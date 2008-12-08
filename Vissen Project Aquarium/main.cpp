@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 	Model model;
 	model.loadFromMs3dAsciiFile("character.txt", math3::Matrix4x4f(-1,0,0,0, 0,0,1,0, 0,1,0,0, 0,0,0,1));
 	std::vector<Vis> fishes;
-	for(int i=0;i<10;++i){
+	for(int i=0;i<2;++i){
 		fishes.push_back(Vis(&model,100+my_random()*50));
 	}
 	//Vis testVis(&model,100);
