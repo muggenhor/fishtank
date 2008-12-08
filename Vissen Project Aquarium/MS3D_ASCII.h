@@ -14,6 +14,8 @@
 #define MS_MAX_NAME 32
 #define MS_MAX_PATH 256
 
+#include "math3.h"
+
 
 class Vec
 {
@@ -51,10 +53,10 @@ class Shape
 		Shape();
 		~Shape();
 
-		bool loadFromFile( const char *filename );
-		bool loadFromMs3dAsciiSegment( FILE *file );
+		//bool loadFromFile( const char *filename );
+		bool loadFromMs3dAsciiSegment( FILE *file, const math3::Matrix4x4f &transform=math3::Matrix4x4f(1,0,0,0 ,0,1,0,0, 0,0,1,0, 0,0,0,1));/// identity transform by default.
 
-		bool saveToFile( const char *filename );
+		//bool saveToFile( const char *filename );
 		void render( void );
 
 		int	num_vertices;
@@ -104,9 +106,9 @@ class Model
 		Model();
 		~Model();
 
-		bool loadFromMs3dAsciiFile( const char *filename );
+		bool loadFromMs3dAsciiFile( const char *filename, const math3::Matrix4x4f &transform=math3::Matrix4x4f(1,0,0,0 ,0,1,0,0, 0,0,1,0, 0,0,0,1));
 		void reloadTextures( void );
-		void render( void );
+		void render(const math3::Vec3f &wiggle_freq=math3::Vec3d(1,0,0), const math3::Vec3f &wiggle_dir=math3::Vec3d(0,0,0), double wiggle_phase=0);
 
 	protected:
 		float x,y,z;

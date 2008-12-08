@@ -9,6 +9,7 @@
 #include <ctime>
 
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -37,9 +38,15 @@ int main(int argc, char **argv)
 	glfwSetWindowTitle("OpenGL rox");
 
 	Model model;
-	model.loadFromMs3dAsciiFile("data/model/character.txt");
+	model.loadFromMs3dAsciiFile("character.txt", math3::Matrix4x4f(-1,0,0,0, 0,0,1,0, 0,1,0,0, 0,0,0,1));
+	std::vector<Vis> fishes;
+	for(int i=0;i<10;++i){
+		fishes.push_back(Vis(&model,100+my_random()*50));
+	}
+	//Vis testVis(&model,100);
+	//Vis testVis2(&model,100);
 
-	Vis testVis(&model);
+
 	double curTime;
 	double oldTime = 0;
 
@@ -72,23 +79,35 @@ int main(int argc, char **argv)
 
 
 		curTime = glfwGetTime();
-		testVis.Update(curTime - oldTime);
+		for(int i=0;i<fishes.size();++i){
+			fishes[i].Update(curTime - oldTime);
+		}
 		oldTime = curTime;
 
 
 		glTranslatef(0,0,-300);
 
-		testVis.Draw();//Vis::visModel::test);
+		for(int i=0;i<fishes.size();++i){
+			fishes[i].Draw();
+		}
+
+		//testVis.Draw();//Vis::visModel::test);
+		//testVis2.Draw();//Vis::visModel::test);
+
+		TestDrawAquarium();
 
 		//cout << glfwGetTime() << endl;
-/*
-		glTranslatef(50*sin(glfwGetTime()*PI),0,50*cos(glfwGetTime()*PI));
-		glTranslatef(0,6*sin(glfwGetTime()*PI * 3),0);
+/* */
+		//glTranslatef(50*sin(glfwGetTime()*PI),0,50*cos(glfwGetTime()*PI));
+		//glTranslatef(0,6*sin(glfwGetTime()*PI * 3),0);
 
-		glRotatef(glfwGetTime()*180,0,1,0);
+		//glRotatef(glfwGetTime()*180,0,1,0);
 
-		model.render();
-		*/
+		//glScalef(200,200,200);
+		//glEnable(GL_NORMALIZE);
+
+		//model.render();
+	/*	*/
 
 		glfwSwapBuffers();/// display what we rendered
 	}

@@ -1107,7 +1107,7 @@ inline Vec3<T> Mulw0(const Matrix4x4<T> &m,const Vec3<T> &v)
 };
 
 template <class T>
-Matrix4x4<T> Transpose(Matrix4x4<T> &m)
+Matrix4x4<T> Transpose(const Matrix4x4<T> &m)
 {
     return Matrix4x4<T>(
                m.a[0][0],m.a[1][0],m.a[2][0],m.a[3][0],
@@ -1119,7 +1119,7 @@ Matrix4x4<T> Transpose(Matrix4x4<T> &m)
 
 //borrowed from intel docs.
 template <class T>
-Matrix4x4<T> Inverse(Matrix4x4<T> &mat)
+Matrix4x4<T> Inverse(const Matrix4x4<T> &mat)
 {
     Matrix4x4<T> result;
     T tmp[12]; /* temp array for pairs */
