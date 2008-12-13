@@ -2,6 +2,7 @@
 #include <GL/glfw.h>
 #include <GL/gl.h>
 #include "Vis.h"
+#include "AquariumController.h"
 #include "MS3D_ASCII.h"
 
 #include <cmath>
@@ -39,10 +40,14 @@ int main(int argc, char **argv)
 
 	Model model;
 	model.loadFromMs3dAsciiFile("character.txt", math3::Matrix4x4f(-1,0,0,0, 0,0,1,0, 0,1,0,0, 0,0,0,1));
-	std::vector<Vis> fishes;
-	for(int i=0;i<2;++i){
-		fishes.push_back(Vis(&model,100+my_random()*50));
+	
+	AquariumController aquariumController;
+	
+	for(int i = 0; i < 2; i++)
+	{
+		aquariumController.AddFish(&model);
 	}
+	aquariumController.AddBubbleSpot();
 	//Vis testVis(&model,100);
 	//Vis testVis2(&model,100);
 
@@ -79,17 +84,20 @@ int main(int argc, char **argv)
 
 
 		curTime = glfwGetTime();
-		for(int i=0;i<fishes.size();++i){
-			fishes[i].Update(curTime - oldTime);
+
+		double dt = curTime - oldTime;
+		if(dt > 0.1)
+		{
+			dt=0.1;
 		}
+		aquariumController.Update(dt);
+
 		oldTime = curTime;
 
 
 		glTranslatef(0,0,-300);
 
-		for(int i=0;i<fishes.size();++i){
-			fishes[i].Draw();
-		}
+		aquariumController.Draw();
 
 		//testVis.Draw();//Vis::visModel::test);
 		//testVis2.Draw();//Vis::visModel::test);

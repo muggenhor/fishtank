@@ -173,6 +173,14 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\AquariumController.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Bubble.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\JPEG.cpp"
 				>
 			</File>
@@ -198,6 +206,14 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\AquariumController.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Bubble.h"
+				>
+			</File>
 			<File
 				RelativePath=".\JPEG.h"
 				>

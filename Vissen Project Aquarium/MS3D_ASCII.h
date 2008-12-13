@@ -67,6 +67,8 @@ class Shape
 
 		int	num_normals;
 		Normal	*normals;
+
+		math3::Vec3d bb_l, bb_h;
 };
 
 
@@ -109,6 +111,10 @@ class Model
 		bool loadFromMs3dAsciiFile( const char *filename, const math3::Matrix4x4f &transform=math3::Matrix4x4f(1,0,0,0 ,0,1,0,0, 0,0,1,0, 0,0,0,1));
 		void reloadTextures( void );
 		void render(const math3::Vec3f &wiggle_freq=math3::Vec3d(1,0,0), const math3::Vec3f &wiggle_dir=math3::Vec3d(0,0,0), double wiggle_phase=0);
+
+
+		math3::Vec3d bb_l;/// bounding box for the model, low and high
+		math3::Vec3d bb_h;
 
 	protected:
 		float x,y,z;

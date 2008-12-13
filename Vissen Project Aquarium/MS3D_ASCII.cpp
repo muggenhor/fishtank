@@ -7,7 +7,9 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //										The Shape Class
 /////////////////////////////////////////////////////////////////////////////////////////////////
-Shape::Shape()
+Shape::Shape():
+bb_l(1E20,1E20,1E20),
+bb_h(-bb_l)
 {
 	num_vertices = 0;
 	vertices = NULL;
@@ -135,6 +137,9 @@ bool Shape::loadFromMs3dAsciiSegment( FILE *file , const math3::Matrix4x4f &tran
 {
 	Matrix4x4f normals_transform=Transpose(Inverse(transform));
 
+	bb_l=Vec3d(1E20,1E20,1E20);
+	bb_h=-bb_l;
+
 	bool bError = false;
 	char szLine[256];
 	for (int i=0;i<256;++i)szLine[i]=0;
@@ -173,10 +178,20 @@ bool Shape::loadFromMs3dAsciiSegment( FILE *file , const math3::Matrix4x4f &tran
 		/// dizekat: apply vertice transform
 		Vec3f tmp1(vertices[j].x, vertices[j].y, vertices[j].z);
 		Vec3f tmp2=Mulw1(transform,tmp1);
+		/// done transform.
+
 		vertices[j].x=tmp2.x;
 		vertices[j].y=tmp2.y;
 		vertices[j].z=tmp2.z;
-		/// done transform.
+
+		if(tmp2.x<bb_l.x)bb_l.x=tmp2.x;
+		if(tmp2.y<bb_l.y)bb_l.y=tmp2.y;
+		if(tmp2.z<bb_l.z)bb_l.z=tmp2.z;
+
+		if(tmp2.x>bb_h.x)bb_h.x=tmp2.x;
+		if(tmp2.y>bb_h.y)bb_h.y=tmp2.y;
+		if(tmp2.z>bb_h.z)bb_h.z=tmp2.z;
+
 
 
 		// adjust the y direction of the texture coordinate
@@ -370,7 +385,9 @@ void Material::reloadTexture( void )
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //										The Model Class
 /////////////////////////////////////////////////////////////////////////////////////////////////
-Model::Model()
+Model::Model():
+bb_l(0,0,0),
+bb_h(0,0,0)
 {
 	num_shapes = 0;
 	shapes = NULL;
@@ -400,6 +417,9 @@ Model::~Model()
 
 bool Model::loadFromMs3dAsciiFile( const char *filename, const math3::Matrix4x4f &transform )
 {
+	bb_l=Vec3d(1E20,1E20,1E20);
+	bb_h=-bb_l;
+
 	bool	bError = false;
 	char	szLine[256];
 	int		nFlags, nIndex, i;
@@ -442,6 +462,15 @@ bool Model::loadFromMs3dAsciiFile( const char *filename, const math3::Matrix4x4f
 					bError = true;
 					break;
 				}
+
+				if(shapes[i].bb_l.x<bb_l.x)bb_l.x=shapes[i].bb_l.x;
+				if(shapes[i].bb_l.y<bb_l.y)bb_l.y=shapes[i].bb_l.y;
+				if(shapes[i].bb_l.z<bb_l.z)bb_l.z=shapes[i].bb_l.z;
+
+				if(shapes[i].bb_h.x>bb_h.x)bb_h.x=shapes[i].bb_h.x;
+				if(shapes[i].bb_h.y>bb_h.y)bb_h.y=shapes[i].bb_h.y;
+				if(shapes[i].bb_h.z>bb_h.z)bb_h.z=shapes[i].bb_h.z;
+
 			}
 			continue;
 		}
@@ -527,6 +556,9 @@ void Model::render(const math3::Vec3f &wiggle_freq, const math3::Vec3f &wiggle_d
 				double alpha=DotProd(pos, wiggle_freq)+wiggle_phase;
 				Vec3f wiggled_pos=pos+wiggle_dir*float(sin(alpha));
 				glVertex3f( wiggled_pos.x , wiggled_pos.y, wiggled_pos.z);
+				/// formulas for improved wiggle....
+				/// a*sin(x*b) ' = a*b*cos(x*b)
+				///
 			}
 
 		}

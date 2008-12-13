@@ -1,15 +1,9 @@
+#include "AquariumController.h"
 #include "Vis.h"
 #include <cstdlib>
 #include <ctime>
 
-float my_random()
-{
-	return rand() / float(RAND_MAX);
-}
-
 using namespace math3;
-
-const Vec3d aquariumSize(200,100,200);
 
 void TestDrawAquarium(){
 
@@ -26,14 +20,11 @@ void TestDrawAquarium(){
 	glVertex3d(-0.5*aquariumSize.x,-0.5*aquariumSize.y,-0.5*aquariumSize.z);
 	glVertex3d(-0.5*aquariumSize.x,-0.5*aquariumSize.y,0.5*aquariumSize.z);
 
-
-
 	glVertex3d(-0.5*aquariumSize.x,-0.5*aquariumSize.y,0.5*aquariumSize.z);
 	glVertex3d(0.5*aquariumSize.x,-0.5*aquariumSize.y,0.5*aquariumSize.z);
 
 	glVertex3d(-0.5*aquariumSize.x,-0.5*aquariumSize.y,0.5*aquariumSize.z);
 	glVertex3d(-0.5*aquariumSize.x,0.5*aquariumSize.y,0.5*aquariumSize.z);
-
 
 	glVertex3d(-0.5*aquariumSize.x,0.5*aquariumSize.y,-0.5*aquariumSize.z);
 	glVertex3d(0.5*aquariumSize.x,0.5*aquariumSize.y,-0.5*aquariumSize.z);
@@ -41,14 +32,11 @@ void TestDrawAquarium(){
 	glVertex3d(-0.5*aquariumSize.x,0.5*aquariumSize.y,-0.5*aquariumSize.z);
 	glVertex3d(-0.5*aquariumSize.x,0.5*aquariumSize.y,0.5*aquariumSize.z);
 
-
-  glVertex3d(0.5*aquariumSize.x,-0.5*aquariumSize.y,-0.5*aquariumSize.z);
+	glVertex3d(0.5*aquariumSize.x,-0.5*aquariumSize.y,-0.5*aquariumSize.z);
 	glVertex3d(0.5*aquariumSize.x,0.5*aquariumSize.y,-0.5*aquariumSize.z);
 
 	glVertex3d(0.5*aquariumSize.x,-0.5*aquariumSize.y,-0.5*aquariumSize.z);
 	glVertex3d(0.5*aquariumSize.x,-0.5*aquariumSize.y,0.5*aquariumSize.z);
-
-
 
 	glVertex3d(0.5*aquariumSize.x,0.5*aquariumSize.y,0.5*aquariumSize.z);
 	glVertex3d(-0.5*aquariumSize.x,0.5*aquariumSize.y,0.5*aquariumSize.z);
@@ -74,21 +62,30 @@ Vec3d RandomPos()
 
 const double max_speed=20.0;
 const double min_speed=15.0;
-const double acceleration=40;
 
-const double turn_speed=1.0;///
+const double forward_acceleration=5;
+const double vertical_acceleration=1;
+//const double max_vertical_speed=10;
+
+const double turn_speed=0.7;///radians per second
 
 const double wiggle_factor=2;/// amount of wiggle (controls amplitude vs speed)
 const double wiggle_freq=0.15;///larger means more wiggle waves on fish.
+const double wiggle_speed_factor=3.0;
 
 Vis::Vis(Model *model, double scale) //defines model
 {
 	this->model = model;
 	this->scale = scale;
 	pos = RandomPos();
-	goalPos = RandomPos();
 	velocity=Vec3d(0,0,0);
-	speed=min_speed+my_random()*(max_speed-min_speed);
+	speed=0;
+
+	//goalPos = RandomPos();
+	//desired_speed=min_speed+my_random()*(max_speed-min_speed);
+	newGoal();
+
+
 	swimDirAngle=0;
 	wiggle_phase=0;
 	wiggle_amplitude=0;
@@ -105,8 +102,8 @@ void Vis::Draw()
 	{
 		/// debugging: draw some lines to show where dude's floating
 		/// 1 line would be impossible to see 3d perspective on, so draw 8
-		/*
-		glColor3d(1,1,1);
+		/**/
+		/*glColor3d(1,1,1);
 		glDisable(GL_TEXTURE_2D);
 		glBegin(GL_LINES);
 		for(int i=0;i<2;++i){
@@ -117,8 +114,8 @@ void Vis::Draw()
 				}
 			}
 		}
-		glEnd();
-		*/
+		glEnd();*/
+		/**/
 
 		glPushMatrix();
 		glTranslatef(pos.x,pos.y,pos.z);
@@ -135,7 +132,7 @@ void Vis::Draw()
 void Vis::newGoal()
 {
 	goalPos = RandomPos();
-	speed = min_speed+my_random()*(max_speed-min_speed);
+	desired_speed = min_speed+my_random()*(max_speed-min_speed);
 }
 
 void Vis::Update(double dt)
@@ -144,45 +141,86 @@ void Vis::Update(double dt)
 
 	Vec3d delta=goalPos-pos;
 	double dist=Length(delta);
-	if (dist<speed)/// if we're about to pass goal in less than second, change the goal
+	if (dist<desired_speed)/// if we're about to pass goal in less than second, change the goal
 	{
 		newGoal();
 		return;
 	}
-
-	Vec3d desiredVelocity=delta*(speed/dist);
+	/*
+	//Vec3d desiredVelocity=delta*(speed/dist);
 	if(desiredVelocity.y>velocity.y){/// vertical movement.
 		velocity.y+=dt*acceleration;
 	}else{
 		velocity.y-=dt*acceleration;
 	}
-	/// horizontal movement
+
+	*/
+	/// Horizontal movement
 	Vec3d fishForward(cos(swimDirAngle),0,sin(swimDirAngle));
 
-	double forwardFactor=DotProd(fishForward,Normalized(desiredVelocity));
-	velocity+=dt*fishForward*acceleration*forwardFactor;
+	double dfs=dt*forward_acceleration;
+	if(speed<desired_speed-dfs){
+		speed+=dfs;
+	}else
+	if(speed>desired_speed+dfs)
+	{
+		speed-=dfs;
+	}else{
+		speed=desired_speed;
+	}
+	velocity.x=fishForward.x*speed;
+	velocity.z=fishForward.z*speed;
+	/// Vertical movement
+	double desired_vertical_speed=delta.y*speed/dist;// /sqrt(delta.x*delta.x+delta.z*delta.z)
+	double dvs=vertical_acceleration*dt;
+	if(velocity.y<desired_vertical_speed-dvs){
+		velocity.y+=dvs;
+	}else
+	if(velocity.y>desired_vertical_speed+dvs)
+	{
+		velocity.y-=dvs;
+	}else{
+		velocity.y=desired_vertical_speed;
+	}
+	velocity.y=desired_vertical_speed;
 
+	//double forwardFactor=DotProd(fishForward,Normalized(desiredVelocity));
 
+	//velocity+=dt*fishForward*acceleration;// *forwardFactor
+
+/*
 	double current_speed=Length(velocity);
 	if(current_speed>speed){/// moving too fast - slow down to exactly speed. TODO: do it smootly for less robotic turns.
 		velocity*=speed/current_speed;
 	}
+	*/
+
 	/// turns
 	double goalHeading=atan2(delta.z,delta.x);
 
-	double angleDelta=goalHeading-swimDirAngle;
+	double angleDelta=swimDirAngle-goalHeading;
 	/// make the closest turn angle (-pi to +pi)
 	if(angleDelta>pi) angleDelta-=2*pi;
 	if(angleDelta<-pi)angleDelta+=2*pi;
 
-	swimDirAngle+=dt*angleDelta*turn_speed;
+	double turn=dt*turn_speed;
+	if(angleDelta>turn){
+		swimDirAngle-=turn;
+	}else
+	if(angleDelta<-turn){
+		swimDirAngle+=turn;
+	}
+
 
 	if(swimDirAngle>pi) swimDirAngle-=2*pi;
 	if(swimDirAngle<-pi)swimDirAngle+=2*pi;
 
-	wiggle_amplitude=wiggle_factor-wiggle_factor/(current_speed+1.0);/// as speed changes from zero to infinity, wiggle amplitude changes from 0 to wiggle_factor
+	wiggle_amplitude=wiggle_factor-wiggle_factor/(speed+1.0);/// as speed changes from zero to infinity, wiggle amplitude changes from 0 to wiggle_factor
 
-	wiggle_phase+=wiggle_freq*dt*current_speed*2.5;/// magic constant.
+	wiggle_phase+=wiggle_freq*dt*speed*wiggle_speed_factor;/// magic constant.
+
+	/// wraparound not to lose precision over time.
+	if(wiggle_phase>2*pi)wiggle_phase-=2*pi;
 
 
 	myWaitTime -= dt;

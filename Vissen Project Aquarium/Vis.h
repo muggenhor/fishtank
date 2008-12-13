@@ -10,9 +10,10 @@ public:
 	math3::Vec3d pos, goalPos, velocity;
 	Model *model;
 	double swimDirAngle;
+	double desired_speed;
 	double speed;
 	double scale;
-	
+
 	double myWaitTime;
 
 	double wiggle_phase, wiggle_amplitude;
@@ -28,5 +29,3 @@ public:
 };
 
 void TestDrawAquarium();
-
-float my_random();
