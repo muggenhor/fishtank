@@ -516,13 +516,41 @@ void Model::reloadTextures( void )
 	}
 }
 
-void Model::render(const math3::Vec3f &wiggle_freq, const math3::Vec3f &wiggle_dir, double wiggle_phase)
+void Model::render(const math3::Vec3f &wiggle_freq, const math3::Vec3f &wiggle_dir, double wiggle_phase, double turn)
 {
 	int	k;
 	int	i, j;
 	Tri	*tri;
 	Vec	*vec;
 	Normal *N;
+
+	/*
+	// approximate elliptic integral with sine... just an approximation, not correct formula
+
+	a*sin(l*b) ' = a*b*cos(l*b)
+
+dl=sqrt((a*b*cos(x*b))^2 + 1)*dt
+
+dl min =dx
+dl max = sqrt((a*b)^2 + 1)*dx
+
+dx/dl max = 1  (x*b=pi/2)
+dx/dl min = 1/sqrt((a*b)^2 + 1)  (l*b=0)
+q=(1-1/sqrt((a*b)^2 + 1)))/2
+p=(1/sqrt((a*b)^2 + 1)+1)/2
+dx/dl=q*cos(2*l*b)+p
+x=q*sin(2*b*l)/(2*b) + p*l
+	*/
+
+
+	double a=2.0*Length(wiggle_dir)+(1E-20);/// prevent divisions by zero
+	double b=Length(wiggle_freq)+(1E-20);
+	double c=1.0/sqrt(a*a*b*b+1);
+	double q=0.5*(1-c);
+	double p=0.5*(c+1);
+	double s_a=0.5*q/b;
+
+
 
 	for (k = 0; k < num_shapes; k++)	// for each shape
 	{
@@ -553,14 +581,34 @@ void Model::render(const math3::Vec3f &wiggle_freq, const math3::Vec3f &wiggle_d
 
 				/// wiggle position
 				Vec3f pos(vec->x , vec->y, vec->z);
-				double alpha=DotProd(pos, wiggle_freq)+wiggle_phase;
-				Vec3f wiggled_pos=pos+wiggle_dir*float(sin(alpha));
-				glVertex3f( wiggled_pos.x , wiggled_pos.y, wiggled_pos.z);
-				/// formulas for improved wiggle....
-				/// a*sin(x*b) ' = a*b*cos(x*b)
-				///
-			}
+				float alpha=DotProd(pos, wiggle_freq);
 
+				Vec3f wiggled_pos=pos + wiggle_dir*float(sin(alpha+wiggle_phase)) ;
+
+				/// approximate the elliptic integral.
+				wiggled_pos.x=wiggled_pos.x*p+sin(2*alpha+wiggle_phase)*s_a;
+				/// approximate the elliptic integral, weirder but better looking (?).
+				//wiggled_pos+=wiggle_freq*float(sin(2*alpha+wiggle_phase)*s_a/b);
+
+				/// turns:
+				if(fabs(turn)>1E-5){
+					double i_turn=1.0/turn;
+					double turn_a=wiggled_pos.x*turn;
+					if(turn>0){
+						wiggled_pos.x=sin(turn_a)*(i_turn+wiggled_pos.z);
+						wiggled_pos.z=cos(turn_a)*(i_turn+wiggled_pos.z)-i_turn;
+					}else{
+						turn_a=-turn_a;
+						i_turn=-i_turn;
+						wiggled_pos.x=sin(turn_a)*(i_turn-wiggled_pos.z);
+						wiggled_pos.z=i_turn-cos(turn_a)*(i_turn-wiggled_pos.z);
+					}
+				}
+
+
+				glVertex3f( wiggled_pos.x , wiggled_pos.y, wiggled_pos.z);
+
+			}
 		}
 		glEnd();
 	}

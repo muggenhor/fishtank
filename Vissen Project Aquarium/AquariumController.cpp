@@ -8,8 +8,10 @@ float my_random()
 	return rand() / float(RAND_MAX);
 }
 
-AquariumController::AquariumController(void)
+AquariumController::AquariumController(void):
+ground(2, 2)
 {
+	
 }
 
 AquariumController::~AquariumController(void)
@@ -69,4 +71,5 @@ void AquariumController::Draw()
 	{
 		bubbles[i].Draw();
 	}
+	ground.Draw();
 }

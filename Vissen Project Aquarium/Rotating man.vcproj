@@ -181,6 +181,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Ground.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\JPEG.cpp"
 				>
 			</File>
@@ -212,6 +216,10 @@
 			</File>
 			<File
 				RelativePath=".\Bubble.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Ground.h"
 				>
 			</File>
 			<File

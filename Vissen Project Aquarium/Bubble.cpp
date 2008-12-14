@@ -13,14 +13,14 @@ Bubble::Bubble(Vec3d startpos, double size, bool wiggle)
 {
 	pos = startpos;
 	this->size = size;
-	velocity = Vec3d(-10 + my_random() * 20, 30, -10 + my_random() * 20);
+	velocity = Vec3d(-3 + my_random() * 6, 10, -3 + my_random() * 6);
 	this->wiggle = wiggle;
 	if (wiggle)
 	{
 		wiggleStartX = my_random() * 100;
 		wiggleStartZ = my_random() * 100;
 	}
-	pop = 0.5 + my_random() * 0.5;
+	pop = 1 + my_random() * 0.8;
 }
 
 Bubble::~Bubble(void)
@@ -50,7 +50,7 @@ void Bubble::Update(double dt)
 		}
 		else
 		{
-			velocity.y += (size * dt) * 40;
+			velocity.y += (size * dt) * 5;
 		}
 	}
 }

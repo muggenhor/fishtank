@@ -12,6 +12,10 @@ public:
 	double swimDirAngle;
 	double desired_speed;
 	double speed;
+	double turn_speed;
+	double bending;
+	double pitch;
+
 	double scale;
 
 	double myWaitTime;
@@ -29,3 +33,5 @@ public:
 };
 
 void TestDrawAquarium();
+
+float my_random();
