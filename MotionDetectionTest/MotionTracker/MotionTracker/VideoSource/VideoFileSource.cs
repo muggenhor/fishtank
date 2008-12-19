@@ -183,6 +183,7 @@ namespace VideoSource
 					// end time
 					TimeSpan	span = DateTime.Now.Subtract(start);
 
+ //                   Thread.Sleep(1000);
 					// sleep for a while
 /*					int			m = (int) span.TotalMilliseconds;
 

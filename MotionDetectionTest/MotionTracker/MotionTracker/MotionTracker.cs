@@ -99,7 +99,7 @@ namespace motion
 				if ( t < 0 )
 					t = -t;
 
-				if ( t >= 15 )
+				if ( t >= 40 ) //15 is standaard
 				{
 					pixelsChanged++;
 					currentFrame[i] = (byte) 255;
@@ -276,9 +276,8 @@ namespace motion
         {
             FileStream fs = new FileStream("c://temp.txt", FileMode.OpenOrCreate, FileAccess.Write);
             StreamWriter sw = new StreamWriter(fs);
-            sw.WriteLine(x);
-            sw.WriteLine(y);
-            sw.WriteLine("xas (%): " + (float)(x/(float)width) + " yas (%): " + (float)(y/(float)height));
+            sw.WriteLine((float)(x/(float)width));
+            sw.WriteLine((float)(y/(float)height));
             sw.Close();
         }
 

@@ -26,9 +26,9 @@ namespace testje
             try
             {
                 FileStream fs = new FileStream("c://temp.txt", FileMode.Open, FileAccess.Read);
-                StreamReader sr = new StreamReader(fs);
-                int x = int.Parse(sr.ReadLine());
-                int y = int.Parse(sr.ReadLine());
+                StreamReader sr = new StreamReader(fs);              
+                int x = (int)(Convert.ToDouble(sr.ReadLine()) * this.Size.Width);
+                int y = (int)(Convert.ToDouble(sr.ReadLine()) * this.Size.Height);
                 sr.Close();
                 panel1.Location = new Point(x, y);               
             }
