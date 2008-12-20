@@ -13,20 +13,16 @@ namespace MotionTracker
     {
         // statistics
         private const int statLength = 15;
-        private int statIndex = 0, statReady = 0;
+  //      private int statIndex = 0, statReady = 0;
         private int[] statCount = new int[statLength];
 
         private motion.MotionTracker detector = new motion.MotionTracker();
-        private int detectorType = 4;
+  //      private int detectorType = 4;
         private int intervalsToSave = 0;
 
         private AVIWriter writer = null;
         private bool saveOnMotion = false;
-
-  /*      private motion.CameraWindow cameraWindow = new motion.CameraWindow();
-        private Panel panel = new Panel();
-        private Timer timer = new Timer();
-    */    
+   
         public Form1()
         {
             InitializeComponent();
@@ -41,7 +37,7 @@ namespace MotionTracker
                 camera.MotionDetector = detector;
 
                 // reset statistics
-                statIndex = statReady = 0;
+ //               statIndex = statReady = 0;
                 camera.Unlock();
             }
 
@@ -87,7 +83,7 @@ namespace MotionTracker
             cameraWindow.Camera = camera;
 
             // reset statistics
-            statIndex = statReady = 0;
+  //          statIndex = statReady = 0;
 
             // set event handlers
             camera.NewFrame += new EventHandler(camera_NewFrame);
@@ -155,7 +151,7 @@ namespace MotionTracker
                         // open AVI file
                         writer.Open(fileName, cameraWindow.Camera.Width, cameraWindow.Camera.Height);
                     }
-                    catch (ApplicationException ex)
+                    catch (ApplicationException)
                     {
                         if (writer != null)
                         {
@@ -175,8 +171,9 @@ namespace MotionTracker
         }
 
         // On timer event - gather statistic
-        private void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+  /*      private void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
+            textBox1.Text = "Gem. COordinaat: "
             Camera camera = cameraWindow.Camera;
 
             if (camera != null)
@@ -213,6 +210,6 @@ namespace MotionTracker
                     writer = null;
                 }
             }
-        }
+        }*/
     }
 }

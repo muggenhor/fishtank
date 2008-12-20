@@ -32,6 +32,7 @@
             this.cameraWindow = new motion.CameraWindow();
             this.panel = new System.Windows.Forms.Panel();
             this.timer = new System.Windows.Forms.Timer(this.components);
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.panel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -57,16 +58,25 @@
             this.timer.Enabled = true;
             this.timer.Interval = 1000;
             // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(2, 266);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(279, 20);
+            this.textBox1.TabIndex = 2;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 264);
+            this.ClientSize = new System.Drawing.Size(284, 290);
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.panel);
             this.Name = "Form1";
             this.Text = "Motion Detector - TEST";
             this.panel.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -75,6 +85,7 @@
         private motion.CameraWindow cameraWindow;
         private System.Windows.Forms.Panel panel;
         private System.Windows.Forms.Timer timer;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
 

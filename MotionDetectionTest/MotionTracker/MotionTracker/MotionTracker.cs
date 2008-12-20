@@ -17,7 +17,9 @@ namespace motion
         private byte[] backgroundFrame = null, currentFrame=null, currentFrameDilatated=null;
         private int counter = 0, width, height, pixelsChanged;
         private bool calculateMotionLevel = false;
-       
+
+        private byte[,] background=null, current=null;
+
 
         //methoden
         // Constructor
@@ -46,6 +48,64 @@ namespace motion
 			int fH = ( ( ( height - 1 ) / 8 ) + 1 );
 			int len = fW * fH;
 
+   /*         if (background == null)
+            {
+                background = new byte[width, height];
+                current = new byte[width, height];
+
+                // lock image
+                BitmapData imgData = image.LockBits(
+                    new Rectangle(0, 0, width, height),
+                    ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+
+                // create initial backgroung image
+                PreprocessInputImage(imgData, width, height, backgroundFrame);
+ //               PreprocessInputImage(imgData, width, height, background);
+
+                //teste
+                for (int i=0; i<fH; i++)
+                    background
+
+                // unlock the image
+                image.UnlockBits(imgData);
+
+                // just return for the first time
+                return;
+            }
+            // lock image
+            BitmapData data = image.LockBits(
+                new Rectangle(0, 0, width, height),
+                ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+
+            // preprocess input image
+            PreprocessInputImage(data, width, height, currentFrame);
+
+
+            //variablen
+            int temp;
+            current = new byte[width,height];
+            //weer wat testen
+            for (int x=0; x<width; x++)
+                for (int y = 0; y < height; y++)
+                {
+                    //kleurverschil bepalen
+                    temp = current[x, y] - background[x, y];
+                    //indien negatief, even postitief maken
+                    if (temp < 0)
+                        temp = -temp;
+                    //indoen verschil groot genoeg, gegevens toevoegen
+                    if (temp >= 40)
+                    {
+                        xas += x;
+                        yas += y;
+                        blokjes++;
+                    }
+                }
+
+            SaveCoordinates(xas / blokjes, yas / blokjes);
+            // unlock the image
+            image.UnlockBits(data);
+   */         
 			if ( backgroundFrame == null )
 			{
 				// alloc memory for a backgound image and for current image
@@ -91,7 +151,7 @@ namespace motion
 				}
 			}
 
-			// difference and thresholding
+            // difference and thresholding
 			pixelsChanged = 0;
 			for ( int i = 0; i < len; i++ )
 			{
@@ -123,7 +183,7 @@ namespace motion
 					int k = i * fW + j;
 					int v = currentFrame[k];
 
-				/*	// left pixels
+					// left pixels
 					if ( j > 0 )
 					{
 						v += currentFrame[k - 1];
@@ -160,7 +220,7 @@ namespace motion
 					if ( i < fH - 1 )
 					{
 						v += currentFrame[k + fW];
-					}*/
+					}
 
 					currentFrameDilatated[k] = (v != 0) ? (byte) 255 : (byte) 0;
 				}
@@ -171,10 +231,12 @@ namespace motion
 
 			// unlock the image
 			image.UnlockBits( data );
+    
 		}
 
 		// Preprocess input image
 		private void PreprocessInputImage( BitmapData data, int width, int height, byte[] buf )
+//        private void PreprocessInputImage( BitmapData data, int width, int height, byte[,] buf2 )
 		{
 			int stride = data.Stride;
 			int offset = stride - width * 3;
@@ -211,6 +273,9 @@ namespace motion
 					for ( j = 0; j < len - 1; j++, k++ )
 						buf[k] = (byte)( tmp[j] / t1 );
 					buf[k++] = (byte)( tmp[j] / t2 );
+        //            for (int x = 0; x < width; x++)
+          //              //      for (int y=0; y<height; y++)
+            //            buf2[x, y] = (byte)(tmp[x*y] / t1);
 				}
 			}
 		}
@@ -249,7 +314,7 @@ namespace motion
 						if (buf[k] == 255)
 						{
 							// check for border
-							if (
+				/*			if (
 								( ( x % 8 == 0 ) && ( ( j == 0 ) || ( buf[k - 1] == 0 ) ) ) ||
 								( ( x % 8 == 7 ) && ( ( j == lenWM1 ) || ( buf[k + 1] == 0 ) ) ) ||
 								( ( y % 8 == 0 ) && ( ( i == 0 ) || ( buf[k - len] == 0 ) ) ) ||
@@ -257,11 +322,11 @@ namespace motion
 								)
 							{
 								src[RGB.R] = 255;
-                                //ff iets testen
+                          */      //ff iets testen
                                 xas += x;
                                 yas += y;
                                 blokjes++;
-							}
+					//		}
 						}
 					}
 					src += offset;
