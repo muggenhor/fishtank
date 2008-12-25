@@ -20,6 +20,8 @@ namespace motion
 
         private byte[,] background=null, current=null;
 
+        //testje
+        private double x=0, y = 0, ox=0, oy=0;
 
         //methoden
         // Constructor
@@ -141,8 +143,11 @@ namespace motion
 				counter = 0;
 
 				// move background towards current frame
-				for ( int i = 0; i < len; i++ )
+                
+				for ( int i = 0; i < len; i++)
 				{
+
+
 					int t = currentFrame[i] - backgroundFrame[i];
 					if ( t > 0 )
 						backgroundFrame[i]++;
@@ -153,14 +158,31 @@ namespace motion
 
             // difference and thresholding
 			pixelsChanged = 0;
-			for ( int i = 0; i < len; i++ )
+
+            /* test */
+            int x = 0, y = 0;
+            blokjes = xas = yas = 0;
+			for ( int i = 0; i < len; i++, x++ )
 			{
+                //test
+                if (x == fW) //gelijk aan de lengte
+                {
+                    x = 0; y++;
+                }
+                //einde test
+
+
 				int t = currentFrame[i] - backgroundFrame[i];
 				if ( t < 0 )
 					t = -t;
 
 				if ( t >= 40 ) //15 is standaard
 				{
+                    //test
+                    xas += x*8;
+                    yas += y*8;
+                    blokjes++;
+
 					pixelsChanged++;
 					currentFrame[i] = (byte) 255;
 				}
@@ -169,6 +191,7 @@ namespace motion
 					currentFrame[i] = (byte) 0;
 				}
 			}
+            SaveCoordinates2(xas / blokjes, yas / blokjes);
 			if ( calculateMotionLevel )
 				pixelsChanged *= 64;
 			else
@@ -337,13 +360,34 @@ namespace motion
 		}
 
         //save the best coordiante in (for now) a txt file
+        private void SaveCoordinates2(float x, float y)
+        {
+
+            this.x = (float)(x / (float)width);
+            this.y = (float)(y / (float)height);
+            
+            FileStream fs = new FileStream("c://temp2.txt", FileMode.OpenOrCreate, FileAccess.Write);
+            StreamWriter sw = new StreamWriter(fs);
+            sw.WriteLine(this.x);
+            sw.WriteLine(this.y);
+            sw.Close();
+
+ 
+        }
+
+        //save the best coordiante in (for now) a txt file
         private void SaveCoordinates(float x, float y)
         {
+            this.ox = (float)(x / (float)width);
+            this.oy = (float)(y / (float)height);
+
             FileStream fs = new FileStream("c://temp.txt", FileMode.OpenOrCreate, FileAccess.Write);
             StreamWriter sw = new StreamWriter(fs);
-            sw.WriteLine((float)(x/(float)width));
-            sw.WriteLine((float)(y/(float)height));
+            sw.WriteLine(this.ox);
+            sw.WriteLine(this.oy);
             sw.Close();
+
+
         }
 
         //proporties
@@ -359,6 +403,12 @@ namespace motion
         {
             get { return (double)pixelsChanged / (width * height); }
         }
+
+        //testje
+        public double MethodCheckX { get { return x; } }
+        public double MethodCheckY { get { return y; } }
+        public double MethodCheckoX { get { return ox; } }
+        public double MethodCheckoY { get { return oy; } }
 
     }
 }

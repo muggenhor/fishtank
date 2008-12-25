@@ -12,9 +12,9 @@ namespace MotionTracker
     public partial class Form1 : Form
     {
         // statistics
-        private const int statLength = 15;
+  //      private const int statLength = 15;
   //      private int statIndex = 0, statReady = 0;
-        private int[] statCount = new int[statLength];
+  //      private int[] statCount = new int[statLength];
 
         private motion.MotionTracker detector = new motion.MotionTracker();
   //      private int detectorType = 4;
@@ -57,7 +57,7 @@ namespace MotionTracker
                 //open file
                 // create video source
                 VideoFileSource fileSource = new VideoFileSource();
-                fileSource.VideoSource = "c:\\Sin City.avi";
+                fileSource.VideoSource = "C:\\Sin City.avi";
                 // open it
                 OpenVideoSource(fileSource);
             }
@@ -86,7 +86,7 @@ namespace MotionTracker
   //          statIndex = statReady = 0;
 
             // set event handlers
-            camera.NewFrame += new EventHandler(camera_NewFrame);
+     //       camera.NewFrame += new EventHandler(camera_NewFrame);
             camera.Alarm += new EventHandler(camera_Alarm);
 
             // start timer
@@ -131,8 +131,16 @@ namespace MotionTracker
             intervalsToSave = (int)(5 * (1000 / timer.Interval));
         }
 
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            label2.Text = detector.MethodCheckX.ToString();
+            label3.Text = detector.MethodCheckY.ToString();
+            label4.Text = detector.MethodCheckoX.ToString();
+            label5.Text = detector.MethodCheckoY.ToString();
+        }
+
         // On new frame
-        private void camera_NewFrame(object sender, System.EventArgs e)
+   /*     private void camera_NewFrame(object sender, System.EventArgs e)
         {
             if ((intervalsToSave != 0) && (saveOnMotion == true))
             {
@@ -168,7 +176,12 @@ namespace MotionTracker
                 writer.AddFrame(camera.LastFrame);
                 camera.Unlock();
             }
-        }
+        }*/
+
+  /*      private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            writer.Close();
+        }*/
 
         // On timer event - gather statistic
   /*      private void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
