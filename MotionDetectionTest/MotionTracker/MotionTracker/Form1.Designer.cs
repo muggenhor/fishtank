@@ -30,25 +30,35 @@
         {
             this.components = new System.ComponentModel.Container();
             this.panel = new System.Windows.Forms.Panel();
+            this.cameraWindow = new motion.CameraWindow();
             this.timer = new System.Windows.Forms.Timer(this.components);
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.cameraWindow = new motion.CameraWindow();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
+            this.cameraWindow2 = new motion.CameraWindow();
             this.panel.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel
             // 
+            this.panel.Controls.Add(this.cameraWindow2);
             this.panel.Controls.Add(this.cameraWindow);
             this.panel.Location = new System.Drawing.Point(-1, 0);
             this.panel.Name = "panel";
-            this.panel.Size = new System.Drawing.Size(285, 263);
+            this.panel.Size = new System.Drawing.Size(563, 263);
             this.panel.TabIndex = 1;
+            // 
+            // cameraWindow
+            // 
+            this.cameraWindow.Camera = null;
+            this.cameraWindow.Location = new System.Drawing.Point(1, 1);
+            this.cameraWindow.Name = "cameraWindow";
+            this.cameraWindow.Size = new System.Drawing.Size(280, 260);
+            this.cameraWindow.TabIndex = 0;
             // 
             // timer
             // 
@@ -88,14 +98,6 @@
             this.label3.TabIndex = 4;
             this.label3.Text = "label3";
             // 
-            // cameraWindow
-            // 
-            this.cameraWindow.Camera = null;
-            this.cameraWindow.Location = new System.Drawing.Point(1, 1);
-            this.cameraWindow.Name = "cameraWindow";
-            this.cameraWindow.Size = new System.Drawing.Size(280, 260);
-            this.cameraWindow.TabIndex = 0;
-            // 
             // label4
             // 
             this.label4.AutoSize = true;
@@ -123,11 +125,19 @@
             this.label6.TabIndex = 7;
             this.label6.Text = "oud XY:";
             // 
+            // cameraWindow2
+            // 
+            this.cameraWindow2.Camera = null;
+            this.cameraWindow2.Location = new System.Drawing.Point(278, 1);
+            this.cameraWindow2.Name = "cameraWindow2";
+            this.cameraWindow2.Size = new System.Drawing.Size(280, 260);
+            this.cameraWindow2.TabIndex = 1;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 325);
+            this.ClientSize = new System.Drawing.Size(564, 325);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
@@ -156,6 +166,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
+        private motion.CameraWindow cameraWindow2;
     }
 }
 

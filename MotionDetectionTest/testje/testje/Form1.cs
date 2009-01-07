@@ -29,18 +29,18 @@ namespace testje
             {
                 FileStream fs = new FileStream("c://temp2.txt", FileMode.Open, FileAccess.Read);
                 StreamReader sr = new StreamReader(fs);
-                int x = (int)(Convert.ToDouble(sr.ReadLine()) * this.Size.Width);
-                int y = (int)(Convert.ToDouble(sr.ReadLine()) * this.Size.Height);
+                int x = (int)(Convert.ToDouble(sr.ReadLine()) * Convert.ToDouble(this.Size.Width));
+                int y = (int)(Convert.ToDouble(sr.ReadLine()) * Convert.ToDouble(this.Size.Height));
                 sr.Close();
                 panel2.Location = new Point(x, y);
             }
             catch { }
             try
             {
-                FileStream fs = new FileStream("c://temp2.txt", FileMode.Open, FileAccess.Read);
+                FileStream fs = new FileStream("c://temp.txt", FileMode.Open, FileAccess.Read);
                 StreamReader sr = new StreamReader(fs);              
-                int x = (int)(Convert.ToDouble(sr.ReadLine()) * this.Size.Width);
-                int y = (int)(Convert.ToDouble(sr.ReadLine()) * this.Size.Height);
+                int x = (int)(Convert.ToDouble(sr.ReadLine()) * Convert.ToDouble(this.Size.Width));
+                int y = (int)(Convert.ToDouble(sr.ReadLine()) * Convert.ToDouble(this.Size.Height));
                 sr.Close();
                 panel1.Location = new Point(x, y);               
             }

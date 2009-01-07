@@ -29,6 +29,7 @@ namespace MotionTracker
 
             //motion detection
             Camera camera = cameraWindow.Camera;
+   //         Camera camera2 = cameraWindow2.Camera;
 
             // set motion detector to camera
             if (camera != null)
@@ -41,6 +42,13 @@ namespace MotionTracker
                 camera.Unlock();
             }
 
+  /*          if (camera2 != null)
+            {
+                camera2.Lock();
+                camera2.MotionDetector = detector;
+                camera2.Unlock();
+            }
+            */
             CaptureDeviceForm form = new CaptureDeviceForm();
 
             if (form.ShowDialog(this) == DialogResult.OK)
@@ -57,10 +65,11 @@ namespace MotionTracker
                 //open file
                 // create video source
                 VideoFileSource fileSource = new VideoFileSource();
-                fileSource.VideoSource = "C:\\Sin City.avi";
+                fileSource.VideoSource = "G:\\Simpsons 08x14 - The Itchie Scratchy and Poochie Show [kl0wnz].avi";
                 // open it
                 OpenVideoSource(fileSource);
             }
+            
         }
 
 
