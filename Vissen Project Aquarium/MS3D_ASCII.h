@@ -8,10 +8,13 @@
 #include <stdlib.h>
 #include <GL/gl.h>
 #include <assert.h>
+#include <string>
+
 #include "Matrix.h"
 
 
-#define MS_MAX_NAME 32
+
+#define MS_MAX_NAME 128
 #define MS_MAX_PATH 256
 
 #include "math3.h"
@@ -81,7 +84,7 @@ class Material
 		Material();
 		~Material();
 
-		bool loadFromMs3dAsciiSegment( FILE *file );
+		bool loadFromMs3dAsciiSegment( FILE *file, std::string path_ );
 		void activate( void );
 		void reloadTexture( void );
 
@@ -96,6 +99,7 @@ class Material
 		char  DiffuseTexture[MS_MAX_NAME];
 		char  AlphaTexture[MS_MAX_NAME];
 		GLuint texture;
+		std::string path;
 };
 
 
@@ -117,6 +121,8 @@ class Model
 		math3::Vec3d bb_l;/// bounding box for the model, low and high
 		math3::Vec3d bb_h;
 
+		std::string path;
+
 	protected:
 		float x,y,z;
 
@@ -127,6 +133,7 @@ class Model
 
 		int	num_materials;
 		Material *materials;
+
 };
 
 

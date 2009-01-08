@@ -4,6 +4,8 @@
 #include "Vis.h"
 #include "AquariumController.h"
 #include "MS3D_ASCII.h"
+#include <fstream>
+#include <string>
 
 #include <cmath>
 #include <cstdlib>
@@ -11,6 +13,8 @@
 
 #include <iostream>
 #include <vector>
+
+#include <map>
 
 using namespace std;
 
@@ -21,6 +25,64 @@ const float near_clip_plane=10;
 const float far_clip_plane=1000;
 const float horizontal_FOV=60*PI/180;/// horizontal field of view in radians
 
+map<string, Model> models;
+
+void LoadModels(AquariumController *aquariumController)
+{
+	string s;
+	ifstream input_file("./Settings/aquaConfig.txt");
+
+	getline(input_file, s);/// not using >> because it is problematic if used together with readline
+	int n=atoi(s.c_str());
+
+	for (int i = 0; i < n; i++)
+	{
+		bool exsists = false;
+
+		string model_name;
+		getline(input_file, model_name);
+		map<string, Model>::iterator model_iterator=models.find(model_name);
+		if(model_iterator==models.end())
+		{// model does not exist
+			models[model_name].loadFromMs3dAsciiFile(("./Data/Vissen/Modellen/" +model_name+ ".txt").c_str(), math3::Matrix4x4f(-1,0,0,0, 0,0,1,0, 0,1,0,0, 0,0,0,1));
+		}
+
+		string propertieFile;
+		getline(input_file, propertieFile);
+
+		getline(input_file, s);
+		int m=atoi(s.c_str());
+		for (int j = 0; j < m; j++)
+		{
+			aquariumController->AddFish(&models[model_name], propertieFile);
+		}
+	}
+
+
+
+	/*getline(input_file, s);
+	n=atoi(s.c_str());
+
+	for (int i = 0; i < n; i++)
+	{
+		bool exsists = false;
+
+		string model_name;
+		getline(input_file, model_name);
+		map<string, Model>::iterator model_iterator=models.find(model_name);
+		if(model_iterator==models.end())
+		{// model does not exist
+			models[model_name].loadFromMs3dAsciiFile(("./Modellen/Objecten/" +model_name+ ".txt").c_str(), math3::Matrix4x4f(-1,0,0,0, 0,0,1,0, 0,1,0,0, 0,0,0,1));
+		}
+
+
+		getline(input_file, s);
+		int x=atoi(s.c_str());
+		getline(input_file, s);
+		int z=atoi(s.c_str());
+		aquariumController->AddObject(&models[model_name], math3::Vec3d(x, -aquariumSize.y / 2, z));
+	}*/
+}
 
 int main(int argc, char **argv)
 {
@@ -38,15 +100,15 @@ int main(int argc, char **argv)
   glDepthMask(GL_TRUE);
 	glfwSetWindowTitle("OpenGL rox");
 
-	Model model;
-	model.loadFromMs3dAsciiFile("character.txt", math3::Matrix4x4f(-1,0,0,0, 0,0,1,0, 0,1,0,0, 0,0,0,1));
-	
+
+
 	AquariumController aquariumController;
-	
-	for(int i = 0; i < 3; i++)
-	{
-		aquariumController.AddFish(&model);
-	}
+
+	LoadModels(&aquariumController);
+	//for(int i = 0; i < 5; i++)
+	//{
+		//aquariumController.AddFish(&model);
+	//}
 	aquariumController.AddBubbleSpot();
 	//Vis testVis(&model,100);
 	//Vis testVis2(&model,100);

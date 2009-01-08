@@ -197,6 +197,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Object.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Vector.cpp"
 				>
 			</File>
@@ -244,6 +248,10 @@
 			</File>
 			<File
 				RelativePath=".\MS3D_ASCII.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Object.h"
 				>
 			</File>
 			<File

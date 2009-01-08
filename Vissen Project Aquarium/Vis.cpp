@@ -2,7 +2,10 @@
 #include "Vis.h"
 #include <cstdlib>
 #include <ctime>
+#include <fstream>
+#include <string>
 using namespace math3;
+using namespace std;
 
 void TestDrawAquarium(){
 
@@ -53,14 +56,11 @@ void TestDrawAquarium(){
 Vec3d RandomPos()
 {
 	Vec3d result;
-	result.x=(my_random()-0.5)*swimArea.x;
-	result.y=(my_random()-0.5)*swimArea.y;
-	result.z=(my_random()-0.5)*swimArea.z;
+	result.x=(my_random()-0.5)*aquariumSize.x;
+	result.y=(my_random()-0.5)*aquariumSize.y;
+	result.z=(my_random()-0.5)*aquariumSize.z;
 	return result;
 }
-
-const double max_speed=20.0;
-const double min_speed=15.0;
 
 const double forward_acceleration=7.5;
 const double vertical_acceleration=5;
@@ -72,20 +72,19 @@ const double min_pitch=-max_pitch;///ditto for swimming down.
 const double pitch_change_speed=5*(pi/180.0);/// speed of change of pitch
 //const double max_vertical_speed=10;
 
-const double max_turn_speed=2.0;///radians per second
-const double turn_acceleration=0.5;///radians per second per second
-
-const double wiggle_factor=2;/// amount of wiggle displacement (controls amplitude vs speed), larger, fish bends more for wiggling
-const double wiggle_freq=0.15;///larger = means more wiggle waves on fish.
 const double wiggle_speed_factor=2.5;/// larger = fish has to wiggle more to move.
 const double bending_factor=0.75;/// larger = fish has to bend more to move. (note: long fish can entirely coil up)
 
 
-Vis::Vis(Model *model, double scale) //defines model
+Vis::Vis(Model *model, const std::string &propertiesFile) //defines model
 {
+	usingTempGoal=false;
 	this->model = model;
-	this->scale = scale;
+
+	this->scale = 200;
+
 	pos = RandomPos();
+	finalGoalPos=Vec3d(0,0,0);
 	velocity=Vec3d(0,0,0);
 	speed=0;
 	turn_speed=0;
@@ -94,17 +93,70 @@ Vis::Vis(Model *model, double scale) //defines model
 
 	//goalPos = RandomPos();
 	//desired_speed=min_speed+my_random()*(max_speed-min_speed);
-	newGoal();
+
 
 
 	swimDirAngle=0;
 	wiggle_phase=0;
 	wiggle_amplitude=0;
 	myWaitTime = 20+20*my_random();
+
+	//just in case
+	max_speed = 20.0;
+	min_speed = 15.0;
+
+	max_turn_speed = 2.0;///radians per second
+	turn_acceleration = 0.5;///radians per second per second
+
+	wiggle_factor=2;/// amount of wiggle displacement (controls amplitude vs speed), larger, fish bends more for wiggling
+	wiggle_freq=0.15;///larger = means more wiggle waves on fish.
+
+	//uncomment this when it works xD
+	LoadProperties(propertiesFile);
+
+	/// need to set goal after we did load all the properties,
+	/// because setting of goal needs some of properties (min and max speed)
+	newGoal();
 }
 
 Vis::~Vis(void)
 {
+}
+
+void Vis::LoadProperties(const string &propertiesFile)
+{
+	string s;
+	ifstream input_file(("./Data/Vissen/" + propertiesFile + ".oif").c_str());
+
+	//scaling
+	getline(input_file, s);
+	scale = atof(s.c_str());
+
+	//randomise
+	getline(input_file, s);
+	float n = atof(s.c_str());
+	scale = scale  + my_random() * n;
+
+	//speeds
+	getline(input_file, s);
+	min_speed = atof(s.c_str());
+
+	getline(input_file, s);
+	max_speed = atof(s.c_str());
+
+	//wiggle
+	getline(input_file, s);
+	wiggle_freq = atof(s.c_str()) / 100;
+
+	getline(input_file, s);
+	wiggle_factor = atof(s.c_str()) / 10;
+
+	//turning
+	getline(input_file, s);
+	max_turn_speed = atof(s.c_str()) / 10;
+
+	getline(input_file, s);
+	turn_acceleration = atof(s.c_str()) / 100;
 }
 
 void Vis::Draw()
@@ -144,8 +196,30 @@ void Vis::Draw()
 
 void Vis::newGoal()
 {
-	goalPos = RandomPos();
+	//goalPos = RandomPos();
 	desired_speed = min_speed+my_random()*(max_speed-min_speed);
+	if(usingTempGoal){
+		goalPos=finalGoalPos;
+		usingTempGoal=false;
+	}else{
+		/// todo: add AI here.
+		goalPos=RandomPos();
+	}
+}
+
+void Vis::setGoal(const math3::Vec3d &final_goal){
+	if(usingTempGoal){
+		finalGoalPos=final_goal;
+	}else{
+		goalPos=final_goal;
+	}
+}
+void Vis::setTemporaryGoal(const math3::Vec3d &temp_goal){
+	if(!usingTempGoal){/// if not using temp goal, make current goal into final
+		finalGoalPos=goalPos;
+		usingTempGoal=true;
+	}
+	goalPos=temp_goal;
 }
 
 double TowardsGoalBy(double a, double goal, double by){
@@ -258,3 +332,4 @@ void Vis::Update(double dt)
 		newGoal();
 	}
 }
+

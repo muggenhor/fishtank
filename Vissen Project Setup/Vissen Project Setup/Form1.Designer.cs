@@ -51,7 +51,7 @@
             this.nudAantal = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.cbVisTypes = new System.Windows.Forms.ComboBox();
+            this.cbVisObjects = new System.Windows.Forms.ComboBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.panel4 = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
@@ -68,9 +68,15 @@
             this.nudPlantX = new System.Windows.Forms.NumericUpDown();
             this.label9 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.cbObjectTypes = new System.Windows.Forms.ComboBox();
+            this.cbObjectObjects = new System.Windows.Forms.ComboBox();
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
+            this.label10 = new System.Windows.Forms.Label();
+            this.cbVisModels = new System.Windows.Forms.ComboBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.cbObjectModels = new System.Windows.Forms.ComboBox();
+            this.columnHeader6 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader7 = new System.Windows.Forms.ColumnHeader();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudLandHoog)).BeginInit();
@@ -101,7 +107,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(239, 262);
+            this.tabControl1.Size = new System.Drawing.Size(297, 262);
             this.tabControl1.TabIndex = 0;
             // 
             // tabPage1
@@ -248,7 +254,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(231, 236);
+            this.tabPage2.Size = new System.Drawing.Size(289, 236);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Scholen";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -260,7 +266,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(225, 155);
+            this.panel1.Size = new System.Drawing.Size(283, 130);
             this.panel1.TabIndex = 4;
             // 
             // panel3
@@ -269,20 +275,21 @@
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel3.Location = new System.Drawing.Point(0, 0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(195, 155);
+            this.panel3.Size = new System.Drawing.Size(253, 130);
             this.panel3.TabIndex = 1;
             // 
             // lvScholen
             // 
             this.lvScholen.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
+            this.columnHeader7,
             this.columnHeader2});
             this.lvScholen.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lvScholen.FullRowSelect = true;
             this.lvScholen.Location = new System.Drawing.Point(0, 0);
             this.lvScholen.MultiSelect = false;
             this.lvScholen.Name = "lvScholen";
-            this.lvScholen.Size = new System.Drawing.Size(195, 155);
+            this.lvScholen.Size = new System.Drawing.Size(253, 130);
             this.lvScholen.TabIndex = 0;
             this.lvScholen.UseCompatibleStateImageBehavior = false;
             this.lvScholen.View = System.Windows.Forms.View.Details;
@@ -290,8 +297,8 @@
             // 
             // columnHeader1
             // 
-            this.columnHeader1.Text = "Type vis";
-            this.columnHeader1.Width = 120;
+            this.columnHeader1.Text = "Vis file";
+            this.columnHeader1.Width = 68;
             // 
             // columnHeader2
             // 
@@ -302,9 +309,9 @@
             this.panel2.Controls.Add(this.button2);
             this.panel2.Controls.Add(this.button1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel2.Location = new System.Drawing.Point(195, 0);
+            this.panel2.Location = new System.Drawing.Point(253, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(30, 155);
+            this.panel2.Size = new System.Drawing.Size(30, 130);
             this.panel2.TabIndex = 0;
             // 
             // button2
@@ -329,22 +336,24 @@
             // 
             // gbInstellingen
             // 
+            this.gbInstellingen.Controls.Add(this.label10);
+            this.gbInstellingen.Controls.Add(this.cbVisModels);
             this.gbInstellingen.Controls.Add(this.nudAantal);
             this.gbInstellingen.Controls.Add(this.label5);
             this.gbInstellingen.Controls.Add(this.label4);
-            this.gbInstellingen.Controls.Add(this.cbVisTypes);
+            this.gbInstellingen.Controls.Add(this.cbVisObjects);
             this.gbInstellingen.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.gbInstellingen.Enabled = false;
-            this.gbInstellingen.Location = new System.Drawing.Point(3, 158);
+            this.gbInstellingen.Location = new System.Drawing.Point(3, 133);
             this.gbInstellingen.Name = "gbInstellingen";
-            this.gbInstellingen.Size = new System.Drawing.Size(225, 75);
+            this.gbInstellingen.Size = new System.Drawing.Size(283, 100);
             this.gbInstellingen.TabIndex = 3;
             this.gbInstellingen.TabStop = false;
             this.gbInstellingen.Text = "Instellingen";
             // 
             // nudAantal
             // 
-            this.nudAantal.Location = new System.Drawing.Point(59, 46);
+            this.nudAantal.Location = new System.Drawing.Point(75, 73);
             this.nudAantal.Minimum = new decimal(new int[] {
             1,
             0,
@@ -363,7 +372,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 48);
+            this.label5.Location = new System.Drawing.Point(6, 75);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(37, 13);
             this.label5.TabIndex = 2;
@@ -374,18 +383,18 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(6, 22);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(47, 13);
+            this.label4.Size = new System.Drawing.Size(37, 13);
             this.label4.TabIndex = 1;
-            this.label4.Text = "Type vis";
+            this.label4.Text = "Vis file";
             // 
-            // cbVisTypes
+            // cbVisObjects
             // 
-            this.cbVisTypes.FormattingEnabled = true;
-            this.cbVisTypes.Location = new System.Drawing.Point(59, 19);
-            this.cbVisTypes.Name = "cbVisTypes";
-            this.cbVisTypes.Size = new System.Drawing.Size(120, 21);
-            this.cbVisTypes.TabIndex = 0;
-            this.cbVisTypes.SelectedIndexChanged += new System.EventHandler(this.cbVisTypes_SelectedIndexChanged);
+            this.cbVisObjects.FormattingEnabled = true;
+            this.cbVisObjects.Location = new System.Drawing.Point(75, 19);
+            this.cbVisObjects.Name = "cbVisObjects";
+            this.cbVisObjects.Size = new System.Drawing.Size(120, 21);
+            this.cbVisObjects.TabIndex = 0;
+            this.cbVisObjects.SelectedIndexChanged += new System.EventHandler(this.cbVisTypes_SelectedIndexChanged);
             // 
             // tabPage3
             // 
@@ -394,7 +403,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(231, 236);
+            this.tabPage3.Size = new System.Drawing.Size(289, 236);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Objecten";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -406,7 +415,7 @@
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel4.Location = new System.Drawing.Point(3, 3);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(225, 127);
+            this.panel4.Size = new System.Drawing.Size(283, 103);
             this.panel4.TabIndex = 5;
             // 
             // panel5
@@ -415,13 +424,14 @@
             this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel5.Location = new System.Drawing.Point(0, 0);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(195, 127);
+            this.panel5.Size = new System.Drawing.Size(253, 103);
             this.panel5.TabIndex = 1;
             // 
             // lvObjecten
             // 
             this.lvObjecten.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader3,
+            this.columnHeader6,
             this.columnHeader4,
             this.columnHeader5});
             this.lvObjecten.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -429,7 +439,7 @@
             this.lvObjecten.Location = new System.Drawing.Point(0, 0);
             this.lvObjecten.MultiSelect = false;
             this.lvObjecten.Name = "lvObjecten";
-            this.lvObjecten.Size = new System.Drawing.Size(195, 127);
+            this.lvObjecten.Size = new System.Drawing.Size(253, 103);
             this.lvObjecten.TabIndex = 0;
             this.lvObjecten.UseCompatibleStateImageBehavior = false;
             this.lvObjecten.View = System.Windows.Forms.View.Details;
@@ -437,7 +447,7 @@
             // 
             // columnHeader3
             // 
-            this.columnHeader3.Text = "Type object";
+            this.columnHeader3.Text = "Object file";
             this.columnHeader3.Width = 107;
             // 
             // columnHeader4
@@ -455,9 +465,9 @@
             this.panel6.Controls.Add(this.button5);
             this.panel6.Controls.Add(this.button6);
             this.panel6.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel6.Location = new System.Drawing.Point(195, 0);
+            this.panel6.Location = new System.Drawing.Point(253, 0);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(30, 127);
+            this.panel6.Size = new System.Drawing.Size(30, 103);
             this.panel6.TabIndex = 0;
             // 
             // button5
@@ -482,24 +492,26 @@
             // 
             // gbInstellingen2
             // 
+            this.gbInstellingen2.Controls.Add(this.label11);
+            this.gbInstellingen2.Controls.Add(this.cbObjectModels);
             this.gbInstellingen2.Controls.Add(this.nudPlantY);
             this.gbInstellingen2.Controls.Add(this.label7);
             this.gbInstellingen2.Controls.Add(this.nudPlantX);
             this.gbInstellingen2.Controls.Add(this.label9);
             this.gbInstellingen2.Controls.Add(this.label8);
-            this.gbInstellingen2.Controls.Add(this.cbObjectTypes);
+            this.gbInstellingen2.Controls.Add(this.cbObjectObjects);
             this.gbInstellingen2.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.gbInstellingen2.Enabled = false;
-            this.gbInstellingen2.Location = new System.Drawing.Point(3, 130);
+            this.gbInstellingen2.Location = new System.Drawing.Point(3, 106);
             this.gbInstellingen2.Name = "gbInstellingen2";
-            this.gbInstellingen2.Size = new System.Drawing.Size(225, 103);
+            this.gbInstellingen2.Size = new System.Drawing.Size(283, 127);
             this.gbInstellingen2.TabIndex = 4;
             this.gbInstellingen2.TabStop = false;
             this.gbInstellingen2.Text = "Instellingen";
             // 
             // nudPlantY
             // 
-            this.nudPlantY.Location = new System.Drawing.Point(75, 73);
+            this.nudPlantY.Location = new System.Drawing.Point(75, 99);
             this.nudPlantY.Maximum = new decimal(new int[] {
             100000,
             0,
@@ -518,7 +530,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 79);
+            this.label7.Location = new System.Drawing.Point(6, 105);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(41, 13);
             this.label7.TabIndex = 8;
@@ -526,7 +538,7 @@
             // 
             // nudPlantX
             // 
-            this.nudPlantX.Location = new System.Drawing.Point(75, 47);
+            this.nudPlantX.Location = new System.Drawing.Point(75, 73);
             this.nudPlantX.Maximum = new decimal(new int[] {
             100000,
             0,
@@ -545,7 +557,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 49);
+            this.label9.Location = new System.Drawing.Point(6, 75);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(41, 13);
             this.label9.TabIndex = 6;
@@ -556,22 +568,22 @@
             this.label8.AutoSize = true;
             this.label8.Location = new System.Drawing.Point(6, 22);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(63, 13);
+            this.label8.Size = new System.Drawing.Size(54, 13);
             this.label8.TabIndex = 1;
-            this.label8.Text = "Type object";
+            this.label8.Text = "Object file";
             // 
-            // cbObjectTypes
+            // cbObjectObjects
             // 
-            this.cbObjectTypes.FormattingEnabled = true;
-            this.cbObjectTypes.Location = new System.Drawing.Point(75, 20);
-            this.cbObjectTypes.Name = "cbObjectTypes";
-            this.cbObjectTypes.Size = new System.Drawing.Size(120, 21);
-            this.cbObjectTypes.TabIndex = 0;
-            this.cbObjectTypes.SelectedIndexChanged += new System.EventHandler(this.cbObjectTypes_SelectedIndexChanged);
+            this.cbObjectObjects.FormattingEnabled = true;
+            this.cbObjectObjects.Location = new System.Drawing.Point(75, 19);
+            this.cbObjectObjects.Name = "cbObjectObjects";
+            this.cbObjectObjects.Size = new System.Drawing.Size(120, 21);
+            this.cbObjectObjects.TabIndex = 0;
+            this.cbObjectObjects.SelectedIndexChanged += new System.EventHandler(this.cbObjectTypes_SelectedIndexChanged);
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(152, 268);
+            this.button3.Location = new System.Drawing.Point(210, 268);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(75, 23);
             this.button3.TabIndex = 1;
@@ -581,7 +593,7 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(71, 268);
+            this.button4.Location = new System.Drawing.Point(129, 268);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(75, 23);
             this.button4.TabIndex = 2;
@@ -589,12 +601,56 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(6, 49);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(52, 13);
+            this.label10.TabIndex = 5;
+            this.label10.Text = "Model file";
+            // 
+            // cbVisModels
+            // 
+            this.cbVisModels.FormattingEnabled = true;
+            this.cbVisModels.Location = new System.Drawing.Point(75, 46);
+            this.cbVisModels.Name = "cbVisModels";
+            this.cbVisModels.Size = new System.Drawing.Size(120, 21);
+            this.cbVisModels.TabIndex = 4;
+            this.cbVisModels.SelectedIndexChanged += new System.EventHandler(this.cbVisModels_SelectedIndexChanged);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 49);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(52, 13);
+            this.label11.TabIndex = 11;
+            this.label11.Text = "Model file";
+            // 
+            // cbObjectModels
+            // 
+            this.cbObjectModels.FormattingEnabled = true;
+            this.cbObjectModels.Location = new System.Drawing.Point(75, 46);
+            this.cbObjectModels.Name = "cbObjectModels";
+            this.cbObjectModels.Size = new System.Drawing.Size(120, 21);
+            this.cbObjectModels.TabIndex = 10;
+            this.cbObjectModels.SelectedIndexChanged += new System.EventHandler(this.cbObjectModels_SelectedIndexChanged);
+            // 
+            // columnHeader6
+            // 
+            this.columnHeader6.Text = "Model file";
+            // 
+            // columnHeader7
+            // 
+            this.columnHeader7.Text = "Model file";
+            // 
             // Form1
             // 
             this.AcceptButton = this.button4;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(239, 295);
+            this.ClientSize = new System.Drawing.Size(297, 295);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.tabControl1);
@@ -650,7 +706,7 @@
         private System.Windows.Forms.NumericUpDown nudAantal;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.ComboBox cbVisTypes;
+        private System.Windows.Forms.ComboBox cbVisObjects;
         private System.Windows.Forms.NumericUpDown nudLandHoog;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button button3;
@@ -671,7 +727,13 @@
         private System.Windows.Forms.NumericUpDown nudPlantX;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.ComboBox cbObjectTypes;
+        private System.Windows.Forms.ComboBox cbObjectObjects;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.ComboBox cbVisModels;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.ComboBox cbObjectModels;
+        private System.Windows.Forms.ColumnHeader columnHeader6;
+        private System.Windows.Forms.ColumnHeader columnHeader7;
     }
 }
 

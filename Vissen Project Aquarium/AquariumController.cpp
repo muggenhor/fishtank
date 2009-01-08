@@ -2,6 +2,7 @@
 
 
 using namespace math3;
+using namespace std;
 
 float my_random()
 {
@@ -27,9 +28,14 @@ Vec3d RandomBubblePos()
 	return result;
 }
 
-void AquariumController::AddFish(Model *model)
+void AquariumController::AddFish(Model *model, const string &propertiesFile)
 {
-	fishes.push_back(Vis(model, 100 + my_random() * 50));
+	fishes.push_back(Vis(model, propertiesFile));
+}
+
+void AquariumController::AddObject(Model *model, const math3::Vec3d &position)
+{
+	objects.push_back(Object(model, 1 + my_random() * 0.5, position));
 }
 
 void AquariumController::AddBubbleSpot()
@@ -42,6 +48,10 @@ void AquariumController::Update(double dt)
 	for(int i = 0; i < fishes.size(); i++)
 	{
 		fishes[i].Update(dt);
+	}
+	for(int i = 0; i < objects.size(); i++)
+	{
+		objects[i].Update(dt);
 	}
 	for(int i = 0; i < bubbleSpots.size(); i++)
 	{
@@ -66,6 +76,10 @@ void AquariumController::Draw()
 	for(int i = 0; i < fishes.size(); i++)
 	{
 		fishes[i].Draw();
+	}
+	for(int i = 0; i < objects.size(); i++)
+	{
+		objects[i].Draw();
 	}
 	for(int i = 0; i < bubbles.size(); i++)
 	{

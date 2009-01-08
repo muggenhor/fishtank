@@ -1,8 +1,7 @@
-
-
 #include "JPEG.h"
 #include "MS3D_ASCII.h"
 
+#include <string>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //										The Shape Class
@@ -306,8 +305,9 @@ void Material::activate( void )
 		glDisable( GL_TEXTURE_2D );
 }
 
-bool Material::loadFromMs3dAsciiSegment( FILE *file )
+bool Material::loadFromMs3dAsciiSegment( FILE *file, std::string path_ )
 {
+	path=path_;
 	char szLine[256];
 
 	// name
@@ -374,7 +374,8 @@ void Material::reloadTexture( void )
 {
 	if ( strlen(DiffuseTexture) > 0 )
 	{
-		JPEG_Texture(&texture,DiffuseTexture,0);
+		std::string tmp(path+DiffuseTexture);
+		JPEG_Texture(&texture, tmp.c_str(), 0);
 	}
 	else	texture = 0;
 }
@@ -393,6 +394,7 @@ bb_h(0,0,0)
 	shapes = NULL;
 	num_materials = 0;
 	materials = NULL;
+	material_indices=NULL;
 }
 
 Model::~Model()
@@ -417,12 +419,23 @@ Model::~Model()
 
 bool Model::loadFromMs3dAsciiFile( const char *filename, const math3::Matrix4x4f &transform )
 {
+
+	path=filename;
+	/// i'd use rfind but duh it cant search for both \\ and /
+	int i;
+	for(i=path.size()-1; i>=0; --i){
+		if(path[i]=='/' || path[i]=='\\'){
+			break;
+		}
+	}
+	path.resize(i+1);/// downsize the string to cut out name from path
+
 	bb_l=Vec3d(1E20,1E20,1E20);
 	bb_h=-bb_l;
 
 	bool	bError = false;
 	char	szLine[256];
-	int		nFlags, nIndex, i;
+	int		nFlags, nIndex;
 
 	FILE *file = fopen (filename, "rt");
 	if (!file)
@@ -486,7 +499,7 @@ bool Model::loadFromMs3dAsciiFile( const char *filename, const math3::Matrix4x4f
 
 			for (i = 0; i < num_materials && !bError; i++)
 			{
-				if ( ! materials[i].loadFromMs3dAsciiSegment(file) )
+				if ( ! materials[i].loadFromMs3dAsciiSegment(file, path) )
 				{
 					bError = true;
 					break;
