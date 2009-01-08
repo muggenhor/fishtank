@@ -12,9 +12,15 @@ namespace VideoStreamMerger
         private Background      bgFrame = null;
         private bool            bgGround = false;
 
+        public event EventHandler frame;
+        public delegate void EventHandler(Bitmap frame);
+
         public VideoInput(IVideoSource source)
+            : this(source, 20, 10) { }
+
+        public VideoInput(IVideoSource source, int frames, int pixels)
         {
-            bgFrame = new Background();
+            bgFrame = new Background(frames, pixels);
             this.source = source;
             source.NewFrame += new CameraEventHandler(source_NewFrame);
             this.source.Start();
@@ -51,10 +57,26 @@ namespace VideoStreamMerger
                 }
                 catch { }
             }
+            else //background is gemaakt, nu de frame doorsturen
+                if (frame != null)
+                    frame((Bitmap)e.Bitmap.Clone());
         }
 
-        //geeft aan of de background is gevonden, zo ja: dan ???
+        public void Close()
+        {
+            // lock
+            Monitor.Enter(this);
+
+            if (source != null)
+            {
+                source.Stop();
+            }
+            // unlock
+            Monitor.Exit(this);
+        }
+
         public bool BackgroundFound { get { return bgGround; } }
         public Bitmap backGround { get { return background; } }
+        public IVideoSource Source { get { return source; } }
     }
 }

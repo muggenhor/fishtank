@@ -13,79 +13,74 @@ namespace VideoStreamMerger
 {
     public class Background
     {
-        private int[] bF;
         private int[,] cF;
         private int gevonden=-1; //het aantal pixels dat veranderd moet worden omdat ze niet overeenkomen met de achtergrond
         private int x, y, height, width, tot, nr=0; //nr = het hoeveelste frame om background te bekijken
+        private bool variabelen = false;
 
-        private int opti;
+        private int opti; //optimilisatie: hoeveel frames er achter elkaar hetzelfde moeten zijn voor de background
+        private int prec; //precisie: hoe precies de frames hetzelfde moeten zijn (10: om de 10 pixels word er bekeken)
+        public int totaal;
+        public int goed;
 
-        public Background()
+        public Background(int frames, int pixels)
         {
-            opti = 5;
+            opti = frames;
+            prec = pixels;
         }
 
         /// <summary> een image word bekeken om zo de achterground 'bij te stellen' <summary>
         public void EditBackground(Bitmap image)
         {
-            y = x = 0;
-
-            //eerste keer word bf gewoon cf
-            //ook worden dan de variabelen goedgezet
-            if (bF == null)
+            //eerste keer worden de variabelen goedgezet
+            if (!variabelen)
             {
                 //variabelen
                 height = image.Height;
                 width = image.Width;
-                tot = width * height;
-
+                tot = (width * height) / (prec * prec);
                 cF = new int[opti, tot];
-                bF = new int[1]; //wordt niet meer gebruikt !!!
- /*               bF = new int[tot];
-                
-
-                for (int i = 0; i < tot; i++, y++)
-                {
-                    if (y == height)
-                    {
-                        x++;
-                        y = 0;
-                    }
-                    bF[i] = image.GetPixel(x, y).ToArgb();
-                }
-                return;*/
+                variabelen = true;
             }
 
             //cf invullen
-            for (int i = 0; i < tot; i++, y++)
-            {
-                if (y == height)
-                {
-                    x++;
-                    y = 0;
-                }
-                cF[nr, i] = image.GetPixel(x, y).ToArgb();
-            }
+            frameInvullen(image);
 
             //nr verhogen
             nr++;
             if (nr == opti)
                 nr = 0;
 
-
             //vergelijken en meteen invullen (word nog anders)
             //werkt niet, de laatste is nu de background indien die niet veranderd... (klopt eigenlijk ook wel)
             for (int i = 0; i < tot; i++)
-                //alle 5 de frames moeten nu precies hetzelfde zijn
+                //alle frames moeten nu precies hetzelfde zijn
                 for (int a = 1; a < opti; a++)
                 {
                     int temp1 = cF[0, i];
                     int temp2 = cF[a, i];
-                    if (cF[0, i] != cF[a, i])
-                        return; // niet gevonden dus meteen afbreken
+                    if (cF[0, i] != cF[a, i]) 
+                        return;
+                    else goed++;
                 }
-            //alles klopt :)
             gevonden = 0;
+        }
+
+        private void frameInvullen(Bitmap image)
+        {
+            y = x = 0;
+            //cf invullen
+            for (int i = 0; i < tot; i++, y += prec)
+            {
+                if (y >= height)
+                {
+                    x += prec;
+                    if (x > width) //word een pixel gepakt dat niet bestaat...
+                        return;
+                    y = 0;
+                }
+                cF[nr, i] = image.GetPixel(x, y).ToArgb();
+            }
         }
 
         /// <summary> als er niks aan de background is veranderd, dan is de background klaar <summary>

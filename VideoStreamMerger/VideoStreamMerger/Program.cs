@@ -15,7 +15,7 @@ namespace VideoStreamMerger
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new temp());
+            Application.Run(new Form1());
         }
     }
 }

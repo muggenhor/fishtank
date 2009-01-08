@@ -8,11 +8,17 @@ using System.Text;
 using System.Windows.Forms;
 
 using System.IO;
+using System.Net.Sockets;
+using System.Net;
 
 namespace testje
 {
     public partial class Form1 : Form
     {
+        private bool eerste = true;
+        private Socket s2;
+        private int totaal = 0;
+
         public Form1()
         {
             InitializeComponent();
@@ -20,12 +26,16 @@ namespace testje
             panel2.Size = new Size(5, 5);
             panel1.BackColor = Color.Blue;
             panel2.BackColor = Color.Red;
+
             timer1.Enabled = true;
-        }
+
+            
+
+       }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            try
+      /*      try
             {
                 FileStream fs = new FileStream("c://temp2.txt", FileMode.Open, FileAccess.Read);
                 StreamReader sr = new StreamReader(fs);
@@ -44,7 +54,35 @@ namespace testje
                 sr.Close();
                 panel1.Location = new Point(x, y);               
             }
+            catch { }*/
+
+            try
+            {
+                //luisteren
+                if (eerste)
+                {
+                    Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
+                    s.Bind(new IPEndPoint(IPAddress.Any, 1234));
+                    s.Listen(1000);
+                    s2 = s.Accept();
+                    eerste = false;
+                }
+
+                System.Runtime.Serialization.Formatters.Binary.BinaryFormatter bf = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                System.IO.MemoryStream ms;
+                byte[] temp = new byte[272416];
+                Bitmap image;
+                int aantal = 0;
+                aantal = s2.Receive(temp);
+                ms = new MemoryStream(temp);
+                image = (Bitmap)bf.Deserialize(ms);
+                pictureBox1.Size = image.Size;
+                pictureBox1.Image = image;
+                totaal++;
+                label1.Text = "ontvangen: " + totaal;
+            }
             catch { }
+
         }
     }
 }
