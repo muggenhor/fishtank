@@ -26,7 +26,7 @@ public:
 	void Draw();
 
 	void AddFish(Model *model, const std::string &propertiesFile);
-	void AddObject(Model *model, const math3::Vec3d &position);
+	void AddObject(Model *model, const std::string &propertiesFile, const math3::Vec3d &position);
 	void AddBubbleSpot();
 };
 

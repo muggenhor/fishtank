@@ -13,9 +13,10 @@ public:
 
 	double wiggle_phase;
 
-	Object(Model *model, double scale, const math3::Vec3d &position);
+	Object(Model *model, const std::string &propertiesFile, const math3::Vec3d &position);
 	~Object(void);
 
+	void LoadProperties(const std::string &propertiesFile);
 	void Update(double dt);
 	void Draw();
 };

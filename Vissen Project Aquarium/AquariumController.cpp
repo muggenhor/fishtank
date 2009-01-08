@@ -33,9 +33,9 @@ void AquariumController::AddFish(Model *model, const string &propertiesFile)
 	fishes.push_back(Vis(model, propertiesFile));
 }
 
-void AquariumController::AddObject(Model *model, const math3::Vec3d &position)
+void AquariumController::AddObject(Model *model, const string &propertiesFile, const math3::Vec3d &position)
 {
-	objects.push_back(Object(model, 1 + my_random() * 0.5, position));
+	objects.push_back(Object(model, propertiesFile, position));
 }
 
 void AquariumController::AddBubbleSpot()

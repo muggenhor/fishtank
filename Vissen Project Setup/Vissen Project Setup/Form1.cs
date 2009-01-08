@@ -107,14 +107,14 @@ namespace Vissen_Project_Setup
                 try
                 {
                     //aquarium gegevens
-                    currentLine = sw.ReadLine();
+                    /*currentLine = sw.ReadLine();
                     nudScherm1.Value = Convert.ToDecimal(currentLine);
                     currentLine = sw.ReadLine();
                     nudScherm2.Value = Convert.ToDecimal(currentLine);
                     currentLine = sw.ReadLine();
                     nudScherm3.Value = Convert.ToDecimal(currentLine);
                     currentLine = sw.ReadLine();
-                    nudLandHoog.Value = Convert.ToDecimal(currentLine);
+                    nudLandHoog.Value = Convert.ToDecimal(currentLine);*/
 
                     //scholen
                     currentLine = sw.ReadLine();
@@ -122,12 +122,13 @@ namespace Vissen_Project_Setup
                     for (int i = 0; i < max; i++)
                     {
                         currentLine = sw.ReadLine();
-                        ListViewItem lvi = new ListViewItem(currentLine);
-                        if (!objectenVis.Contains(currentLine))
+                        string currentLine2 = sw.ReadLine();
+                        ListViewItem lvi = new ListViewItem(currentLine2);
+                        if (!objectenVis.Contains(currentLine2))
                         {
                             lvi.BackColor = Color.Red;
                         }
-                        currentLine = sw.ReadLine();
+                        
                         lvi.SubItems.Add(currentLine);
                         if (!modellenVis.Contains(currentLine))
                         {
@@ -144,12 +145,13 @@ namespace Vissen_Project_Setup
                     for (int i = 0; i < max; i++)
                     {
                         currentLine = sw.ReadLine();
-                        ListViewItem lvi = new ListViewItem(currentLine);
-                        if (!objectenObject.Contains(currentLine))
+                        string currentLine2 = sw.ReadLine();
+                        ListViewItem lvi = new ListViewItem(currentLine2);
+                        if (!objectenObject.Contains(currentLine2))
                         {
                             lvi.BackColor = Color.Red;
                         }
-                        currentLine = sw.ReadLine();
+
                         lvi.SubItems.Add(currentLine);
                         if (!modellenVis.Contains(currentLine))
                         {
@@ -157,6 +159,7 @@ namespace Vissen_Project_Setup
                         }
                         currentLine = sw.ReadLine();
                         lvi.SubItems.Add(Convert.ToString(Math.Max(nudPlantX.Minimum, Math.Min(nudPlantX.Maximum, Convert.ToDecimal(currentLine)))));
+                        currentLine = sw.ReadLine();
                         lvi.SubItems.Add(Convert.ToString(Math.Max(nudPlantY.Minimum, Math.Min(nudPlantY.Maximum, Convert.ToDecimal(currentLine)))));
                         lvObjecten.Items.Add(lvi);
                     }
@@ -182,17 +185,17 @@ namespace Vissen_Project_Setup
                 try
                 {
                     //aquarium gegevens
-                    sw.WriteLine(Convert.ToString(nudScherm1.Value));
+                    /*sw.WriteLine(Convert.ToString(nudScherm1.Value));
                     sw.WriteLine(Convert.ToString(nudScherm2.Value));
                     sw.WriteLine(Convert.ToString(nudScherm3.Value));
-                    sw.WriteLine(Convert.ToString(nudLandHoog.Value));
+                    sw.WriteLine(Convert.ToString(nudLandHoog.Value));*/
 
                     //scholen
                     sw.WriteLine(Convert.ToString(lvScholen.Items.Count));
                     for (int i = 0; i < lvScholen.Items.Count; i++)
                     {
-                        sw.WriteLine(lvScholen.Items[i].Text);
                         sw.WriteLine(lvScholen.Items[i].SubItems[1].Text);
+                        sw.WriteLine(lvScholen.Items[i].Text);
                         sw.WriteLine(lvScholen.Items[i].SubItems[2].Text);
                     }
 
@@ -200,8 +203,8 @@ namespace Vissen_Project_Setup
                     sw.WriteLine(Convert.ToString(lvObjecten.Items.Count));
                     for (int i = 0; i < lvObjecten.Items.Count; i++)
                     {
-                        sw.WriteLine(lvObjecten.Items[i].Text);
                         sw.WriteLine(lvObjecten.Items[i].SubItems[1].Text);
+                        sw.WriteLine(lvObjecten.Items[i].Text);
                         sw.WriteLine(lvObjecten.Items[i].SubItems[2].Text);
                         sw.WriteLine(lvObjecten.Items[i].SubItems[3].Text);
                     }

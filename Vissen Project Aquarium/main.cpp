@@ -59,10 +59,8 @@ void LoadModels(AquariumController *aquariumController)
 	}
 
 
-
-	/*getline(input_file, s);
+	getline(input_file, s);
 	n=atoi(s.c_str());
-
 	for (int i = 0; i < n; i++)
 	{
 		bool exsists = false;
@@ -72,16 +70,18 @@ void LoadModels(AquariumController *aquariumController)
 		map<string, Model>::iterator model_iterator=models.find(model_name);
 		if(model_iterator==models.end())
 		{// model does not exist
-			models[model_name].loadFromMs3dAsciiFile(("./Modellen/Objecten/" +model_name+ ".txt").c_str(), math3::Matrix4x4f(-1,0,0,0, 0,0,1,0, 0,1,0,0, 0,0,0,1));
+			models[model_name].loadFromMs3dAsciiFile(("./Data/Objecten/Modellen/" +model_name+ ".txt").c_str(), math3::Matrix4x4f(-1,0,0,0, 0,0,1,0, 0,1,0,0, 0,0,0,1));
 		}
 
+		string propertieFile;
+		getline(input_file, propertieFile);
 
 		getline(input_file, s);
 		int x=atoi(s.c_str());
 		getline(input_file, s);
 		int z=atoi(s.c_str());
-		aquariumController->AddObject(&models[model_name], math3::Vec3d(x, -aquariumSize.y / 2, z));
-	}*/
+		aquariumController->AddObject(&models[model_name], propertieFile, math3::Vec3d(x, -aquariumSize.y / 2, z));
+	}
 }
 
 int main(int argc, char **argv)

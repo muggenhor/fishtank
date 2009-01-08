@@ -56,9 +56,9 @@ void TestDrawAquarium(){
 Vec3d RandomPos()
 {
 	Vec3d result;
-	result.x=(my_random()-0.5)*aquariumSize.x;
-	result.y=(my_random()-0.5)*aquariumSize.y;
-	result.z=(my_random()-0.5)*aquariumSize.z;
+	result.x=(my_random()-0.5)*swimArea.x;
+	result.y=(my_random()-0.5)*swimArea.y;
+	result.z=(my_random()-0.5)*swimArea.z;
 	return result;
 }
 
@@ -111,7 +111,6 @@ Vis::Vis(Model *model, const std::string &propertiesFile) //defines model
 	wiggle_factor=2;/// amount of wiggle displacement (controls amplitude vs speed), larger, fish bends more for wiggling
 	wiggle_freq=0.15;///larger = means more wiggle waves on fish.
 
-	//uncomment this when it works xD
 	LoadProperties(propertiesFile);
 
 	/// need to set goal after we did load all the properties,
@@ -130,12 +129,18 @@ void Vis::LoadProperties(const string &propertiesFile)
 
 	//scaling
 	getline(input_file, s);
-	scale = atof(s.c_str());
-
-	//randomise
+	double fish_length = atof(s.c_str());
+	//randomize
 	getline(input_file, s);
-	float n = atof(s.c_str());
-	scale = scale  + my_random() * n;
+	float random_length = atof(s.c_str());
+	fish_length = fish_length + my_random() * random_length;
+
+	if(model){
+		scale = fish_length / ( model->bb_h.x - model->bb_l.x );
+	}else{
+		scale = fish_length;
+		std::cerr<<"Error: trying to load properties for fish that has no model, cant determine scaling"<<std::endl;
+	}
 
 	//speeds
 	getline(input_file, s);
@@ -146,10 +151,10 @@ void Vis::LoadProperties(const string &propertiesFile)
 
 	//wiggle
 	getline(input_file, s);
-	wiggle_freq = atof(s.c_str()) / 100;
+	wiggle_freq = (40.0/fish_length) * atof(s.c_str()) / 100;
 
 	getline(input_file, s);
-	wiggle_factor = atof(s.c_str()) / 10;
+	wiggle_factor = (fish_length/40.0) * atof(s.c_str()) / 10;
 
 	//turning
 	getline(input_file, s);

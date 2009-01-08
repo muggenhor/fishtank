@@ -156,6 +156,14 @@ namespace Vissen_Project_Object_File_Generator
         private void rbObject_CheckedChanged(object sender, EventArgs e)
         {
             gbVis.Enabled = !rbObject.Checked;
+            if (rbObject.Checked)
+            {
+                lblSize.Text = "Plant Hoogte";
+            }
+            else
+            {
+                lblSize.Text = "Vis Lengte";
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)

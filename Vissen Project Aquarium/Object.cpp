@@ -2,20 +2,46 @@
 #include "Object.h"
 #include <cstdlib>
 #include <ctime>
+#include <fstream>
+#include <string>
 using namespace math3;
+using namespace std;
 
-Object::Object(Model *model, double scale, const math3::Vec3d &position)
+Object::Object(Model *model, const std::string &propertiesFile, const math3::Vec3d &position)
 {
 	this->model = model;
-	this->scale = scale;
 
 	pos = position;
 
 	wiggle_phase = 0;
+
+	LoadProperties(propertiesFile);
 }
 
 Object::~Object(void)
 {
+}
+
+void Object::LoadProperties(const string &propertiesFile)
+{
+	string s;
+	ifstream input_file(("./Data/Objecten/" + propertiesFile + ".oif").c_str());
+
+	//scaling
+	getline(input_file, s);
+	double object_height = atof(s.c_str());
+
+	getline(input_file, s);/// randomize
+	float n = atof(s.c_str());
+	object_height  = object_height  + my_random() * n;
+
+	if(model){
+		scale = object_height / ( model->bb_h.y - model->bb_l.y );
+	}else{
+		scale = object_height;
+		std::cerr<<"Error: trying to load properties for object that has no model, cant determine scaling"<<std::endl;
+	}
+
 }
 
 void Object::Draw()

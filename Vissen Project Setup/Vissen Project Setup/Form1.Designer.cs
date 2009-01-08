@@ -43,11 +43,14 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.lvScholen = new System.Windows.Forms.ListView();
             this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader7 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
             this.panel2 = new System.Windows.Forms.Panel();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.gbInstellingen = new System.Windows.Forms.GroupBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.cbVisModels = new System.Windows.Forms.ComboBox();
             this.nudAantal = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -57,12 +60,15 @@
             this.panel5 = new System.Windows.Forms.Panel();
             this.lvObjecten = new System.Windows.Forms.ListView();
             this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader6 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader5 = new System.Windows.Forms.ColumnHeader();
             this.panel6 = new System.Windows.Forms.Panel();
             this.button5 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
             this.gbInstellingen2 = new System.Windows.Forms.GroupBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.cbObjectModels = new System.Windows.Forms.ComboBox();
             this.nudPlantY = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
             this.nudPlantX = new System.Windows.Forms.NumericUpDown();
@@ -71,12 +77,6 @@
             this.cbObjectObjects = new System.Windows.Forms.ComboBox();
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
-            this.label10 = new System.Windows.Forms.Label();
-            this.cbVisModels = new System.Windows.Forms.ComboBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.cbObjectModels = new System.Windows.Forms.ComboBox();
-            this.columnHeader6 = new System.Windows.Forms.ColumnHeader();
-            this.columnHeader7 = new System.Windows.Forms.ColumnHeader();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudLandHoog)).BeginInit();
@@ -123,13 +123,14 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(231, 236);
+            this.tabPage1.Size = new System.Drawing.Size(289, 236);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Aquarium";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // nudLandHoog
             // 
+            this.nudLandHoog.Enabled = false;
             this.nudLandHoog.Location = new System.Drawing.Point(104, 102);
             this.nudLandHoog.Maximum = new decimal(new int[] {
             100000,
@@ -148,6 +149,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
+            this.label6.Enabled = false;
             this.label6.Location = new System.Drawing.Point(6, 104);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(92, 13);
@@ -156,6 +158,7 @@
             // 
             // nudScherm3
             // 
+            this.nudScherm3.Enabled = false;
             this.nudScherm3.Location = new System.Drawing.Point(104, 58);
             this.nudScherm3.Maximum = new decimal(new int[] {
             100000,
@@ -178,6 +181,7 @@
             // 
             // nudScherm2
             // 
+            this.nudScherm2.Enabled = false;
             this.nudScherm2.Location = new System.Drawing.Point(104, 32);
             this.nudScherm2.Maximum = new decimal(new int[] {
             100000,
@@ -201,6 +205,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
+            this.label3.Enabled = false;
             this.label3.Location = new System.Drawing.Point(6, 60);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(81, 13);
@@ -210,6 +215,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
+            this.label2.Enabled = false;
             this.label2.Location = new System.Drawing.Point(6, 34);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(79, 13);
@@ -218,6 +224,7 @@
             // 
             // nudScherm1
             // 
+            this.nudScherm1.Enabled = false;
             this.nudScherm1.Location = new System.Drawing.Point(104, 6);
             this.nudScherm1.Maximum = new decimal(new int[] {
             100000,
@@ -241,6 +248,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
+            this.label1.Enabled = false;
             this.label1.Location = new System.Drawing.Point(6, 8);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(83, 13);
@@ -300,6 +308,10 @@
             this.columnHeader1.Text = "Vis file";
             this.columnHeader1.Width = 68;
             // 
+            // columnHeader7
+            // 
+            this.columnHeader7.Text = "Model file";
+            // 
             // columnHeader2
             // 
             this.columnHeader2.Text = "Aantal";
@@ -350,6 +362,24 @@
             this.gbInstellingen.TabIndex = 3;
             this.gbInstellingen.TabStop = false;
             this.gbInstellingen.Text = "Instellingen";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(6, 49);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(52, 13);
+            this.label10.TabIndex = 5;
+            this.label10.Text = "Model file";
+            // 
+            // cbVisModels
+            // 
+            this.cbVisModels.FormattingEnabled = true;
+            this.cbVisModels.Location = new System.Drawing.Point(75, 46);
+            this.cbVisModels.Name = "cbVisModels";
+            this.cbVisModels.Size = new System.Drawing.Size(120, 21);
+            this.cbVisModels.TabIndex = 4;
+            this.cbVisModels.SelectedIndexChanged += new System.EventHandler(this.cbVisModels_SelectedIndexChanged);
             // 
             // nudAantal
             // 
@@ -450,6 +480,10 @@
             this.columnHeader3.Text = "Object file";
             this.columnHeader3.Width = 107;
             // 
+            // columnHeader6
+            // 
+            this.columnHeader6.Text = "Model file";
+            // 
             // columnHeader4
             // 
             this.columnHeader4.Text = "X";
@@ -508,6 +542,24 @@
             this.gbInstellingen2.TabIndex = 4;
             this.gbInstellingen2.TabStop = false;
             this.gbInstellingen2.Text = "Instellingen";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 49);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(52, 13);
+            this.label11.TabIndex = 11;
+            this.label11.Text = "Model file";
+            // 
+            // cbObjectModels
+            // 
+            this.cbObjectModels.FormattingEnabled = true;
+            this.cbObjectModels.Location = new System.Drawing.Point(75, 46);
+            this.cbObjectModels.Name = "cbObjectModels";
+            this.cbObjectModels.Size = new System.Drawing.Size(120, 21);
+            this.cbObjectModels.TabIndex = 10;
+            this.cbObjectModels.SelectedIndexChanged += new System.EventHandler(this.cbObjectModels_SelectedIndexChanged);
             // 
             // nudPlantY
             // 
@@ -600,50 +652,6 @@
             this.button4.Text = "Oplaan";
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(6, 49);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(52, 13);
-            this.label10.TabIndex = 5;
-            this.label10.Text = "Model file";
-            // 
-            // cbVisModels
-            // 
-            this.cbVisModels.FormattingEnabled = true;
-            this.cbVisModels.Location = new System.Drawing.Point(75, 46);
-            this.cbVisModels.Name = "cbVisModels";
-            this.cbVisModels.Size = new System.Drawing.Size(120, 21);
-            this.cbVisModels.TabIndex = 4;
-            this.cbVisModels.SelectedIndexChanged += new System.EventHandler(this.cbVisModels_SelectedIndexChanged);
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 49);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(52, 13);
-            this.label11.TabIndex = 11;
-            this.label11.Text = "Model file";
-            // 
-            // cbObjectModels
-            // 
-            this.cbObjectModels.FormattingEnabled = true;
-            this.cbObjectModels.Location = new System.Drawing.Point(75, 46);
-            this.cbObjectModels.Name = "cbObjectModels";
-            this.cbObjectModels.Size = new System.Drawing.Size(120, 21);
-            this.cbObjectModels.TabIndex = 10;
-            this.cbObjectModels.SelectedIndexChanged += new System.EventHandler(this.cbObjectModels_SelectedIndexChanged);
-            // 
-            // columnHeader6
-            // 
-            this.columnHeader6.Text = "Model file";
-            // 
-            // columnHeader7
-            // 
-            this.columnHeader7.Text = "Model file";
             // 
             // Form1
             // 
