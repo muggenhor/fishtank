@@ -18,6 +18,7 @@ namespace testje
         private bool eerste = true;
         private Socket s2;
         private int totaal = 0;
+        private Bitmap image;
 
         public Form1()
         {
@@ -35,6 +36,7 @@ namespace testje
 
         private void timer1_Tick(object sender, EventArgs e)
         {
+
       /*      try
             {
                 FileStream fs = new FileStream("c://temp2.txt", FileMode.Open, FileAccess.Read);
@@ -70,16 +72,19 @@ namespace testje
 
                 System.Runtime.Serialization.Formatters.Binary.BinaryFormatter bf = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
                 System.IO.MemoryStream ms;
-                byte[] temp = new byte[272416];
-                Bitmap image;
+                byte[] temp = new byte[284364]; //<- uiteindelijk krijgt die het binnen van de client
+                
                 int aantal = 0;
                 aantal = s2.Receive(temp);
                 ms = new MemoryStream(temp);
                 image = (Bitmap)bf.Deserialize(ms);
+
+
+
+
                 pictureBox1.Size = image.Size;
                 pictureBox1.Image = image;
-                totaal++;
-                label1.Text = "ontvangen: " + totaal;
+                label1.Text = "ontvangen: " + totaal++;
             }
             catch { }
 

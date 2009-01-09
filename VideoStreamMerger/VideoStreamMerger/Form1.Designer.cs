@@ -33,13 +33,15 @@
             this.lbVerschillen = new System.Windows.Forms.ListBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pbImageLinks)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbImageRechts)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // pbImageLinks
             // 
-            this.pbImageLinks.Location = new System.Drawing.Point(12, 12);
+            this.pbImageLinks.Location = new System.Drawing.Point(300, 283);
             this.pbImageLinks.Name = "pbImageLinks";
             this.pbImageLinks.Size = new System.Drawing.Size(100, 50);
             this.pbImageLinks.TabIndex = 0;
@@ -81,11 +83,20 @@
             this.label2.TabIndex = 6;
             this.label2.Text = "label2";
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Location = new System.Drawing.Point(3, 1);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(100, 50);
+            this.pictureBox1.TabIndex = 7;
+            this.pictureBox1.TabStop = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(678, 345);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.lbVerschillen);
@@ -96,6 +107,7 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.pbImageLinks)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbImageRechts)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -108,6 +120,7 @@
         private System.Windows.Forms.ListBox lbVerschillen;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }
 
