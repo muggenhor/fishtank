@@ -77,9 +77,9 @@ void LoadModels(AquariumController *aquariumController)
 		getline(input_file, propertieFile);
 
 		getline(input_file, s);
-		int x=atoi(s.c_str());
+		int x = -(aquariumSize.x / 2) + atoi(s.c_str());
 		getline(input_file, s);
-		int z=atoi(s.c_str());
+		int z = -(aquariumSize.z / 2) + atoi(s.c_str());
 		aquariumController->AddObject(&models[model_name], propertieFile, math3::Vec3d(x, -aquariumSize.y / 2, z));
 	}
 }

@@ -57,6 +57,9 @@
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
+            this.gbObject = new System.Windows.Forms.GroupBox();
+            this.nudBewegingFrequentie2 = new System.Windows.Forms.NumericUpDown();
+            this.label2 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -69,6 +72,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudBewegingFrequentie)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMinSnelheid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMaxSnelheid)).BeginInit();
+            this.gbObject.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudBewegingFrequentie2)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -226,7 +231,7 @@
             this.gbVis.Controls.Add(this.nudMaxSnelheid);
             this.gbVis.Controls.Add(this.label7);
             this.gbVis.Dock = System.Windows.Forms.DockStyle.Top;
-            this.gbVis.Location = new System.Drawing.Point(0, 196);
+            this.gbVis.Location = new System.Drawing.Point(0, 244);
             this.gbVis.Name = "gbVis";
             this.gbVis.Size = new System.Drawing.Size(301, 178);
             this.gbVis.TabIndex = 3;
@@ -396,6 +401,7 @@
             this.button2.TabIndex = 4;
             this.button2.Text = "Annuleren";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button3
             // 
@@ -417,15 +423,50 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
+            // gbObject
+            // 
+            this.gbObject.Controls.Add(this.nudBewegingFrequentie2);
+            this.gbObject.Controls.Add(this.label2);
+            this.gbObject.Dock = System.Windows.Forms.DockStyle.Top;
+            this.gbObject.Location = new System.Drawing.Point(0, 196);
+            this.gbObject.Name = "gbObject";
+            this.gbObject.Size = new System.Drawing.Size(301, 48);
+            this.gbObject.TabIndex = 7;
+            this.gbObject.TabStop = false;
+            this.gbObject.Text = "Object";
+            this.gbObject.Visible = false;
+            // 
+            // nudBewegingFrequentie2
+            // 
+            this.nudBewegingFrequentie2.Location = new System.Drawing.Point(122, 19);
+            this.nudBewegingFrequentie2.Name = "nudBewegingFrequentie2";
+            this.nudBewegingFrequentie2.Size = new System.Drawing.Size(65, 20);
+            this.nudBewegingFrequentie2.TabIndex = 18;
+            this.nudBewegingFrequentie2.Value = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(12, 21);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(104, 13);
+            this.label2.TabIndex = 17;
+            this.label2.Text = "Beweging frequentie";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(301, 353);
+            this.Controls.Add(this.gbVis);
+            this.Controls.Add(this.gbObject);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
-            this.Controls.Add(this.gbVis);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.panel1);
@@ -448,6 +489,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudBewegingFrequentie)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMinSnelheid)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMaxSnelheid)).EndInit();
+            this.gbObject.ResumeLayout(false);
+            this.gbObject.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudBewegingFrequentie2)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -483,6 +527,9 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.GroupBox gbObject;
+        private System.Windows.Forms.NumericUpDown nudBewegingFrequentie2;
+        private System.Windows.Forms.Label label2;
     }
 }
 

@@ -12,6 +12,7 @@ public:
 	double scale;
 
 	double wiggle_phase;
+	double wiggle_freq;
 
 	Object(Model *model, const std::string &propertiesFile, const math3::Vec3d &position);
 	~Object(void);

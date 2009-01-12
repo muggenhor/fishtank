@@ -14,6 +14,7 @@ Object::Object(Model *model, const std::string &propertiesFile, const math3::Vec
 	pos = position;
 
 	wiggle_phase = 0;
+	wiggle_freq = 0;
 
 	LoadProperties(propertiesFile);
 }
@@ -42,6 +43,9 @@ void Object::LoadProperties(const string &propertiesFile)
 		std::cerr<<"Error: trying to load properties for object that has no model, cant determine scaling"<<std::endl;
 	}
 
+	//wiggle
+	getline(input_file, s);
+	wiggle_freq = (40.0/object_height) * atof(s.c_str()) / 100;
 }
 
 void Object::Draw()
@@ -58,7 +62,11 @@ void Object::Draw()
 
 void Object::Update(double dt)
 {
-	wiggle_phase += 2.0 * dt;
+	if (wiggle_freq == 0)
+	{
+		return;
+	}
+	wiggle_phase += wiggle_freq * dt * 20;
 
 	/// wraparound not to lose precision over time.
 

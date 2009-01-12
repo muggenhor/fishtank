@@ -179,7 +179,7 @@ namespace Vissen_Project_Setup
 
             try
             {
-                bestand = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write);
+                bestand = new FileStream(path, FileMode.Create, FileAccess.Write);
                 sw = new StreamWriter(bestand);
 
                 try

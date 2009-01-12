@@ -52,24 +52,33 @@ namespace Vissen_Project_Object_File_Generator
                     nudMaxAfwijk.Value = Convert.ToDecimal(currentLine);
 
                     rbVis.Checked = true;
-                    try
+
+                    currentLine = sw.ReadLine();
+                    if (sw.EndOfStream)
                     {
-                        currentLine = sw.ReadLine();
-                        nudMinSnelheid.Value = Convert.ToDecimal(currentLine);
-                        currentLine = sw.ReadLine();
-                        nudMaxSnelheid.Value = Convert.ToDecimal(currentLine);
-                        currentLine = sw.ReadLine();
-                        nudBewegingFrequentie.Value = Convert.ToDecimal(currentLine);
-                        currentLine = sw.ReadLine();
-                        nudBewegingFactor.Value = Convert.ToDecimal(currentLine);
-                        currentLine = sw.ReadLine();
-                        nudDraaiSnelheid.Value = Convert.ToDecimal(currentLine);
-                        currentLine = sw.ReadLine();
-                        nudDraaiVersnelling.Value = Convert.ToDecimal(currentLine);
-                    }
-                    catch
-                    {
+                        nudBewegingFrequentie2.Value = Convert.ToDecimal(currentLine);
                         rbObject.Checked = true;
+                    }
+                    else
+                    {
+                        try
+                        {
+                            nudMinSnelheid.Value = Convert.ToDecimal(currentLine);
+                            currentLine = sw.ReadLine();
+                            nudMaxSnelheid.Value = Convert.ToDecimal(currentLine);
+                            currentLine = sw.ReadLine();
+                            nudBewegingFrequentie.Value = Convert.ToDecimal(currentLine);
+                            currentLine = sw.ReadLine();
+                            nudBewegingFactor.Value = Convert.ToDecimal(currentLine);
+                            currentLine = sw.ReadLine();
+                            nudDraaiSnelheid.Value = Convert.ToDecimal(currentLine);
+                            currentLine = sw.ReadLine();
+                            nudDraaiVersnelling.Value = Convert.ToDecimal(currentLine);
+                        }
+                        catch
+                        {
+                            rbObject.Checked = true;
+                        }
                     }
                 }
                 finally
@@ -87,7 +96,7 @@ namespace Vissen_Project_Object_File_Generator
 
             try
             {
-                bestand = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write);
+                bestand = new FileStream(path, FileMode.Create, FileAccess.Write);
                 sw = new StreamWriter(bestand);
 
                 try
@@ -105,6 +114,10 @@ namespace Vissen_Project_Object_File_Generator
                         sw.WriteLine(Convert.ToString(nudBewegingFactor.Value));
                         sw.WriteLine(Convert.ToString(nudDraaiSnelheid.Value));
                         sw.WriteLine(Convert.ToString(nudDraaiVersnelling.Value));
+                    }
+                    else
+                    {
+                        sw.WriteLine(Convert.ToString(nudBewegingFrequentie2.Value));
                     }
                 }
                 finally
@@ -159,10 +172,14 @@ namespace Vissen_Project_Object_File_Generator
             if (rbObject.Checked)
             {
                 lblSize.Text = "Plant Hoogte";
+                gbVis.Hide();
+                gbObject.Show();
             }
             else
             {
                 lblSize.Text = "Vis Lengte";
+                gbVis.Show();
+                gbObject.Hide();
             }
         }
 
@@ -196,6 +213,11 @@ namespace Vissen_Project_Object_File_Generator
             {
                 LaadGegevens(ofd.FileName);
             }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }
