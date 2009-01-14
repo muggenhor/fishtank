@@ -70,16 +70,24 @@ namespace testje
                     eerste = false;
                 }
 
-                System.Runtime.Serialization.Formatters.Binary.BinaryFormatter bf = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                System.IO.MemoryStream ms;
-                byte[] temp = new byte[284364]; //<- uiteindelijk krijgt die het binnen van de client
+      //          System.Runtime.Serialization.Formatters.Binary.BinaryFormatter bf = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+        //        System.IO.MemoryStream ms;
+          //      byte[] temp = new byte[284364]; //<- uiteindelijk krijgt die het binnen van de client
                 
-                int aantal = 0;
-                aantal = s2.Receive(temp);
-                ms = new MemoryStream(temp);
-                image = (Bitmap)bf.Deserialize(ms);
+        //        int aantal = 0;
+          //      aantal = s2.Receive(temp);
+            //    ms = new MemoryStream(temp);
+              //  image = (Bitmap)bf.Deserialize(ms);
+                byte[] temp = new byte[2000000];
+                s2.Receive(temp);
+                MemoryStream ms = new MemoryStream(temp);
+                image = (Bitmap)Bitmap.FromStream(ms);
+                ms.Flush();
 
-
+      /*          Bitmap tempBit = new Bitmap(image.Width * 2, image.Height * 2);
+                for (int x = 0; x < tempBit.Width; x++)
+                    for (int y = 0; y < tempBit.Height; y++)
+                        tempBit.SetPixel(x, y, image.GetPixel(x/2, y/2));*/
 
 
                 pictureBox1.Size = image.Size;
