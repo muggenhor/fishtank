@@ -4,7 +4,7 @@
 #include <iostream>
 
 
-void DecodeJPG(jpeg_decompress_struct* cinfo, tImageJPG *pImageData)
+void DecodeJPG(jpeg_decompress_struct* cinfo, tImageJPG *pImageData, bool flipY)
 {
 	jpeg_read_header(cinfo, TRUE);
 
@@ -17,13 +17,19 @@ void DecodeJPG(jpeg_decompress_struct* cinfo, tImageJPG *pImageData)
 	pImageData->data = new unsigned char[pImageData->rowSpan * pImageData->sizeY];
 
 	unsigned char** rowPtr = new unsigned char*[pImageData->sizeY];
-	for (int i = 0; i < pImageData->sizeY; i++)
-		rowPtr[i] = &(pImageData->data[i*pImageData->rowSpan]);
-
-	int rowsRead = cinfo->output_height-1;
+	if(flipY){
+		for (int i = 0; i < pImageData->sizeY; i++){
+			rowPtr[i] = &(pImageData->data[(pImageData->sizeY-i-1)*pImageData->rowSpan]);
+		}
+	}else{
+		for (int i = 0; i < pImageData->sizeY; i++){
+			rowPtr[i] = &(pImageData->data[i*pImageData->rowSpan]);
+		}
+	}
+	int rowsRead = 0;
 	while (cinfo->output_scanline < cinfo->output_height)
 	{
-		rowsRead -= jpeg_read_scanlines(cinfo, &rowPtr[rowsRead], cinfo->output_height - rowsRead);
+		rowsRead += jpeg_read_scanlines(cinfo, &rowPtr[rowsRead], cinfo->output_height-rowsRead);
 	}
 
 	delete [] rowPtr;
@@ -34,7 +40,7 @@ void DecodeJPG(jpeg_decompress_struct* cinfo, tImageJPG *pImageData)
 
 
 
-tImageJPG *LoadJPG(const char *filename)
+tImageJPG *LoadJPG(const char *filename, bool flipY)
 {
 	struct jpeg_decompress_struct cinfo;
 	tImageJPG *pImageData = NULL;
@@ -57,7 +63,7 @@ tImageJPG *LoadJPG(const char *filename)
 
 	pImageData = (tImageJPG*)malloc(sizeof(tImageJPG));
 
-	DecodeJPG(&cinfo, pImageData);
+	DecodeJPG(&cinfo, pImageData, flipY);
 
 	jpeg_destroy_decompress(&cinfo);
 
@@ -72,7 +78,7 @@ void JPEG_Texture(UINT textureArray[], const std::string &strFileName, int textu
 {
 	if(strFileName.empty())return;
 
-	tImageJPG *pImage = LoadJPG(strFileName.c_str());
+	tImageJPG *pImage = LoadJPG(strFileName.c_str(), true);
 
 	if(pImage == NULL)	exit(0);
 
@@ -80,7 +86,7 @@ void JPEG_Texture(UINT textureArray[], const std::string &strFileName, int textu
 	glBindTexture(GL_TEXTURE_2D, textureArray[textureID]);
 	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, pImage->sizeX, pImage->sizeY, GL_RGB, GL_UNSIGNED_BYTE, pImage->data);
 
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR_MIPMAP_LINEAR);
 
 	if (pImage)

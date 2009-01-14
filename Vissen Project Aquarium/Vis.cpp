@@ -53,15 +53,6 @@ void TestDrawAquarium(){
 
 }
 
-Vec3d RandomPos()
-{
-	Vec3d result;
-	result.x=(my_random()-0.5)*swimArea.x;
-	result.y=(my_random()-0.5)*swimArea.y;
-	result.z=(my_random()-0.5)*swimArea.z;
-	return result;
-}
-
 const double forward_acceleration=7.5;
 const double vertical_acceleration=5;
 
@@ -76,8 +67,9 @@ const double wiggle_speed_factor=2.5;/// larger = fish has to wiggle more to mov
 const double bending_factor=0.75;/// larger = fish has to bend more to move. (note: long fish can entirely coil up)
 
 
-Vis::Vis(Model *model, const std::string &propertiesFile) //defines model
+Vis::Vis(Model *model, const std::string &propertiesFile, int maxFloorHeight) //defines model
 {
+	this->maxFloorHeight = maxFloorHeight;
 	usingTempGoal=false;
 	this->model = model;
 
@@ -116,10 +108,22 @@ Vis::Vis(Model *model, const std::string &propertiesFile) //defines model
 	/// need to set goal after we did load all the properties,
 	/// because setting of goal needs some of properties (min and max speed)
 	newGoal();
+
+	sphere = 20;
 }
 
 Vis::~Vis(void)
 {
+}
+
+Vec3d Vis::RandomPos()
+{
+	Vec3d result;
+	result.x=(my_random()-0.5)*swimArea.x;
+	int noswim = maxFloorHeight - model->bb_l.y * scale;
+	result.y=(my_random()-0.5)*(swimArea.y - noswim) + (noswim / 2);
+	result.z=(my_random()-0.5)*swimArea.z;
+	return result;
 }
 
 void Vis::LoadProperties(const string &propertiesFile)
@@ -149,6 +153,10 @@ void Vis::LoadProperties(const string &propertiesFile)
 	getline(input_file, s);
 	max_speed = atof(s.c_str());
 
+	//sphere
+	getline(input_file, s);
+	sphere = Length(model->bb_h - model->bb_l) * scale * 0.5 + atoi(s.c_str());
+
 	//wiggle
 	getline(input_file, s);
 	wiggle_freq = (40.0/fish_length) * atof(s.c_str()) / 100;
@@ -164,13 +172,25 @@ void Vis::LoadProperties(const string &propertiesFile)
 	turn_acceleration = atof(s.c_str()) / 100;
 }
 
+bool Vis::Colliding(const math3::Vec3d &object, int otherSphere)
+{
+	double distance = Length(object - pos);
+	distance -= otherSphere;
+	distance -= sphere;
+	return (distance < 0);
+}
+
+bool Vis::IsGoingTowards(const math3::Vec3d &object){
+	return DotProd(goalPos-pos, object-pos)>0;
+}
+
 void Vis::Draw()
 {
 	if(model)
 	{
-		/// debugging: draw some lines to show where dude's floating
+		/// debugging: draw some lines to show where fish's floating
 		/// 1 line would be impossible to see 3d perspective on, so draw 8
-		/**
+		/*
 		glColor3d(1,1,1);
 		glDisable(GL_TEXTURE_2D);
 		glBegin(GL_LINES);
@@ -197,6 +217,11 @@ void Vis::Draw()
 
 		glPopMatrix();
 	}
+}
+
+void Vis::Avade()
+{
+	setTemporaryGoal(RandomPos());
 }
 
 void Vis::newGoal()

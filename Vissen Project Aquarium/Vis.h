@@ -21,10 +21,10 @@ public:
 	//instellingen
 	double max_speed;
 	double min_speed;
-	
+
 	double max_turn_speed;///radians per second
 	double turn_acceleration;///radians per second per second
-	
+
 	double wiggle_factor;/// amount of wiggle displacement (controls amplitude vs speed), larger, fish bends more for wiggling
 	double wiggle_freq;///larger = means more wiggle waves on fish.
 	//instellingen end
@@ -35,11 +35,18 @@ public:
 
 	double wiggle_phase, wiggle_amplitude;
 
+	int sphere;
+	int maxFloorHeight;
 public:
 	//enum visModel{model1, model2} //this right?:S
-	Vis(Model *model, const std::string &propertiesFile); //hihi
+	Vis(Model *model, const std::string &propertiesFile, int maxFloorHeight); //hihi
 	~Vis(void);
 
+	void Avade();
+	bool Colliding(const math3::Vec3d &object, int sphere);
+	bool IsGoingTowards(const math3::Vec3d &object);
+
+	math3::Vec3d Vis::RandomPos();
 	void Update(double dt);
 	void Draw();
 	void LoadProperties(const std::string &propertiesFile);

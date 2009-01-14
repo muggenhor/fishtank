@@ -33,6 +33,9 @@ void LoadModels(AquariumController *aquariumController)
 	ifstream input_file("./Settings/aquaConfig.txt");
 
 	getline(input_file, s);/// not using >> because it is problematic if used together with readline
+	aquariumController->ground.maxHeight = atoi(s.c_str());
+
+	getline(input_file, s);
 	int n=atoi(s.c_str());
 
 	for (int i = 0; i < n; i++)
@@ -80,7 +83,9 @@ void LoadModels(AquariumController *aquariumController)
 		int x = -(aquariumSize.x / 2) + atoi(s.c_str());
 		getline(input_file, s);
 		int z = -(aquariumSize.z / 2) + atoi(s.c_str());
-		aquariumController->AddObject(&models[model_name], propertieFile, math3::Vec3d(x, -aquariumSize.y / 2, z));
+		int groundposx = (x + (aquariumSize.x / 2)) / aquariumSize.x * (aquariumController->ground.widthAmount);
+		int groundposy = (z + (aquariumSize.z / 2)) / aquariumSize.z * (aquariumController->ground.lengthAmount);
+		aquariumController->AddObject(&models[model_name], propertieFile, math3::Vec3d(x, aquariumController->ground.HeightAt(groundposx, groundposy), z));
 	}
 }
 

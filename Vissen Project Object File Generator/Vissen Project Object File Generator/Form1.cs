@@ -67,6 +67,8 @@ namespace Vissen_Project_Object_File_Generator
                             currentLine = sw.ReadLine();
                             nudMaxSnelheid.Value = Convert.ToDecimal(currentLine);
                             currentLine = sw.ReadLine();
+                            nudBotsStraal.Value = Convert.ToDecimal(currentLine);
+                            currentLine = sw.ReadLine();
                             nudBewegingFrequentie.Value = Convert.ToDecimal(currentLine);
                             currentLine = sw.ReadLine();
                             nudBewegingFactor.Value = Convert.ToDecimal(currentLine);
@@ -110,6 +112,7 @@ namespace Vissen_Project_Object_File_Generator
                     {
                         sw.WriteLine(Convert.ToString(nudMinSnelheid.Value));
                         sw.WriteLine(Convert.ToString(nudMaxSnelheid.Value));
+                        sw.WriteLine(Convert.ToString(nudBotsStraal.Value));
                         sw.WriteLine(Convert.ToString(nudBewegingFrequentie.Value));
                         sw.WriteLine(Convert.ToString(nudBewegingFactor.Value));
                         sw.WriteLine(Convert.ToString(nudDraaiSnelheid.Value));

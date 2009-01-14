@@ -14,6 +14,8 @@ public:
 	double wiggle_phase;
 	double wiggle_freq;
 
+	int sphere;
+
 	Object(Model *model, const std::string &propertiesFile, const math3::Vec3d &position);
 	~Object(void);
 

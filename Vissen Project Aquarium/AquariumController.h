@@ -16,14 +16,15 @@ private:
 	std::vector<Vis> fishes;
 	std::vector<Bubble> bubbles;
 	std::vector<math3::Vec3d> bubbleSpots;
-
-	Ground ground;
 public:
+	Ground ground;
 	AquariumController(void);
 	~AquariumController(void);
 
 	void Update(double dt);
 	void Draw();
+
+	void AvoidFishBounce();
 
 	void AddFish(Model *model, const std::string &propertiesFile);
 	void AddObject(Model *model, const std::string &propertiesFile, const math3::Vec3d &position);

@@ -26,9 +26,9 @@ extern "C" {
 }
 #endif
 
-tImageJPG *LoadJPG(const char *filename);
+tImageJPG *LoadJPG(const char *filename, bool flipY=false);
 
-void DecodeJPG(jpeg_decompress_struct* cinfo, tImageJPG *pImageData);
+void DecodeJPG(jpeg_decompress_struct* cinfo, tImageJPG *pImageData, bool flipY=false);
 
 typedef unsigned int UINT;
 

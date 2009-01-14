@@ -36,6 +36,8 @@ void Object::LoadProperties(const string &propertiesFile)
 	float n = atof(s.c_str());
 	object_height  = object_height  + my_random() * n;
 
+	sphere = Length(model->bb_h - model->bb_l);
+
 	if(model){
 		scale = object_height / ( model->bb_h.y - model->bb_l.y );
 	}else{

@@ -112,9 +112,9 @@ namespace Vissen_Project_Setup
                     currentLine = sw.ReadLine();
                     nudScherm2.Value = Convert.ToDecimal(currentLine);
                     currentLine = sw.ReadLine();
-                    nudScherm3.Value = Convert.ToDecimal(currentLine);
+                    nudScherm3.Value = Convert.ToDecimal(currentLine);*/
                     currentLine = sw.ReadLine();
-                    nudLandHoog.Value = Convert.ToDecimal(currentLine);*/
+                    nudLandHoog.Value = Convert.ToDecimal(currentLine);
 
                     //scholen
                     currentLine = sw.ReadLine();
@@ -187,8 +187,8 @@ namespace Vissen_Project_Setup
                     //aquarium gegevens
                     /*sw.WriteLine(Convert.ToString(nudScherm1.Value));
                     sw.WriteLine(Convert.ToString(nudScherm2.Value));
-                    sw.WriteLine(Convert.ToString(nudScherm3.Value));
-                    sw.WriteLine(Convert.ToString(nudLandHoog.Value));*/
+                    sw.WriteLine(Convert.ToString(nudScherm3.Value));*/
+                    sw.WriteLine(Convert.ToString(nudLandHoog.Value));
 
                     //scholen
                     sw.WriteLine(Convert.ToString(lvScholen.Items.Count));

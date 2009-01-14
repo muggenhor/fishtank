@@ -130,8 +130,7 @@
             // 
             // nudLandHoog
             // 
-            this.nudLandHoog.Enabled = false;
-            this.nudLandHoog.Location = new System.Drawing.Point(104, 102);
+            this.nudLandHoog.Location = new System.Drawing.Point(104, 6);
             this.nudLandHoog.Maximum = new decimal(new int[] {
             100000,
             0,
@@ -141,7 +140,7 @@
             this.nudLandHoog.Size = new System.Drawing.Size(120, 20);
             this.nudLandHoog.TabIndex = 8;
             this.nudLandHoog.Value = new decimal(new int[] {
-            100,
+            30,
             0,
             0,
             0});
@@ -149,8 +148,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Enabled = false;
-            this.label6.Location = new System.Drawing.Point(6, 104);
+            this.label6.Location = new System.Drawing.Point(6, 8);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(92, 13);
             this.label6.TabIndex = 7;
@@ -159,7 +157,7 @@
             // nudScherm3
             // 
             this.nudScherm3.Enabled = false;
-            this.nudScherm3.Location = new System.Drawing.Point(104, 58);
+            this.nudScherm3.Location = new System.Drawing.Point(104, 202);
             this.nudScherm3.Maximum = new decimal(new int[] {
             100000,
             0,
@@ -178,11 +176,12 @@
             0,
             0,
             0});
+            this.nudScherm3.Visible = false;
             // 
             // nudScherm2
             // 
             this.nudScherm2.Enabled = false;
-            this.nudScherm2.Location = new System.Drawing.Point(104, 32);
+            this.nudScherm2.Location = new System.Drawing.Point(104, 176);
             this.nudScherm2.Maximum = new decimal(new int[] {
             100000,
             0,
@@ -201,31 +200,34 @@
             0,
             0,
             0});
+            this.nudScherm2.Visible = false;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
             this.label3.Enabled = false;
-            this.label3.Location = new System.Drawing.Point(6, 60);
+            this.label3.Location = new System.Drawing.Point(6, 204);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(81, 13);
             this.label3.TabIndex = 4;
             this.label3.Text = "Scherm Hoogte";
+            this.label3.Visible = false;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Enabled = false;
-            this.label2.Location = new System.Drawing.Point(6, 34);
+            this.label2.Location = new System.Drawing.Point(6, 178);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(79, 13);
             this.label2.TabIndex = 2;
             this.label2.Text = "Scherm Lengte";
+            this.label2.Visible = false;
             // 
             // nudScherm1
             // 
             this.nudScherm1.Enabled = false;
-            this.nudScherm1.Location = new System.Drawing.Point(104, 6);
+            this.nudScherm1.Location = new System.Drawing.Point(104, 150);
             this.nudScherm1.Maximum = new decimal(new int[] {
             100000,
             0,
@@ -244,16 +246,18 @@
             0,
             0,
             0});
+            this.nudScherm1.Visible = false;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Enabled = false;
-            this.label1.Location = new System.Drawing.Point(6, 8);
+            this.label1.Location = new System.Drawing.Point(6, 152);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(83, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Scherm Breedte";
+            this.label1.Visible = false;
             // 
             // tabPage2
             // 

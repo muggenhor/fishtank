@@ -60,6 +60,8 @@
             this.gbObject = new System.Windows.Forms.GroupBox();
             this.nudBewegingFrequentie2 = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
+            this.nudBotsStraal = new System.Windows.Forms.NumericUpDown();
+            this.label3 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -74,6 +76,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudMaxSnelheid)).BeginInit();
             this.gbObject.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudBewegingFrequentie2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudBotsStraal)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -217,6 +220,8 @@
             // 
             // gbVis
             // 
+            this.gbVis.Controls.Add(this.nudBotsStraal);
+            this.gbVis.Controls.Add(this.label3);
             this.gbVis.Controls.Add(this.nudDraaiVersnelling);
             this.gbVis.Controls.Add(this.label12);
             this.gbVis.Controls.Add(this.nudDraaiSnelheid);
@@ -233,14 +238,14 @@
             this.gbVis.Dock = System.Windows.Forms.DockStyle.Top;
             this.gbVis.Location = new System.Drawing.Point(0, 244);
             this.gbVis.Name = "gbVis";
-            this.gbVis.Size = new System.Drawing.Size(301, 178);
+            this.gbVis.Size = new System.Drawing.Size(301, 202);
             this.gbVis.TabIndex = 3;
             this.gbVis.TabStop = false;
             this.gbVis.Text = "Vis";
             // 
             // nudDraaiVersnelling
             // 
-            this.nudDraaiVersnelling.Location = new System.Drawing.Point(122, 149);
+            this.nudDraaiVersnelling.Location = new System.Drawing.Point(122, 175);
             this.nudDraaiVersnelling.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -263,7 +268,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(12, 151);
+            this.label12.Location = new System.Drawing.Point(12, 177);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(85, 13);
             this.label12.TabIndex = 22;
@@ -271,7 +276,7 @@
             // 
             // nudDraaiSnelheid
             // 
-            this.nudDraaiSnelheid.Location = new System.Drawing.Point(122, 123);
+            this.nudDraaiSnelheid.Location = new System.Drawing.Point(122, 149);
             this.nudDraaiSnelheid.Minimum = new decimal(new int[] {
             1,
             0,
@@ -289,7 +294,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(12, 125);
+            this.label11.Location = new System.Drawing.Point(12, 151);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(74, 13);
             this.label11.TabIndex = 20;
@@ -298,7 +303,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(193, 99);
+            this.label10.Location = new System.Drawing.Point(193, 125);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(104, 13);
             this.label10.TabIndex = 19;
@@ -306,7 +311,7 @@
             // 
             // nudBewegingFactor
             // 
-            this.nudBewegingFactor.Location = new System.Drawing.Point(122, 97);
+            this.nudBewegingFactor.Location = new System.Drawing.Point(122, 123);
             this.nudBewegingFactor.Name = "nudBewegingFactor";
             this.nudBewegingFactor.Size = new System.Drawing.Size(65, 20);
             this.nudBewegingFactor.TabIndex = 18;
@@ -319,7 +324,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(12, 99);
+            this.label8.Location = new System.Drawing.Point(12, 125);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(84, 13);
             this.label8.TabIndex = 17;
@@ -327,7 +332,7 @@
             // 
             // nudBewegingFrequentie
             // 
-            this.nudBewegingFrequentie.Location = new System.Drawing.Point(122, 71);
+            this.nudBewegingFrequentie.Location = new System.Drawing.Point(122, 97);
             this.nudBewegingFrequentie.Minimum = new decimal(new int[] {
             1,
             0,
@@ -345,7 +350,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(12, 73);
+            this.label6.Location = new System.Drawing.Point(12, 99);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(104, 13);
             this.label6.TabIndex = 15;
@@ -395,7 +400,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(214, 322);
+            this.button2.Location = new System.Drawing.Point(214, 347);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 4;
@@ -405,7 +410,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(133, 322);
+            this.button3.Location = new System.Drawing.Point(133, 347);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(75, 23);
             this.button3.TabIndex = 5;
@@ -415,7 +420,7 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(52, 322);
+            this.button4.Location = new System.Drawing.Point(52, 347);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(75, 23);
             this.button4.TabIndex = 6;
@@ -457,11 +462,32 @@
             this.label2.TabIndex = 17;
             this.label2.Text = "Beweging frequentie";
             // 
+            // nudBotsStraal
+            // 
+            this.nudBotsStraal.Location = new System.Drawing.Point(122, 71);
+            this.nudBotsStraal.Name = "nudBotsStraal";
+            this.nudBotsStraal.Size = new System.Drawing.Size(65, 20);
+            this.nudBotsStraal.TabIndex = 25;
+            this.nudBotsStraal.Value = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(12, 73);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(58, 13);
+            this.label3.TabIndex = 24;
+            this.label3.Text = "Bots Straal";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(301, 353);
+            this.ClientSize = new System.Drawing.Size(301, 380);
             this.Controls.Add(this.gbVis);
             this.Controls.Add(this.gbObject);
             this.Controls.Add(this.button4);
@@ -492,6 +518,7 @@
             this.gbObject.ResumeLayout(false);
             this.gbObject.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudBewegingFrequentie2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudBotsStraal)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -530,6 +557,8 @@
         private System.Windows.Forms.GroupBox gbObject;
         private System.Windows.Forms.NumericUpDown nudBewegingFrequentie2;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.NumericUpDown nudBotsStraal;
+        private System.Windows.Forms.Label label3;
     }
 }
 
