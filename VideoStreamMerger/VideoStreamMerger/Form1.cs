@@ -29,9 +29,9 @@ namespace VideoStreamMerger
         private MemoryStream msL = new MemoryStream(), msR = new MemoryStream();
 
         //variabelen die aan te passen zijn om zo de kwaliteit of de snelheid te verhogen
-        private int kolom = 1; //aantal kolommen langs elkaar die vergeleken worden
-        private int frames = 1; //aantal frames waaruit een achtergrond gehaald word
-        private int pixels = 10; //de precisie waarmee de achtergrond bepaald word
+        private int kolom = 5; //aantal kolommen langs elkaar die vergeleken worden
+        private int frames = 50; //aantal frames waaruit een achtergrond gehaald word
+        private int pixels = 1; //de precisie waarmee de achtergrond bepaald word
         private float percentage = (float)0.95; //hoeveel procent de stukken hetzelfde moeten zijn
         private int temp = 1; //temp: hoeveel pixels er worden overgeslagen
   //      private int ver = 15; //hoe precies de pixels hetzelfde moeten zijn
@@ -41,11 +41,35 @@ namespace VideoStreamMerger
             InitializeComponent();            
             
             //videobestanden en/of webcams laden en achtergrond bepalen
-            VideoLadenEnAchtergrondBepalen();
+     //       VideoLadenEnAchtergrondBepalen();
+            CaptureDeviceForm form = new CaptureDeviceForm();
+            if (form.ShowDialog(this) == DialogResult.OK)
+            {
+                // create video source
+                CaptureDevice localSource = new CaptureDevice();
+                localSource.VideoSource = form.Device;
+
+                // open it
+                video1 = new VideoInput(localSource, frames, pixels);
+                while (!video1.BackgroundFound) { }
+                label1.Text = "Frames voor optimalisatie: " + video1.Source.FramesReceived;
+                imageLinks = video1.backGround;
+                imageLinks.Save("c://Achtergrond_Links.bmp");          
+            }
+   //         pictureBox1.Size = imageLinks.Size;
+  //          video1.frame += new VideoInput.EventHandler(video1_frame);
+
+            imageRechts = new Bitmap("c://temp000.bmp");
+            if (ImagesVergelijken())
+            {
+                NieuweImageInitialiseren();
+                pictureBox1.Size = image.Size;
+                pictureBox1.Image = image;
+            }
 
             //kijken waar de bitmaps over elkaar gaan
             //als niets overeenkomt, achtergronden opslaan en niets doen
-            if (!ImagesVergelijken())
+  /*          if (!ImagesVergelijken())
             {
                 MessageBox.Show("Geen vergelijking gevonden, afbeeldingen opgeslagen (c:/Achtergrond_Rechts en c:/Achtergrond_Links)");
                 imageLinks.Save("c://Achtergrond_Links.bmp");
@@ -90,7 +114,7 @@ namespace VideoStreamMerger
                 {
                     MessageBox.Show("Geen verbinding met de Server.");
                 }
-            }
+            }*/
 
         }
 
@@ -117,6 +141,7 @@ namespace VideoStreamMerger
         //alleen doen als het pogramma snel genoeg is...
         void video1_frame(Bitmap frame)
         {
+            pictureBox1.Image = frame;
             if (imageRechts==null)
                 imageRechts = frame;
         }
@@ -223,7 +248,7 @@ namespace VideoStreamMerger
                     }
                 }
             }
-
+            image.Save("c://totaal.bmp");
             //de afbeelding in het geheugen zetten zodat het aangepast kan worden
             MemoryStream mstemp = new MemoryStream();
      //       image.SetResolution(96, 96);

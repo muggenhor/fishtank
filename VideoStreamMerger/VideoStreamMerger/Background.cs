@@ -21,7 +21,6 @@ namespace VideoStreamMerger
         private int opti; //optimilisatie: hoeveel frames er achter elkaar hetzelfde moeten zijn voor de background
         private int prec; //precisie: hoe precies de frames hetzelfde moeten zijn (10: om de 10 pixels word er bekeken)
         public int totaal;
-        public int goed;
 
         public Background(int frames, int pixels)
         {
@@ -30,7 +29,7 @@ namespace VideoStreamMerger
         }
 
         /// <summary> een image word bekeken om zo de achterground 'bij te stellen' <summary>
-        public void EditBackground(Bitmap image)
+        public void EditBackground(Bitmap image, bool vergelijken)
         {
             //eerste keer worden de variabelen goedgezet
             if (!variabelen)
@@ -51,17 +50,16 @@ namespace VideoStreamMerger
             if (nr == opti)
                 nr = 0;
 
-            //vergelijken en meteen invullen (word nog anders)
-            //werkt niet, de laatste is nu de background indien die niet veranderd... (klopt eigenlijk ook wel)
+            //vergelijken (alleen als het nodig is)
+            if (!vergelijken)
+                return;
             for (int i = 0; i < tot; i++)
-                //alle frames moeten nu precies hetzelfde zijn
                 for (int a = 1; a < opti; a++)
                 {
-                    int temp1 = cF[0, i];
-                    int temp2 = cF[a, i];
-                    if (cF[0, i] != cF[a, i]) 
+                    int ver = cF[0, i] - cF[a, i];
+                    if (ver < 0) ver *= -1; //indien negatief, het getal positief maken
+                    if (ver > 20) //kijken of het verschil accpetabel is, zo niet, methode beeindigen
                         return;
-                    else goed++;
                 }
             gevonden = 0;
         }
@@ -75,11 +73,12 @@ namespace VideoStreamMerger
                 if (y >= height)
                 {
                     x += prec;
-                    if (x > width) //word een pixel gepakt dat niet bestaat...
+                    if (x > width) //word een pixel gepakt dat niet bestaat dus klaar met array vullen
                         return;
                     y = 0;
                 }
-                cF[nr, i] = image.GetPixel(x, y).ToArgb();
+                //de r, g en b optellen en delen door 3 voor een gem waarde
+                cF[nr, i] = ((int)image.GetPixel(x, y).R + (int)image.GetPixel(x, y).G + (int)image.GetPixel(x, y).B) / 3;
             }
         }
 

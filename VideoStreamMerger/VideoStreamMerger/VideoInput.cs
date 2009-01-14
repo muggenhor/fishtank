@@ -11,6 +11,8 @@ namespace VideoStreamMerger
         private Bitmap          newFrame = null, background;
         private Background      bgFrame = null;
         private bool            bgGround = false;
+        private int             frames = 0;
+        private int             aFrames = 0;
 
         public event EventHandler frame;
         public delegate void EventHandler(Bitmap frame);
@@ -22,23 +24,18 @@ namespace VideoStreamMerger
 
         public VideoInput(IVideoSource source, int frames, int pixels)
         {
+            aFrames = frames;
             bgFrame = new Background(frames, pixels);
             this.source = source;
             this.source.NewFrame += new CameraEventHandler(source_NewFrame);
             this.source.Start();
         }
 
-        void source_NewStream(object sender, CameraEventArgs e)
-        {
-            if (stream != null)
-                stream(e.Stream);
-        }
-
         void source_NewFrame(object sender, CameraEventArgs e)
         {
             if (!bgGround)
             {
-                try
+   //             try
                 {
                     // lock
                     Monitor.Enter(this);
@@ -55,15 +52,20 @@ namespace VideoStreamMerger
                     //background bijstellen indien nodig
                     if (!bgGround)
                     {
-                        bgFrame.EditBackground(newFrame);
-                        bgGround = bgFrame.BackgroundCheck();
-                        if (bgGround)
-                            background = newFrame;
+                        if (frames++ < aFrames)
+                            bgFrame.EditBackground(newFrame, false);
+                        else
+                        {
+                            bgFrame.EditBackground(newFrame, true);
+                            bgGround = bgFrame.BackgroundCheck();
+                            if (bgGround)
+                                background = newFrame;
+                        }
                     }
                     // unlock
                     Monitor.Exit(this);
                 }
-                catch { }
+   //             catch { }
             }
             else //background is gemaakt, nu de frame doorsturen
                 if (frame != null)
