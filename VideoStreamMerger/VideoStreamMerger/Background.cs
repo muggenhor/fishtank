@@ -20,12 +20,14 @@ namespace VideoStreamMerger
 
         private int opti; //optimilisatie: hoeveel frames er achter elkaar hetzelfde moeten zijn voor de background
         private int prec; //precisie: hoe precies de frames hetzelfde moeten zijn (10: om de 10 pixels word er bekeken)
+        private int ver;
         public int totaal;
 
-        public Background(int frames, int pixels)
+        public Background(int frames, int pixels, int verschil)
         {
             opti = frames;
             prec = pixels;
+            ver = verschil;
         }
 
         /// <summary> een image word bekeken om zo de achterground 'bij te stellen' <summary>
@@ -58,7 +60,7 @@ namespace VideoStreamMerger
                 {
                     int ver = cF[0, i] - cF[a, i];
                     if (ver < 0) ver *= -1; //indien negatief, het getal positief maken
-                    if (ver > 20) //kijken of het verschil accpetabel is, zo niet, methode beeindigen
+                    if (ver > this.ver) //kijken of het verschil accpetabel is, zo niet, methode beeindigen
                         return;
                 }
             gevonden = 0;

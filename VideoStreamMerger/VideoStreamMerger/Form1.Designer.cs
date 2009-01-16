@@ -116,7 +116,6 @@
             this.Controls.Add(this.pbImageLinks);
             this.Name = "Form1";
             this.Text = "Form1";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.pbImageLinks)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbImageRechts)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();

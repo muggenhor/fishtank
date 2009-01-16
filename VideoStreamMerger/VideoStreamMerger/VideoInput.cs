@@ -16,16 +16,14 @@ namespace VideoStreamMerger
 
         public event EventHandler frame;
         public delegate void EventHandler(Bitmap frame);
-        public event EventHandlerStream stream;
-        public delegate void EventHandlerStream(System.IO.MemoryStream ms);
 
         public VideoInput(IVideoSource source)
-            : this(source, 20, 10) { }
+            : this(source, 20, 10, 20) { }
 
-        public VideoInput(IVideoSource source, int frames, int pixels)
+        public VideoInput(IVideoSource source, int frames, int pixels, int verschil)
         {
             aFrames = frames;
-            bgFrame = new Background(frames, pixels);
+            bgFrame = new Background(frames, pixels, verschil);
             this.source = source;
             this.source.NewFrame += new CameraEventHandler(source_NewFrame);
             this.source.Start();
