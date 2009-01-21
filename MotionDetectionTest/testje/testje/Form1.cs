@@ -15,9 +15,9 @@ namespace testje
 {
     public partial class Form1 : Form
     {
-        private bool eerste = true;
-        private Socket s2;
-        private int totaal = 0;
+        private bool eerste = true, eerste1 = true;
+        private Socket s2, s3;
+        private int totaal = 0, totaal2=0, fail=0, fail1=0;
         private Bitmap image;
 
         public Form1()
@@ -28,10 +28,14 @@ namespace testje
             panel1.BackColor = Color.Blue;
             panel2.BackColor = Color.Red;
 
-            timer1.Enabled = true;
-
+            //plaatjes
             
+            //coordinaten
 
+
+            timer1.Enabled = true;
+            timer2.Enabled = true;
+            
        }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -60,12 +64,11 @@ namespace testje
 
             try
             {
-                //luisteren
                 if (eerste)
                 {
                     Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
                     s.Bind(new IPEndPoint(IPAddress.Any, 1234));
-                    s.Listen(1000);
+                    s.Listen(10);
                     s2 = s.Accept();
                     eerste = false;
                 }
@@ -94,8 +97,35 @@ namespace testje
                 pictureBox1.Image = image;
                 label1.Text = "ontvangen: " + totaal++;
             }
-            catch { }
+            catch { label4.Text = "misluk: " + ++fail;}
 
+        }
+
+        private void timer2_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                if (eerste1)
+                {
+                    Socket s4 = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
+                    s4.Bind(new IPEndPoint(IPAddress.Any, 1235));
+                    s4.Listen(10);
+                    s3 = s4.Accept();
+                    eerste1 = false;
+                }
+
+                byte[] temp = new byte[2];
+                s3.Receive(temp);
+
+
+                pictureBox1.Size = image.Size;
+                pictureBox1.Image = image;
+                label2.Text = "coordinaten: " + totaal2++;
+            }
+            catch
+            {
+                label3.Text = "mislukt: " + ++fail1;
+            }
         }
     }
 }
