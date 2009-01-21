@@ -19,6 +19,7 @@ namespace VideoStreamMerger
             this.lengte = lengte;
             this.backGround = achtergrond;
             this.socket = socket;
+            this.socket.Start();
         }
 
         public bool BewegingZoeken(byte[] frame)

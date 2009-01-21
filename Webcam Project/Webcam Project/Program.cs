@@ -81,8 +81,8 @@ namespace Webcam_Project
                     Console.WriteLine("---TEST---");
                     VideoSource.VideoFileSource vid1 = new VideoSource.VideoFileSource();
                     VideoSource.VideoFileSource vid2 = new VideoSource.VideoFileSource();
-                    Console.Write("pad van video1 (bijv. c://Sin City.avi): "); vid1.VideoSource = Console.ReadLine();
-                    Console.Write("pad van video2 (bijv. c://Sin City.avi): "); vid2.VideoSource = Console.ReadLine();
+                    Console.Write("pad van video1 (bijv. c://Sin City.avi): "); vid1.VideoSource = "c://Simpsons 08x14 - The Itchie Scratchy and Poochie Show [kl0wnz].avi"; //Console.ReadLine();
+                    Console.Write("pad van video2 (bijv. c://Sin City.avi): "); vid2.VideoSource = "c://Simpsons 08x14 - The Itchie Scratchy and Poochie Show [kl0wnz].avi"; // Console.ReadLine();
                     imageC = new VideoStreamMerger.ImageControl(1, 1, 10, (float)0.05, 1, 100, 100, new VideoStreamMerger.TCPOut(),
                         50, new VideoStreamMerger.TCPOut("localhost", 1235), 2000);
                     Console.WriteLine("ImageControl aangemaakt");
@@ -90,7 +90,7 @@ namespace Webcam_Project
                     Console.WriteLine("Vergelijken: " + imageC.ImagesVergelijken());
                     Console.WriteLine("Initialiseren: " + imageC.NieuweImageInitialiseren());
                     imageC.StreamsSamenvoegen();
-                    Console.WriteLine("Afsluiten?"); Console.ReadLine();
+                    Console.WriteLine("Afsluiten?"); Console.ReadLine(); imageC.BlijfSamenvoegen = false;
                 }
             }
             catch { Console.Write("ERROR - druk op Enter om programma af te sluiten"); Console.ReadLine(); }

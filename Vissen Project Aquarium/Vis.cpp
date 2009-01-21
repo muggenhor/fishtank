@@ -9,7 +9,25 @@ using namespace std;
 
 void TestDrawAquarium(){
 
-	glColor3d(1,1,1);
+	/*glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	
+	glBegin(GL_QUADS);
+
+	glTextCoord2f(0, 0);
+	glVertex3f(-0.5*aquariumSize.x, -0.5*aquariumSize.y, -0.5*aquariumSize.z);
+
+	glTextCoord2f(1, 0);
+	glVertex3f(-0.5*aquariumSize.x, 0.5*aquariumSize.y, -0.5*aquariumSize.z);
+
+	glTextCoord2f(1, 1);
+	glVertex3f(-0.5*aquariumSize.x, 0.5*aquariumSize.y, 0.5*aquariumSize.z);
+
+	glTextCoord2f(0, 1);
+	glVertex3f(-0.5*aquariumSize.x, -0.5*aquariumSize.y, 0.5*aquariumSize.z);
+
+	glEnd();
+	/*glColor3d(1,1,1);
 	glDisable(GL_TEXTURE_2D);
 	glBegin(GL_LINES);
 
@@ -49,7 +67,7 @@ void TestDrawAquarium(){
 	glVertex3d(0.5*aquariumSize.x,0.5*aquariumSize.y,0.5*aquariumSize.z);
 	glVertex3d(0.5*aquariumSize.x,0.5*aquariumSize.y,-0.5*aquariumSize.z);
 
-	glEnd();
+	glEnd();*/
 
 }
 

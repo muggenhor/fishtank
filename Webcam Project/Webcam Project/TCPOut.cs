@@ -36,6 +36,17 @@ namespace VideoStreamMerger
             catch { return false; }
         }
 
+        public bool Stop()
+        {
+            try
+            {
+                sock.Disconnect(false);
+                sock.Close();
+                return true;
+            }
+            catch { return false; }
+        }
+
         public bool Verzenden(byte[] data)
         {
             try

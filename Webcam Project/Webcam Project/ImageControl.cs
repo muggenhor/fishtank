@@ -69,7 +69,8 @@ namespace VideoStreamMerger
 
         void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            if (dataImage != null) detector.BewegingZoeken(dataImage);
+            if (dataImage != null) 
+                detector.BewegingZoeken(dataImage);
         }
         public ImageControl()
             : this(5, 20, 5, (float)0.95, 1, 15, 20, new TCPOut(), 20, new TCPOut("localhost", 1235), 2000) { }
@@ -106,10 +107,10 @@ namespace VideoStreamMerger
                 imageLinks = video1.backGround;
 
                 //rechterwebcam
-               //          video2 = new VideoInput(webcamRechts, frames, pixels, verBack);
-               //        while (!video2.BackgroundFound) { }
-               //          imageRechts = video2.backGround;
-                imageRechts = new Bitmap("c://totaal.bmp");
+                video2 = new VideoInput(webcamRechts, frames, pixels, verBack);
+                while (!video2.BackgroundFound) { }
+                imageRechts = video2.backGround;
+               // imageRechts = new Bitmap("c://totaal.bmp");
                 return true;
             }
             catch { return false; }
@@ -224,8 +225,8 @@ namespace VideoStreamMerger
                 //de afbeelding in het geheugen zetten zodat het aangepast kan worden
                 MemoryStream mstemp = new MemoryStream();
                 image.Save(mstemp, ImageFormat.Bmp);
-                dataImage = mstemp.GetBuffer();
                 mstemp.Flush();
+                dataImage = mstemp.ToArray();
                 mstemp.Close();
 
                 //variabelen invullen voor het samenvoegen van de streams
@@ -236,7 +237,7 @@ namespace VideoStreamMerger
                 imLengte += (width * 2);
 
                 //alles terugzetten naar default en true retourneren
-                imageLinks = null;// imageRechts = null;  
+                imageLinks = imageRechts = null;  
                 return true;
             }
             catch
@@ -252,13 +253,13 @@ namespace VideoStreamMerger
             {
                 MemoryStream msL = new MemoryStream();
                 imageLinks.Save(msL, ImageFormat.Bmp);
-                dataLinks = msL.GetBuffer();
                 msL.Flush();
+                dataLinks = msL.ToArray();
 
                 MemoryStream msR = new MemoryStream();
                 imageRechts.Save(msR, ImageFormat.Bmp);
-                dataRechts = msR.GetBuffer();
                 msR.Flush();
+                dataRechts = msR.ToArray();
 
                 int totaal = (width * 3 + 2) * height + 54; //de totaal aantal benodigde bytes voor de bitmap (24bits)
                 int i, x = 0, y = 0, xl = 54, xr = 54; //x,y de positie in de array, xl,xr is beginpositie in de array (54 ivm headers)
@@ -288,7 +289,7 @@ namespace VideoStreamMerger
                     }
                 }
                 //klaar dus alles weer terugzetten naar default en de data voor videostream retourneren
-                imageLinks = null;// imageRechts = null;
+                imageLinks = imageRechts = null;
                 return dataImage;
             }
             catch
@@ -307,17 +308,19 @@ namespace VideoStreamMerger
 
                 //motion detection
                 MotionDetectionInitialiseren();
-                timer.Enabled = true;
+             //   timer.Enabled = true;
 
                 //2 bitmaps samenvoegen (voor altijd blijven doen)
                 video1.frame += new VideoInput.EventHandler(video1_frame);
-         //       video2.frame += new VideoInput.EventHandler(video2_frame);
+                video2.frame += new VideoInput.EventHandler(video2_frame);
 
                 //vliegt eruit als er iets mis gaat met verzenden of imagesSamenvoegen
                 while (doorgaan)
                     if (imageRechts != null && imageLinks != null)
+                    {
                         if (!socket.Verzenden(ImagesSamenvoegen()))
                             throw new Exception();
+                    }
                 if (video1 != null) video1.Close();
                 if (video2 != null) video2.Close();
             }

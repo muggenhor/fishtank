@@ -15,6 +15,9 @@
 #include <vector>
 
 #include <map>
+#include "safe_getline.h"
+
+#include "imagereceiver.h"
 
 using namespace std;
 
@@ -32,10 +35,10 @@ void LoadModels(AquariumController *aquariumController)
 	string s;
 	ifstream input_file("./Settings/aquaConfig.txt");
 
-	getline(input_file, s);/// not using >> because it is problematic if used together with readline
+	safe_getline(input_file, s);/// not using >> because it is problematic if used together with readline
 	aquariumController->ground.maxHeight = atoi(s.c_str());
 
-	getline(input_file, s);
+	safe_getline(input_file, s);
 	int n=atoi(s.c_str());
 
 	for (int i = 0; i < n; i++)
@@ -43,7 +46,7 @@ void LoadModels(AquariumController *aquariumController)
 		bool exsists = false;
 
 		string model_name;
-		getline(input_file, model_name);
+		safe_getline(input_file, model_name);
 		map<string, Model>::iterator model_iterator=models.find(model_name);
 		if(model_iterator==models.end())
 		{// model does not exist
@@ -51,9 +54,9 @@ void LoadModels(AquariumController *aquariumController)
 		}
 
 		string propertieFile;
-		getline(input_file, propertieFile);
+		safe_getline(input_file, propertieFile);
 
-		getline(input_file, s);
+		safe_getline(input_file, s);
 		int m=atoi(s.c_str());
 		for (int j = 0; j < m; j++)
 		{
@@ -62,14 +65,14 @@ void LoadModels(AquariumController *aquariumController)
 	}
 
 
-	getline(input_file, s);
+	safe_getline(input_file, s);
 	n=atoi(s.c_str());
 	for (int i = 0; i < n; i++)
 	{
 		bool exsists = false;
 
 		string model_name;
-		getline(input_file, model_name);
+		safe_getline(input_file, model_name);
 		map<string, Model>::iterator model_iterator=models.find(model_name);
 		if(model_iterator==models.end())
 		{// model does not exist
@@ -77,16 +80,45 @@ void LoadModels(AquariumController *aquariumController)
 		}
 
 		string propertieFile;
-		getline(input_file, propertieFile);
+		safe_getline(input_file, propertieFile);
 
-		getline(input_file, s);
+		safe_getline(input_file, s);
 		int x = -(aquariumSize.x / 2) + atoi(s.c_str());
-		getline(input_file, s);
+		safe_getline(input_file, s);
 		int z = -(aquariumSize.z / 2) + atoi(s.c_str());
 		int groundposx = (x + (aquariumSize.x / 2)) / aquariumSize.x * (aquariumController->ground.widthAmount);
 		int groundposy = (z + (aquariumSize.z / 2)) / aquariumSize.z * (aquariumController->ground.lengthAmount);
 		aquariumController->AddObject(&models[model_name], propertieFile, math3::Vec3d(x, aquariumController->ground.HeightAt(groundposx, groundposy), z));
 	}
+}
+
+ImageReceiver image_receiver(7779);
+
+void DrawBackground(){
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, image_receiver.TextureID());
+	glMatrixMode(GL_TEXTURE);
+	glLoadIdentity();
+	glMatrixMode(GL_MODELVIEW);
+
+	glColor3f(1,1,1);/// just in case
+
+	glBegin(GL_QUADS);
+
+	glTexCoord2f(0, 0);
+	glVertex3f(-0.5*aquariumSize.x, -0.5*aquariumSize.y, -0.5*aquariumSize.z);
+
+	glTexCoord2f(1, 0);
+	glVertex3f(-0.5*aquariumSize.x, 0.5*aquariumSize.y, -0.5*aquariumSize.z);
+
+	glTexCoord2f(1, 1);
+	glVertex3f(-0.5*aquariumSize.x, 0.5*aquariumSize.y, 0.5*aquariumSize.z);
+
+	glTexCoord2f(0, 1);
+	glVertex3f(-0.5*aquariumSize.x, -0.5*aquariumSize.y, 0.5*aquariumSize.z);
+
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
 }
 
 int main(int argc, char **argv)
@@ -159,6 +191,8 @@ int main(int argc, char **argv)
 		}
 		aquariumController.Update(dt);
 
+		image_receiver.Update();
+
 		oldTime = curTime;
 
 
@@ -170,6 +204,8 @@ int main(int argc, char **argv)
 		//testVis2.Draw();//Vis::visModel::test);
 
 		TestDrawAquarium();
+
+		DrawBackground();
 
 		//cout << glfwGetTime() << endl;
 /* */
