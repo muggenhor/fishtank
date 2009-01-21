@@ -106,10 +106,10 @@ namespace VideoStreamMerger
                 imageLinks = video1.backGround;
 
                 //rechterwebcam
-                         video2 = new VideoInput(webcamRechts, frames, pixels, verBack);
-                       while (!video2.BackgroundFound) { }
-                         imageRechts = video2.backGround;
-             //   imageRechts = new Bitmap("c://totaal.bmp");
+               //          video2 = new VideoInput(webcamRechts, frames, pixels, verBack);
+               //        while (!video2.BackgroundFound) { }
+               //          imageRechts = video2.backGround;
+                imageRechts = new Bitmap("c://totaal.bmp");
                 return true;
             }
             catch { return false; }
@@ -185,6 +185,10 @@ namespace VideoStreamMerger
                 zoeknr += 4;
         //        zoeknr++;
             }
+            //niets gevonden dus linkerimage gebruiken
+            image = imageLinks;
+            this.verschil = 0;
+            width = imageLinks.Width;
             return false;
         }
 
@@ -232,7 +236,7 @@ namespace VideoStreamMerger
                 imLengte += (width * 2);
 
                 //alles terugzetten naar default en true retourneren
-                imageLinks = imageRechts =null;  
+                imageLinks = null;// imageRechts = null;  
                 return true;
             }
             catch
@@ -284,7 +288,7 @@ namespace VideoStreamMerger
                     }
                 }
                 //klaar dus alles weer terugzetten naar default en de data voor videostream retourneren
-                imageLinks = imageRechts = null;
+                imageLinks = null;// imageRechts = null;
                 return dataImage;
             }
             catch
@@ -307,7 +311,7 @@ namespace VideoStreamMerger
 
                 //2 bitmaps samenvoegen (voor altijd blijven doen)
                 video1.frame += new VideoInput.EventHandler(video1_frame);
-                video2.frame += new VideoInput.EventHandler(video2_frame);
+         //       video2.frame += new VideoInput.EventHandler(video2_frame);
 
                 //vliegt eruit als er iets mis gaat met verzenden of imagesSamenvoegen
                 while (doorgaan)
