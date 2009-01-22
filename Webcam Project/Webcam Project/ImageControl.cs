@@ -116,6 +116,25 @@ namespace VideoStreamMerger
             catch { return false; }
         }
 
+        public bool WebcamLadenEnAchtergrondBepalen(CaptureDevice webcam, VideoFileSource video)//, CaptureDevice webcamRechts)
+        {
+            try
+            {
+                //linkerwebcam
+                video1 = new VideoInput(webcam, frames, pixels, verBack);
+                while (!video1.BackgroundFound) { }
+                imageLinks = video1.backGround;
+
+                //linkerwebcam
+                video1 = new VideoInput(video, frames, pixels, verBack);
+                while (!video1.BackgroundFound) { }
+                imageLinks = video1.backGround;
+                return true;
+            }
+            catch { return false; }
+        }
+
+
         //todo: nu moet de hele kolom hetzelfde zijn: dus als 1 webcam iets hoger staat, vind die al niets
         public bool ImagesVergelijken()
         {
