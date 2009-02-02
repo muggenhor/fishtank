@@ -44,10 +44,11 @@ namespace Webcam_Project
                     Console.Write(" 'j' om de default waarden te laden van de Image Control: ");
                     if (Console.ReadLine().ToLower() != "j")
                     {
-                        int kol, fra, pix, rat, vba, vim, por, tim, vimm, porm; float per; string ip, ipm;
+                        int hoo, kol, fra, pix, rat, vba, vim, por, tim, vimm, porm; float per; string ip, ipm;
                         Console.Write(" Aantal frames dat gebruikt moet worden voor de achtergrond (1-50): "); fra = Convert.ToInt32(Console.ReadLine());
                         Console.Write(" Aantal pixels dat word overgeslagen bij achtergrond bepalen (1-50): "); pix = Convert.ToInt32(Console.ReadLine());
                         Console.Write(" Maximale kleurverschil tussen pixels bij het bepalen van de achtergrond (0-255): "); vba = Convert.ToInt32(Console.ReadLine());
+                        Console.Write(" Hoogte van de kolom dat gebruikt word bij het vergelijken (1-100): "); hoo = Convert.ToInt32(Console.ReadLine());
                         Console.Write(" Aantal kolommen dat vergeleken moet worden (1-50): "); kol = Convert.ToInt32(Console.ReadLine());
                         Console.Write(" Percentage dat de webcambeelden hetzelfde moeten zijn (0-1): "); per = (float)Convert.ToDouble(Console.ReadLine());
                         Console.Write(" Maximale kleurverschil tussen pixels bij het vergelijken (0-255): "); vim = Convert.ToInt32(Console.ReadLine());
@@ -58,17 +59,17 @@ namespace Webcam_Project
                         Console.Write(" Aantal miliseconden dat er op beweging gezocht moet worden (1000-10000): "); tim = Convert.ToInt32(Console.ReadLine());
                         Console.Write(" Het ip addres van de server voor de beweging (bijv 127.0.0.1): "); ipm = Console.ReadLine();
                         Console.Write(" De poort voor het verzenden van de coordinaat van de beweging (bijv 1235): "); porm = Convert.ToInt32(Console.ReadLine());
-                        imageC = new VideoStreamMerger.ImageControl(kol, fra, pix, per, rat, vim, vba, new VideoStreamMerger.TCPOut(ip, por), vimm, new VideoStreamMerger.TCPOut(ipm, porm), tim);
+                        imageC = new VideoStreamMerger.ImageControl(hoo, kol, fra, pix, per, rat, vim, vba, new VideoStreamMerger.TCPOut(ip, por), vimm, tim);
                     }
                     else
-                        imageC = new VideoStreamMerger.ImageControl(1, 1, 10, (float)0.05, 1, 20, 20, new VideoStreamMerger.TCPOut(), 50, new VideoStreamMerger.TCPOut("localhost", 1235), 2000);
+                        imageC = new VideoStreamMerger.ImageControl(100,1, 1, 10, (float)0.05, 1, 20, 20, new VideoStreamMerger.TCPOut(), 50, 2000);
                     //en de imagecontrol alles laten doen
                     Console.WriteLine("PROGRAMMA STARTEN");
                     Console.WriteLine(" Achtergrond gevonden in de webcambeelden: " + imageC.WebcamLadenEnAchtergrondBepalen(webcamLinks, webcamRechts));
                     Console.WriteLine(" Vergelijking gevonden in de webcambeelden: " + imageC.ImagesVergelijken());
                     Console.WriteLine(" Nieuwe videostream gemaakt van de webcambeelden: " + imageC.NieuweImageInitialiseren());
                     Console.WriteLine(" Webcambeelden worden samengevoegd en verstuurt naar: " + imageC.SocketStream.IpAddres + ":" + imageC.SocketStream.Poort);
-                    Console.WriteLine(" Coordinaten van de Motion Detection worden verstuurt naar: " + imageC.SocketMotion.IpAddres + ":" + imageC.SocketMotion.Poort);
+             //       Console.WriteLine(" Coordinaten van de Motion Detection worden verstuurt naar: " + imageC.SocketMotion.IpAddres + ":" + imageC.SocketMotion.Poort);
                     Console.WriteLine(" Typ 'exit' om af te sluiten.");
                     imageC.StreamsSamenvoegen();
                     //afsluiten
@@ -81,16 +82,17 @@ namespace Webcam_Project
                     Console.WriteLine("---TEST---");
                     VideoSource.VideoFileSource vid1 = new VideoSource.VideoFileSource();
                     VideoSource.VideoFileSource vid2 = new VideoSource.VideoFileSource();
-                    Console.Write("pad van video1 (bijv. c://Sin City.avi): "); vid1.VideoSource = "c://Simpsons 08x14 - The Itchie Scratchy and Poochie Show [kl0wnz].avi"; //Console.ReadLine();
-                    Console.Write("pad van video2 (bijv. c://Sin City.avi): "); vid2.VideoSource = "c://Simpsons 08x14 - The Itchie Scratchy and Poochie Show [kl0wnz].avi"; // Console.ReadLine();
-                    imageC = new VideoStreamMerger.ImageControl(1, 1, 10, (float)0.05, 1, 100, 100, new VideoStreamMerger.TCPOut(),
-                        50, new VideoStreamMerger.TCPOut("localhost", 1235), 2000);
+                    Console.Write("pad van video1 (bijv. c://Sin City.avi): "); vid1.VideoSource = "C://Wall-E.avi"; //Console.ReadLine();
+                    Console.Write("pad van video2 (bijv. c://Sin City.avi): "); vid2.VideoSource = "C://Wall-E.avi"; // Console.ReadLine();
+                    imageC = new VideoStreamMerger.ImageControl(10, 5, 5, 10, (float)0.95, 1, 100, 100, new VideoStreamMerger.TCPOut(),
+                        50, 5000);
                     Console.WriteLine("ImageControl aangemaakt");
                     Console.WriteLine("Achtergrond Laden: " + imageC.VideoLadenEnAchtergrondBepalen(vid1, vid2));
                     Console.WriteLine("Vergelijken: " + imageC.ImagesVergelijken());
                     Console.WriteLine("Initialiseren: " + imageC.NieuweImageInitialiseren());
+                    Console.WriteLine("Bezig met streamen naar " + imageC.SocketStream.IpAddres + ":" + imageC.SocketStream.Poort);
                     imageC.StreamsSamenvoegen();
-                    Console.WriteLine("Afsluiten?"); Console.ReadLine(); imageC.BlijfSamenvoegen = false;
+                    Console.WriteLine("ImageControl is gestopt..."); Console.ReadLine(); imageC.BlijfSamenvoegen = false;
                 }
             }
             catch { Console.Write("ERROR - druk op Enter om programma af te sluiten"); Console.ReadLine(); }

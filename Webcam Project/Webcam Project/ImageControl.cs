@@ -24,21 +24,24 @@ namespace VideoStreamMerger
         private int ver; //15 hoe precies de pixels hetzelfde moeten zijn tijdens het vergelijken van 2 bitmaps
         private int verBack; //20 heo precies de pixels hetzelfde moeten zijn tijdens het bepalen van de achtergrond
         private int detVerschil; //20 het verschil dat er maximaal mag zijn bij het detecteren van beweging
+        private int hoogteKolom; //80 hoogte van een kolom bij vergelijken
         //standaard variabelen
         private Bitmap imageLinks=null, imageRechts=null, image = null;
         private VideoInput video1 = null, video2 = null;
         private int width=0, height=0, verschil=0, imLengte=0;
         private byte[] dataImage = null, dataLinks=null, dataRechts=null;
-        private bool doorgaan=true;
-        private TCPOut socket, socketMotion;
+        private bool doorgaan=true, motionZoeken=false;
+        private TCPOut socket;
         private MotionDetection detector;
         private System.Timers.Timer timer;
+
 
         //constructors
         /// <summary>
         /// De class die alles doet (het bepalen van de achtergronden, 
         /// het vergelijken, het samenvoegen en het verzenden (via socket)
         /// </summary>
+        /// <param name="hoogteKolomVergelijken">de hoogte van de kolom die gebruikt word voor het vergelijken (bij 100 word hele kolom gebruikt), getal tussen de 1 en de 100 (80 is standaard)</param>
         /// <param name="aantalKolomVergelijken">het aantal kolommen dat vergeleken moet worden tussen de 2 videostreams (bij 1 word er maar 1 kolom vergeleken)), getal moet minmaal 1 zijn (5 is standaard)</param>
         /// <param name="aantalFramesVergelijken">het aantal frames dat van 1 videostream hetzelfde moet zijn om de achtergrond te bepalen (bij 1 word er maar naar 1 frame gekeken), getal moet minimaal 1 zijn (20 is standaard)</param>
         /// <param name="aantalPixelsBekijken">hoeveel pixels er worden overgeslagen met het bepalen van de achtergond (bij 1 worden alle pixels bekeken), moet minimaal 1 zijn (5 is standaard)</param>
@@ -48,10 +51,11 @@ namespace VideoStreamMerger
         /// <param name="verschilBackground">hoe precies de pixels hetzelde moeten zijn tijdens het bepalen van de achtergrond van een videstream (bij 0 moeten ze precies hetzelfde zijn), getal tussen de 0 en 255 liggen (20 is standaard)</param>
         /// <param name="socket">de socket die gebruikt word bij het verzenden van de videostream (standaard is ip "localhost" en port 1234)</param>
         /// <param name="detectieVerschil">het maximale verschil dat er mag zijn tussen 2 pixels bij het detecteren van beweging (bij 0 moeten ze precies hetzelde zijn), getal tussen de 0 en de 255 (20 is standaard)</param>
-        public ImageControl(int aantalKolomVergelijken, int aantalFramesVergelijken, int aantalPixelsBekijken, 
+        public ImageControl(int hoogteKolomVergelijken, int aantalKolomVergelijken, int aantalFramesVergelijken, int aantalPixelsBekijken, 
             float decPercentageHetzelfde, int ratioInOut, int verschilImages, int verschilBackground, TCPOut socket, 
-            int detectieVerschil, TCPOut socketMotion, int intervalMotionCheck)
+            int detectieVerschil, int intervalMotionCheck)
         {
+            this.hoogteKolom = hoogteKolomVergelijken;
             this.kolom = aantalKolomVergelijken;
             this.frames = aantalFramesVergelijken;
             this.pixels = aantalPixelsBekijken;
@@ -61,7 +65,6 @@ namespace VideoStreamMerger
             this.verBack = verschilBackground;
             this.socket = socket;
             this.detVerschil = detectieVerschil;
-            this.socketMotion = socketMotion;
             this.timer = new System.Timers.Timer(intervalMotionCheck);
             timer.Enabled = false;
             timer.Elapsed += new System.Timers.ElapsedEventHandler(timer_Elapsed);
@@ -69,11 +72,21 @@ namespace VideoStreamMerger
 
         void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            if (dataImage != null) 
-                detector.BewegingZoeken(dataImage);
+            //alleen gaan zoeken als er nog niet word gezocht
+            if (!motionZoeken)
+            {
+                motionZoeken = true;
+                if (dataImage != null)
+                {
+                    byte[] data;
+                    if ((data = detector.BewegingZoeken((byte[])dataImage.Clone())) != null)
+                        socket.Verzenden(data);
+                }
+                motionZoeken = false;
+            }
         }
         public ImageControl()
-            : this(5, 20, 5, (float)0.95, 1, 15, 20, new TCPOut(), 20, new TCPOut("localhost", 1235), 2000) { }
+            : this(80, 5, 20, 5, (float)0.95, 1, 15, 20, new TCPOut(), 20, 2000) { }
 
         //methoden
         //video/webcam laden en achtergrond bepalen
@@ -116,26 +129,8 @@ namespace VideoStreamMerger
             catch { return false; }
         }
 
-        public bool WebcamLadenEnAchtergrondBepalen(CaptureDevice webcam, VideoFileSource video)//, CaptureDevice webcamRechts)
-        {
-            try
-            {
-                //linkerwebcam
-                video1 = new VideoInput(webcam, frames, pixels, verBack);
-                while (!video1.BackgroundFound) { }
-                imageLinks = video1.backGround;
-
-                //linkerwebcam
-                video1 = new VideoInput(video, frames, pixels, verBack);
-                while (!video1.BackgroundFound) { }
-                imageLinks = video1.backGround;
-                return true;
-            }
-            catch { return false; }
-        }
-
-
         //todo: nu moet de hele kolom hetzelfde zijn: dus als 1 webcam iets hoger staat, vind die al niets
+        //
         public bool ImagesVergelijken()
         {
             //alleen frames samenvoegen als ze even hoog zijn
@@ -144,14 +139,17 @@ namespace VideoStreamMerger
             height = imageLinks.Height;
 
             //variabelen voor de rechter frame declareren
-            int i, x = 0, y = 0, max = height * kolom;
+            int i, x = 0, y = 0;
+            int max = (int)((double)height * (double)kolom * ((double)hoogteKolom / (double)100));
             int[] kolomRechts;
             kolomRechts = new int[max];
 
+            int boven = (int)(height * (double)((100 - hoogteKolom) / 2 ) / (double)100);
+            int onder = height - boven;
             //data van de rechter frame invullen
-            for (i = 0; i < max; i++, y++)
+            for (i = boven; i < max; i++, y++)
             {
-                if (y == height)
+                if (y == onder)
                 {
                     x++;
                     y = 0;
@@ -170,9 +168,9 @@ namespace VideoStreamMerger
                 kolomLinks = new int[max];
 
                 //data van de linker frame laden
-                for (i = 0; i < max; i++, y++)
+                for (i = boven; i < max; i++, y++)
                 {
-                    if (y == height)
+                    if (y == onder)
                     {
                         x++;
                         y = 0;
@@ -309,6 +307,10 @@ namespace VideoStreamMerger
                 }
                 //klaar dus alles weer terugzetten naar default en de data voor videostream retourneren
                 imageLinks = imageRechts = null;
+    //            Bitmap.FromStream(new MemoryStream(dataImage)).Save("c://temp.bmp");
+
+
+                //wat testen
                 return dataImage;
             }
             catch
@@ -327,7 +329,7 @@ namespace VideoStreamMerger
 
                 //motion detection
                 MotionDetectionInitialiseren();
-             //   timer.Enabled = true;
+                timer.Enabled = true;
 
                 //2 bitmaps samenvoegen (voor altijd blijven doen)
                 video1.frame += new VideoInput.EventHandler(video1_frame);
@@ -369,12 +371,11 @@ namespace VideoStreamMerger
 
         private void MotionDetectionInitialiseren()
         {
-            detector = new MotionDetection(detVerschil, dataImage, (image.Width * 3 + 2), socketMotion);
+            detector = new MotionDetection(detVerschil, (image.Width * 3 + 2), (byte[])dataImage.Clone());
         }
 
         //proporties
         public bool BlijfSamenvoegen { set { doorgaan = value; } }
         public TCPOut SocketStream { get { return socket; } }
-        public TCPOut SocketMotion { get { return detector.Socket; } }
     }
 }

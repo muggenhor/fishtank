@@ -51,6 +51,7 @@ namespace VideoStreamMerger
         {
             try
             {
+                System.Threading.Thread.Sleep(25);
                 sock.Send(data);
                 return true;
             }
