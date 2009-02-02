@@ -30,7 +30,7 @@ namespace VideoStreamMerger
             {
                 IPAddress[] ips = Dns.GetHostAddresses(ip);
                 sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
-                sock.Connect(new System.Net.IPEndPoint(ips[1], port));
+                sock.Connect(new System.Net.IPEndPoint(ips[0], port));
                 return true;
             }
             catch { return false; }
@@ -47,11 +47,13 @@ namespace VideoStreamMerger
             catch { return false; }
         }
 
+        /// <summary> wacht met verzenden totdat de ontvanger een berichtje terug gestuurd heeft dat die de data ontvangen heeft <summary>
         public bool Verzenden(byte[] data)
         {
             try
             {
-                System.Threading.Thread.Sleep(25);
+     //           sock.Receive(new byte[1]);
+                System.Threading.Thread.Sleep(40);
                 sock.Send(data);
                 return true;
             }

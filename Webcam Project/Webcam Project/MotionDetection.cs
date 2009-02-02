@@ -11,15 +11,16 @@ namespace VideoStreamMerger
         private int verschil;
         private byte[] backGround;
         private int lengte;
+        private TCPOut socket;
 
-        public MotionDetection(int verschil, int lengte, byte[] achtergrond)
+        public MotionDetection(int verschil, int lengte, byte[] achtergrond, TCPOut socket)
         {
             this.verschil = verschil;
             this.lengte = lengte;
             this.backGround = achtergrond;
   //          Bitmap.FromStream(new System.IO.MemoryStream(achtergrond)).Save("c://achtergrond.bmp");
-  //          this.socket = socket;
-    //        this.socket.Start();
+            this.socket = socket;
+            this.socket.Start();
         }
 
         public byte[] BewegingZoeken(byte[] frame)
@@ -62,6 +63,7 @@ namespace VideoStreamMerger
             catch { return null; }
         }
 
+        public TCPOut Socket { get { return socket; } }
    //     public byte[] Achtergrond { get { return backGround; } set { backGround = value; } }
     }
 }
