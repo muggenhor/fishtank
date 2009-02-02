@@ -21,8 +21,6 @@
 
 using namespace std;
 
-const double PI=3.14159265358979323846;
-
 int win_width=640,win_height=480;
 const float near_clip_plane=10;
 const float far_clip_plane=1000;
@@ -93,6 +91,8 @@ void LoadModels(AquariumController *aquariumController)
 }
 
 ImageReceiver image_receiver(7779);
+
+PositionReceiver position_receiver(7780);
 
 void DrawBackground(){
 	glEnable(GL_TEXTURE_2D);
@@ -192,6 +192,8 @@ int main(int argc, char **argv)
 		aquariumController.Update(dt);
 
 		image_receiver.Update();
+
+		position_receiver.Update();
 
 		oldTime = curTime;
 

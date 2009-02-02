@@ -379,3 +379,97 @@ void ImageReceiver::ReceivedImage(){
 
 	glBindTexture(GL_TEXTURE_2D,0);
 }
+
+
+
+
+
+
+
+#pragma pack(push,bitmap_data,1)
+
+typedef struct tagPositionInfoHeader {
+	unsigned char x;
+	unsigned char y;
+} PositionInfoHeader;
+#pragma pack(pop,bitmap_data)
+
+const int header_size_position=sizeof(tagPositionInfoHeader);
+
+PositionReceiver::PositionReceiver(int port)
+{
+	buffered_bytes=0;
+	image_size=0;
+
+	sockaddr_in server_address;
+	memset(&server_address,0,sizeof(server_address));
+
+	server_address.sin_family = AF_INET;
+	server_address.sin_port=htons(port);
+	server_address.sin_addr.s_addr = htonl (INADDR_ANY);
+	m_server_socket=socket (PF_INET, SOCK_STREAM, 0);
+	if (m_server_socket < 0)
+	{
+		std::cerr<<"Error creating socket!"<<std::endl;
+	}
+	if (bind(m_server_socket, (sockaddr *)&server_address, sizeof(server_address)) < 0){
+		std::cerr<<"Error binding socket!"<<std::endl;
+	}
+	std::cerr<<"Listening on port "<<port<<std::endl;
+	listen(m_server_socket, 5);
+
+
+#ifdef WIN32
+	u_long NonBlock = 1;
+	if (ioctlsocket(m_server_socket, FIONBIO, &NonBlock) == SOCKET_ERROR)
+  {
+		std::cerr<<"ioctlsocket() failed \n"<<std::endl;
+		return;
+  }
+#else
+	fcntl(m_server_socket, F_SETFL, O_NONBLOCK);
+#endif
+
+}
+
+PositionReceiver::~PositionReceiver()
+{
+
+}
+
+void PositionReceiver::AcceptClient(){
+	sockaddr_in client_address;
+	memset(&client_address,0,sizeof(client_address));
+	socklen_t client_address_len=sizeof(client_address);
+	int client_socket=accept(m_server_socket,(struct sockaddr *) &client_address, &client_address_len);
+	if (client_socket<0){
+		//std::cerr<<"accept() failed"<<std::endl;
+		return;
+	}
+	m_socket_stream.SetSocket(client_socket);
+	std::string client_address_str=inet_ntoa(client_address.sin_addr);
+	std::cerr<<client_address_str<<" connected"<<std::endl;
+}
+
+void PositionReceiver::Update(){
+	if(!m_socket_stream.CanRead()){
+		/*
+		pollfd pfd;
+		memset(&pfd,0,sizeof(pfd));
+		pfd.fd=m_sock;
+    pfd.events=POLLIN;
+    */
+    AcceptClient();
+	}else{
+		ReceiveSegment();/// receive segments.
+	}
+}
+
+void PositionReceiver::ReceiveSegment(){
+        PositionInfoHeader pos;
+	int received_size=m_socket_stream.Read((char*)(&pos), 2);
+	if(received_size==2){
+		cout << "X: " << int(pos.x) << " Y: " << int(pos.y) << endl;
+
+        }
+}

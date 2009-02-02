@@ -45,6 +45,7 @@ void AquariumController::AddBubbleSpot()
 
 void AquariumController::Update(double dt)
 {
+	GoToScreen(math3::Vec2d(0,0));
 	for(int i = 0; i < fishes.size(); i++)
 	{
 		fishes[i].Update(dt);
@@ -70,6 +71,20 @@ void AquariumController::Update(double dt)
 		}
 	}
 	AvoidFishBounce();
+}
+
+void AquariumController::GoToScreen(const math3::Vec2d &position)
+{
+	math3::Vec2d pos = math3::Vec2d(aquariumSize.x * position.x / 100, aquariumSize.z * position.y / 100);
+	//cout << "X: " << pos.x << "Y: " << pos.y << endl;
+	//cout << "HIER KOMT IE" << endl;
+	for(int i = 0; i < fishes.size(); i++)
+	{
+		double tempx = pos.x + sin(2 * PI / fishes.size() * i) * circleDistance;
+		double tempy = pos.y + cos(2 * PI / fishes.size() * i) * circleDistance;
+		fishes[i].setGoal(math3::Vec3d(tempx, tempy, aquariumSize.y));
+		//cout << "X: " << tempx << " Y: " << tempy << endl;
+	}
 }
 
 void AquariumController::AvoidFishBounce()

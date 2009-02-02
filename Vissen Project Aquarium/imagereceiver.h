@@ -78,4 +78,24 @@ class ImageReceiver
 		unsigned int TextureID();
 };
 
+class PositionReceiver
+{
+	int m_server_socket;
+	SimpleSocketStream m_socket_stream;
+	std::vector<unsigned char> buffer;/// contains image
+	int buffered_bytes;
+	int image_size;
+
+	void AcceptClient();
+	void ReceiveSegment();
+
+	public:
+	/// port: the port to listen on.
+		PositionReceiver(int port=7779);
+		virtual ~PositionReceiver();
+		void Update();
+
+		unsigned int TextureID();
+};
+
 #endif // IMAGERECEIVER_H

@@ -5,11 +5,11 @@ redbetta
 1
 GuppyBlueGrass
 guppieBT
-10
+4
 leopartshark
 shark
 1
-5
+0
 weed13
 weed13
 100
