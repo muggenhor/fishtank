@@ -11,8 +11,8 @@ namespace Webcam_Project
         {
      //       try
             {
-                Console.WriteLine("Webcam Project - gemaakt door Gijs Trepels");
-                Console.WriteLine("------------------------------------------");
+                Console.WriteLine("Webcam Project");
+                Console.WriteLine("--------------");
                 Console.WriteLine();
                 //variabelen
                 VideoStreamMerger.ImageControl imageC;
@@ -33,7 +33,7 @@ namespace Webcam_Project
                     webcamLinks.VideoSource = filters[l].MonikerString;
                     Console.Write(" Kies de rechterwebcam: ");
                     int r = Convert.ToInt32(Console.ReadLine());
-      //              while (r == l)
+                    while (r == l)
                     {
                         Console.Write(" Is al in gebruik, kies een andere: ");
                         r = Convert.ToInt32(Console.ReadLine());
@@ -59,19 +59,20 @@ namespace Webcam_Project
                         Console.Write(" Aantal miliseconden dat er op beweging gezocht moet worden (1000-10000): "); tim = Convert.ToInt32(Console.ReadLine());
                         Console.Write(" Het ip addres van de server voor de beweging (bijv 127.0.0.1): "); ipm = Console.ReadLine();
                         Console.Write(" De poort voor het verzenden van de coordinaat van de beweging (bijv 1235): "); porm = Convert.ToInt32(Console.ReadLine());
-                        imageC = new VideoStreamMerger.ImageControl(hoo, kol, fra, pix, per, rat, vim, vba, new VideoStreamMerger.TCPOut(ip, por), vimm, tim);
+                        imageC = new VideoStreamMerger.ImageControl(hoo, kol, fra, pix, per, rat, vim, vba, new VideoStreamMerger.TCPOut(ip, por), new VideoStreamMerger.TCPOut(ipm, porm), vimm, tim);
                     }
                     else
-                        imageC = new VideoStreamMerger.ImageControl(100,1, 1, 10, (float)0.05, 1, 20, 20, new VideoStreamMerger.TCPOut(), 50, 2000);
+                        imageC = new VideoStreamMerger.ImageControl(80,5, 10, 10, (float)0.85, 1, 30, 50, new VideoStreamMerger.TCPOut("127.0.0.1", 7779), new VideoStreamMerger.TCPOut("127.0.0.1", 7780), 20, 500);
                     //en de imagecontrol alles laten doen
                     Console.WriteLine("PROGRAMMA STARTEN");
                     Console.WriteLine(" Achtergrond gevonden in de webcambeelden: " + imageC.WebcamLadenEnAchtergrondBepalen(webcamLinks, webcamRechts));
                     Console.WriteLine(" Vergelijking gevonden in de webcambeelden: " + imageC.ImagesVergelijken());
                     Console.WriteLine(" Nieuwe videostream gemaakt van de webcambeelden: " + imageC.NieuweImageInitialiseren());
                     Console.WriteLine(" Webcambeelden worden samengevoegd en verstuurt naar: " + imageC.SocketStream.IpAddres + ":" + imageC.SocketStream.Poort);
-             //       Console.WriteLine(" Coordinaten van de Motion Detection worden verstuurt naar: " + imageC.SocketMotion.IpAddres + ":" + imageC.SocketMotion.Poort);
-                    Console.WriteLine(" Typ 'exit' om af te sluiten.");
+              //      Console.WriteLine(" Coordinaten van de Motion Detection worden verstuurt naar: " + imageC.SocketMotion.IpAddres + ":" + imageC.SocketMotion.Poort);
+                    Console.WriteLine(" Bezig met streamen...");
                     imageC.StreamsSamenvoegen();
+                    Console.WriteLine(" Streamen is gestopt");
                     //afsluiten
                     while (Console.ReadLine().ToLower() != "exit") { }
                     imageC.BlijfSamenvoegen = false;
@@ -85,7 +86,7 @@ namespace Webcam_Project
                     Console.Write("pad van video1 (bijv. c://Sin City.avi): "); vid1.VideoSource = "C://Wall-E.avi"; //Console.ReadLine();
                     Console.Write("pad van video2 (bijv. c://Sin City.avi): "); vid2.VideoSource = "C://Wall-E.avi"; // Console.ReadLine();
                     imageC = new VideoStreamMerger.ImageControl(100, 5, 5, 10, (float)0.95, 1, 100, 100, new VideoStreamMerger.TCPOut(),
-                        50, 5000);
+                        new VideoStreamMerger.TCPOut("127.0.0.1", 1235), 50, 5000);
                     Console.WriteLine("ImageControl aangemaakt");
                     Console.WriteLine("Achtergrond Laden: " + imageC.VideoLadenEnAchtergrondBepalen(vid1, vid2));
                     Console.WriteLine("Vergelijken: " + imageC.ImagesVergelijken());

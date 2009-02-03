@@ -31,10 +31,12 @@ namespace VideoStreamMerger
         private int width=0, height=0, verschil=0, imLengte=0, startRechts=0;
         private byte[] dataImage = null, dataLinks=null, dataRechts=null;
         private bool doorgaan=true, motionZoeken=false;
-        private TCPOut socket;
+        private TCPOut socket, socketMotion;
         private MotionDetection detector;
-        private System.Timers.Timer timer;             
+        private System.Timers.Timer timer;
 
+        private TCPOut sockFace = null;
+        private List<float> tempverschillen = null;
 
         //constructors
         /// <summary>
@@ -52,7 +54,7 @@ namespace VideoStreamMerger
         /// <param name="socket">de socket die gebruikt word bij het verzenden van de videostream (standaard is ip "localhost" en port 1234)</param>
         /// <param name="detectieVerschil">het maximale verschil dat er mag zijn tussen 2 pixels bij het detecteren van beweging (bij 0 moeten ze precies hetzelde zijn), getal tussen de 0 en de 255 (20 is standaard)</param>
         public ImageControl(int hoogteKolomVergelijken, int aantalKolomVergelijken, int aantalFramesVergelijken, int aantalPixelsBekijken, 
-            float decPercentageHetzelfde, int ratioInOut, int verschilImages, int verschilBackground, TCPOut socket, 
+            float decPercentageHetzelfde, int ratioInOut, int verschilImages, int verschilBackground, TCPOut socket, TCPOut socketMotion,
             int detectieVerschil, int intervalMotionCheck)
         {
             this.hoogteKolom = hoogteKolomVergelijken;
@@ -65,6 +67,7 @@ namespace VideoStreamMerger
             this.verBack = verschilBackground;
             this.socket = socket;
             this.detVerschil = detectieVerschil;
+            this.socketMotion = socketMotion;
             this.timer = new System.Timers.Timer(intervalMotionCheck);
             timer.Enabled = false;
             timer.Elapsed += new System.Timers.ElapsedEventHandler(timer_Elapsed);
@@ -80,13 +83,18 @@ namespace VideoStreamMerger
                 {
                     byte[] data;
                     if ((data = detector.BewegingZoeken((byte[])dataImage.Clone())) != null)
-                        socket.Verzenden(data);
+                    {
+                        detector.Socket.Verzenden(data);
+                        Console.WriteLine("Coordinaten:" + data[0] + ":" + data[1]);
+                    }
+                    else
+                        Console.WriteLine("Geen beweging gedetecteerd");
                 }
                 motionZoeken = false;
             }
         }
         public ImageControl()
-            : this(80, 5, 20, 5, (float)0.95, 1, 15, 20, new TCPOut(), 20, 2000) { }
+            : this(80, 5, 20, 5, (float)0.95, 1, 15, 20, new TCPOut(), new TCPOut("127.0.0.1", 1235), 20, 2000) { }
 
         //methoden
         //video/webcam laden en achtergrond bepalen
@@ -112,27 +120,30 @@ namespace VideoStreamMerger
         }
         public bool WebcamLadenEnAchtergrondBepalen(CaptureDevice webcamLinks, CaptureDevice webcamRechts)
         {
-            try
+         //   try
             {
                 //linkerwebcam
                 video1 = new VideoInput(webcamLinks, frames, pixels, verBack);
                 while (!video1.BackgroundFound) { }
                 imageLinks = video1.backGround;
-
+                imageLinks.Save("c://achtergrond_links.bmp");
                 //rechterwebcam
                 video2 = new VideoInput(webcamRechts, frames, pixels, verBack);
                 while (!video2.BackgroundFound) { }
                 imageRechts = video2.backGround;
+                imageRechts.Save("c://achtergrond_rechts.bmp");
                // imageRechts = new Bitmap("c://totaal.bmp");
                 return true;
             }
-            catch { return false; }
+        //    catch { return false; }
         }
 
         //todo: nu moet de hele kolom hetzelfde zijn: dus als 1 webcam iets hoger staat, vind die al niets
         //links en rechts war eraf snijden, om de beeldkwaliteit hoog te houden
         public bool ImagesVergelijken()
         {
+            tempverschillen = new List<float>();
+
             //TODO: uiteindelijk mag dit weg (dan hoven de kolommen niet meer evenlang te zijn)
             //alleen frames samenvoegen als ze even hoog zijn
             if (imageRechts.Height != imageLinks.Height)
@@ -168,73 +179,92 @@ namespace VideoStreamMerger
             bool links = true;
             while (zoeknr - 1 < (imageLinks.Width - kolom)) //TODO: AANPASSEN?
             {
-                if (links) //linkerstukje verwijderen
-                {
-                    //een kolom pixels van de linkerbitmap pakken
-                    x = imageLinks.Width - (kolom + zoeknr); y = 0;
-                    
+                //elke pixel van de hoogte van de kolom afgaan
+      //          for (int z = 0; z < (int)((double)((100 - hoogteKolom) / 100.0) * (double)imageRechts.Height); z++)
+        //        {
 
-                    //data van de linker frame laden
-                    for (i = boven; i < max; i++, y++)
+                    if (links) //linkerstukje verwijderen
                     {
-                        if (y == onder)
-                        {
-                            x++;
-                            y = 0;
-                        }
-                        kolomLinks[i] = (imageLinks.GetPixel(x, y).R + imageLinks.GetPixel(x, y).G + imageLinks.GetPixel(x, y).B) / 3;
-                    }
-                }
-                else //rechterstukje verwijderen
-                {
-                    x = zoeknr; y = 0;
+                        //een kolom pixels van de linkerbitmap pakken
+                       // x = imageLinks.Width - (kolom + zoeknr); y = 0;
+                        x = zoeknr; y = 0;
 
-                    //data van de rechter frame invullen
-                    for (i = boven; i < max; i++, y++)
+
+                        //data van de linker frame laden
+                        for (i = boven; i < max; i++, y++)
+                        {
+                            if (y == onder)
+                            {
+                                x++;
+                                y = 0;
+                            }
+                            kolomLinks[i] = (imageLinks.GetPixel(x, y).R + imageLinks.GetPixel(x, y).G + imageLinks.GetPixel(x, y).B) / 3;
+                        }
+                        //data van de linker frame laden
+         /*               for (i = z; i < (max - z * kolom); i++, y++)
+                        {
+                            if (y == onder)
+                            {
+                                x++;
+                                y = 0;
+                            }
+                            kolomLinks[i] = (imageLinks.GetPixel(x, y).R + imageLinks.GetPixel(x, y).G + imageLinks.GetPixel(x, y).B) / 3;
+                        }*/
+                    }
+                    else //rechterstukje verwijderen
                     {
-                        if (y == onder)
+                        x = zoeknr; y = 0;
+
+                        //data van de rechter frame invullen
+                        for (i = boven; i < max; i++, y++)
                         {
-                            x++;
-                            y = 0;
+                            if (y == onder)
+                            {
+                                x++;
+                                y = 0;
+                            }
+                            kolomRechts[i] = (imageRechts.GetPixel(x, y).R + imageRechts.GetPixel(x, y).G + imageRechts.GetPixel(x, y).B) / 3;
                         }
-                        kolomRechts[i] = (imageRechts.GetPixel(x, y).R + imageRechts.GetPixel(x, y).G + imageRechts.GetPixel(x, y).B) / 3;
                     }
-                }
 
-                //'beurt' omwisselen (zodat er van beide frames een stukje weggehaald word)
-                links = !links;
+                    //'beurt' omwisselen (zodat er van beide frames een stukje weggehaald word)
+                    links = !links;
 
-                //kolommen vergelijken
-                int totaal = 0;
-                for (i = 0; i < max; i++)
-                {
-                    temp = kolomLinks[i] - kolomRechts[i];
-                    if (temp < 0) temp = -temp;
-                    if (temp < ver)
-                        totaal++;
-                }
+                    //kolommen vergelijken
+                    int totaal = 0;
+                    for (i = 0; i < max; i++)
+                    {
+                        temp = kolomLinks[i] - kolomRechts[i];
+                        if (temp < 0) temp = -temp;
+                        if (temp < ver)
+                            totaal++;
+                    }
 
-                //kijken hoeveel pixels overeenkomen, als het genoeg is, dan kunnen de frams samengevoegd worden
-                float verschil = (float)totaal / (float)max;
-                if (verschil >= percentage)
-                {
-                    //iets lopms doen maar het scheelt me wel tijd als het werkt
-         //           if ((imageLinks.Width / 4).ToString().Contains(",")) //width is niet deelbaar door 4
-           //             if ((imageLinks.Width / 4).ToString().
+                    //kijken hoeveel pixels overeenkomen, als het genoeg is, dan kunnen de frams samengevoegd worden
+                    float verschil = (float)totaal / (float)max;
+                    tempverschillen.Add(verschil);
+                    if (verschil >= percentage)
+                    {
 
-                    //TODO: AANPASSEN
-            //        this.verschil = imageLinks.Width - (kolom + zoeknr);// + 2);
-              //      width = this.verschil + imageRechts.Width;
-                //    return true;
+                        //iets lopms doen maar het scheelt me wel tijd als het werkt
+                        //           if ((imageLinks.Width / 4).ToString().Contains(",")) //width is niet deelbaar door 4
+                        //             if ((imageLinks.Width / 4).ToString().
 
-                    //AANGEPAST:
-                    startRechts = zoeknr / 2; //vanuit welke positie de rechterimage 'gemerged' moet worden
-                    this.verschil = imageLinks.Width - (kolom + zoeknr / 2); // /2 wat andere kant van rechterframe
-                    width = imageRechts.Width + imageLinks.Width - (kolom + zoeknr);
-                    return true;
-                }
+                        //TODO: AANPASSEN
+                        this.verschil = zoeknr + kolom;// + 2);
+                           width = this.verschil + imageRechts.Width;
+                        // return true;
+
+                        //AANGEPAST:
+          //              startRechts = zoeknr / 2; //vanuit welke positie de rechterimage 'gemerged' moet worden
+            //            this.verschil = imageLinks.Width - (kolom + zoeknr / 2); // /2 wat andere kant van rechterframe
+              //          width = imageRechts.Width + imageLinks.Width - (kolom + zoeknr);
+                        return true;
+                    }
+       //         }
                 //zoeknr nu alleen verhogen als links ne rechts geprobeert is
-                if (!links) zoeknr += 4;
+                if (!links) 
+                        zoeknr += 4;
         //        zoeknr++;
             }
             //niets gevonden dus linkerimage gebruiken
@@ -255,6 +285,27 @@ namespace VideoStreamMerger
                 int temph = height / ratio;
                 int tempv = verschil / ratio;
                 image = new Bitmap(tempw, temph, PixelFormat.Format24bppRgb);
+                
+     /*           for (int x = 0; x < tempw; x++)
+                {
+                    for (int y = 0; y < temph; y++)
+                    {
+                        if (x < tempv) //verschil) //< of <= maakt niet zoveel uit, het gedeelte word anders bij de else gepakt
+                            image.SetPixel(x, y, imageLinks.GetPixel(x * ratio, y * ratio));
+                        else
+                        {
+                            //TODO: kijken of startRechts klopt !!! 
+                            image.SetPixel(x, y, imageRechts.GetPixel(tempx * ratio + startRechts, tempy * ratio));
+                            tempy++;
+                            if (tempy >= temph)
+                            {
+                                tempy = 0;
+                                tempx++;
+                            }
+                        }
+                    }
+                }*/
+
                 for (int x = 0; x < tempw; x++)
                 {
                     for (int y = 0; y < temph; y++)
@@ -274,6 +325,7 @@ namespace VideoStreamMerger
                         }
                     }
                 }
+
                 //de afbeelding in het geheugen zetten zodat het aangepast kan worden
                 MemoryStream mstemp = new MemoryStream();
                 image.Save(mstemp, ImageFormat.Bmp);
@@ -288,15 +340,9 @@ namespace VideoStreamMerger
                 //test:
                 imLengte += (width * 2);
 
-                imageLinks.Save("c://links.bmp");
-                imageRechts.Save("c://rechts.bmp");
-                image.Save("c://temp.bmp");
-
                 //alles terugzetten naar default en true retourneren
+                  Bitmap.FromStream(new MemoryStream(dataImage)).Save("c://achtergrond.bmp");
                 imageLinks = imageRechts = null;
-
-                
-
                 return true;
             }
             catch
@@ -356,8 +402,10 @@ namespace VideoStreamMerger
                 }
                 //klaar dus alles weer terugzetten naar default en de data voor videostream retourneren
                 imageLinks = imageRechts = null;
-    //            Bitmap.FromStream(new MemoryStream(dataImage)).Save("c://temp.bmp");
+                
 
+                //TIJDELIJK
+      //          sockFace.Verzenden(dataImage);
 
                 //wat testen
                 return dataImage;
@@ -372,13 +420,17 @@ namespace VideoStreamMerger
         {
   //          try
             {
+                //TIJDELIJK
+     //           sockFace = new TCPOut("127.0.0.1", 1234);
+      //          sockFace.Start();
+
                 //verbinding maken, indien mislukt false retourneren
-     //           if (!socket.Start())
-     //               return false;
+                if (!socket.Start())
+                    return false;
 
                 //motion detection
-    //            MotionDetectionInitialiseren();
-     //           timer.Enabled = true;
+                MotionDetectionInitialiseren();
+                timer.Enabled = true;
 
                 //2 bitmaps samenvoegen (voor altijd blijven doen)
                 video1.frame += new VideoInput.EventHandler(video1_frame);
@@ -388,10 +440,8 @@ namespace VideoStreamMerger
                 //vliegt eruit als er iets mis gaat met verzenden of imagesSamenvoegen
                 while (doorgaan)
                     if (imageRechts != null && imageLinks != null)
-                    {
                         if (!socket.Verzenden(ImagesSamenvoegen()))
                             throw new Exception("Error met stream samenvoegen of verzenden");
-                    }
                 if (video1 != null) video1.Close();
                 if (video2 != null) video2.Close();
             }
@@ -415,17 +465,19 @@ namespace VideoStreamMerger
         }
         void video2_frame(Bitmap frame)
         {
-            if (imageRechts==null)
+            if (imageRechts == null)
                 imageRechts = frame;
         }
 
         private void MotionDetectionInitialiseren()
         {
-            detector = new MotionDetection(detVerschil, (image.Width * 3 + 2), (byte[])dataImage.Clone());
+            detector = new MotionDetection(detVerschil, (image.Width * 3 + 2), (byte[])dataImage.Clone(), socketMotion);
         }
 
         //proporties
+        public Bitmap Frame { get { return image; }  set { image = value;} }
         public bool BlijfSamenvoegen { set { doorgaan = value; } }
         public TCPOut SocketStream { get { return socket; } }
+        public TCPOut SocketMotion { get { return detector.Socket; } }
     }
 }
