@@ -9,7 +9,7 @@ namespace Webcam_Project
     {
         static void Main(string[] args)
         {
-            try
+     //       try
             {
                 Console.WriteLine("Webcam Project - gemaakt door Gijs Trepels");
                 Console.WriteLine("------------------------------------------");
@@ -84,7 +84,7 @@ namespace Webcam_Project
                     VideoSource.VideoFileSource vid2 = new VideoSource.VideoFileSource();
                     Console.Write("pad van video1 (bijv. c://Sin City.avi): "); vid1.VideoSource = "C://Wall-E.avi"; //Console.ReadLine();
                     Console.Write("pad van video2 (bijv. c://Sin City.avi): "); vid2.VideoSource = "C://Wall-E.avi"; // Console.ReadLine();
-                    imageC = new VideoStreamMerger.ImageControl(10, 5, 5, 10, (float)0.95, 1, 100, 100, new VideoStreamMerger.TCPOut(),
+                    imageC = new VideoStreamMerger.ImageControl(100, 5, 5, 10, (float)0.95, 1, 100, 100, new VideoStreamMerger.TCPOut(),
                         50, 5000);
                     Console.WriteLine("ImageControl aangemaakt");
                     Console.WriteLine("Achtergrond Laden: " + imageC.VideoLadenEnAchtergrondBepalen(vid1, vid2));
@@ -95,7 +95,7 @@ namespace Webcam_Project
                     Console.WriteLine("ImageControl is gestopt..."); Console.ReadLine(); imageC.BlijfSamenvoegen = false;
                 }
             }
-            catch { Console.Write("ERROR - druk op Enter om programma af te sluiten"); Console.ReadLine(); }
+      //      catch { Console.Write("ERROR - druk op Enter om programma af te sluiten"); Console.ReadLine(); }
         }
     }
 }

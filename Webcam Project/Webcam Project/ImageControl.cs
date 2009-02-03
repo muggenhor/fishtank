@@ -28,12 +28,12 @@ namespace VideoStreamMerger
         //standaard variabelen
         private Bitmap imageLinks=null, imageRechts=null, image = null;
         private VideoInput video1 = null, video2 = null;
-        private int width=0, height=0, verschil=0, imLengte=0;
+        private int width=0, height=0, verschil=0, imLengte=0, startRechts=0;
         private byte[] dataImage = null, dataLinks=null, dataRechts=null;
         private bool doorgaan=true, motionZoeken=false;
         private TCPOut socket;
         private MotionDetection detector;
-        private System.Timers.Timer timer;
+        private System.Timers.Timer timer;             
 
 
         //constructors
@@ -130,9 +130,10 @@ namespace VideoStreamMerger
         }
 
         //todo: nu moet de hele kolom hetzelfde zijn: dus als 1 webcam iets hoger staat, vind die al niets
-        //
+        //links en rechts war eraf snijden, om de beeldkwaliteit hoog te houden
         public bool ImagesVergelijken()
         {
+            //TODO: uiteindelijk mag dit weg (dan hoven de kolommen niet meer evenlang te zijn)
             //alleen frames samenvoegen als ze even hoog zijn
             if (imageRechts.Height != imageLinks.Height)
                 return false;
@@ -143,6 +144,10 @@ namespace VideoStreamMerger
             int max = (int)((double)height * (double)kolom * ((double)hoogteKolom / (double)100));
             int[] kolomRechts;
             kolomRechts = new int[max];
+
+            //variabelen van de linker frame declareren
+            int[] kolomLinks;
+            kolomLinks = new int[max];
 
             int boven = (int)(height * (double)((100 - hoogteKolom) / 2 ) / (double)100);
             int onder = height - boven;
@@ -160,30 +165,51 @@ namespace VideoStreamMerger
             //door blijven zoeken naar het goeie strookje
             //of totdat de hele bitmap afgezocht is
             int zoeknr = 0; int temp;
-            while (zoeknr - 1 < (imageLinks.Width - kolom))
+            bool links = true;
+            while (zoeknr - 1 < (imageLinks.Width - kolom)) //TODO: AANPASSEN?
             {
-                //een kolom pixels van de linkerbitmap pakken
-                x = imageLinks.Width - (kolom + zoeknr); y = 0;
-                int[] kolomLinks;
-                kolomLinks = new int[max];
-
-                //data van de linker frame laden
-                for (i = boven; i < max; i++, y++)
+                if (links) //linkerstukje verwijderen
                 {
-                    if (y == onder)
+                    //een kolom pixels van de linkerbitmap pakken
+                    x = imageLinks.Width - (kolom + zoeknr); y = 0;
+                    
+
+                    //data van de linker frame laden
+                    for (i = boven; i < max; i++, y++)
                     {
-                        x++;
-                        y = 0;
+                        if (y == onder)
+                        {
+                            x++;
+                            y = 0;
+                        }
+                        kolomLinks[i] = (imageLinks.GetPixel(x, y).R + imageLinks.GetPixel(x, y).G + imageLinks.GetPixel(x, y).B) / 3;
                     }
-                    kolomLinks[i] = (imageLinks.GetPixel(x, y).R + imageLinks.GetPixel(x, y).G + imageLinks.GetPixel(x, y).B) / 3;
                 }
+                else //rechterstukje verwijderen
+                {
+                    x = zoeknr; y = 0;
+
+                    //data van de rechter frame invullen
+                    for (i = boven; i < max; i++, y++)
+                    {
+                        if (y == onder)
+                        {
+                            x++;
+                            y = 0;
+                        }
+                        kolomRechts[i] = (imageRechts.GetPixel(x, y).R + imageRechts.GetPixel(x, y).G + imageRechts.GetPixel(x, y).B) / 3;
+                    }
+                }
+
+                //'beurt' omwisselen (zodat er van beide frames een stukje weggehaald word)
+                links = !links;
 
                 //kolommen vergelijken
                 int totaal = 0;
                 for (i = 0; i < max; i++)
                 {
                     temp = kolomLinks[i] - kolomRechts[i];
-                    if (temp < 0) temp *= -1;
+                    if (temp < 0) temp = -temp;
                     if (temp < ver)
                         totaal++;
                 }
@@ -196,11 +222,19 @@ namespace VideoStreamMerger
          //           if ((imageLinks.Width / 4).ToString().Contains(",")) //width is niet deelbaar door 4
            //             if ((imageLinks.Width / 4).ToString().
 
-                    this.verschil = imageLinks.Width - (kolom + zoeknr);// + 2);
-                    width = this.verschil + imageRechts.Width;
+                    //TODO: AANPASSEN
+            //        this.verschil = imageLinks.Width - (kolom + zoeknr);// + 2);
+              //      width = this.verschil + imageRechts.Width;
+                //    return true;
+
+                    //AANGEPAST:
+                    startRechts = zoeknr / 2; //vanuit welke positie de rechterimage 'gemerged' moet worden
+                    this.verschil = imageLinks.Width - (kolom + zoeknr / 2); // /2 wat andere kant van rechterframe
+                    width = imageRechts.Width + imageLinks.Width - (kolom + zoeknr);
                     return true;
                 }
-                zoeknr += 4;
+                //zoeknr nu alleen verhogen als links ne rechts geprobeert is
+                if (!links) zoeknr += 4;
         //        zoeknr++;
             }
             //niets gevonden dus linkerimage gebruiken
@@ -229,7 +263,8 @@ namespace VideoStreamMerger
                             image.SetPixel(x, y, imageLinks.GetPixel(x * ratio, y * ratio));
                         else
                         {
-                            image.SetPixel(x, y, imageRechts.GetPixel(tempx * ratio, tempy * ratio));
+                            //TODO: kijken of startRechts klopt !!! 
+                            image.SetPixel(x, y, imageRechts.GetPixel(tempx * ratio + startRechts, tempy * ratio));
                             tempy++;
                             if (tempy >= temph)
                             {
@@ -253,8 +288,15 @@ namespace VideoStreamMerger
                 //test:
                 imLengte += (width * 2);
 
+                imageLinks.Save("c://links.bmp");
+                imageRechts.Save("c://rechts.bmp");
+                image.Save("c://temp.bmp");
+
                 //alles terugzetten naar default en true retourneren
-                imageLinks = imageRechts = null;  
+                imageLinks = imageRechts = null;
+
+                
+
                 return true;
             }
             catch
@@ -266,7 +308,7 @@ namespace VideoStreamMerger
         //de twee achtergrond samen voegen en 1 afbeelding ervan maken
         private byte[] ImagesSamenvoegen()
         {
-            try
+       //     try
             {
                 MemoryStream msL = new MemoryStream();
                 imageLinks.Save(msL, ImageFormat.Bmp);
@@ -278,11 +320,14 @@ namespace VideoStreamMerger
                 msR.Flush();
                 dataRechts = msR.ToArray();
 
+                //variabelen voor het stream samenvoegen berekenen
+                int rechts = startRechts * 3;
                 int totaal = (width * 3 + 2) * height + 54; //de totaal aantal benodigde bytes voor de bitmap (24bits)
-                int i, x = 0, y = 0, xl = 54, xr = 54; //x,y de positie in de array, xl,xr is beginpositie in de array (54 ivm headers)
+                int maxWidth = width * 3; //de width van de image van een rij (alleen van de rgb waardes)
                 int imgWdL = imageLinks.Width * 3; //lengte van een rij van linkerimage
                 int imgWdR = imageRechts.Width * 3; //lengte van een rij van rechterimage
-                int maxWidth = width * 3; //de width van de image van een rij (alleen van de rgb waardes)
+                int i, x = 0, y = 0, xl = 54, xr = 54; //x,y de positie in de array, xl,xr is beginpositie in de array (54 ivm headers)
+               
                 for (i = 53; i < totaal; i++, x++)
                 {
                     //nieuwe regel
@@ -294,15 +339,19 @@ namespace VideoStreamMerger
                         dataImage[i++] = 0;
                         dataImage[i++] = 0;
                     }
-                    //vergaan met huidige regel
+                    //verdergaan met huidige regel
                     else
                     {
                         //links laden
                         if (x <= verschil)
                             dataImage[i] = dataLinks[xl++ + (y * imgWdL)];
                         //rechts laden
+                            //OUDE CODE
+                   //     else
+                     //       dataImage[i] = dataRechts[xr++ + (y * imgWdR)];
+                        //NIEUWE CODE
                         else
-                            dataImage[i] = dataRechts[xr++ + (y * imgWdR)];
+                            dataImage[i] = dataRechts[xr++ + (y * imgWdR) + ((y+1) * rechts)];
                     }
                 }
                 //klaar dus alles weer terugzetten naar default en de data voor videostream retourneren
@@ -313,7 +362,7 @@ namespace VideoStreamMerger
                 //wat testen
                 return dataImage;
             }
-            catch
+   //         catch
             {
                 return null;
             }
@@ -321,31 +370,32 @@ namespace VideoStreamMerger
 
         public bool StreamsSamenvoegen()
         {
-            try
+  //          try
             {
                 //verbinding maken, indien mislukt false retourneren
-                if (!socket.Start())
-                    return false;
+     //           if (!socket.Start())
+     //               return false;
 
                 //motion detection
-                MotionDetectionInitialiseren();
-                timer.Enabled = true;
+    //            MotionDetectionInitialiseren();
+     //           timer.Enabled = true;
 
                 //2 bitmaps samenvoegen (voor altijd blijven doen)
                 video1.frame += new VideoInput.EventHandler(video1_frame);
                 video2.frame += new VideoInput.EventHandler(video2_frame);
 
+                
                 //vliegt eruit als er iets mis gaat met verzenden of imagesSamenvoegen
                 while (doorgaan)
                     if (imageRechts != null && imageLinks != null)
                     {
                         if (!socket.Verzenden(ImagesSamenvoegen()))
-                            throw new Exception();
+                            throw new Exception("Error met stream samenvoegen of verzenden");
                     }
                 if (video1 != null) video1.Close();
                 if (video2 != null) video2.Close();
             }
-            catch
+   //         catch
             {
                 //error: videstreams afsluiten en false retourneren
                 if (video1 != null) video1.Close();
