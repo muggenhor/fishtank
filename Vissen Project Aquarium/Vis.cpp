@@ -209,7 +209,7 @@ void Vis::Draw()
 		/// debugging: draw some lines to show where fish's floating
 		/// 1 line would be impossible to see 3d perspective on, so draw 8
 		
-		glColor3d(1,1,1);
+		/*glColor3d(1,1,1);
 		glDisable(GL_TEXTURE_2D);
 		glBegin(GL_LINES);
 		for(int i=0;i<2;++i){

@@ -1,6 +1,7 @@
 #define GLFW_BUILD_DLL
 #include <GL/glfw.h>
 #include <GL/gl.h>
+#include "math3.h"
 #include "Vis.h"
 #include "AquariumController.h"
 #include "MS3D_ASCII.h"
@@ -20,11 +21,13 @@
 #include "imagereceiver.h"
 
 using namespace std;
+using namespace math3;
 
-int win_width=640,win_height=480;
-const float near_clip_plane=10;
-const float far_clip_plane=1000;
-const float horizontal_FOV=60*PI/180;/// horizontal field of view in radians
+
+int win_width=0, win_height=0;
+
+const float eye_distance=300;/// eye distance from aquarium, in aquarium units.
+
 
 map<string, Model> models;
 
@@ -34,6 +37,30 @@ void LoadModels(AquariumController *aquariumController)
 	ifstream input_file("./Settings/aquaConfig.txt");
 
 	safe_getline(input_file, s);/// not using >> because it is problematic if used together with readline
+	win_width = atoi(s.c_str());
+	safe_getline(input_file, s);
+	win_height = atoi(s.c_str());
+
+	safe_getline(input_file, s);
+	int xx = atoi(s.c_str());
+	safe_getline(input_file, s);
+	int yy = atoi(s.c_str());
+	safe_getline(input_file, s);
+	int zz = atoi(s.c_str());
+	aquariumSize = math3::Vec3d(xx, yy, zz);
+
+	safe_getline(input_file, s);
+	xx = atoi(s.c_str());
+	safe_getline(input_file, s);
+	yy = atoi(s.c_str());
+	safe_getline(input_file, s);
+	zz = atoi(s.c_str());
+	swimArea = math3::Vec3d(xx, yy, zz);
+
+	safe_getline(input_file, s);
+	balkSize = atoi(s.c_str());
+
+	safe_getline(input_file, s);
 	aquariumController->ground.maxHeight = atoi(s.c_str());
 
 	safe_getline(input_file, s);
@@ -90,13 +117,23 @@ void LoadModels(AquariumController *aquariumController)
 	}
 }
 
-ImageReceiver image_receiver(7779);
+ImageReceiver image_receiver(7778);
+ImageReceiver image_receiver2(7779);
 
 PositionReceiver position_receiver(7780);
 
-void DrawBackground(){
+unsigned int background_id;
+
+void DrawBackground(bool cam1){
 	glEnable(GL_TEXTURE_2D);
+	if (cam1)
+	{
 	glBindTexture(GL_TEXTURE_2D, image_receiver.TextureID());
+	}
+	else
+	{
+		glBindTexture(GL_TEXTURE_2D, image_receiver2.TextureID());
+	}
 	glMatrixMode(GL_TEXTURE);
 	glLoadIdentity();
 	glMatrixMode(GL_MODELVIEW);
@@ -105,20 +142,53 @@ void DrawBackground(){
 
 	glBegin(GL_QUADS);
 
-	glTexCoord2f(0, 0);
-	glVertex3f(-0.5*aquariumSize.x, -0.5*aquariumSize.y, -0.5*aquariumSize.z);
+	if (cam1)
+	{
+		glTexCoord2f(0, 0);
+		glVertex3f(0.5*aquariumSize.x, -0.5*aquariumSize.y + balkSize, -0.5*aquariumSize.z + balkSize);
 
-	glTexCoord2f(1, 0);
-	glVertex3f(-0.5*aquariumSize.x, 0.5*aquariumSize.y, -0.5*aquariumSize.z);
+		glTexCoord2f(0, 1);
+		glVertex3f(0.5*aquariumSize.x, 0.5*aquariumSize.y - balkSize, -0.5*aquariumSize.z + balkSize);
 
-	glTexCoord2f(1, 1);
-	glVertex3f(-0.5*aquariumSize.x, 0.5*aquariumSize.y, 0.5*aquariumSize.z);
+		glTexCoord2f(1, 1);
+		glVertex3f(0.5*aquariumSize.x, 0.5*aquariumSize.y - balkSize, 0.5*aquariumSize.z - balkSize);
 
-	glTexCoord2f(0, 1);
-	glVertex3f(-0.5*aquariumSize.x, -0.5*aquariumSize.y, 0.5*aquariumSize.z);
+		glTexCoord2f(1, 0);
+		glVertex3f(0.5*aquariumSize.x, -0.5*aquariumSize.y + balkSize, 0.5*aquariumSize.z - balkSize);
+	}
+	else
+	{
+		glTexCoord2f(0, 0);
+		glVertex3f(-0.5*aquariumSize.x + balkSize, -0.5*aquariumSize.y + balkSize, 0.5*aquariumSize.z);
+
+		glTexCoord2f(0, 1);
+		glVertex3f(-0.5*aquariumSize.x + balkSize, 0.5*aquariumSize.y - balkSize, 0.5*aquariumSize.z);
+
+		glTexCoord2f(1, 1);
+		glVertex3f(0.5*aquariumSize.x - balkSize, 0.5*aquariumSize.y - balkSize, 0.5*aquariumSize.z);
+
+		glTexCoord2f(1, 0);
+		glVertex3f(0.5*aquariumSize.x - balkSize, -0.5*aquariumSize.y + balkSize, 0.5*aquariumSize.z);
+	}
 
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
+
+	if (!cam1)
+	{
+		glColor3f(0,0,0);
+
+		glBegin(GL_QUADS);
+
+		glVertex3f(-balkSize, -0.5 * aquariumSize.y + balkSize, 0.5 * aquariumSize.z - 1);
+		glVertex3f(-balkSize, 0.5 * aquariumSize.y - balkSize, 0.5 * aquariumSize.z - 1);
+		glVertex3f(balkSize, 0.5 * aquariumSize.y - balkSize, 0.5 * aquariumSize.z - 1);
+		glVertex3f(balkSize, -0.5 * aquariumSize.y + balkSize, 0.5 * aquariumSize.z - 1);
+
+		glEnd();
+
+		glColor3f(1,1,1);
+	}
 }
 
 int main(int argc, char **argv)
@@ -142,6 +212,8 @@ int main(int argc, char **argv)
 	AquariumController aquariumController;
 
 	LoadModels(&aquariumController);
+
+	glfwSetWindowSize(win_width, win_height);
 	//for(int i = 0; i < 5; i++)
 	//{
 		//aquariumController.AddFish(&model);
@@ -156,34 +228,8 @@ int main(int argc, char **argv)
 
 	while(glfwGetWindowParam( GLFW_OPENED ))
 	{
-		glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT);
-
-		glfwGetWindowSize(&win_width,&win_height);/// get window size
-		glViewport(0, 0, win_width, win_height);/// Set render area
-
-
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-
-		//glOrtho(0,win_width,win_height,0, -1000,1000);/// set up orthographic view for 2d drawing.
-
-		/// Set up 3d view.
-
-		double kx=tan(0.5*horizontal_FOV)*near_clip_plane;
-		double ky=((double)win_height/(double)win_width)*kx;
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glFrustum( -kx, kx, -ky, ky, near_clip_plane, far_clip_plane );
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-
-
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-
-
+		//update
 		curTime = glfwGetTime();
-
 		double dt = curTime - oldTime;
 		if(dt > 0.1)
 		{
@@ -192,22 +238,61 @@ int main(int argc, char **argv)
 		aquariumController.Update(dt);
 
 		image_receiver.Update();
+		image_receiver2.Update();
 
-		position_receiver.Update();
+		position_receiver.Update(&aquariumController);
+
 
 		oldTime = curTime;
 
 
-		glTranslatef(0,0,-300);
+		glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT);
 
+		glfwGetWindowSize(&win_width,&win_height);/// get window size
+
+		double port1_width = win_width *2.0/3.0;
+		double port2_width = win_width *1.0/3.0;
+
+		/// set up and draw first viewport
+		/// set up and draw first viewport
+		glViewport(0, 0, port1_width, win_height);
+
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		double kx=0.25*aquariumSize.x;
+		double ky=((double)win_height/(double)port1_width)*kx;
+		glFrustum( -kx, kx, -ky, ky, 0.5*eye_distance, eye_distance*2+aquariumSize.z );
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+
+		glTranslatef(0,0,-(eye_distance+aquariumSize.z*0.5));
 		aquariumController.Draw();
+		DrawBackground(true);
+
+		/// set up and draw second viewport
+		glViewport(port1_width, 0, port2_width, win_height);
+
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+
+		kx=0.25*aquariumSize.z;
+		ky=((double)win_height/(double)port2_width)*kx;
+		glFrustum( -kx, kx, -ky, ky, 0.5*eye_distance, eye_distance*2+aquariumSize.x );
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+
+
+		glTranslatef(0,0,-(eye_distance+aquariumSize.x*0.5));
+		glRotatef(270,0,1,0);
+		aquariumController.Draw();
+		DrawBackground(false);
 
 		//testVis.Draw();//Vis::visModel::test);
 		//testVis2.Draw();//Vis::visModel::test);
 
-		TestDrawAquarium();
+		//TestDrawAquarium();
 
-		DrawBackground();
+
 
 		//cout << glfwGetTime() << endl;
 /* */

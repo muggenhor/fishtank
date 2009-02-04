@@ -183,6 +183,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Environment.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Ground.cpp"
 				>
 			</File>
@@ -230,6 +234,10 @@
 			</File>
 			<File
 				RelativePath=".\Bubble.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Environment.h"
 				>
 			</File>
 			<File

@@ -10,9 +10,21 @@ float my_random()
 }
 
 AquariumController::AquariumController(void):
-ground("./data/heightmap.jpg", 30, "./data/ground.jpg")
+ground("./data/heightmap.jpg", 30, "./data/ground.jpg"),
+wall1(math3::Vec3d(-0.5*aquariumSize.x, -0.5*aquariumSize.y + balkSize, -0.5*aquariumSize.z + balkSize),
+	  math3::Vec3d(-0.5*aquariumSize.x, 0.5*aquariumSize.y - balkSize, -0.5*aquariumSize.z + balkSize),
+	  math3::Vec3d(-0.5*aquariumSize.x, 0.5*aquariumSize.y - balkSize, 0.5*aquariumSize.z - balkSize),
+	  math3::Vec3d(-0.5*aquariumSize.x, -0.5*aquariumSize.y + balkSize, 0.5*aquariumSize.z - balkSize), "./data/wall1.jpg"),
+wall2(math3::Vec3d(-0.5*aquariumSize.x + balkSize, -0.5*aquariumSize.y + balkSize, -0.5*aquariumSize.z),
+	  math3::Vec3d(-0.5*aquariumSize.x + balkSize, 0.5*aquariumSize.y - balkSize, -0.5*aquariumSize.z),
+	  math3::Vec3d(0.5*aquariumSize.x - balkSize, 0.5*aquariumSize.y - balkSize, -0.5*aquariumSize.z),
+	  math3::Vec3d(0.5*aquariumSize.x - balkSize, -0.5*aquariumSize.y + balkSize, -0.5*aquariumSize.z), "./data/wall2.jpg"),
+ceiling(math3::Vec3d(-0.5*aquariumSize.x + balkSize, 0.5*aquariumSize.y, 0.5*aquariumSize.z - balkSize),
+	  math3::Vec3d(-0.5*aquariumSize.x + balkSize, 0.5*aquariumSize.y, -0.5*aquariumSize.z + balkSize),
+	  math3::Vec3d(0.5*aquariumSize.x - balkSize, 0.5*aquariumSize.y, -0.5*aquariumSize.z + balkSize),
+	  math3::Vec3d(0.5*aquariumSize.x - balkSize, 0.5*aquariumSize.y, 0.5*aquariumSize.z - balkSize), "./data/ceiling.jpg")
 {
-
+	
 }
 
 AquariumController::~AquariumController(void)
@@ -45,7 +57,6 @@ void AquariumController::AddBubbleSpot()
 
 void AquariumController::Update(double dt)
 {
-	GoToScreen(math3::Vec2d(0,0));
 	for(int i = 0; i < fishes.size(); i++)
 	{
 		fishes[i].Update(dt);
@@ -75,15 +86,17 @@ void AquariumController::Update(double dt)
 
 void AquariumController::GoToScreen(const math3::Vec2d &position)
 {
-	math3::Vec2d pos = math3::Vec2d(aquariumSize.x * position.x / 100, aquariumSize.z * position.y / 100);
+	math3::Vec2d pos = math3::Vec2d(aquariumSize.x * position.x / 100 - aquariumSize.x / 2, aquariumSize.y * position.y / 100 - aquariumSize.y / 2);
 	//cout << "X: " << pos.x << "Y: " << pos.y << endl;
 	//cout << "HIER KOMT IE" << endl;
 	for(int i = 0; i < fishes.size(); i++)
 	{
 		double tempx = pos.x + sin(2 * PI / fishes.size() * i) * circleDistance;
 		double tempy = pos.y + cos(2 * PI / fishes.size() * i) * circleDistance;
-		fishes[i].setGoal(math3::Vec3d(tempx, tempy, aquariumSize.y));
-		//cout << "X: " << tempx << " Y: " << tempy << endl;
+		//fishes[i].setTemporaryGoal(math3::Vec3d(tempx, tempy, aquariumSize.y));
+		//fishes[i].setGoal(math3::Vec3d(tempx, tempy, aquariumSize.y));
+		fishes[i].pos = math3::Vec3d(tempx, tempy, aquariumSize.y);
+		cout << "Goto X: " << tempx << " Y: " << tempy << endl;
 	}
 }
 
@@ -130,4 +143,7 @@ void AquariumController::Draw()
 		bubbles[i].Draw();
 	}
 	ground.Draw();
+	wall1.Draw();
+	wall2.Draw();
+	ceiling.Draw();
 }

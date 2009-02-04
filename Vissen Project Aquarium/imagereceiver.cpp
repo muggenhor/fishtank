@@ -2,6 +2,7 @@
 #include <GL/glu.h>
 
 #include "imagereceiver.h"
+#include "AquariumController.h"
 
 #include <algorithm>
 
@@ -451,7 +452,7 @@ void PositionReceiver::AcceptClient(){
 	std::cerr<<client_address_str<<" connected"<<std::endl;
 }
 
-void PositionReceiver::Update(){
+void PositionReceiver::Update(AquariumController *aquariumController){
 	if(!m_socket_stream.CanRead()){
 		/*
 		pollfd pfd;
@@ -461,15 +462,17 @@ void PositionReceiver::Update(){
     */
     AcceptClient();
 	}else{
-		ReceiveSegment();/// receive segments.
+		ReceiveSegment(aquariumController);/// receive segments.
 	}
 }
 
-void PositionReceiver::ReceiveSegment(){
+void PositionReceiver::ReceiveSegment(AquariumController *aquariumController){
         PositionInfoHeader pos;
 	int received_size=m_socket_stream.Read((char*)(&pos), 2);
-	if(received_size==2){
-		cout << "X: " << int(pos.x) << " Y: " << int(pos.y) << endl;
+	if(received_size==2)
+		{
+			aquariumController->GoToScreen(math3::Vec2d(pos.x, pos.y));
+			cout << "X: " << int(pos.x) << " Y: " << int(pos.y) << endl;
 
         }
 }

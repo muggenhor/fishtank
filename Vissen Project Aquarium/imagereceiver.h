@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "AquariumController.h"
+
 class SimpleIStream{
   public:
   virtual size_t Read(char *data, size_t max_size)=0;
@@ -87,13 +89,13 @@ class PositionReceiver
 	int image_size;
 
 	void AcceptClient();
-	void ReceiveSegment();
+	void ReceiveSegment(AquariumController *aquariumController);
 
 	public:
 	/// port: the port to listen on.
 		PositionReceiver(int port=7779);
 		virtual ~PositionReceiver();
-		void Update();
+		void Update(AquariumController *aquariumController);
 
 		unsigned int TextureID();
 };
