@@ -106,17 +106,37 @@ namespace Vissen_Project_Setup
 
                 try
                 {
-                    //aquarium gegevens
-                    /*currentLine = sw.ReadLine();
+                    //Scherm resolutie
+                    currentLine = sw.ReadLine();
                     nudScherm1.Value = Convert.ToDecimal(currentLine);
                     currentLine = sw.ReadLine();
                     nudScherm2.Value = Convert.ToDecimal(currentLine);
+
+                    //Aquarium groote
                     currentLine = sw.ReadLine();
-                    nudScherm3.Value = Convert.ToDecimal(currentLine);*/
+                    nudAquarium1.Value = Convert.ToDecimal(currentLine);
+                    currentLine = sw.ReadLine();
+                    nudAquarium2.Value = Convert.ToDecimal(currentLine);
+                    currentLine = sw.ReadLine();
+                    nudAquarium3.Value = Convert.ToDecimal(currentLine);
+
+                    //Zwem regio
+                    currentLine = sw.ReadLine();
+                    nudRegio1.Value = Convert.ToDecimal(currentLine);
+                    currentLine = sw.ReadLine();
+                    nudRegio2.Value = Convert.ToDecimal(currentLine);
+                    currentLine = sw.ReadLine();
+                    nudRegio3.Value = Convert.ToDecimal(currentLine);
+
+                    //Balk
+                    currentLine = sw.ReadLine();
+                    nudBalk.Value = Convert.ToDecimal(currentLine);
+
+                    //Land hoogte
                     currentLine = sw.ReadLine();
                     nudLandHoog.Value = Convert.ToDecimal(currentLine);
 
-                    //scholen
+                    //Scholen
                     currentLine = sw.ReadLine();
                     int max = Convert.ToInt32(currentLine);
                     for (int i = 0; i < max; i++)
@@ -139,7 +159,7 @@ namespace Vissen_Project_Setup
                         lvScholen.Items.Add(lvi);
                     }
 
-                    //objecten
+                    //Objecten
                     currentLine = sw.ReadLine();
                     max = Convert.ToInt32(currentLine);
                     for (int i = 0; i < max; i++)
@@ -184,13 +204,27 @@ namespace Vissen_Project_Setup
 
                 try
                 {
-                    //aquarium gegevens
-                    /*sw.WriteLine(Convert.ToString(nudScherm1.Value));
+                    //Scherm resolutie
+                    sw.WriteLine(Convert.ToString(nudScherm1.Value));
                     sw.WriteLine(Convert.ToString(nudScherm2.Value));
-                    sw.WriteLine(Convert.ToString(nudScherm3.Value));*/
+
+                    //Aquarium groote
+                    sw.WriteLine(Convert.ToString(nudAquarium1.Value));
+                    sw.WriteLine(Convert.ToString(nudAquarium2.Value));
+                    sw.WriteLine(Convert.ToString(nudAquarium3.Value));
+
+                    //Zwem regio
+                    sw.WriteLine(Convert.ToString(nudRegio1.Value));
+                    sw.WriteLine(Convert.ToString(nudRegio2.Value));
+                    sw.WriteLine(Convert.ToString(nudRegio3.Value));
+
+                    //Balk
+                    sw.WriteLine(Convert.ToString(nudBalk.Value));
+
+                    //Land hoogte
                     sw.WriteLine(Convert.ToString(nudLandHoog.Value));
 
-                    //scholen
+                    //Scholen
                     sw.WriteLine(Convert.ToString(lvScholen.Items.Count));
                     for (int i = 0; i < lvScholen.Items.Count; i++)
                     {
@@ -199,7 +233,7 @@ namespace Vissen_Project_Setup
                         sw.WriteLine(lvScholen.Items[i].SubItems[2].Text);
                     }
 
-                    //objecten
+                    //Objecten
                     sw.WriteLine(Convert.ToString(lvObjecten.Items.Count));
                     for (int i = 0; i < lvObjecten.Items.Count; i++)
                     {
@@ -412,6 +446,19 @@ namespace Vissen_Project_Setup
             }
             lvScholen.SelectedItems[0].SubItems[1].BackColor = SystemColors.Window;
             lvScholen.SelectedItems[0].SubItems[1].Text = (string)cbVisModels.Items[cbVisModels.SelectedIndex];
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            nudRegio1.Value = nudAquarium1.Value - numericUpDown4.Value * 2;
+            nudRegio2.Value = nudAquarium2.Value - numericUpDown4.Value * 2;
+            nudRegio3.Value = nudAquarium3.Value - numericUpDown4.Value * 2;
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            nudAquarium3.Value = nudAquarium1.Value / 2;
+            nudAquarium2.Value = (nudScherm2.Value / nudScherm1.Value) * nudAquarium3.Value;
         }
     }
 }
