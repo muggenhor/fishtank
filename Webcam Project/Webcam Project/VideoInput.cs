@@ -17,8 +17,9 @@ namespace VideoStreamMerger
         public event EventHandler frame;
         public delegate void EventHandler(Bitmap frame);
 
+        //word gebruikt als er geen achtergrond vastgesteld hoeft te worden
         public VideoInput(IVideoSource source)
-            : this(source, 20, 10, 20) { }
+            : this(source, 1,10,255) { }
 
         public VideoInput(IVideoSource source, int frames, int pixels, int verschil)
         {

@@ -67,6 +67,7 @@
     <Compile Include="MotionDetection.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ShortSide.cs" />
     <Compile Include="TCPOut.cs" />
     <Compile Include="VideoInput.cs" />
     <Compile Include="VideoSource\ByteArrayUtils.cs" />
