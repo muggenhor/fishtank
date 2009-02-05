@@ -70,7 +70,7 @@ namespace TestEyeDetection
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            Bitmap bmp = new Bitmap("D:\\FaceTest\\lena1.jpg"); // hier de bitmap laden van cam's
+            Bitmap bmp = new Bitmap("C:\\Documents and Settings\\Administrator\\Desktop\\FaceTest\\lena1.jpg"); // hier de bitmap laden van cam's
 
             pictureBox1.Image = (Image)bmp;
             lastPic = bmp;

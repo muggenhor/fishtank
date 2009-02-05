@@ -19,9 +19,9 @@ __gc class FaceLocator
 		ObjectLocator* LeftEyeDetector;		
 		ObjectLocator* RightEyeDetector;		
 	
-		static System::String * FaceCascade  = "D:\\FaceTest\\TestDetection\\bin\\Debug\\Cascades\\haarcascade_frontalface_alt.xml";
-		static System::String * RightEyeCascade  = "D:\\FaceTest\\TestDetection\\bin\\Debug\\Cascades\\ojoD.xml";
-		static System::String * LeftEyeCascade  = "D:\\FaceTest\\TestDetection\\bin\\Debug\\Cascades\\ojoI.xml";
+		static System::String * FaceCascade  = "C:\\Documents and Settings\\Administrator\\Desktop\\FaceTest\\TestDetection\\bin\\Debug\\Cascades\\haarcascade_frontalface_alt.xml";
+		static System::String * RightEyeCascade  = "C:\\Documents and Settings\\Administrator\\Desktop\\FaceTest\\TestDetection\\bin\\Debug\\Cascades\\ojoD.xml";
+		static System::String * LeftEyeCascade  = "C:\\Documents and Settings\\Administrator\\Desktop\\FaceTest\\TestDetection\\bin\\Debug\\Cascades\\ojoI.xml";
 		void InitCascades();
 		int faceMode;
 	

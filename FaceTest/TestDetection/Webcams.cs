@@ -1,28 +1,23 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
+using System.Text;
 
-namespace TestEyeDetection
+namespace Webcam_Project
 {
-    static class Program
+    class Webcams
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        static void Main()
+        //sockets verzenden:
+        //allemaal op ip adres 127.0.0.1 (localhost)
+        //7778: streamen van webcambeeld aan de kleine zijde
+        //7779: streamen van webcambeeld aan de lange zijde
+        //7780: coordinaten van motiondetection aan de lange zijde
+        //7781: coordianten van de gezichtsherkenning aan de lange zijde
+
+        public Webcams()
         {
-            System.Guid
-   //         Application.EnableVisualStyles();
-     //       Application.SetCompatibleTextRenderingDefault(false);
-       //     Application.Run(new frmEyeTest());
-
-        //    Webcam_Project.Webcams webcams = new Webcam_Project.Webcams();
-            AllesStarten();
-
-            while (true) { }
         }
-              static public void AllesStarten()
+
+        public void AllesStarten()
         {
      //       try
             {
@@ -157,4 +152,4 @@ namespace TestEyeDetection
             }
  */       }
     }
-    }
+}
