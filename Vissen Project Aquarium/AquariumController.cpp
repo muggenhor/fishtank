@@ -4,6 +4,13 @@
 using namespace math3;
 using namespace std;
 
+math3::Vec3d aquariumSize(440, 250, 220), swimArea(200, 90, 200);
+int balkSize = 5; //de grote van de zwarte balken tussen de hoeken
+int range_x = 50;
+int range_y = 50;
+static const double circleDistance = 15.0;
+static const double PI=3.14159265358979323846;
+
 float my_random()
 {
 	return rand() / float(RAND_MAX);
@@ -24,7 +31,7 @@ ceiling(math3::Vec3d(-0.5*aquariumSize.x + balkSize, 0.5*aquariumSize.y, 0.5*aqu
 	  math3::Vec3d(0.5*aquariumSize.x - balkSize, 0.5*aquariumSize.y, -0.5*aquariumSize.z + balkSize),
 	  math3::Vec3d(0.5*aquariumSize.x - balkSize, 0.5*aquariumSize.y, 0.5*aquariumSize.z - balkSize), "./data/ceiling.jpg")
 {
-	
+	facePosition = math3::Vec2d(50, 50);
 }
 
 AquariumController::~AquariumController(void)
@@ -94,8 +101,8 @@ void AquariumController::GoToScreen(const math3::Vec2d &position)
 		double tempx = pos.x + sin(2 * PI / fishes.size() * i) * circleDistance;
 		double tempy = pos.y + cos(2 * PI / fishes.size() * i) * circleDistance;
 		//fishes[i].setTemporaryGoal(math3::Vec3d(tempx, tempy, aquariumSize.y));
-		//fishes[i].setGoal(math3::Vec3d(tempx, tempy, aquariumSize.y));
-		fishes[i].pos = math3::Vec3d(tempx, tempy, aquariumSize.y);
+		fishes[i].setGoal(math3::Vec3d(tempx, tempy, aquariumSize.y));
+		//fishes[i].pos = math3::Vec3d(tempx, tempy, aquariumSize.y);
 		cout << "Goto X: " << tempx << " Y: " << tempy << endl;
 	}
 }

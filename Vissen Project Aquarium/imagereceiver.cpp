@@ -330,10 +330,10 @@ unsigned int ImageReceiver::TextureID(){
 
 using namespace std;
 void ImageReceiver::ReceivedImage(){
-	std::cerr<<"Received an image"<<std::endl;
+	//std::cerr<<"Received an image"<<std::endl;
 	BitmapFileHeader *header=(BitmapFileHeader *)(&buffer[0]);
 	BitmapInfoHeader *info=(BitmapInfoHeader *)(&buffer[sizeof(BitmapFileHeader)]);
-	std::cerr<<"resolution: "<<(info->biWidth)<<"x"<<(info->biHeight)<<std::endl;
+	//std::cerr<<"resolution: "<<(info->biWidth)<<"x"<<(info->biHeight)<<std::endl;
 /*
 	cout << "biBitCount      =" << bmih.biBitCount << endl;
 	cout << "biClrImportant  =" << bmih.biClrImportant << endl;
@@ -397,8 +397,10 @@ typedef struct tagPositionInfoHeader {
 
 const int header_size_position=sizeof(tagPositionInfoHeader);
 
-PositionReceiver::PositionReceiver(int port)
+PositionReceiver::PositionReceiver(int type, int port)
 {
+	this->type = type;
+
 	buffered_bytes=0;
 	image_size=0;
 
@@ -471,8 +473,15 @@ void PositionReceiver::ReceiveSegment(AquariumController *aquariumController){
 	int received_size=m_socket_stream.Read((char*)(&pos), 2);
 	if(received_size==2)
 		{
-			aquariumController->GoToScreen(math3::Vec2d(pos.x, pos.y));
-			cout << "X: " << int(pos.x) << " Y: " << int(pos.y) << endl;
-
+			if (type == 0)
+			{
+				aquariumController->GoToScreen(math3::Vec2d(pos.x, pos.y));
+				cout << "Zwempositie X: " << int(pos.x) << " Y: " << int(pos.y) << endl;
+			}
+			else
+			{
+				aquariumController->facePosition = math3::Vec2d(pos.x, pos.y);
+				cout << "Gezichtpositie X: " << int(pos.x) << " Y: " << int(pos.y) << endl;
+			}
         }
 }

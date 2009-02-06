@@ -11,6 +11,7 @@ public:
 	std::vector<int> ground;
 	int widthAmount, lengthAmount, maxHeight;
 	GLuint texture_id;
+	std::string file;
 public:
 	Ground(const std::string &filename, int maxHeight, const std::string &texturename="");/// use no texture name if want no texture
 	~Ground(void);

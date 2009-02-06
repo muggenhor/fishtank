@@ -25,21 +25,25 @@ using namespace math3;
 
 
 int win_width=0, win_height=0;
+int win_move_x = 5, win_move_y = 30;
 
-const float eye_distance=300;/// eye distance from aquarium, in aquarium units.
-
+float eye_distance=300;/// eye distance from aquarium, in aquarium units.
 
 map<string, Model> models;
 
-void LoadModels(AquariumController *aquariumController)
+void LoadSettings(std::istream &input_file)
 {
 	string s;
-	ifstream input_file("./Settings/aquaConfig.txt");
 
 	safe_getline(input_file, s);/// not using >> because it is problematic if used together with readline
 	win_width = atoi(s.c_str());
 	safe_getline(input_file, s);
 	win_height = atoi(s.c_str());
+
+	safe_getline(input_file, s);
+	win_move_x = atoi(s.c_str());
+	safe_getline(input_file, s);
+	win_move_y = atoi(s.c_str());
 
 	safe_getline(input_file, s);
 	int xx = atoi(s.c_str());
@@ -61,7 +65,21 @@ void LoadModels(AquariumController *aquariumController)
 	balkSize = atoi(s.c_str());
 
 	safe_getline(input_file, s);
+	eye_distance = atof(s.c_str());
+
+	safe_getline(input_file, s);
+	range_x = atoi(s.c_str());
+	safe_getline(input_file, s);
+	range_y = atoi(s.c_str());
+}
+
+void LoadModels(std::istream &input_file, AquariumController *aquariumController)
+{
+	string s;
+
+	safe_getline(input_file, s);
 	aquariumController->ground.maxHeight = atoi(s.c_str());
+	aquariumController->ground.GenerateGroundFromImage(aquariumController->ground.file);
 
 	safe_getline(input_file, s);
 	int n=atoi(s.c_str());
@@ -120,7 +138,8 @@ void LoadModels(AquariumController *aquariumController)
 ImageReceiver image_receiver(7778);
 ImageReceiver image_receiver2(7779);
 
-PositionReceiver position_receiver(7780);
+PositionReceiver position_receiver(0, 7780);
+PositionReceiver faceposition_receiver(1, 7781);
 
 unsigned int background_id;
 
@@ -158,16 +177,16 @@ void DrawBackground(bool cam1){
 	}
 	else
 	{
-		glTexCoord2f(0, 0);
+		glTexCoord2f(1, 0);
 		glVertex3f(-0.5*aquariumSize.x + balkSize, -0.5*aquariumSize.y + balkSize, 0.5*aquariumSize.z);
 
-		glTexCoord2f(0, 1);
+		glTexCoord2f(1, 1);
 		glVertex3f(-0.5*aquariumSize.x + balkSize, 0.5*aquariumSize.y - balkSize, 0.5*aquariumSize.z);
 
-		glTexCoord2f(1, 1);
+		glTexCoord2f(0, 1);
 		glVertex3f(0.5*aquariumSize.x - balkSize, 0.5*aquariumSize.y - balkSize, 0.5*aquariumSize.z);
 
-		glTexCoord2f(1, 0);
+		glTexCoord2f(0, 0);
 		glVertex3f(0.5*aquariumSize.x - balkSize, -0.5*aquariumSize.y + balkSize, 0.5*aquariumSize.z);
 	}
 
@@ -205,15 +224,21 @@ int main(int argc, char **argv)
   }
   glEnable(GL_DEPTH_TEST);
   glDepthMask(GL_TRUE);
-	glfwSetWindowTitle("OpenGL rox");
+	glfwSetWindowTitle("");
 
 
+	ifstream input_file("./Settings/aquaConfig.txt");
+
+	LoadSettings(input_file);
 
 	AquariumController aquariumController;
 
-	LoadModels(&aquariumController);
+	LoadModels(input_file, &aquariumController);
+
 
 	glfwSetWindowSize(win_width, win_height);
+	glfwSetWindowPos(win_move_x, win_move_y);
+
 	//for(int i = 0; i < 5; i++)
 	//{
 		//aquariumController.AddFish(&model);
@@ -225,6 +250,19 @@ int main(int argc, char **argv)
 
 	double curTime;
 	double oldTime = 0;
+
+	GLfloat fogColor[4]= {0.3f, 0.4f, 0.7f, 1.0f};
+	//glClearColor(fogColor[0], fogColor[1], fogColor[2], fogColor[3]); // make it clear to fog color?
+
+	glFogi(GL_FOG_MODE, GL_EXP);		// Fog Mode
+	//glFogi(GL_FOG_COORD_SRC, GL_FRAGMENT_DEPTH);
+	glFogfv(GL_FOG_COLOR, fogColor);			// Set Fog Color
+	glFogf(GL_FOG_DENSITY, 1.0f/(eye_distance+aquariumSize.z+aquariumSize.x));				// Fog density, tweak this for less dense fog
+	/// unnecessary
+	//glHint(GL_FOG_HINT, GL_NICEST);
+	//glFogf(GL_FOG_START, eye_distance);
+	//glFogf(GL_FOG_END, eye_distance+aquariumSize.z+aquariumSize.x);
+	glEnable(GL_FOG);
 
 	while(glfwGetWindowParam( GLFW_OPENED ))
 	{
@@ -241,6 +279,7 @@ int main(int argc, char **argv)
 		image_receiver2.Update();
 
 		position_receiver.Update(&aquariumController);
+		faceposition_receiver.Update(&aquariumController);
 
 
 		oldTime = curTime;
@@ -254,18 +293,21 @@ int main(int argc, char **argv)
 		double port2_width = win_width *1.0/3.0;
 
 		/// set up and draw first viewport
-		/// set up and draw first viewport
 		glViewport(0, 0, port1_width, win_height);
 
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		double kx=0.25*aquariumSize.x;
 		double ky=((double)win_height/(double)port1_width)*kx;
-		glFrustum( -kx, kx, -ky, ky, 0.5*eye_distance, eye_distance*2+aquariumSize.z );
+
+		math3::Vec2d size = math3::Vec2d(aquariumSize.x * (range_x / 100.0), aquariumSize.y * (range_y / 100.0));
+		math3::Vec2d pos = math3::Vec2d(size.x * aquariumController.facePosition.x / 100.0 - size.x / 2.0, size.y * aquariumController.facePosition.y / 100.0 - size.y / 2.0);
+
+		glFrustum( -kx - 0.5*pos.x, kx - 0.5*pos.x, -ky - 0.5*pos.y, ky - 0.5*pos.y, 0.5*eye_distance, eye_distance*2+aquariumSize.z );
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-		glTranslatef(0,0,-(eye_distance+aquariumSize.z*0.5));
+		glTranslatef(-pos.x, -pos.y, -(eye_distance+aquariumSize.z*0.5));
 		aquariumController.Draw();
 		DrawBackground(true);
 

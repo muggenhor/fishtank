@@ -112,6 +112,12 @@ namespace Vissen_Project_Setup
                     currentLine = sw.ReadLine();
                     nudScherm2.Value = Convert.ToDecimal(currentLine);
 
+                    //Scherm Positie
+                    currentLine = sw.ReadLine();
+                    nudSchermX.Value = Convert.ToDecimal(currentLine);
+                    currentLine = sw.ReadLine();
+                    nudSchermY.Value = Convert.ToDecimal(currentLine);
+
                     //Aquarium groote
                     currentLine = sw.ReadLine();
                     nudAquarium1.Value = Convert.ToDecimal(currentLine);
@@ -131,6 +137,14 @@ namespace Vissen_Project_Setup
                     //Balk
                     currentLine = sw.ReadLine();
                     nudBalk.Value = Convert.ToDecimal(currentLine);
+
+                    //Camera opties
+                    currentLine = sw.ReadLine();
+                    nudCamera1.Value = Convert.ToDecimal(currentLine);
+                    currentLine = sw.ReadLine();
+                    nudCamera2.Value = Convert.ToDecimal(currentLine);
+                    currentLine = sw.ReadLine();
+                    nudCamera3.Value = Convert.ToDecimal(currentLine);
 
                     //Land hoogte
                     currentLine = sw.ReadLine();
@@ -208,6 +222,10 @@ namespace Vissen_Project_Setup
                     sw.WriteLine(Convert.ToString(nudScherm1.Value));
                     sw.WriteLine(Convert.ToString(nudScherm2.Value));
 
+                    //Scherm Positie
+                    sw.WriteLine(Convert.ToString(nudSchermX.Value));
+                    sw.WriteLine(Convert.ToString(nudSchermY.Value));
+
                     //Aquarium groote
                     sw.WriteLine(Convert.ToString(nudAquarium1.Value));
                     sw.WriteLine(Convert.ToString(nudAquarium2.Value));
@@ -220,6 +238,11 @@ namespace Vissen_Project_Setup
 
                     //Balk
                     sw.WriteLine(Convert.ToString(nudBalk.Value));
+
+                    //Camera opties
+                    sw.WriteLine(Convert.ToString(nudCamera1.Value));
+                    sw.WriteLine(Convert.ToString(nudCamera2.Value));
+                    sw.WriteLine(Convert.ToString(nudCamera3.Value));
 
                     //Land hoogte
                     sw.WriteLine(Convert.ToString(nudLandHoog.Value));

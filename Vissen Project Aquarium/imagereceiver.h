@@ -87,13 +87,14 @@ class PositionReceiver
 	std::vector<unsigned char> buffer;/// contains image
 	int buffered_bytes;
 	int image_size;
+	int type;
 
 	void AcceptClient();
 	void ReceiveSegment(AquariumController *aquariumController);
 
 	public:
 	/// port: the port to listen on.
-		PositionReceiver(int port=7779);
+		PositionReceiver(int type, int port=7779);
 		virtual ~PositionReceiver();
 		void Update(AquariumController *aquariumController);
 

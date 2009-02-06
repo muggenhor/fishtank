@@ -8,10 +8,11 @@
 #include "Environment.h"
 #include "math3.h"
 
-static math3::Vec3d aquariumSize(440, 250, 220), swimArea(200, 90, 200);
-static double balkSize = 5; //de grote van de zwarte balken tussen de hoeken
-static const double circleDistance = 15.0;
-static const double PI=3.14159265358979323846;
+extern math3::Vec3d aquariumSize;
+extern math3::Vec3d swimArea;
+extern int balkSize; //de grote van de zwarte balken tussen de hoeken
+extern int range_x;
+extern int range_y;
 
 class AquariumController
 {
@@ -23,6 +24,7 @@ private:
 public:
 	Ground ground;
 	Environment wall1, wall2, ceiling;
+	math3::Vec2d facePosition;
 
 	AquariumController(void);
 	~AquariumController(void);

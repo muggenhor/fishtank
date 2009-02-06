@@ -9,7 +9,9 @@ Ground::Ground(const string &filename, int maxHeight, const std::string &texture
 texture_id(0)
 {
 	this->maxHeight = maxHeight;
-	GenerateGroundFromImage(filename);
+	//GenerateGroundFromImage(filename);
+
+	file = filename;
 
 	if(!texturename.empty()){/// if got texture name
 		JPEG_Texture(&texture_id, texturename.c_str(), 0);

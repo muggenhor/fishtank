@@ -29,15 +29,47 @@
         private void InitializeComponent()
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.nudSchermX = new System.Windows.Forms.NumericUpDown();
+            this.label3 = new System.Windows.Forms.Label();
+            this.nudSchermY = new System.Windows.Forms.NumericUpDown();
+            this.label22 = new System.Windows.Forms.Label();
+            this.nudScherm1 = new System.Windows.Forms.NumericUpDown();
+            this.label23 = new System.Windows.Forms.Label();
+            this.nudScherm2 = new System.Windows.Forms.NumericUpDown();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
+            this.label21 = new System.Windows.Forms.Label();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.label19 = new System.Windows.Forms.Label();
+            this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
+            this.label20 = new System.Windows.Forms.Label();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.nudBalk = new System.Windows.Forms.NumericUpDown();
+            this.label18 = new System.Windows.Forms.Label();
             this.nudLandHoog = new System.Windows.Forms.NumericUpDown();
             this.label6 = new System.Windows.Forms.Label();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.button7 = new System.Windows.Forms.Button();
+            this.numericUpDown4 = new System.Windows.Forms.NumericUpDown();
+            this.label17 = new System.Windows.Forms.Label();
+            this.nudRegio1 = new System.Windows.Forms.NumericUpDown();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.nudRegio3 = new System.Windows.Forms.NumericUpDown();
+            this.nudRegio2 = new System.Windows.Forms.NumericUpDown();
+            this.label16 = new System.Windows.Forms.Label();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.button8 = new System.Windows.Forms.Button();
             this.nudAquarium1 = new System.Windows.Forms.NumericUpDown();
-            this.nudScherm2 = new System.Windows.Forms.NumericUpDown();
-            this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.nudScherm1 = new System.Windows.Forms.NumericUpDown();
-            this.label1 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.nudAquarium3 = new System.Windows.Forms.NumericUpDown();
+            this.nudAquarium2 = new System.Windows.Forms.NumericUpDown();
+            this.label13 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
@@ -77,32 +109,37 @@
             this.cbObjectObjects = new System.Windows.Forms.ComboBox();
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
-            this.nudAquarium2 = new System.Windows.Forms.NumericUpDown();
-            this.label12 = new System.Windows.Forms.Label();
-            this.nudAquarium3 = new System.Windows.Forms.NumericUpDown();
-            this.label13 = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.nudRegio1 = new System.Windows.Forms.NumericUpDown();
-            this.label14 = new System.Windows.Forms.Label();
-            this.label15 = new System.Windows.Forms.Label();
-            this.nudRegio3 = new System.Windows.Forms.NumericUpDown();
-            this.nudRegio2 = new System.Windows.Forms.NumericUpDown();
-            this.label16 = new System.Windows.Forms.Label();
-            this.label17 = new System.Windows.Forms.Label();
-            this.numericUpDown4 = new System.Windows.Forms.NumericUpDown();
-            this.button7 = new System.Windows.Forms.Button();
-            this.button8 = new System.Windows.Forms.Button();
-            this.nudBalk = new System.Windows.Forms.NumericUpDown();
-            this.label18 = new System.Windows.Forms.Label();
+            this.label24 = new System.Windows.Forms.Label();
+            this.nudCamera3 = new System.Windows.Forms.NumericUpDown();
+            this.label26 = new System.Windows.Forms.Label();
+            this.nudCamera1 = new System.Windows.Forms.NumericUpDown();
+            this.label27 = new System.Windows.Forms.Label();
+            this.nudCamera2 = new System.Windows.Forms.NumericUpDown();
             this.tabControl1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudLandHoog)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudAquarium1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudScherm2)).BeginInit();
+            this.tabPage4.SuspendLayout();
+            this.groupBox6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudSchermX)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudSchermY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudScherm1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudScherm2)).BeginInit();
+            this.tabPage1.SuspendLayout();
+            this.groupBox5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
+            this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudBalk)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudLandHoog)).BeginInit();
+            this.groupBox4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudRegio1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudRegio3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudRegio2)).BeginInit();
+            this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudAquarium1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudAquarium3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudAquarium2)).BeginInit();
             this.tabPage2.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -116,21 +153,15 @@
             this.gbInstellingen2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudPlantY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudPlantX)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudAquarium2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudAquarium3)).BeginInit();
-            this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
-            this.groupBox4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudRegio1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudRegio3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudRegio2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudBalk)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudCamera3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudCamera1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudCamera2)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
             // 
+            this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
@@ -138,22 +169,309 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(295, 425);
+            this.tabControl1.Size = new System.Drawing.Size(295, 516);
             this.tabControl1.TabIndex = 0;
+            // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.groupBox2);
+            this.tabPage4.Controls.Add(this.groupBox6);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Size = new System.Drawing.Size(287, 490);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "Scherm en Camera";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // groupBox6
+            // 
+            this.groupBox6.Controls.Add(this.label1);
+            this.groupBox6.Controls.Add(this.nudSchermX);
+            this.groupBox6.Controls.Add(this.label3);
+            this.groupBox6.Controls.Add(this.nudSchermY);
+            this.groupBox6.Controls.Add(this.label22);
+            this.groupBox6.Controls.Add(this.nudScherm1);
+            this.groupBox6.Controls.Add(this.label23);
+            this.groupBox6.Controls.Add(this.nudScherm2);
+            this.groupBox6.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox6.Location = new System.Drawing.Point(0, 0);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(287, 120);
+            this.groupBox6.TabIndex = 15;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "Scherm (alle 3 de schermen krijgen deze resolutie)";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 68);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(53, 13);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "Scherm X";
+            // 
+            // nudSchermX
+            // 
+            this.nudSchermX.Location = new System.Drawing.Point(104, 66);
+            this.nudSchermX.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.nudSchermX.Minimum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            -2147483648});
+            this.nudSchermX.Name = "nudSchermX";
+            this.nudSchermX.Size = new System.Drawing.Size(120, 20);
+            this.nudSchermX.TabIndex = 7;
+            this.nudSchermX.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            -2147483648});
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 94);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(53, 13);
+            this.label3.TabIndex = 8;
+            this.label3.Text = "Scherm Y";
+            // 
+            // nudSchermY
+            // 
+            this.nudSchermY.Location = new System.Drawing.Point(104, 92);
+            this.nudSchermY.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.nudSchermY.Minimum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            -2147483648});
+            this.nudSchermY.Name = "nudSchermY";
+            this.nudSchermY.Size = new System.Drawing.Size(120, 20);
+            this.nudSchermY.TabIndex = 9;
+            this.nudSchermY.Value = new decimal(new int[] {
+            30,
+            0,
+            0,
+            -2147483648});
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(6, 16);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(83, 13);
+            this.label22.TabIndex = 0;
+            this.label22.Text = "Scherm Breedte";
+            // 
+            // nudScherm1
+            // 
+            this.nudScherm1.Location = new System.Drawing.Point(104, 14);
+            this.nudScherm1.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.nudScherm1.Minimum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.nudScherm1.Name = "nudScherm1";
+            this.nudScherm1.Size = new System.Drawing.Size(120, 20);
+            this.nudScherm1.TabIndex = 1;
+            this.nudScherm1.Value = new decimal(new int[] {
+            1024,
+            0,
+            0,
+            0});
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(6, 42);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(81, 13);
+            this.label23.TabIndex = 4;
+            this.label23.Text = "Scherm Hoogte";
+            // 
+            // nudScherm2
+            // 
+            this.nudScherm2.Location = new System.Drawing.Point(104, 40);
+            this.nudScherm2.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.nudScherm2.Minimum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.nudScherm2.Name = "nudScherm2";
+            this.nudScherm2.Size = new System.Drawing.Size(120, 20);
+            this.nudScherm2.TabIndex = 5;
+            this.nudScherm2.Value = new decimal(new int[] {
+            768,
+            0,
+            0,
+            0});
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.groupBox5);
             this.tabPage1.Controls.Add(this.groupBox1);
             this.tabPage1.Controls.Add(this.groupBox4);
             this.tabPage1.Controls.Add(this.groupBox3);
-            this.tabPage1.Controls.Add(this.groupBox2);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(287, 399);
+            this.tabPage1.Size = new System.Drawing.Size(287, 490);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Aquarium";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.numericUpDown3);
+            this.groupBox5.Controls.Add(this.label21);
+            this.groupBox5.Controls.Add(this.numericUpDown1);
+            this.groupBox5.Controls.Add(this.label19);
+            this.groupBox5.Controls.Add(this.numericUpDown2);
+            this.groupBox5.Controls.Add(this.label20);
+            this.groupBox5.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox5.Location = new System.Drawing.Point(3, 323);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(281, 94);
+            this.groupBox5.TabIndex = 17;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Camera";
+            // 
+            // numericUpDown3
+            // 
+            this.numericUpDown3.Location = new System.Drawing.Point(104, 71);
+            this.numericUpDown3.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.numericUpDown3.Name = "numericUpDown3";
+            this.numericUpDown3.Size = new System.Drawing.Size(120, 20);
+            this.numericUpDown3.TabIndex = 12;
+            this.numericUpDown3.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(6, 73);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(74, 13);
+            this.label21.TabIndex = 11;
+            this.label21.Text = "Verticaal extra";
+            // 
+            // numericUpDown1
+            // 
+            this.numericUpDown1.Location = new System.Drawing.Point(104, 45);
+            this.numericUpDown1.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(120, 20);
+            this.numericUpDown1.TabIndex = 10;
+            this.numericUpDown1.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(6, 47);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(86, 13);
+            this.label19.TabIndex = 9;
+            this.label19.Text = "Horisontaal extra";
+            // 
+            // numericUpDown2
+            // 
+            this.numericUpDown2.Location = new System.Drawing.Point(104, 19);
+            this.numericUpDown2.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.numericUpDown2.Name = "numericUpDown2";
+            this.numericUpDown2.Size = new System.Drawing.Size(120, 20);
+            this.numericUpDown2.TabIndex = 8;
+            this.numericUpDown2.Value = new decimal(new int[] {
+            300,
+            0,
+            0,
+            0});
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(6, 21);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(66, 13);
+            this.label20.TabIndex = 7;
+            this.label20.Text = "Cam afstand";
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.nudBalk);
+            this.groupBox1.Controls.Add(this.label18);
+            this.groupBox1.Controls.Add(this.nudLandHoog);
+            this.groupBox1.Controls.Add(this.label6);
+            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox1.Location = new System.Drawing.Point(3, 252);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(281, 71);
+            this.groupBox1.TabIndex = 13;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Land";
+            // 
+            // nudBalk
+            // 
+            this.nudBalk.Location = new System.Drawing.Point(104, 45);
+            this.nudBalk.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.nudBalk.Name = "nudBalk";
+            this.nudBalk.Size = new System.Drawing.Size(120, 20);
+            this.nudBalk.TabIndex = 10;
+            this.nudBalk.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(6, 47);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(68, 13);
+            this.label18.TabIndex = 9;
+            this.label18.Text = "Balk Breedte";
             // 
             // nudLandHoog
             // 
@@ -181,6 +499,181 @@
             this.label6.TabIndex = 7;
             this.label6.Text = "Max Land Hoogte";
             // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.button7);
+            this.groupBox4.Controls.Add(this.numericUpDown4);
+            this.groupBox4.Controls.Add(this.label17);
+            this.groupBox4.Controls.Add(this.nudRegio1);
+            this.groupBox4.Controls.Add(this.label14);
+            this.groupBox4.Controls.Add(this.label15);
+            this.groupBox4.Controls.Add(this.nudRegio3);
+            this.groupBox4.Controls.Add(this.nudRegio2);
+            this.groupBox4.Controls.Add(this.label16);
+            this.groupBox4.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox4.Location = new System.Drawing.Point(3, 128);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(281, 124);
+            this.groupBox4.TabIndex = 16;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Zwem Regio";
+            // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(200, 16);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(75, 23);
+            this.button7.TabIndex = 3;
+            this.button7.Text = "Bereken";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
+            // numericUpDown4
+            // 
+            this.numericUpDown4.Location = new System.Drawing.Point(104, 19);
+            this.numericUpDown4.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.numericUpDown4.Name = "numericUpDown4";
+            this.numericUpDown4.Size = new System.Drawing.Size(90, 20);
+            this.numericUpDown4.TabIndex = 15;
+            this.numericUpDown4.Value = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(6, 21);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(78, 13);
+            this.label17.TabIndex = 14;
+            this.label17.Text = "Tussen Ruimte";
+            // 
+            // nudRegio1
+            // 
+            this.nudRegio1.Location = new System.Drawing.Point(104, 45);
+            this.nudRegio1.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.nudRegio1.Minimum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.nudRegio1.Name = "nudRegio1";
+            this.nudRegio1.Size = new System.Drawing.Size(120, 20);
+            this.nudRegio1.TabIndex = 6;
+            this.nudRegio1.Value = new decimal(new int[] {
+            380,
+            0,
+            0,
+            0});
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(6, 47);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(75, 13);
+            this.label14.TabIndex = 2;
+            this.label14.Text = "Regio Breedte";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(6, 73);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(73, 13);
+            this.label15.TabIndex = 9;
+            this.label15.Text = "Regio Hoogte";
+            // 
+            // nudRegio3
+            // 
+            this.nudRegio3.Location = new System.Drawing.Point(104, 97);
+            this.nudRegio3.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.nudRegio3.Minimum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.nudRegio3.Name = "nudRegio3";
+            this.nudRegio3.Size = new System.Drawing.Size(120, 20);
+            this.nudRegio3.TabIndex = 12;
+            this.nudRegio3.Value = new decimal(new int[] {
+            160,
+            0,
+            0,
+            0});
+            // 
+            // nudRegio2
+            // 
+            this.nudRegio2.Location = new System.Drawing.Point(104, 71);
+            this.nudRegio2.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.nudRegio2.Minimum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.nudRegio2.Name = "nudRegio2";
+            this.nudRegio2.Size = new System.Drawing.Size(120, 20);
+            this.nudRegio2.TabIndex = 10;
+            this.nudRegio2.Value = new decimal(new int[] {
+            105,
+            0,
+            0,
+            0});
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(6, 99);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(69, 13);
+            this.label16.TabIndex = 11;
+            this.label16.Text = "Regio Diepte";
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.button8);
+            this.groupBox3.Controls.Add(this.nudAquarium1);
+            this.groupBox3.Controls.Add(this.label2);
+            this.groupBox3.Controls.Add(this.label12);
+            this.groupBox3.Controls.Add(this.nudAquarium3);
+            this.groupBox3.Controls.Add(this.nudAquarium2);
+            this.groupBox3.Controls.Add(this.label13);
+            this.groupBox3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox3.Location = new System.Drawing.Point(3, 3);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(281, 125);
+            this.groupBox3.TabIndex = 15;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Aquarium";
+            // 
+            // button8
+            // 
+            this.button8.Location = new System.Drawing.Point(200, 45);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(75, 23);
+            this.button8.TabIndex = 16;
+            this.button8.Text = "Bereken";
+            this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.button8_Click);
+            // 
             // nudAquarium1
             // 
             this.nudAquarium1.Location = new System.Drawing.Point(104, 19);
@@ -203,37 +696,6 @@
             0,
             0});
             // 
-            // nudScherm2
-            // 
-            this.nudScherm2.Location = new System.Drawing.Point(104, 40);
-            this.nudScherm2.Maximum = new decimal(new int[] {
-            100000,
-            0,
-            0,
-            0});
-            this.nudScherm2.Minimum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.nudScherm2.Name = "nudScherm2";
-            this.nudScherm2.Size = new System.Drawing.Size(120, 20);
-            this.nudScherm2.TabIndex = 5;
-            this.nudScherm2.Value = new decimal(new int[] {
-            768,
-            0,
-            0,
-            0});
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 42);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(81, 13);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "Scherm Hoogte";
-            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -243,36 +705,67 @@
             this.label2.TabIndex = 2;
             this.label2.Text = "Aquarium Breedte";
             // 
-            // nudScherm1
+            // label12
             // 
-            this.nudScherm1.Location = new System.Drawing.Point(104, 14);
-            this.nudScherm1.Maximum = new decimal(new int[] {
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(6, 76);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(89, 13);
+            this.label12.TabIndex = 9;
+            this.label12.Text = "Aquarium Hoogte";
+            // 
+            // nudAquarium3
+            // 
+            this.nudAquarium3.Location = new System.Drawing.Point(104, 100);
+            this.nudAquarium3.Maximum = new decimal(new int[] {
             100000,
             0,
             0,
             0});
-            this.nudScherm1.Minimum = new decimal(new int[] {
+            this.nudAquarium3.Minimum = new decimal(new int[] {
             10,
             0,
             0,
             0});
-            this.nudScherm1.Name = "nudScherm1";
-            this.nudScherm1.Size = new System.Drawing.Size(120, 20);
-            this.nudScherm1.TabIndex = 1;
-            this.nudScherm1.Value = new decimal(new int[] {
-            1024,
+            this.nudAquarium3.Name = "nudAquarium3";
+            this.nudAquarium3.Size = new System.Drawing.Size(120, 20);
+            this.nudAquarium3.TabIndex = 12;
+            this.nudAquarium3.Value = new decimal(new int[] {
+            220,
             0,
             0,
             0});
             // 
-            // label1
+            // nudAquarium2
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 16);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(83, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Scherm Breedte";
+            this.nudAquarium2.Location = new System.Drawing.Point(104, 74);
+            this.nudAquarium2.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.nudAquarium2.Minimum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.nudAquarium2.Name = "nudAquarium2";
+            this.nudAquarium2.Size = new System.Drawing.Size(120, 20);
+            this.nudAquarium2.TabIndex = 10;
+            this.nudAquarium2.Value = new decimal(new int[] {
+            165,
+            0,
+            0,
+            0});
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(6, 102);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(85, 13);
+            this.label13.TabIndex = 11;
+            this.label13.Text = "Aquarium Diepte";
             // 
             // tabPage2
             // 
@@ -281,7 +774,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(287, 359);
+            this.tabPage2.Size = new System.Drawing.Size(287, 490);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Scholen";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -293,7 +786,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(281, 253);
+            this.panel1.Size = new System.Drawing.Size(281, 384);
             this.panel1.TabIndex = 4;
             // 
             // panel3
@@ -302,7 +795,7 @@
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel3.Location = new System.Drawing.Point(0, 0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(251, 253);
+            this.panel3.Size = new System.Drawing.Size(251, 384);
             this.panel3.TabIndex = 1;
             // 
             // lvScholen
@@ -316,7 +809,7 @@
             this.lvScholen.Location = new System.Drawing.Point(0, 0);
             this.lvScholen.MultiSelect = false;
             this.lvScholen.Name = "lvScholen";
-            this.lvScholen.Size = new System.Drawing.Size(251, 253);
+            this.lvScholen.Size = new System.Drawing.Size(251, 384);
             this.lvScholen.TabIndex = 0;
             this.lvScholen.UseCompatibleStateImageBehavior = false;
             this.lvScholen.View = System.Windows.Forms.View.Details;
@@ -342,7 +835,7 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel2.Location = new System.Drawing.Point(251, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(30, 253);
+            this.panel2.Size = new System.Drawing.Size(30, 384);
             this.panel2.TabIndex = 0;
             // 
             // button2
@@ -375,7 +868,7 @@
             this.gbInstellingen.Controls.Add(this.cbVisObjects);
             this.gbInstellingen.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.gbInstellingen.Enabled = false;
-            this.gbInstellingen.Location = new System.Drawing.Point(3, 256);
+            this.gbInstellingen.Location = new System.Drawing.Point(3, 387);
             this.gbInstellingen.Name = "gbInstellingen";
             this.gbInstellingen.Size = new System.Drawing.Size(281, 100);
             this.gbInstellingen.TabIndex = 3;
@@ -452,7 +945,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(287, 359);
+            this.tabPage3.Size = new System.Drawing.Size(287, 490);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Objecten";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -464,7 +957,7 @@
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel4.Location = new System.Drawing.Point(3, 3);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(281, 226);
+            this.panel4.Size = new System.Drawing.Size(281, 357);
             this.panel4.TabIndex = 5;
             // 
             // panel5
@@ -473,7 +966,7 @@
             this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel5.Location = new System.Drawing.Point(0, 0);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(251, 226);
+            this.panel5.Size = new System.Drawing.Size(251, 357);
             this.panel5.TabIndex = 1;
             // 
             // lvObjecten
@@ -488,7 +981,7 @@
             this.lvObjecten.Location = new System.Drawing.Point(0, 0);
             this.lvObjecten.MultiSelect = false;
             this.lvObjecten.Name = "lvObjecten";
-            this.lvObjecten.Size = new System.Drawing.Size(251, 226);
+            this.lvObjecten.Size = new System.Drawing.Size(251, 357);
             this.lvObjecten.TabIndex = 0;
             this.lvObjecten.UseCompatibleStateImageBehavior = false;
             this.lvObjecten.View = System.Windows.Forms.View.Details;
@@ -520,7 +1013,7 @@
             this.panel6.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel6.Location = new System.Drawing.Point(251, 0);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(30, 226);
+            this.panel6.Size = new System.Drawing.Size(30, 357);
             this.panel6.TabIndex = 0;
             // 
             // button5
@@ -555,7 +1048,7 @@
             this.gbInstellingen2.Controls.Add(this.cbObjectObjects);
             this.gbInstellingen2.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.gbInstellingen2.Enabled = false;
-            this.gbInstellingen2.Location = new System.Drawing.Point(3, 229);
+            this.gbInstellingen2.Location = new System.Drawing.Point(3, 360);
             this.gbInstellingen2.Name = "gbInstellingen2";
             this.gbInstellingen2.Size = new System.Drawing.Size(281, 127);
             this.gbInstellingen2.TabIndex = 4;
@@ -654,7 +1147,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(216, 427);
+            this.button3.Location = new System.Drawing.Point(213, 522);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(75, 23);
             this.button3.TabIndex = 1;
@@ -664,7 +1157,7 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(135, 427);
+            this.button4.Location = new System.Drawing.Point(132, 522);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(75, 23);
             this.button4.TabIndex = 2;
@@ -672,303 +1165,106 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
-            // nudAquarium2
-            // 
-            this.nudAquarium2.Location = new System.Drawing.Point(104, 74);
-            this.nudAquarium2.Maximum = new decimal(new int[] {
-            100000,
-            0,
-            0,
-            0});
-            this.nudAquarium2.Minimum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.nudAquarium2.Name = "nudAquarium2";
-            this.nudAquarium2.Size = new System.Drawing.Size(120, 20);
-            this.nudAquarium2.TabIndex = 10;
-            this.nudAquarium2.Value = new decimal(new int[] {
-            165,
-            0,
-            0,
-            0});
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(6, 76);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(89, 13);
-            this.label12.TabIndex = 9;
-            this.label12.Text = "Aquarium Hoogte";
-            // 
-            // nudAquarium3
-            // 
-            this.nudAquarium3.Location = new System.Drawing.Point(104, 100);
-            this.nudAquarium3.Maximum = new decimal(new int[] {
-            100000,
-            0,
-            0,
-            0});
-            this.nudAquarium3.Minimum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.nudAquarium3.Name = "nudAquarium3";
-            this.nudAquarium3.Size = new System.Drawing.Size(120, 20);
-            this.nudAquarium3.TabIndex = 12;
-            this.nudAquarium3.Value = new decimal(new int[] {
-            220,
-            0,
-            0,
-            0});
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(6, 102);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(85, 13);
-            this.label13.TabIndex = 11;
-            this.label13.Text = "Aquarium Diepte";
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.nudBalk);
-            this.groupBox1.Controls.Add(this.label18);
-            this.groupBox1.Controls.Add(this.nudLandHoog);
-            this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.groupBox1.Location = new System.Drawing.Point(3, 319);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(281, 74);
-            this.groupBox1.TabIndex = 13;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Land";
-            // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Controls.Add(this.nudScherm1);
-            this.groupBox2.Controls.Add(this.label3);
-            this.groupBox2.Controls.Add(this.nudScherm2);
+            this.groupBox2.Controls.Add(this.label24);
+            this.groupBox2.Controls.Add(this.nudCamera3);
+            this.groupBox2.Controls.Add(this.label26);
+            this.groupBox2.Controls.Add(this.nudCamera1);
+            this.groupBox2.Controls.Add(this.label27);
+            this.groupBox2.Controls.Add(this.nudCamera2);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.groupBox2.Location = new System.Drawing.Point(3, 3);
+            this.groupBox2.Location = new System.Drawing.Point(0, 120);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(281, 67);
-            this.groupBox2.TabIndex = 14;
+            this.groupBox2.Size = new System.Drawing.Size(287, 92);
+            this.groupBox2.TabIndex = 16;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Scherm (alle 3 de schermen krijgen deze resolutie)";
+            this.groupBox2.Text = "Camera";
             // 
-            // groupBox3
+            // label24
             // 
-            this.groupBox3.Controls.Add(this.button8);
-            this.groupBox3.Controls.Add(this.nudAquarium1);
-            this.groupBox3.Controls.Add(this.label2);
-            this.groupBox3.Controls.Add(this.label12);
-            this.groupBox3.Controls.Add(this.nudAquarium3);
-            this.groupBox3.Controls.Add(this.nudAquarium2);
-            this.groupBox3.Controls.Add(this.label13);
-            this.groupBox3.Dock = System.Windows.Forms.DockStyle.Top;
-            this.groupBox3.Location = new System.Drawing.Point(3, 70);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(281, 125);
-            this.groupBox3.TabIndex = 15;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Aquarium";
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(6, 68);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(52, 13);
+            this.label24.TabIndex = 6;
+            this.label24.Text = "Extra Y %";
             // 
-            // groupBox4
+            // nudCamera3
             // 
-            this.groupBox4.Controls.Add(this.button7);
-            this.groupBox4.Controls.Add(this.numericUpDown4);
-            this.groupBox4.Controls.Add(this.label17);
-            this.groupBox4.Controls.Add(this.nudRegio1);
-            this.groupBox4.Controls.Add(this.label14);
-            this.groupBox4.Controls.Add(this.label15);
-            this.groupBox4.Controls.Add(this.nudRegio3);
-            this.groupBox4.Controls.Add(this.nudRegio2);
-            this.groupBox4.Controls.Add(this.label16);
-            this.groupBox4.Dock = System.Windows.Forms.DockStyle.Top;
-            this.groupBox4.Location = new System.Drawing.Point(3, 195);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(281, 124);
-            this.groupBox4.TabIndex = 16;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Zwem Regio";
-            // 
-            // nudRegio1
-            // 
-            this.nudRegio1.Location = new System.Drawing.Point(104, 45);
-            this.nudRegio1.Maximum = new decimal(new int[] {
+            this.nudCamera3.Location = new System.Drawing.Point(104, 66);
+            this.nudCamera3.Maximum = new decimal(new int[] {
             100000,
             0,
             0,
             0});
-            this.nudRegio1.Minimum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.nudRegio1.Name = "nudRegio1";
-            this.nudRegio1.Size = new System.Drawing.Size(120, 20);
-            this.nudRegio1.TabIndex = 6;
-            this.nudRegio1.Value = new decimal(new int[] {
-            380,
+            this.nudCamera3.Name = "nudCamera3";
+            this.nudCamera3.Size = new System.Drawing.Size(120, 20);
+            this.nudCamera3.TabIndex = 7;
+            this.nudCamera3.Value = new decimal(new int[] {
+            50,
             0,
             0,
             0});
             // 
-            // label14
+            // label26
             // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(6, 47);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(75, 13);
-            this.label14.TabIndex = 2;
-            this.label14.Text = "Regio Breedte";
+            this.label26.AutoSize = true;
+            this.label26.Location = new System.Drawing.Point(6, 16);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(66, 13);
+            this.label26.TabIndex = 0;
+            this.label26.Text = "Oog Afstand";
             // 
-            // label15
+            // nudCamera1
             // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(6, 73);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(73, 13);
-            this.label15.TabIndex = 9;
-            this.label15.Text = "Regio Hoogte";
-            // 
-            // nudRegio3
-            // 
-            this.nudRegio3.Location = new System.Drawing.Point(104, 97);
-            this.nudRegio3.Maximum = new decimal(new int[] {
+            this.nudCamera1.Location = new System.Drawing.Point(104, 14);
+            this.nudCamera1.Maximum = new decimal(new int[] {
             100000,
             0,
             0,
             0});
-            this.nudRegio3.Minimum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.nudRegio3.Name = "nudRegio3";
-            this.nudRegio3.Size = new System.Drawing.Size(120, 20);
-            this.nudRegio3.TabIndex = 12;
-            this.nudRegio3.Value = new decimal(new int[] {
-            160,
+            this.nudCamera1.Name = "nudCamera1";
+            this.nudCamera1.Size = new System.Drawing.Size(120, 20);
+            this.nudCamera1.TabIndex = 1;
+            this.nudCamera1.Value = new decimal(new int[] {
+            300,
             0,
             0,
             0});
             // 
-            // nudRegio2
+            // label27
             // 
-            this.nudRegio2.Location = new System.Drawing.Point(104, 71);
-            this.nudRegio2.Maximum = new decimal(new int[] {
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(6, 42);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(52, 13);
+            this.label27.TabIndex = 4;
+            this.label27.Text = "Extra X %";
+            // 
+            // nudCamera2
+            // 
+            this.nudCamera2.Location = new System.Drawing.Point(104, 40);
+            this.nudCamera2.Maximum = new decimal(new int[] {
             100000,
             0,
             0,
             0});
-            this.nudRegio2.Minimum = new decimal(new int[] {
-            10,
+            this.nudCamera2.Name = "nudCamera2";
+            this.nudCamera2.Size = new System.Drawing.Size(120, 20);
+            this.nudCamera2.TabIndex = 5;
+            this.nudCamera2.Value = new decimal(new int[] {
+            50,
             0,
             0,
             0});
-            this.nudRegio2.Name = "nudRegio2";
-            this.nudRegio2.Size = new System.Drawing.Size(120, 20);
-            this.nudRegio2.TabIndex = 10;
-            this.nudRegio2.Value = new decimal(new int[] {
-            105,
-            0,
-            0,
-            0});
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(6, 99);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(69, 13);
-            this.label16.TabIndex = 11;
-            this.label16.Text = "Regio Diepte";
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(6, 21);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(78, 13);
-            this.label17.TabIndex = 14;
-            this.label17.Text = "Tussen Ruimte";
-            // 
-            // numericUpDown4
-            // 
-            this.numericUpDown4.Location = new System.Drawing.Point(104, 19);
-            this.numericUpDown4.Maximum = new decimal(new int[] {
-            100000,
-            0,
-            0,
-            0});
-            this.numericUpDown4.Name = "numericUpDown4";
-            this.numericUpDown4.Size = new System.Drawing.Size(90, 20);
-            this.numericUpDown4.TabIndex = 15;
-            this.numericUpDown4.Value = new decimal(new int[] {
-            30,
-            0,
-            0,
-            0});
-            // 
-            // button7
-            // 
-            this.button7.Location = new System.Drawing.Point(200, 16);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(75, 23);
-            this.button7.TabIndex = 3;
-            this.button7.Text = "Bereken";
-            this.button7.UseVisualStyleBackColor = true;
-            this.button7.Click += new System.EventHandler(this.button7_Click);
-            // 
-            // button8
-            // 
-            this.button8.Location = new System.Drawing.Point(200, 45);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(75, 23);
-            this.button8.TabIndex = 16;
-            this.button8.Text = "Bereken";
-            this.button8.UseVisualStyleBackColor = true;
-            this.button8.Click += new System.EventHandler(this.button8_Click);
-            // 
-            // nudBalk
-            // 
-            this.nudBalk.Location = new System.Drawing.Point(104, 45);
-            this.nudBalk.Maximum = new decimal(new int[] {
-            100000,
-            0,
-            0,
-            0});
-            this.nudBalk.Name = "nudBalk";
-            this.nudBalk.Size = new System.Drawing.Size(120, 20);
-            this.nudBalk.TabIndex = 10;
-            this.nudBalk.Value = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(6, 47);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(68, 13);
-            this.label18.TabIndex = 9;
-            this.label18.Text = "Balk Breedte";
             // 
             // Form1
             // 
             this.AcceptButton = this.button4;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(295, 453);
+            this.ClientSize = new System.Drawing.Size(295, 549);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.tabControl1);
@@ -976,11 +1272,34 @@
             this.Name = "Form1";
             this.Text = "Aquarium Instellingen";
             this.tabControl1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.nudLandHoog)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudAquarium1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudScherm2)).EndInit();
+            this.tabPage4.ResumeLayout(false);
+            this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudSchermX)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudSchermY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudScherm1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudScherm2)).EndInit();
+            this.tabPage1.ResumeLayout(false);
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudBalk)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudLandHoog)).EndInit();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudRegio1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudRegio3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudRegio2)).EndInit();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudAquarium1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudAquarium3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudAquarium2)).EndInit();
             this.tabPage2.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
@@ -996,21 +1315,11 @@
             this.gbInstellingen2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudPlantY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudPlantX)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudAquarium2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudAquarium3)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
-            this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudRegio1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudRegio3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudRegio2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudBalk)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudCamera3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudCamera1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudCamera2)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1019,16 +1328,12 @@
 
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.NumericUpDown nudScherm1;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.ListView lvScholen;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.NumericUpDown nudAquarium1;
-        private System.Windows.Forms.NumericUpDown nudScherm2;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Panel panel2;
@@ -1066,7 +1371,6 @@
         private System.Windows.Forms.ComboBox cbObjectModels;
         private System.Windows.Forms.ColumnHeader columnHeader6;
         private System.Windows.Forms.ColumnHeader columnHeader7;
-        private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.NumericUpDown nudAquarium3;
         private System.Windows.Forms.Label label13;
@@ -1086,6 +1390,30 @@
         private System.Windows.Forms.Button button8;
         private System.Windows.Forms.NumericUpDown nudBalk;
         private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.NumericUpDown numericUpDown3;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.NumericUpDown numericUpDown2;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.NumericUpDown nudSchermX;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.NumericUpDown nudSchermY;
+        private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.NumericUpDown nudScherm1;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.NumericUpDown nudScherm2;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.NumericUpDown nudCamera3;
+        private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.NumericUpDown nudCamera1;
+        private System.Windows.Forms.Label label27;
+        private System.Windows.Forms.NumericUpDown nudCamera2;
     }
 }
 
