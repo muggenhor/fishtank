@@ -133,6 +133,19 @@ void LoadModels(std::istream &input_file, AquariumController *aquariumController
 		int groundposy = (z + (aquariumSize.z / 2)) / aquariumSize.z * (aquariumController->ground.lengthAmount);
 		aquariumController->AddObject(&models[model_name], propertieFile, math3::Vec3d(x, aquariumController->ground.HeightAt(groundposx, groundposy), z));
 	}
+
+	safe_getline(input_file, s);
+	n=atoi(s.c_str());
+	for (int i = 0; i < n; i++)
+	{
+		safe_getline(input_file, s);
+		int x = -(aquariumSize.x / 2) + atoi(s.c_str());
+		safe_getline(input_file, s);
+		int z = -(aquariumSize.z / 2) + atoi(s.c_str());
+		int groundposx = (x + (aquariumSize.x / 2)) / aquariumSize.x * (aquariumController->ground.widthAmount);
+		int groundposy = (z + (aquariumSize.z / 2)) / aquariumSize.z * (aquariumController->ground.lengthAmount);
+		aquariumController->AddBubbleSpot(math3::Vec3d(x, aquariumController->ground.HeightAt(groundposx, groundposy), z));
+	}
 }
 
 ImageReceiver image_receiver(7778);
@@ -243,7 +256,7 @@ int main(int argc, char **argv)
 	//{
 		//aquariumController.AddFish(&model);
 	//}
-	aquariumController.AddBubbleSpot();
+	//aquariumController.AddBubbleSpot();
 	//Vis testVis(&model,100);
 	//Vis testVis2(&model,100);
 

@@ -30,7 +30,7 @@ public:
 	AquariumController(void);
 	~AquariumController(void);
 
-	void InitialiseComponents(tImageJPG *img);
+	static void InitialiseComponents(tImageJPG *img);
 
 	void Update(double dt);
 	void Draw();
@@ -40,7 +40,7 @@ public:
 
 	void AddFish(Model *model, const std::string &propertiesFile);
 	void AddObject(Model *model, const std::string &propertiesFile, const math3::Vec3d &position);
-	void AddBubbleSpot();
+	void AddBubbleSpot(const math3::Vec3d &position);
 };
 
 

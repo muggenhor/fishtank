@@ -1,7 +1,14 @@
-
 #include "JPEG.h"
 #include "Main.h"
 #include <iostream>
+
+#ifdef LINUX
+#include <jpeglib.h>
+#else
+extern "C" {
+#include "include/jpeglib.h"
+}
+#endif
 
 
 void DecodeJPG(jpeg_decompress_struct* cinfo, tImageJPG *pImageData, bool flipY)
@@ -49,7 +56,7 @@ tImageJPG *LoadJPG(const char *filename, bool flipY)
 	if((pFile = fopen(filename, "rb")) == NULL)
 	{
 		//MessageBox(hWnd, "Unable to load JPG File!", "Error", MB_OK);
-		std::cerr<<"Unable to load JPG File!"<<std::endl;
+		std::cerr<<"Unable to load JPG File '"<<filename<<"'"<<std::endl;
 		return NULL;
 	}
 
@@ -73,13 +80,8 @@ tImageJPG *LoadJPG(const char *filename, bool flipY)
 }
 
 
-
-void JPEG_Texture(UINT textureArray[], const std::string &strFileName, int textureID)
+void JPEG_Texture(UINT textureArray[], tImageJPG *pImage, int textureID)
 {
-	if(strFileName.empty())return;
-
-	tImageJPG *pImage = LoadJPG(strFileName.c_str(), true);
-
 	if(pImage == NULL)	exit(0);
 
 	glGenTextures(1, &textureArray[textureID]);
@@ -98,6 +100,18 @@ void JPEG_Texture(UINT textureArray[], const std::string &strFileName, int textu
 
 		free(pImage);
 	}
+}
+
+
+
+
+void JPEG_Texture(UINT textureArray[], const std::string &strFileName, int textureID)
+{
+	if(strFileName.empty())return;
+
+	tImageJPG *pImage = LoadJPG(strFileName.c_str(), true);
+
+	JPEG_Texture(textureArray, pImage, textureID);
 }
 
 

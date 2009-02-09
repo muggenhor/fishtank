@@ -18,21 +18,15 @@ struct tImageJPG
 	int sizeY;
 	unsigned char *data;
 };
-#ifdef LINUX
-#include <jpeglib.h>
-#else
-extern "C" {
-#include "include/jpeglib.h"
-}
-#endif
 
 tImageJPG *LoadJPG(const char *filename, bool flipY=false);
 
-void DecodeJPG(jpeg_decompress_struct* cinfo, tImageJPG *pImageData, bool flipY=false);
-
 typedef unsigned int UINT;
 
+/// Note: frees image data.
+void JPEG_Texture(UINT textureArray[], tImageJPG *pImageData, int textureID);
 void JPEG_Texture(UINT textureArray[], const std::string &strFileName, int textureID);
+
 
 
 

@@ -13,7 +13,9 @@ texture_id(0)
 	this->pos3 = pos3;
 	this->pos4 = pos4;
 	if(!texturename.empty()){/// if got texture name
-		JPEG_Texture(&texture_id, texturename.c_str(), 0);
+	  tImageJPG *img=LoadJPG(texturename.c_str());
+		AquariumController::InitialiseComponents(img);
+		JPEG_Texture(&texture_id, img, 0);
 	}
 }
 
