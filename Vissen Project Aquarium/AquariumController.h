@@ -7,6 +7,7 @@
 #include "Ground.h"
 #include "Environment.h"
 #include "math3.h"
+#include "JPEG.h"
 
 extern math3::Vec3d aquariumSize;
 extern math3::Vec3d swimArea;
@@ -28,6 +29,8 @@ public:
 
 	AquariumController(void);
 	~AquariumController(void);
+
+	void InitialiseComponents(tImageJPG *img);
 
 	void Update(double dt);
 	void Draw();

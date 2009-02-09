@@ -236,7 +236,7 @@ int main(int argc, char **argv)
 	LoadModels(input_file, &aquariumController);
 
 
-	glfwSetWindowSize(win_width, win_height);
+	glfwSetWindowSize(win_width * 3, win_height);
 	glfwSetWindowPos(win_move_x, win_move_y);
 
 	//for(int i = 0; i < 5; i++)
