@@ -18,13 +18,17 @@ namespace WebcamSettings
         {
             InitializeComponent();
 
+            //je mag niet resizen
+            this.MaximizeBox = this.MinimizeBox = false;
+            this.MaximumSize = this.MinimumSize = this.Size;
+
             //data uit textbestand halen            
             GegevensOphalen();
         }
 
         private void GegevensOphalen()
         {
-            data = new string[19];
+            data = new string[20];
             StreamReader sr = null;
             //openen
             try
@@ -41,7 +45,7 @@ namespace WebcamSettings
                 sw.WriteLine(10); sw.WriteLine(25); sw.WriteLine(20);
                 sw.WriteLine(500); sw.WriteLine(25); sw.WriteLine(5);
                 sw.WriteLine(80); sw.WriteLine(0.8); sw.WriteLine(30);
-                sw.WriteLine(2); sw.Close();
+                sw.WriteLine(2); sw.WriteLine(100); sw.Close();
                 sr = File.OpenText("settings.txt");
             }
             //algemene instellingen
@@ -65,6 +69,7 @@ namespace WebcamSettings
             tbStreamPerc.Text = data[16] = Convert.ToString(Convert.ToDouble(sr.ReadLine()) * 100.0);
             tbStreamVersPixels.Text = data[17] = sr.ReadLine();
             doWebcams.Text = data[18] = sr.ReadLine();
+            tbFaceInterval.Text = data[19] = sr.ReadLine();
             //afsluiten
             sr.Close();
         }
@@ -118,7 +123,7 @@ namespace WebcamSettings
             //uitgebreide instellingen opslaan
             else if (((Button)sender).Name == "btSaveUitgebreid")
             {
-                int[] datat = new int[9];
+                int[] datat = new int[10];
 
                 //kijken of alles klopt
                 //heel simpel kijken of het allemaal getallen zijn
@@ -133,6 +138,7 @@ namespace WebcamSettings
                     datat[6] = Convert.ToInt32(tbStreamKolomHoogte.Text);
                     datat[7] = Convert.ToInt32(tbStreamVersPixels.Text);
                     datat[8] = Convert.ToInt32(tbStreamPerc.Text);
+                    datat[9] = Convert.ToInt32(tbFaceInterval.Text);
                 }
                 catch
                 {
@@ -148,6 +154,7 @@ namespace WebcamSettings
                 if (datat[6] < 1 || datat[6] > 100) { MessageBox.Show("Het percentage van een kolom dat gebruikt word moet tussen de 1 en de 100 liggen"); return; }
                 if (datat[7] < 0 || datat[7] > 255) { MessageBox.Show("Het verschil tussen de pixels bij het maken van 1 stream moet tussen de 0 en de 255 liggen"); return; }
                 if (datat[8] < 0 || datat[8] > 100) { MessageBox.Show("Het percentage dat hetzelfde moet zijn bij het maken van 1 steam moet tussen de 1 en de 100 liggen"); return; }
+                if (datat[9] < 1) { MessageBox.Show("De interval van de timer voor de gezichtsdetectie moet minimaal 1 miliseconde zijn"); return; }
                 else data[16] = Convert.ToString((double)datat[8] / 100.0);
                         //instellingen zijn 'acceptabel'
                 data[9] = tbAchtAantalPixels.Text;
@@ -159,6 +166,7 @@ namespace WebcamSettings
                 data[15] = tbStreamKolomHoogte.Text;
                 data[17] = tbStreamVersPixels.Text;
                 data[18] = doWebcams.Text;
+                data[19] = tbFaceInterval.Text;
                 
             }
             //textbestand opnieuw schrijven
@@ -235,7 +243,10 @@ namespace WebcamSettings
                     labHelp1.Text = "Het maximale verschil tussen de pixels bij vergelijken, moet tussen de 0 en de 255 liggen";
                     break;
                 case "25": //aantal webcams
-                    labHelp1.Text = "Of de beelden van 2 of 3 webcambeelden doorgestreamd worden\n\r(middelste camera word bij 2 weggelaten)";
+                    labHelp1.Text = "2 Of 3 webcambeelden samenvoegen en door- streamen (bij 2 word de middelste camera weggelaten)";
+                    break;
+                case "26": //gezicht - tijdsinterval
+                    labHelp1.Text = "De tijdsinterval waarmee er op gezichten gekeken word, interval is in miliseconden";
                     break;
             }
         }
@@ -300,6 +311,9 @@ namespace WebcamSettings
                     break;
                 case "doWebcams":
                     labHelp1.Text = "Of de beelden van 2 of 3 webcambeelden doorgestreamd worden\n\r(middelste camera word bij 2 weggelaten)";
+                    break;
+                case "tbFaceInterval": //gezicht- tijdsinterval
+                    labHelp1.Text = "De tijdsinterval waarmee er op gezichten gekeken word, interval is in miliseconden";
                     break;
             }
         }

@@ -55,6 +55,11 @@
             this.tbPoortFace = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.Uitgebreid = new System.Windows.Forms.TabPage();
+            this.tbFaceInterval = new System.Windows.Forms.TextBox();
+            this.label26 = new System.Windows.Forms.Label();
+            this.label27 = new System.Windows.Forms.Label();
+            this.doWebcams = new System.Windows.Forms.DomainUpDown();
+            this.label25 = new System.Windows.Forms.Label();
             this.labHelp1 = new System.Windows.Forms.Label();
             this.btVorigUitgebreid = new System.Windows.Forms.Button();
             this.tbBeweInterval = new System.Windows.Forms.TextBox();
@@ -79,8 +84,6 @@
             this.tbAchtFrames = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.btSaveUitgebreid = new System.Windows.Forms.Button();
-            this.label25 = new System.Windows.Forms.Label();
-            this.doWebcams = new System.Windows.Forms.DomainUpDown();
             this.tabControl1.SuspendLayout();
             this.Algemeen.SuspendLayout();
             this.Uitgebreid.SuspendLayout();
@@ -165,7 +168,7 @@
             this.tabControl1.Location = new System.Drawing.Point(-3, -1);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(289, 422);
+            this.tabControl1.Size = new System.Drawing.Size(289, 479);
             this.tabControl1.TabIndex = 9;
             // 
             // Algemeen
@@ -197,14 +200,14 @@
             this.Algemeen.Location = new System.Drawing.Point(4, 22);
             this.Algemeen.Name = "Algemeen";
             this.Algemeen.Padding = new System.Windows.Forms.Padding(3);
-            this.Algemeen.Size = new System.Drawing.Size(281, 396);
+            this.Algemeen.Size = new System.Drawing.Size(281, 453);
             this.Algemeen.TabIndex = 0;
             this.Algemeen.Text = "Algemene Instellingen";
             this.Algemeen.UseVisualStyleBackColor = true;
             // 
             // btVorigAlgemeen
             // 
-            this.btVorigAlgemeen.Location = new System.Drawing.Point(48, 369);
+            this.btVorigAlgemeen.Location = new System.Drawing.Point(55, 426);
             this.btVorigAlgemeen.Name = "btVorigAlgemeen";
             this.btVorigAlgemeen.Size = new System.Drawing.Size(142, 24);
             this.btVorigAlgemeen.TabIndex = 37;
@@ -214,7 +217,7 @@
             // 
             // labHelp
             // 
-            this.labHelp.Location = new System.Drawing.Point(6, 330);
+            this.labHelp.Location = new System.Drawing.Point(10, 394);
             this.labHelp.Name = "labHelp";
             this.labHelp.Size = new System.Drawing.Size(265, 29);
             this.labHelp.TabIndex = 36;
@@ -222,7 +225,7 @@
             // 
             // btSaveAlgemeen
             // 
-            this.btSaveAlgemeen.Location = new System.Drawing.Point(196, 369);
+            this.btSaveAlgemeen.Location = new System.Drawing.Point(203, 426);
             this.btSaveAlgemeen.Name = "btSaveAlgemeen";
             this.btSaveAlgemeen.Size = new System.Drawing.Size(75, 24);
             this.btSaveAlgemeen.TabIndex = 35;
@@ -350,6 +353,9 @@
             // Uitgebreid
             // 
             this.Uitgebreid.AutoScroll = true;
+            this.Uitgebreid.Controls.Add(this.tbFaceInterval);
+            this.Uitgebreid.Controls.Add(this.label26);
+            this.Uitgebreid.Controls.Add(this.label27);
             this.Uitgebreid.Controls.Add(this.doWebcams);
             this.Uitgebreid.Controls.Add(this.label25);
             this.Uitgebreid.Controls.Add(this.labHelp1);
@@ -378,14 +384,61 @@
             this.Uitgebreid.Controls.Add(this.btSaveUitgebreid);
             this.Uitgebreid.Location = new System.Drawing.Point(4, 22);
             this.Uitgebreid.Name = "Uitgebreid";
-            this.Uitgebreid.Size = new System.Drawing.Size(281, 396);
+            this.Uitgebreid.Size = new System.Drawing.Size(281, 453);
             this.Uitgebreid.TabIndex = 2;
             this.Uitgebreid.Text = "Uitgebreide Instellingen";
             this.Uitgebreid.UseVisualStyleBackColor = true;
             // 
+            // tbFaceInterval
+            // 
+            this.tbFaceInterval.Location = new System.Drawing.Point(171, 359);
+            this.tbFaceInterval.Name = "tbFaceInterval";
+            this.tbFaceInterval.Size = new System.Drawing.Size(100, 20);
+            this.tbFaceInterval.TabIndex = 44;
+            this.tbFaceInterval.MouseHover += new System.EventHandler(this.tbWebKort_MouseHover);
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Location = new System.Drawing.Point(11, 362);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(45, 13);
+            this.label26.TabIndex = 43;
+            this.label26.Text = "Interval:";
+            this.label26.MouseHover += new System.EventHandler(this.label1_MouseHover);
+            // 
+            // label27
+            // 
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(3, 339);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(107, 13);
+            this.label27.TabIndex = 42;
+            this.label27.Text = "GEZICHTDETECTIE";
+            // 
+            // doWebcams
+            // 
+            this.doWebcams.Items.Add("3");
+            this.doWebcams.Items.Add("2");
+            this.doWebcams.Location = new System.Drawing.Point(171, 129);
+            this.doWebcams.Name = "doWebcams";
+            this.doWebcams.Size = new System.Drawing.Size(100, 20);
+            this.doWebcams.TabIndex = 41;
+            this.doWebcams.Text = "2";
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(11, 131);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(88, 13);
+            this.label25.TabIndex = 40;
+            this.label25.Text = "Aantal webcams:";
+            this.label25.MouseHover += new System.EventHandler(this.label1_MouseHover);
+            // 
             // labHelp1
             // 
-            this.labHelp1.Location = new System.Drawing.Point(11, 335);
+            this.labHelp1.Location = new System.Drawing.Point(6, 392);
             this.labHelp1.Name = "labHelp1";
             this.labHelp1.Size = new System.Drawing.Size(265, 31);
             this.labHelp1.TabIndex = 39;
@@ -393,7 +446,7 @@
             // 
             // btVorigUitgebreid
             // 
-            this.btVorigUitgebreid.Location = new System.Drawing.Point(48, 369);
+            this.btVorigUitgebreid.Location = new System.Drawing.Point(55, 426);
             this.btVorigUitgebreid.Name = "btVorigUitgebreid";
             this.btVorigUitgebreid.Size = new System.Drawing.Size(142, 24);
             this.btVorigUitgebreid.TabIndex = 38;
@@ -592,7 +645,7 @@
             // 
             // btSaveUitgebreid
             // 
-            this.btSaveUitgebreid.Location = new System.Drawing.Point(196, 369);
+            this.btSaveUitgebreid.Location = new System.Drawing.Point(203, 426);
             this.btSaveUitgebreid.Name = "btSaveUitgebreid";
             this.btSaveUitgebreid.Size = new System.Drawing.Size(75, 24);
             this.btSaveUitgebreid.TabIndex = 0;
@@ -600,31 +653,11 @@
             this.btSaveUitgebreid.UseVisualStyleBackColor = true;
             this.btSaveUitgebreid.Click += new System.EventHandler(this.btSaveUitgebreid_Click);
             // 
-            // label25
-            // 
-            this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(11, 131);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(88, 13);
-            this.label25.TabIndex = 40;
-            this.label25.Text = "Aantal webcams:";
-            this.label25.MouseHover += new System.EventHandler(this.label1_MouseHover);
-            // 
-            // doWebcams
-            // 
-            this.doWebcams.Items.Add("3");
-            this.doWebcams.Items.Add("2");
-            this.doWebcams.Location = new System.Drawing.Point(171, 129);
-            this.doWebcams.Name = "doWebcams";
-            this.doWebcams.Size = new System.Drawing.Size(100, 20);
-            this.doWebcams.TabIndex = 41;
-            this.doWebcams.Text = "2";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 419);
+            this.ClientSize = new System.Drawing.Size(284, 474);
             this.Controls.Add(this.tabControl1);
             this.Name = "Form1";
             this.Text = "Form1";
@@ -692,6 +725,9 @@
         private System.Windows.Forms.Label labHelp1;
         private System.Windows.Forms.DomainUpDown doWebcams;
         private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.TextBox tbFaceInterval;
+        private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.Label label27;
     }
 }
 
