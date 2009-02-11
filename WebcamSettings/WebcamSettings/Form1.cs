@@ -24,7 +24,7 @@ namespace WebcamSettings
 
         private void GegevensOphalen()
         {
-            data = new string[18];
+            data = new string[19];
             StreamReader sr = null;
             //openen
             try
@@ -41,7 +41,7 @@ namespace WebcamSettings
                 sw.WriteLine(10); sw.WriteLine(25); sw.WriteLine(20);
                 sw.WriteLine(500); sw.WriteLine(25); sw.WriteLine(5);
                 sw.WriteLine(80); sw.WriteLine(0.8); sw.WriteLine(30);
-                sw.Close();
+                sw.WriteLine(2); sw.Close();
                 sr = File.OpenText("settings.txt");
             }
             //algemene instellingen
@@ -64,6 +64,7 @@ namespace WebcamSettings
             tbStreamKolomHoogte.Text = data[15] = sr.ReadLine();
             tbStreamPerc.Text = data[16] = Convert.ToString(Convert.ToDouble(sr.ReadLine()) * 100.0);
             tbStreamVersPixels.Text = data[17] = sr.ReadLine();
+            doWebcams.Text = data[18] = sr.ReadLine();
             //afsluiten
             sr.Close();
         }
@@ -112,7 +113,7 @@ namespace WebcamSettings
                 data[5] = tbPoortFace.Text;
                 data[6] = tbPoortKort.Text;
                 data[7] = tbPoortLang.Text;
-                data[8] = tbPoortMotion.Text;               
+                data[8] = tbPoortMotion.Text; 
             }
             //uitgebreide instellingen opslaan
             else if (((Button)sender).Name == "btSaveUitgebreid")
@@ -157,6 +158,7 @@ namespace WebcamSettings
                 data[14] = tbStreamAantalKolom.Text; 
                 data[15] = tbStreamKolomHoogte.Text;
                 data[17] = tbStreamVersPixels.Text;
+                data[18] = doWebcams.Text;
                 
             }
             //textbestand opnieuw schrijven
@@ -232,6 +234,9 @@ namespace WebcamSettings
                 case "22": //samevoegen - pixelverschil
                     labHelp1.Text = "Het maximale verschil tussen de pixels bij vergelijken, moet tussen de 0 en de 255 liggen";
                     break;
+                case "25": //aantal webcams
+                    labHelp1.Text = "Of de beelden van 2 of 3 webcambeelden doorgestreamd worden\n\r(middelste camera word bij 2 weggelaten)";
+                    break;
             }
         }
 
@@ -292,6 +297,9 @@ namespace WebcamSettings
                     break;
                 case "tbStreamVersPixels": //samevoegen - pixelverschil
                     labHelp1.Text = "Het maximale verschil tussen de pixels bij vergelijken, moet tussen de 0 en de 255 liggen";
+                    break;
+                case "doWebcams":
+                    labHelp1.Text = "Of de beelden van 2 of 3 webcambeelden doorgestreamd worden\n\r(middelste camera word bij 2 weggelaten)";
                     break;
             }
         }

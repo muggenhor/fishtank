@@ -79,6 +79,8 @@
             this.tbAchtFrames = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.btSaveUitgebreid = new System.Windows.Forms.Button();
+            this.label25 = new System.Windows.Forms.Label();
+            this.doWebcams = new System.Windows.Forms.DomainUpDown();
             this.tabControl1.SuspendLayout();
             this.Algemeen.SuspendLayout();
             this.Uitgebreid.SuspendLayout();
@@ -163,7 +165,7 @@
             this.tabControl1.Location = new System.Drawing.Point(-3, -1);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(289, 412);
+            this.tabControl1.Size = new System.Drawing.Size(289, 422);
             this.tabControl1.TabIndex = 9;
             // 
             // Algemeen
@@ -195,14 +197,14 @@
             this.Algemeen.Location = new System.Drawing.Point(4, 22);
             this.Algemeen.Name = "Algemeen";
             this.Algemeen.Padding = new System.Windows.Forms.Padding(3);
-            this.Algemeen.Size = new System.Drawing.Size(281, 386);
+            this.Algemeen.Size = new System.Drawing.Size(281, 396);
             this.Algemeen.TabIndex = 0;
             this.Algemeen.Text = "Algemene Instellingen";
             this.Algemeen.UseVisualStyleBackColor = true;
             // 
             // btVorigAlgemeen
             // 
-            this.btVorigAlgemeen.Location = new System.Drawing.Point(48, 359);
+            this.btVorigAlgemeen.Location = new System.Drawing.Point(48, 369);
             this.btVorigAlgemeen.Name = "btVorigAlgemeen";
             this.btVorigAlgemeen.Size = new System.Drawing.Size(142, 24);
             this.btVorigAlgemeen.TabIndex = 37;
@@ -212,7 +214,7 @@
             // 
             // labHelp
             // 
-            this.labHelp.Location = new System.Drawing.Point(6, 327);
+            this.labHelp.Location = new System.Drawing.Point(6, 330);
             this.labHelp.Name = "labHelp";
             this.labHelp.Size = new System.Drawing.Size(265, 29);
             this.labHelp.TabIndex = 36;
@@ -220,7 +222,7 @@
             // 
             // btSaveAlgemeen
             // 
-            this.btSaveAlgemeen.Location = new System.Drawing.Point(196, 359);
+            this.btSaveAlgemeen.Location = new System.Drawing.Point(196, 369);
             this.btSaveAlgemeen.Name = "btSaveAlgemeen";
             this.btSaveAlgemeen.Size = new System.Drawing.Size(75, 24);
             this.btSaveAlgemeen.TabIndex = 35;
@@ -348,6 +350,8 @@
             // Uitgebreid
             // 
             this.Uitgebreid.AutoScroll = true;
+            this.Uitgebreid.Controls.Add(this.doWebcams);
+            this.Uitgebreid.Controls.Add(this.label25);
             this.Uitgebreid.Controls.Add(this.labHelp1);
             this.Uitgebreid.Controls.Add(this.btVorigUitgebreid);
             this.Uitgebreid.Controls.Add(this.tbBeweInterval);
@@ -374,14 +378,14 @@
             this.Uitgebreid.Controls.Add(this.btSaveUitgebreid);
             this.Uitgebreid.Location = new System.Drawing.Point(4, 22);
             this.Uitgebreid.Name = "Uitgebreid";
-            this.Uitgebreid.Size = new System.Drawing.Size(281, 386);
+            this.Uitgebreid.Size = new System.Drawing.Size(281, 396);
             this.Uitgebreid.TabIndex = 2;
             this.Uitgebreid.Text = "Uitgebreide Instellingen";
             this.Uitgebreid.UseVisualStyleBackColor = true;
             // 
             // labHelp1
             // 
-            this.labHelp1.Location = new System.Drawing.Point(11, 325);
+            this.labHelp1.Location = new System.Drawing.Point(11, 335);
             this.labHelp1.Name = "labHelp1";
             this.labHelp1.Size = new System.Drawing.Size(265, 31);
             this.labHelp1.TabIndex = 39;
@@ -389,7 +393,7 @@
             // 
             // btVorigUitgebreid
             // 
-            this.btVorigUitgebreid.Location = new System.Drawing.Point(48, 359);
+            this.btVorigUitgebreid.Location = new System.Drawing.Point(48, 369);
             this.btVorigUitgebreid.Name = "btVorigUitgebreid";
             this.btVorigUitgebreid.Size = new System.Drawing.Size(142, 24);
             this.btVorigUitgebreid.TabIndex = 38;
@@ -399,7 +403,7 @@
             // 
             // tbBeweInterval
             // 
-            this.tbBeweInterval.Location = new System.Drawing.Point(171, 289);
+            this.tbBeweInterval.Location = new System.Drawing.Point(171, 312);
             this.tbBeweInterval.Name = "tbBeweInterval";
             this.tbBeweInterval.Size = new System.Drawing.Size(100, 20);
             this.tbBeweInterval.TabIndex = 21;
@@ -408,7 +412,7 @@
             // label23
             // 
             this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(11, 292);
+            this.label23.Location = new System.Drawing.Point(11, 315);
             this.label23.Name = "label23";
             this.label23.Size = new System.Drawing.Size(45, 13);
             this.label23.TabIndex = 20;
@@ -417,7 +421,7 @@
             // 
             // tbStreamVersPixels
             // 
-            this.tbStreamVersPixels.Location = new System.Drawing.Point(171, 213);
+            this.tbStreamVersPixels.Location = new System.Drawing.Point(171, 236);
             this.tbStreamVersPixels.Name = "tbStreamVersPixels";
             this.tbStreamVersPixels.Size = new System.Drawing.Size(100, 20);
             this.tbStreamVersPixels.TabIndex = 19;
@@ -426,7 +430,7 @@
             // label22
             // 
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(11, 216);
+            this.label22.Location = new System.Drawing.Point(11, 239);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(76, 13);
             this.label22.TabIndex = 18;
@@ -453,7 +457,7 @@
             // 
             // tbBeweVersPixels
             // 
-            this.tbBeweVersPixels.Location = new System.Drawing.Point(171, 263);
+            this.tbBeweVersPixels.Location = new System.Drawing.Point(171, 286);
             this.tbBeweVersPixels.Name = "tbBeweVersPixels";
             this.tbBeweVersPixels.Size = new System.Drawing.Size(100, 20);
             this.tbBeweVersPixels.TabIndex = 15;
@@ -462,7 +466,7 @@
             // label20
             // 
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(11, 266);
+            this.label20.Location = new System.Drawing.Point(11, 289);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(76, 13);
             this.label20.TabIndex = 14;
@@ -471,7 +475,7 @@
             // 
             // tbStreamPerc
             // 
-            this.tbStreamPerc.Location = new System.Drawing.Point(171, 187);
+            this.tbStreamPerc.Location = new System.Drawing.Point(171, 210);
             this.tbStreamPerc.Name = "tbStreamPerc";
             this.tbStreamPerc.Size = new System.Drawing.Size(100, 20);
             this.tbStreamPerc.TabIndex = 13;
@@ -480,7 +484,7 @@
             // label19
             // 
             this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(11, 190);
+            this.label19.Location = new System.Drawing.Point(11, 213);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(128, 13);
             this.label19.TabIndex = 12;
@@ -489,7 +493,7 @@
             // 
             // tbStreamAantalKolom
             // 
-            this.tbStreamAantalKolom.Location = new System.Drawing.Point(171, 161);
+            this.tbStreamAantalKolom.Location = new System.Drawing.Point(171, 184);
             this.tbStreamAantalKolom.Name = "tbStreamAantalKolom";
             this.tbStreamAantalKolom.Size = new System.Drawing.Size(100, 20);
             this.tbStreamAantalKolom.TabIndex = 11;
@@ -498,7 +502,7 @@
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(11, 164);
+            this.label18.Location = new System.Drawing.Point(11, 187);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(91, 13);
             this.label18.TabIndex = 10;
@@ -507,7 +511,7 @@
             // 
             // tbStreamKolomHoogte
             // 
-            this.tbStreamKolomHoogte.Location = new System.Drawing.Point(171, 135);
+            this.tbStreamKolomHoogte.Location = new System.Drawing.Point(171, 158);
             this.tbStreamKolomHoogte.Name = "tbStreamKolomHoogte";
             this.tbStreamKolomHoogte.Size = new System.Drawing.Size(100, 20);
             this.tbStreamKolomHoogte.TabIndex = 9;
@@ -516,7 +520,7 @@
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(11, 135);
+            this.label17.Location = new System.Drawing.Point(11, 158);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(89, 13);
             this.label17.TabIndex = 8;
@@ -526,7 +530,7 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(3, 243);
+            this.label16.Location = new System.Drawing.Point(3, 266);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(119, 13);
             this.label16.TabIndex = 7;
@@ -588,7 +592,7 @@
             // 
             // btSaveUitgebreid
             // 
-            this.btSaveUitgebreid.Location = new System.Drawing.Point(196, 359);
+            this.btSaveUitgebreid.Location = new System.Drawing.Point(196, 369);
             this.btSaveUitgebreid.Name = "btSaveUitgebreid";
             this.btSaveUitgebreid.Size = new System.Drawing.Size(75, 24);
             this.btSaveUitgebreid.TabIndex = 0;
@@ -596,11 +600,31 @@
             this.btSaveUitgebreid.UseVisualStyleBackColor = true;
             this.btSaveUitgebreid.Click += new System.EventHandler(this.btSaveUitgebreid_Click);
             // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(11, 131);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(88, 13);
+            this.label25.TabIndex = 40;
+            this.label25.Text = "Aantal webcams:";
+            this.label25.MouseHover += new System.EventHandler(this.label1_MouseHover);
+            // 
+            // doWebcams
+            // 
+            this.doWebcams.Items.Add("3");
+            this.doWebcams.Items.Add("2");
+            this.doWebcams.Location = new System.Drawing.Point(171, 129);
+            this.doWebcams.Name = "doWebcams";
+            this.doWebcams.Size = new System.Drawing.Size(100, 20);
+            this.doWebcams.TabIndex = 41;
+            this.doWebcams.Text = "2";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 407);
+            this.ClientSize = new System.Drawing.Size(284, 419);
             this.Controls.Add(this.tabControl1);
             this.Name = "Form1";
             this.Text = "Form1";
@@ -666,6 +690,8 @@
         private System.Windows.Forms.Label labHelp;
         private System.Windows.Forms.Button btVorigUitgebreid;
         private System.Windows.Forms.Label labHelp1;
+        private System.Windows.Forms.DomainUpDown doWebcams;
+        private System.Windows.Forms.Label label25;
     }
 }
 
