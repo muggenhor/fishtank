@@ -1,0 +1,260 @@
+        //todo: nu moet de hele kolom hetzelfde zijn: dus als 1 webcam iets hoger staat, vind die al niets
+        //links en rechts war eraf snijden, om de beeldkwaliteit hoog te houden
+        public bool ImagesVergelijkenRechtsLinks()
+        {
+            tempverschillenRM = new List<float>();
+
+            //TODO: uiteindelijk mag dit weg (dan hoven de kolommen niet meer evenlang te zijn)
+            //alleen frames samenvoegen als ze even hoog zijn
+            if (imageRechts.Height != imageLinks.Height)
+                return false;
+
+            //variabelen voor de rechter frame declareren
+            int i, x = 0, y = 0;
+            int max = (int)((double)height * (double)kolom * ((double)hoogteKolom / (double)100));
+            int[] kolomRechts;
+            kolomRechts = new int[max];
+
+            //variabelen van de midden frame declareren
+            int[] kolomMidden;
+            kolomMidden = new int[max];
+
+            int boven = (int)(height * (double)((100 - hoogteKolom) / 2) / (double)100);
+            int onder = height - boven;
+            //data van de rechter frame invullen
+            for (i = boven; i < max; i++, y++)
+            {
+                if (y == onder)
+                {
+                    x++;
+                    y = 0;
+                }
+                kolomRechts[i] = (imageRechts.GetPixel(x, y).R + imageRechts.GetPixel(x, y).G + imageRechts.GetPixel(x, y).B) / 3;
+            }
+
+            //door blijven zoeken naar het goeie strookje
+            //of totdat de hele bitmap afgezocht is
+            int zoeknr = 0; int temp;
+            bool midden = true;
+            while (zoeknr - 1 < (imageLinks.Width - kolom)) //TODO: AANPASSEN?
+            {
+                if (midden) //middenstukje verwijderen
+                {
+                    //een kolom pixels van de linkerbitmap pakken
+                    // x = imageLinks.Width - (kolom + zoeknr); y = 0;
+                    x = zoeknr + kolom; y = 0;
+
+
+                    //data van de linker frame laden
+                    //de linkerkant spiegelen ivm de verschillende hoeken tov de plaatsting van de webcams
+                    for (i = boven; i < max; i++, y++)
+                    {
+                        if (y == onder)
+                        {
+                            x--;
+                            y = 0;
+                        }
+                        kolomMidden[i] = (imageLinks.GetPixel(x, y).R + imageLinks.GetPixel(x, y).G + imageLinks.GetPixel(x, y).B) / 3;
+                    }
+
+                }
+                else //rechterstukje verwijderen
+                {
+                    x = zoeknr; y = 0;
+
+                    //data van de rechter frame invullen
+                    for (i = boven; i < max; i++, y++)
+                    {
+                        if (y == onder)
+                        {
+                            x++;
+                            y = 0;
+                        }
+                        kolomRechts[i] = (imageRechts.GetPixel(x, y).R + imageRechts.GetPixel(x, y).G + imageRechts.GetPixel(x, y).B) / 3;
+                    }
+                }
+
+                //'beurt' omwisselen (zodat er van beide frames een stukje weggehaald word)
+                midden = !midden;
+
+                //kolommen vergelijken
+                int totaal = 0;
+                for (i = 0; i < max; i++)
+                {
+                    temp = kolomMidden[i] - kolomRechts[i];
+                    if (temp < 0) temp = -temp;
+                    if (temp < ver)
+                        totaal++;
+                }
+
+                //kijken hoeveel pixels overeenkomen, als het genoeg is, dan kunnen de frams samengevoegd worden
+                float verschil = (float)totaal / (float)max;
+                tempverschillenRM.Add(verschil);
+                if (verschil >= percentage)
+                {
+                    eindLinks = imageLinks.Width - (zoeknr / 2);
+                    begRechts = zoeknr / 2;
+                    return true;
+                }
+
+                //zoeknr nu alleen verhogen als midden en rechts geprobeert is
+                if (!midden)
+                    zoeknr += 4;
+            }
+            return false;
+        }
+
+        public bool NieuweImageInitialiseren2()
+        {
+            //    try
+            {
+                //totale lengte van samengevoegde image (hoogte is al gedaan)
+                width = eindMidden + imageRechts - begRechts;
+
+                image = new Bitmap(width, height, PixelFormat.Format24bppRgb);
+                int xR = begRechts, xL = 0;
+                //voor elke x coordinaat
+                for (int y = 0; y < height; y++)
+                {
+                    //voor elke y coordinaat
+                    for (int x = 0; x < width; x++)
+                    {
+                        //linkerimage
+                        if (x < eindLinks)
+                        {
+                            image.SetPixel(x, y, imageLinks.GetPixel(xL++, y));
+                        }
+                        //rechterimage
+                        else
+                        {
+                            image.SetPixel(x, y, imageRechts.GetPixel(xR++, y));
+                        }
+                    }
+                    xL = 0;
+                    xR = begRechts;
+                }
+
+                //de afbeelding in het geheugen zetten zodat het aangepast kan worden
+                MemoryStream mstemp = new MemoryStream();
+                image.Save(mstemp, ImageFormat.Bmp);
+                mstemp.Flush();
+                dataImage = mstemp.ToArray();
+                mstemp.Close();
+
+                //variabelen invullen voor het samenvoegen van de streams
+                eindLinks *= 3;
+                begRechts *= 3;
+                width *= 3;
+                width -= 2;
+                totaal = width * height + 54;
+                imgLen = imageLinks.Width * 3;
+
+                //alles terugzetten naar default en true retourneren
+                Bitmap.FromStream(new MemoryStream(dataImage)).Save("c://achtergrond.bmp");
+                imageLinks = imageRechts = null;
+
+                return true;
+            }
+        }
+
+        //de twee achtergrond samen voegen en 1 afbeelding ervan maken
+        private byte[] ImagesSamenvoegen2()
+        {
+            //     try
+            {
+                MemoryStream msL = new MemoryStream();
+                imageLinks.Save(msL, ImageFormat.Bmp);
+                msL.Flush();
+                dataLinks = msL.ToArray();
+                msL.Close();
+
+                MemoryStream msR = new MemoryStream();
+                imageRechts.Save(msR, ImageFormat.Bmp);
+                msR.Flush();
+                dataRechts = msR.ToArray();
+                msR.Close();
+
+                int x = 0, xL = 54, xR = 54 + begRechts, y = 0;
+                
+                for (int i = 53; i < totaal; i++, x++)
+                {
+                    //nieuwe regel
+                    if (x >= width) //eerst alleen >
+                    {
+                        x = 0;
+                        xL = xR = 54;
+                        y++;
+
+                        dataImage[i++] = 0;
+                        dataImage[i++] = 0;
+                    }
+                    else
+                    {
+                        //linkerImage
+                        if (x <= eindLinks)
+                        {
+                            dataImage[i] = dataLinks[xL++ + (y * imgLen)];
+                        }
+                        //rechterImage
+                        else
+                        {
+                            dataImage[i] = dataRechts[xR++ + (y * imgLen)];
+                        }
+                    }
+                }
+
+                //klaar dus alles weer terugzetten naar default en de data voor videostream retourneren
+                //        Bitmap.FromStream(new MemoryStream(dataImage)).Save("c://achtergrondStream.bmp");
+                imageLinks = imageRechts = null;
+                return dataImage;
+            }
+            //          catch
+            {
+                return null;
+            }
+        }
+
+        public bool StreamsSamenvoegen2()
+        {
+            //       try
+            {
+                gezichtHer = new face();
+                timerGezichtherk.Enabled = true;
+
+                //verbinding maken, indien mislukt false retourneren
+                if (!socket.Start())
+                    throw new Exception("GEEN VERBEINGING MET HET AQUARIUM");
+                //return false;
+
+                //motion detection
+                MotionDetectionInitialiseren();
+                timer.Enabled = true;
+
+                //webcam voor kleine zijde streamen
+                kleineZijde.Start();
+
+                //2 bitmaps samenvoegen (voor altijd blijven doen)
+                videoL.frame += new VideoInput.EventHandler(videoL_frame);
+                videoR.frame += new VideoInput.EventHandler(videoR_frame);
+                videoM.frame += new VideoInput.EventHandler(videoM_frame);
+
+                //vliegt eruit als er iets mis gaat met verzenden of imagesSamenvoegen
+                while (doorgaan)
+                    if (imageRechts != null && imageLinks != null)
+                        if (!socket.Verzenden(ImagesSamenvoegen2()))
+                            throw new Exception("Error met stream samenvoegen of verzenden");
+                if (videoL != null) videoL.Close();
+                if (videoR != null) videoR.Close();
+                if (videoM != null) videoM.Close();
+            }
+            //        catch
+            {
+                //error: videstreams afsluiten en false retourneren
+                if (videoL != null) videoL.Close();
+                if (videoR != null) videoR.Close();
+                if (videoM != null) videoM.Close();
+                return false;
+            }
+            //gebruiker heeft afgesloten en alles is goed gegaan, true retourneren
+            return true;
+        }
