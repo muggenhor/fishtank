@@ -8,8 +8,7 @@ namespace WebcamFaceTest
     {
         static void Main(string[] args)
         {
-            Webcam_Project.Webcams web = new Webcam_Project.Webcams();
-            web.AllesStarten();
+            Webcam_Project.Webcams.AllesStarten();
         }
     }
 }
