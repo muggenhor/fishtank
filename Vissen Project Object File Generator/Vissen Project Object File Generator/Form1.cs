@@ -174,7 +174,7 @@ namespace Vissen_Project_Object_File_Generator
             gbVis.Enabled = !rbObject.Checked;
             if (rbObject.Checked)
             {
-                lblSize.Text = "Plant Hoogte";
+                lblSize.Text = "Object Hoogte";
                 gbVis.Hide();
                 gbObject.Show();
             }

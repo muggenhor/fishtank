@@ -197,6 +197,19 @@ namespace Vissen_Project_Setup
                         lvi.SubItems.Add(Convert.ToString(Math.Max(nudPlantY.Minimum, Math.Min(nudPlantY.Maximum, Convert.ToDecimal(currentLine)))));
                         lvObjecten.Items.Add(lvi);
                     }
+
+                    //Bubbels
+                    currentLine = sw.ReadLine();
+                    max = Convert.ToInt32(currentLine);
+                    for (int i = 0; i < max; i++)
+                    {
+                        ListViewItem lvi = new ListViewItem();
+                        currentLine = sw.ReadLine();
+                        lvi.Text = Convert.ToString(Math.Max(nudPlantX.Minimum, Math.Min(nudPlantX.Maximum, Convert.ToDecimal(currentLine))));
+                        currentLine = sw.ReadLine();
+                        lvi.SubItems.Add(Convert.ToString(Math.Max(nudPlantY.Minimum, Math.Min(nudPlantY.Maximum, Convert.ToDecimal(currentLine)))));
+                        lvBubbels.Items.Add(lvi);
+                    }
                 }
                 finally
                 {
@@ -265,6 +278,14 @@ namespace Vissen_Project_Setup
                         sw.WriteLine(lvObjecten.Items[i].SubItems[2].Text);
                         sw.WriteLine(lvObjecten.Items[i].SubItems[3].Text);
                     }
+
+                    //Bubbels
+                    sw.WriteLine(Convert.ToString(lvBubbels.Items.Count));
+                    for (int i = 0; i < lvBubbels.Items.Count; i++)
+                    {
+                        sw.WriteLine(lvBubbels.Items[i].Text);
+                        sw.WriteLine(lvBubbels.Items[i].SubItems[1].Text);
+                    }
                 }
                 finally
                 {
@@ -327,7 +348,7 @@ namespace Vissen_Project_Setup
             
             if (objectenVis.Contains(lvScholen.SelectedItems[0].Text))
             {
-                cbVisObjects.SelectedIndex = modellenVis.IndexOf(lvScholen.SelectedItems[0].Text);
+                cbVisObjects.SelectedIndex = objectenVis.IndexOf(lvScholen.SelectedItems[0].Text);
             }
             if (modellenVis.Contains(lvScholen.SelectedItems[0].SubItems[1].Text))
             {
@@ -428,32 +449,15 @@ namespace Vissen_Project_Setup
             lvObjecten.SelectedItems[0].SubItems[3].Text = Convert.ToString(nudPlantY.Value);
         }
 
-        private void lvObjecten_SelectedIndexChanged(object sender, EventArgs e)
+        private void cbObjectModels_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (lvObjecten.SelectedItems.Count == 0)
             {
                 gbInstellingen2.Enabled = false;
                 return;
             }
-            gbInstellingen2.Enabled = true;
-            
-            if (objectenObject.Contains(lvObjecten.SelectedItems[0].Text))
+            if (cbObjectModels.SelectedIndex < 0)
             {
-                cbObjectObjects.SelectedIndex = objectenObject.IndexOf(lvObjecten.SelectedItems[0].Text);
-            }
-            if (modellenObject.Contains(lvObjecten.SelectedItems[0].SubItems[1].Text))
-            {
-                cbObjectModels.SelectedIndex = modellenObject.IndexOf(lvObjecten.SelectedItems[0].SubItems[1].Text);
-            }
-            nudPlantX.Value = Convert.ToDecimal(lvObjecten.SelectedItems[0].SubItems[2].Text);
-            nudPlantY.Value = Convert.ToDecimal(lvObjecten.SelectedItems[0].SubItems[3].Text);
-        }
-
-        private void cbObjectModels_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (lvObjecten.SelectedItems.Count == 0)
-            {
-                gbInstellingen2.Enabled = false;
                 return;
             }
             lvObjecten.SelectedItems[0].SubItems[1].BackColor = SystemColors.Window;
@@ -465,6 +469,10 @@ namespace Vissen_Project_Setup
             if (lvScholen.SelectedItems.Count == 0)
             {
                 gbInstellingen.Enabled = false;
+                return;
+            }
+            if (cbVisModels.SelectedIndex < 0)
+            {
                 return;
             }
             lvScholen.SelectedItems[0].SubItems[1].BackColor = SystemColors.Window;
@@ -482,6 +490,78 @@ namespace Vissen_Project_Setup
         {
             nudAquarium3.Value = nudAquarium1.Value / 2;
             nudAquarium2.Value = (nudScherm2.Value / nudScherm1.Value) * nudAquarium3.Value;
+        }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            ListViewItem lvi = new ListViewItem();
+            lvi.Text = "0";
+            lvi.SubItems.Add("0");
+            lvBubbels.Items.Add(lvi);
+        }
+
+        private void button12_Click(object sender, EventArgs e)
+        {
+            if (lvBubbels.SelectedItems.Count == 0)
+            {
+                gbInstellingen3.Enabled = false;
+                return;
+            }
+            lvBubbels.SelectedItems[0].Remove();
+        }
+
+        private void lvBubbels_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lvBubbels.SelectedItems.Count == 0)
+            {
+                gbInstellingen3.Enabled = false;
+                return;
+            }
+            gbInstellingen3.Enabled = true;
+
+            nudBubbelX.Value = Convert.ToDecimal(lvBubbels.SelectedItems[0].Text);
+            nudBubbelY.Value = Convert.ToDecimal(lvBubbels.SelectedItems[0].SubItems[1].Text);
+        }
+
+        private void numericUpDown7_ValueChanged(object sender, EventArgs e)
+        {
+            if (lvBubbels.SelectedItems.Count == 0)
+            {
+                gbInstellingen3.Enabled = false;
+                return;
+            }
+            lvBubbels.SelectedItems[0].SubItems[1].Text = Convert.ToString(nudBubbelY.Value);
+        }
+
+        private void nudBubbelX_ValueChanged(object sender, EventArgs e)
+        {
+            if (lvBubbels.SelectedItems.Count == 0)
+            {
+                gbInstellingen3.Enabled = false;
+                return;
+            }
+            lvBubbels.SelectedItems[0].Text = Convert.ToString(nudBubbelX.Value);
+        }
+
+        private void lvObjecten_SelectedIndexChanged_1(object sender, EventArgs e)
+        {
+            if (lvObjecten.SelectedItems.Count == 0)
+            {
+                gbInstellingen2.Enabled = false;
+                return;
+            }
+            gbInstellingen2.Enabled = true;
+
+            if (objectenObject.Contains(lvObjecten.SelectedItems[0].Text))
+            {
+                cbObjectObjects.SelectedIndex = objectenObject.IndexOf(lvObjecten.SelectedItems[0].Text);
+            }
+            if (modellenObject.Contains(lvObjecten.SelectedItems[0].SubItems[1].Text))
+            {
+                cbObjectModels.SelectedIndex = modellenObject.IndexOf(lvObjecten.SelectedItems[0].SubItems[1].Text);
+            }
+            nudPlantX.Value = Convert.ToDecimal(lvObjecten.SelectedItems[0].SubItems[2].Text);
+            nudPlantY.Value = Convert.ToDecimal(lvObjecten.SelectedItems[0].SubItems[3].Text);
         }
     }
 }

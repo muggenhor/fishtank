@@ -41,6 +41,8 @@
             this.nudModelSchaal = new System.Windows.Forms.NumericUpDown();
             this.lblSize = new System.Windows.Forms.Label();
             this.gbVis = new System.Windows.Forms.GroupBox();
+            this.nudBotsStraal = new System.Windows.Forms.NumericUpDown();
+            this.label3 = new System.Windows.Forms.Label();
             this.nudDraaiVersnelling = new System.Windows.Forms.NumericUpDown();
             this.label12 = new System.Windows.Forms.Label();
             this.nudDraaiSnelheid = new System.Windows.Forms.NumericUpDown();
@@ -60,14 +62,13 @@
             this.gbObject = new System.Windows.Forms.GroupBox();
             this.nudBewegingFrequentie2 = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
-            this.nudBotsStraal = new System.Windows.Forms.NumericUpDown();
-            this.label3 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudMaxAfwijk)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudModelSchaal)).BeginInit();
             this.gbVis.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudBotsStraal)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudDraaiVersnelling)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudDraaiSnelheid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudBewegingFactor)).BeginInit();
@@ -76,7 +77,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudMaxSnelheid)).BeginInit();
             this.gbObject.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudBewegingFrequentie2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudBotsStraal)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -243,6 +243,27 @@
             this.gbVis.TabStop = false;
             this.gbVis.Text = "Vis";
             // 
+            // nudBotsStraal
+            // 
+            this.nudBotsStraal.Location = new System.Drawing.Point(122, 71);
+            this.nudBotsStraal.Name = "nudBotsStraal";
+            this.nudBotsStraal.Size = new System.Drawing.Size(65, 20);
+            this.nudBotsStraal.TabIndex = 25;
+            this.nudBotsStraal.Value = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(12, 73);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(58, 13);
+            this.label3.TabIndex = 24;
+            this.label3.Text = "Bots Straal";
+            // 
             // nudDraaiVersnelling
             // 
             this.nudDraaiVersnelling.Location = new System.Drawing.Point(122, 175);
@@ -270,9 +291,9 @@
             this.label12.AutoSize = true;
             this.label12.Location = new System.Drawing.Point(12, 177);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(85, 13);
+            this.label12.Size = new System.Drawing.Size(86, 13);
             this.label12.TabIndex = 22;
-            this.label12.Text = "Draai versnelling";
+            this.label12.Text = "Draai Versnelling";
             // 
             // nudDraaiSnelheid
             // 
@@ -296,9 +317,9 @@
             this.label11.AutoSize = true;
             this.label11.Location = new System.Drawing.Point(12, 151);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(74, 13);
+            this.label11.Size = new System.Drawing.Size(76, 13);
             this.label11.TabIndex = 20;
-            this.label11.Text = "Draai snelheid";
+            this.label11.Text = "Draai Snelheid";
             // 
             // label10
             // 
@@ -326,9 +347,9 @@
             this.label8.AutoSize = true;
             this.label8.Location = new System.Drawing.Point(12, 125);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(84, 13);
+            this.label8.Size = new System.Drawing.Size(87, 13);
             this.label8.TabIndex = 17;
-            this.label8.Text = "Beweging factor";
+            this.label8.Text = "Beweging Factor";
             // 
             // nudBewegingFrequentie
             // 
@@ -352,9 +373,9 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(12, 99);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(104, 13);
+            this.label6.Size = new System.Drawing.Size(107, 13);
             this.label6.TabIndex = 15;
-            this.label6.Text = "Beweging frequentie";
+            this.label6.Text = "Beweging Frequentie";
             // 
             // nudMinSnelheid
             // 
@@ -458,30 +479,9 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(12, 21);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(104, 13);
+            this.label2.Size = new System.Drawing.Size(107, 13);
             this.label2.TabIndex = 17;
-            this.label2.Text = "Beweging frequentie";
-            // 
-            // nudBotsStraal
-            // 
-            this.nudBotsStraal.Location = new System.Drawing.Point(122, 71);
-            this.nudBotsStraal.Name = "nudBotsStraal";
-            this.nudBotsStraal.Size = new System.Drawing.Size(65, 20);
-            this.nudBotsStraal.TabIndex = 25;
-            this.nudBotsStraal.Value = new decimal(new int[] {
-            20,
-            0,
-            0,
-            0});
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 73);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(58, 13);
-            this.label3.TabIndex = 24;
-            this.label3.Text = "Bots Straal";
+            this.label2.Text = "Beweging Frequentie";
             // 
             // Form1
             // 
@@ -498,7 +498,7 @@
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Vissen Project Gedrag Editor";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -509,6 +509,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudModelSchaal)).EndInit();
             this.gbVis.ResumeLayout(false);
             this.gbVis.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudBotsStraal)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudDraaiVersnelling)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudDraaiSnelheid)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudBewegingFactor)).EndInit();
@@ -518,7 +519,6 @@
             this.gbObject.ResumeLayout(false);
             this.gbObject.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudBewegingFrequentie2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudBotsStraal)).EndInit();
             this.ResumeLayout(false);
 
         }
