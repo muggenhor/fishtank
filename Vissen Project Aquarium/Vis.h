@@ -6,56 +6,74 @@
 
 class Vis
 {
-public:
-	math3::Vec3d pos, goalPos, finalGoalPos, velocity;
-	bool usingTempGoal;
+	public:
+		//pos = huidige positie
+		//goalPos = positie waar de vis naartoe wil zwemmen (deze is finalgoalpos, tenzij de vis iets moet ontwijken, en met een omweg zwemt)
+		//finalgoalpos = de positie waar de vis wil belanden
+		math3::Vec3d pos, goalPos, finalGoalPos, velocity;
+		//true als goalpos gebruikt wordt als tijdelijk doel, om te ontwijken
+		bool usingTempGoal;
 
-	Model *model;
-	double swimDirAngle;
-	double desired_speed;
-	double speed;
-	double turn_speed;
-	double bending;
-	double pitch;
+		//het model
+		Model *model;
 
-	//instellingen
-	double max_speed;
-	double min_speed;
+		//informatie voor het gedrag van de vis
+		double swimDirAngle;
+		double desired_speed;
+		double speed;
+		double turn_speed;
+		double bending;
+		double pitch;
 
-	double max_turn_speed;///radians per second
-	double turn_acceleration;///radians per second per second
+		//instellingen
+		double max_speed;
+		double min_speed;
 
-	double wiggle_factor;/// amount of wiggle displacement (controls amplitude vs speed), larger, fish bends more for wiggling
-	double wiggle_freq;///larger = means more wiggle waves on fish.
-	//instellingen end
+		//graden per seconde
+		double max_turn_speed;
+		double turn_acceleration;
 
-	double scale;
+		//groter, meer vibratie
+		double wiggle_factor;
+		double wiggle_freq;
+		//instellingen end
 
-	double myWaitTime;
+		//de lengte van de vis
+		double scale;
 
-	double wiggle_phase, wiggle_amplitude;
+		//de (willekeurige) tijd voor de vis om te besluiten een nieuw punt te zoeken, als de vis zijn punt niet kan bereiken (bijvoorbeeld omdat deze te dichtbij is en er rondjes omheen gaat zwemmen)
+		double myWaitTime;
 
-	int sphere;
-	int maxFloorHeight;
-public:
-	//enum visModel{model1, model2} //this right?:S
-	Vis(Model *model, const std::string &propertiesFile, int maxFloorHeight); //hihi
-	~Vis(void);
+		double wiggle_phase, wiggle_amplitude;
 
-	void Avade();
-	bool Colliding(const math3::Vec3d &object, int sphere);
-	bool IsGoingTowards(const math3::Vec3d &object);
+		//de botsarea
+		int sphere;
+		//de vloerhoogte, om ervoor te zorgen dat de vissen niet lager dan dit gaan zwemmen
+		int maxFloorHeight;
 
-	math3::Vec3d Vis::RandomPos();
-	void Update(double dt);
-	void Draw();
-	void LoadProperties(const std::string &propertiesFile);
-	void newGoal();
-	void setGoal(const math3::Vec3d &final_goal);/// use that to set goal
-	void setTemporaryGoal(const math3::Vec3d &temp_goal);/// use that to set temporary goal when avoiding collision or something.
+		Vis(Model *model, const std::string &propertiesFile, int maxFloorHeight); //hihi
+		~Vis(void);
 
+		//draag de vis op om een andere positie te pakken (iets te ontwijken)
+		void Avade();
+		//geeft true als de vis botst met een ander object, hier gegeven in een positie en een botsarea
+		bool Colliding(const math3::Vec3d &object, int sphere);
+		//geeft true als de vis richting het gegeven punt aan het zwemmen is
+		bool IsGoingTowards(const math3::Vec3d &object);
+
+		//geeft een willekeurige posite binnen de zwemarea, rekening houdende met de maxFloorHeight
+		math3::Vec3d Vis::RandomPos();
+		// - afblijven - de update van de vis, deze houd het bewegen van de vis bij en voert een stap uit - afblijven -
+		void Update(double dt);
+		//teken de vis
+		void Draw();
+		//haalt info uit de file, gegeven als path
+		void LoadProperties(const std::string &propertiesFile);
+		//positiebeheer
+		void newGoal();
+		void setGoal(const math3::Vec3d &final_goal);/// use that to set goal
+		void setTemporaryGoal(const math3::Vec3d &temp_goal);/// use that to set temporary goal when avoiding collision or something.
 };
 
+//teken het aquarium, gebruikmakende van witte lijnen
 void TestDrawAquarium();
-
-float my_random();

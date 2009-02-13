@@ -206,10 +206,8 @@ void Vis::Draw()
 {
 	if(model)
 	{
-		/// debugging: draw some lines to show where fish's floating
-		/// 1 line would be impossible to see 3d perspective on, so draw 8
-		
-		glColor3d(1,1,1);
+		//om te debuggen kun je deze comment uitzetten, het tekent lijnen per vis om te kunnen weten waar ze naartoe willen gaan
+		/*glColor3d(1,1,1);
 		glDisable(GL_TEXTURE_2D);
 		glBegin(GL_LINES);
 		for(int i=0;i<2;++i){
@@ -246,45 +244,56 @@ void Vis::newGoal()
 {
 	//goalPos = RandomPos();
 	desired_speed = min_speed+my_random()*(max_speed-min_speed);
-	if(usingTempGoal){
+	if(usingTempGoal)
+	{
 		goalPos=finalGoalPos;
 		usingTempGoal=false;
-	}else{
+	}
+	else
+	{
 		goalPos=RandomPos();
 	}
 }
 
 void Vis::setGoal(const math3::Vec3d &final_goal){
-	if(usingTempGoal){
+	if(usingTempGoal)
+	{
 		finalGoalPos=final_goal;
-	}else{
+	}
+	else
+	{
 		goalPos=final_goal;
 	}
 }
 void Vis::setTemporaryGoal(const math3::Vec3d &temp_goal){
-	if(!usingTempGoal){/// if not using temp goal, make current goal into final
-		finalGoalPos=goalPos;
-		usingTempGoal=true;
+	//zonder tempgoal, wordt het een finalgoal
+	if(!usingTempGoal)
+	{
+		finalGoalPos = goalPos;
+		usingTempGoal = true;
 	}
-	goalPos=temp_goal;
+	goalPos = temp_goal;
 }
 
 double TowardsGoalBy(double a, double goal, double by){
-	if(a<goal-by){
-		return a+by;
+	if(a < goal - by)
+	{
+		return a + by;
 	}
-	if(a>goal+by){
-		return a-by;
+	if(a > goal + by)
+	{
+		return a - by;
 	}
 	return goal;
 }
 
+// - afblijven - de update van de vis, deze houd het bewegen van de vis bij en voert een stap uit - afblijven -
 void Vis::Update(double dt)
 {
 	pos += velocity*dt;
 
-	Vec3d delta=goalPos-pos;
-	double dist=Length(delta);
+	Vec3d delta = goalPos-pos;
+	double dist = Length(delta);
 	if (dist<desired_speed)/// if we're about to pass goal in less than second, change the goal
 	{
 		newGoal();
@@ -299,7 +308,7 @@ void Vis::Update(double dt)
 	}
 
 	*/
-	/// Horizontal movement
+	//horisontale beweging
 	Vec3d fishForward(cos(swimDirAngle),0,sin(swimDirAngle));
 
 	double dfs=dt*forward_acceleration;
@@ -307,7 +316,7 @@ void Vis::Update(double dt)
 
 	velocity.x=fishForward.x*speed;
 	velocity.z=fishForward.z*speed;
-	/// Vertical movement
+	//vertikale beweging
 	double desired_vertical_speed=delta.y*speed/dist;// /sqrt(delta.x*delta.x+delta.z*delta.z)
 	double dvs=vertical_acceleration*dt;
 
@@ -324,52 +333,80 @@ void Vis::Update(double dt)
 	}
 	*/
 
-	/// turns
-	double goalHeading=atan2(delta.z,delta.x);
+	//omdraaien
+	double goalHeading=atan2(delta.z, delta.x);
 
 	double angleDelta=goalHeading-swimDirAngle;
-	/// make the closest turn angle (-pi to +pi)
-	if(angleDelta>pi) angleDelta-=2*pi;
-	if(angleDelta<-pi)angleDelta+=2*pi;
+	//maak de kleinst mogelijke draai (-pi to +pi)
+	if(angleDelta>pi)
+	{
+		angleDelta -= 2 * pi;
+	}
+	if(angleDelta<-pi)
+	{
+		angleDelta += 2 * pi;
+	}
 
 
-	if(angleDelta>0.5*turn_speed*turn_speed/turn_acceleration){/// steering behavior as for homing rocket ;-)
+	if(angleDelta>0.5*turn_speed*turn_speed/turn_acceleration)
+	{
 		turn_speed=TowardsGoalBy(turn_speed, max_turn_speed, dt*turn_acceleration);
-	}else
-	if(angleDelta<-0.5*turn_speed*turn_speed/turn_acceleration){
+	}
+	else if(angleDelta<-0.5*turn_speed*turn_speed/turn_acceleration)
+	{
 		turn_speed=TowardsGoalBy(turn_speed, -max_turn_speed, dt*turn_acceleration);
-	}else{
+	}
+	else
+	{
 		turn_speed=TowardsGoalBy(turn_speed, 0, dt*turn_acceleration);
 	}
 	swimDirAngle+=dt*turn_speed;
 
 
-	if(swimDirAngle>pi) swimDirAngle-=2*pi;
-	if(swimDirAngle<-pi)swimDirAngle+=2*pi;
+	if(swimDirAngle>pi)
+	{
+		swimDirAngle-=2*pi;
+	}
+	if(swimDirAngle<-pi)
+	{
+		swimDirAngle+=2*pi;
+	}
 
-	/// wiggle
+	//vibreren
 
-	wiggle_amplitude=wiggle_factor-wiggle_factor/(speed+1.0);/// as speed changes from zero to infinity, wiggle amplitude changes from 0 to wiggle_factor
+	//snelheid van 0 tot oneindig = vibratie van 0 tot wiggle_factor
+	wiggle_amplitude=wiggle_factor-wiggle_factor/(speed+1.0);
 
-	wiggle_phase+=wiggle_freq*dt*speed*wiggle_speed_factor;/// magic constant.
+	/// magische constante
+	wiggle_phase+=wiggle_freq*dt*speed*wiggle_speed_factor;
 
-	/// bend
-	if(fabs(speed)>1E-2){/// bending radius is speed / turn speed
+	//buigen
+	//buig radius is snelheid / buig snelheid
+	if(fabs(speed)>1E-2)
+	{
 		bending=-bending_factor*(turn_speed/speed);
 	}
 
-	/// pitch
-
+	//pitch
 	double desired_pitch=atan2(pitch_factor*velocity.y,sqrt(velocity.x*velocity.x+velocity.z*velocity.z));
-	if(desired_pitch<min_pitch)desired_pitch=min_pitch;
-	if(desired_pitch>max_pitch)desired_pitch=max_pitch;
-	pitch=TowardsGoalBy(pitch, desired_pitch, pitch_change_speed*dt);
+	if(desired_pitch < min_pitch)
+	{
+		desired_pitch = min_pitch;
+	}
+	if(desired_pitch > max_pitch)
+	{
+		desired_pitch = max_pitch;
+	}
+	pitch = TowardsGoalBy(pitch, desired_pitch, pitch_change_speed*dt);
 
 
-	/// stability things:
+	/// stabielheid dingen:
 
-	/// wraparound not to lose precision over time.
-	if(wiggle_phase>2*pi)wiggle_phase-=2*pi;
+	//even zorgen dat de wiggle_phase niet te hoog wordt
+	if(wiggle_phase>2*pi)
+	{
+		wiggle_phase-=2*pi;
+	}
 
 
 	myWaitTime -= dt;

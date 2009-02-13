@@ -59,10 +59,17 @@ void Bubble::Draw()
 {
 	glPushMatrix();
 	glTranslatef(pos.x,pos.y,pos.z);
-	glColor3f(1,1,1);
+	//glColor3f(1,1,1);
 
 	glDisable(GL_TEXTURE_2D);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f(1,1,1,0.5);
+
 	gluSphere(TheQuadric(), size / 2, 20, 20);
+
+	glDisable(GL_BLEND);
 
 	glPopMatrix();
 }

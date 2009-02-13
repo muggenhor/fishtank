@@ -5,18 +5,26 @@
 
 class Bubble
 {
-private:
-	double size;
-	double wiggleStartX, wiggleStartZ;
-	bool wiggle;
-	math3::Vec3d velocity;
-public:
-	Bubble(math3::Vec3d startpos, double size, bool wiggle);
-	~Bubble(void);
+	private:
+		//de grootte van de bubbel
+		double size;
+		//een random tussen 0 en 100 die er voor zorgt dat de sinusen random lijken
+		double wiggleStartX, wiggleStartZ;
+		//het type beweging dat de bubbel maakt, true is een sinus, false een exponentiele beweging omhoog
+		bool wiggle;
+		//snelheid
+		math3::Vec3d velocity;
+	public:
+		Bubble(math3::Vec3d startpos, double size, bool wiggle);
+		~Bubble(void);
 
-	math3::Vec3d pos;
-	double pop;
+		//de huidige positie van de bubbel
+		math3::Vec3d pos;
+		//dit houd bij wanneer een bubbel op het oppervlak kapot moet gaan
+		double pop;
 
-	void Update(double dt);
-	void Draw();
+		//deze functie berekend een stap van de bubbel
+		void Update(double dt);
+		//deze funtie tekend de bubbel
+		void Draw();
 };
