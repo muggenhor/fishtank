@@ -84,9 +84,31 @@
             this.tbAchtFrames = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.btSaveUitgebreid = new System.Windows.Forms.Button();
+            this.Beeld = new System.Windows.Forms.TabPage();
+            this.label28 = new System.Windows.Forms.Label();
+            this.label29 = new System.Windows.Forms.Label();
+            this.tbBeeKortRec = new System.Windows.Forms.TextBox();
+            this.tbBeeKortOnd = new System.Windows.Forms.TextBox();
+            this.label30 = new System.Windows.Forms.Label();
+            this.label31 = new System.Windows.Forms.Label();
+            this.tbBeeKortLin = new System.Windows.Forms.TextBox();
+            this.tbBeeKortBov = new System.Windows.Forms.TextBox();
+            this.label32 = new System.Windows.Forms.Label();
+            this.label33 = new System.Windows.Forms.Label();
+            this.label34 = new System.Windows.Forms.Label();
+            this.tbBeeLanRec = new System.Windows.Forms.TextBox();
+            this.tbBeeLanOnd = new System.Windows.Forms.TextBox();
+            this.label35 = new System.Windows.Forms.Label();
+            this.label36 = new System.Windows.Forms.Label();
+            this.tbBeeLanLin = new System.Windows.Forms.TextBox();
+            this.tbBeeLanBov = new System.Windows.Forms.TextBox();
+            this.label37 = new System.Windows.Forms.Label();
+            this.btOphalenBeeld = new System.Windows.Forms.Button();
+            this.btSaveBeeld = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.Algemeen.SuspendLayout();
             this.Uitgebreid.SuspendLayout();
+            this.Beeld.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -165,6 +187,7 @@
             // 
             this.tabControl1.Controls.Add(this.Algemeen);
             this.tabControl1.Controls.Add(this.Uitgebreid);
+            this.tabControl1.Controls.Add(this.Beeld);
             this.tabControl1.Location = new System.Drawing.Point(-3, -1);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -202,7 +225,7 @@
             this.Algemeen.Padding = new System.Windows.Forms.Padding(3);
             this.Algemeen.Size = new System.Drawing.Size(281, 453);
             this.Algemeen.TabIndex = 0;
-            this.Algemeen.Text = "Algemene Instellingen";
+            this.Algemeen.Text = "Algemeen";
             this.Algemeen.UseVisualStyleBackColor = true;
             // 
             // btVorigAlgemeen
@@ -386,7 +409,7 @@
             this.Uitgebreid.Name = "Uitgebreid";
             this.Uitgebreid.Size = new System.Drawing.Size(281, 453);
             this.Uitgebreid.TabIndex = 2;
-            this.Uitgebreid.Text = "Uitgebreide Instellingen";
+            this.Uitgebreid.Text = "Uitgebreid";
             this.Uitgebreid.UseVisualStyleBackColor = true;
             // 
             // tbFaceInterval
@@ -653,6 +676,202 @@
             this.btSaveUitgebreid.UseVisualStyleBackColor = true;
             this.btSaveUitgebreid.Click += new System.EventHandler(this.btSaveUitgebreid_Click);
             // 
+            // Beeld
+            // 
+            this.Beeld.Controls.Add(this.btOphalenBeeld);
+            this.Beeld.Controls.Add(this.btSaveBeeld);
+            this.Beeld.Controls.Add(this.label34);
+            this.Beeld.Controls.Add(this.tbBeeLanRec);
+            this.Beeld.Controls.Add(this.tbBeeLanOnd);
+            this.Beeld.Controls.Add(this.label35);
+            this.Beeld.Controls.Add(this.label36);
+            this.Beeld.Controls.Add(this.tbBeeLanLin);
+            this.Beeld.Controls.Add(this.tbBeeLanBov);
+            this.Beeld.Controls.Add(this.label37);
+            this.Beeld.Controls.Add(this.label33);
+            this.Beeld.Controls.Add(this.label28);
+            this.Beeld.Controls.Add(this.label29);
+            this.Beeld.Controls.Add(this.tbBeeKortRec);
+            this.Beeld.Controls.Add(this.tbBeeKortOnd);
+            this.Beeld.Controls.Add(this.label30);
+            this.Beeld.Controls.Add(this.label31);
+            this.Beeld.Controls.Add(this.tbBeeKortLin);
+            this.Beeld.Controls.Add(this.tbBeeKortBov);
+            this.Beeld.Controls.Add(this.label32);
+            this.Beeld.Location = new System.Drawing.Point(4, 22);
+            this.Beeld.Name = "Beeld";
+            this.Beeld.Size = new System.Drawing.Size(281, 453);
+            this.Beeld.TabIndex = 3;
+            this.Beeld.Text = "Beeld";
+            this.Beeld.UseVisualStyleBackColor = true;
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(3, 10);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(77, 13);
+            this.label28.TabIndex = 42;
+            this.label28.Text = "KORTE ZIJDE";
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(11, 37);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(39, 13);
+            this.label29.TabIndex = 34;
+            this.label29.Text = "Onder:";
+            // 
+            // tbBeeKortRec
+            // 
+            this.tbBeeKortRec.Location = new System.Drawing.Point(171, 112);
+            this.tbBeeKortRec.Name = "tbBeeKortRec";
+            this.tbBeeKortRec.Size = new System.Drawing.Size(100, 20);
+            this.tbBeeKortRec.TabIndex = 41;
+            // 
+            // tbBeeKortOnd
+            // 
+            this.tbBeeKortOnd.Location = new System.Drawing.Point(171, 34);
+            this.tbBeeKortOnd.Name = "tbBeeKortOnd";
+            this.tbBeeKortOnd.Size = new System.Drawing.Size(100, 20);
+            this.tbBeeKortOnd.TabIndex = 35;
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Location = new System.Drawing.Point(11, 115);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(44, 13);
+            this.label30.TabIndex = 40;
+            this.label30.Text = "Rechts:";
+            // 
+            // label31
+            // 
+            this.label31.AutoSize = true;
+            this.label31.Location = new System.Drawing.Point(11, 63);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(41, 13);
+            this.label31.TabIndex = 36;
+            this.label31.Text = "Boven:";
+            // 
+            // tbBeeKortLin
+            // 
+            this.tbBeeKortLin.Location = new System.Drawing.Point(171, 86);
+            this.tbBeeKortLin.Name = "tbBeeKortLin";
+            this.tbBeeKortLin.Size = new System.Drawing.Size(100, 20);
+            this.tbBeeKortLin.TabIndex = 39;
+            // 
+            // tbBeeKortBov
+            // 
+            this.tbBeeKortBov.Location = new System.Drawing.Point(171, 60);
+            this.tbBeeKortBov.Name = "tbBeeKortBov";
+            this.tbBeeKortBov.Size = new System.Drawing.Size(100, 20);
+            this.tbBeeKortBov.TabIndex = 37;
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Location = new System.Drawing.Point(11, 89);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(35, 13);
+            this.label32.TabIndex = 38;
+            this.label32.Text = "Links:";
+            // 
+            // label33
+            // 
+            this.label33.AutoSize = true;
+            this.label33.Location = new System.Drawing.Point(3, 141);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(76, 13);
+            this.label33.TabIndex = 51;
+            this.label33.Text = "LANGE ZIJDE";
+            // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Location = new System.Drawing.Point(11, 171);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(39, 13);
+            this.label34.TabIndex = 52;
+            this.label34.Text = "Onder:";
+            // 
+            // tbBeeLanRec
+            // 
+            this.tbBeeLanRec.Location = new System.Drawing.Point(171, 246);
+            this.tbBeeLanRec.Name = "tbBeeLanRec";
+            this.tbBeeLanRec.Size = new System.Drawing.Size(100, 20);
+            this.tbBeeLanRec.TabIndex = 59;
+            // 
+            // tbBeeLanOnd
+            // 
+            this.tbBeeLanOnd.Location = new System.Drawing.Point(171, 168);
+            this.tbBeeLanOnd.Name = "tbBeeLanOnd";
+            this.tbBeeLanOnd.Size = new System.Drawing.Size(100, 20);
+            this.tbBeeLanOnd.TabIndex = 53;
+            // 
+            // label35
+            // 
+            this.label35.AutoSize = true;
+            this.label35.Location = new System.Drawing.Point(11, 249);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(44, 13);
+            this.label35.TabIndex = 58;
+            this.label35.Text = "Rechts:";
+            // 
+            // label36
+            // 
+            this.label36.AutoSize = true;
+            this.label36.Location = new System.Drawing.Point(11, 197);
+            this.label36.Name = "label36";
+            this.label36.Size = new System.Drawing.Size(41, 13);
+            this.label36.TabIndex = 54;
+            this.label36.Text = "Boven:";
+            // 
+            // tbBeeLanLin
+            // 
+            this.tbBeeLanLin.AcceptsTab = true;
+            this.tbBeeLanLin.Location = new System.Drawing.Point(171, 220);
+            this.tbBeeLanLin.Name = "tbBeeLanLin";
+            this.tbBeeLanLin.Size = new System.Drawing.Size(100, 20);
+            this.tbBeeLanLin.TabIndex = 57;
+            // 
+            // tbBeeLanBov
+            // 
+            this.tbBeeLanBov.Location = new System.Drawing.Point(171, 194);
+            this.tbBeeLanBov.Name = "tbBeeLanBov";
+            this.tbBeeLanBov.Size = new System.Drawing.Size(100, 20);
+            this.tbBeeLanBov.TabIndex = 55;
+            // 
+            // label37
+            // 
+            this.label37.AutoSize = true;
+            this.label37.Location = new System.Drawing.Point(11, 223);
+            this.label37.Name = "label37";
+            this.label37.Size = new System.Drawing.Size(35, 13);
+            this.label37.TabIndex = 56;
+            this.label37.Text = "Links:";
+            // 
+            // btOphalenBeeld
+            // 
+            this.btOphalenBeeld.Location = new System.Drawing.Point(55, 426);
+            this.btOphalenBeeld.Name = "btOphalenBeeld";
+            this.btOphalenBeeld.Size = new System.Drawing.Size(142, 24);
+            this.btOphalenBeeld.TabIndex = 61;
+            this.btOphalenBeeld.Text = "Vorige gegevens ophalen";
+            this.btOphalenBeeld.UseVisualStyleBackColor = true;
+            this.btOphalenBeeld.Click += new System.EventHandler(this.btVorigUitgebreid_Click);
+            // 
+            // btSaveBeeld
+            // 
+            this.btSaveBeeld.Location = new System.Drawing.Point(203, 426);
+            this.btSaveBeeld.Name = "btSaveBeeld";
+            this.btSaveBeeld.Size = new System.Drawing.Size(75, 24);
+            this.btSaveBeeld.TabIndex = 60;
+            this.btSaveBeeld.Text = "Opslaan";
+            this.btSaveBeeld.UseVisualStyleBackColor = true;
+            this.btSaveBeeld.Click += new System.EventHandler(this.btSaveUitgebreid_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -666,6 +885,8 @@
             this.Algemeen.PerformLayout();
             this.Uitgebreid.ResumeLayout(false);
             this.Uitgebreid.PerformLayout();
+            this.Beeld.ResumeLayout(false);
+            this.Beeld.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -728,6 +949,27 @@
         private System.Windows.Forms.TextBox tbFaceInterval;
         private System.Windows.Forms.Label label26;
         private System.Windows.Forms.Label label27;
+        private System.Windows.Forms.TabPage Beeld;
+        private System.Windows.Forms.Label label34;
+        private System.Windows.Forms.TextBox tbBeeLanRec;
+        private System.Windows.Forms.TextBox tbBeeLanOnd;
+        private System.Windows.Forms.Label label35;
+        private System.Windows.Forms.Label label36;
+        private System.Windows.Forms.TextBox tbBeeLanLin;
+        private System.Windows.Forms.TextBox tbBeeLanBov;
+        private System.Windows.Forms.Label label37;
+        private System.Windows.Forms.Label label33;
+        private System.Windows.Forms.Label label28;
+        private System.Windows.Forms.Label label29;
+        private System.Windows.Forms.TextBox tbBeeKortRec;
+        private System.Windows.Forms.TextBox tbBeeKortOnd;
+        private System.Windows.Forms.Label label30;
+        private System.Windows.Forms.Label label31;
+        private System.Windows.Forms.TextBox tbBeeKortLin;
+        private System.Windows.Forms.TextBox tbBeeKortBov;
+        private System.Windows.Forms.Label label32;
+        private System.Windows.Forms.Button btOphalenBeeld;
+        private System.Windows.Forms.Button btSaveBeeld;
     }
 }
 

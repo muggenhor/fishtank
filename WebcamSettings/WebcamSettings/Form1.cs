@@ -45,7 +45,11 @@ namespace WebcamSettings
                 sw.WriteLine(10); sw.WriteLine(25); sw.WriteLine(20);
                 sw.WriteLine(500); sw.WriteLine(25); sw.WriteLine(5);
                 sw.WriteLine(80); sw.WriteLine(0.8); sw.WriteLine(30);
-                sw.WriteLine(2); sw.WriteLine(100); sw.Close();
+                sw.WriteLine(2); sw.WriteLine(100);
+                sw.WriteLine(100); sw.WriteLine(100); sw.WriteLine(100);
+                sw.WriteLine(100); sw.WriteLine(100); sw.WriteLine(100);
+                sw.WriteLine(100); sw.WriteLine(100);
+                sw.Close();
                 sr = File.OpenText("settings.txt");
             }
             //algemene instellingen
@@ -70,6 +74,14 @@ namespace WebcamSettings
             tbStreamVersPixels.Text = data[17] = sr.ReadLine();
             doWebcams.Text = data[18] = sr.ReadLine();
             tbFaceInterval.Text = data[19] = sr.ReadLine();
+            tbBeeKortBov.Text = data[20] = sr.ReadLine();
+            tbBeeKortOnd.Text = data[21] = sr.ReadLine();
+            tbBeeKortLin.Text = data[22] = sr.ReadLine();
+            tbBeeKortRec.Text = data[23] = sr.ReadLine();
+            tbBeeLanBov.Text = data[24] = sr.ReadLine();
+            tbBeeLanOnd.Text = data[25] = sr.ReadLine();
+            tbBeeLanLin.Text = data[26] = sr.ReadLine();
+            tbBeeLanRec.Text = data[27] = sr.ReadLine();
             //afsluiten
             sr.Close();
         }
@@ -168,6 +180,18 @@ namespace WebcamSettings
                 data[18] = doWebcams.Text;
                 data[19] = tbFaceInterval.Text;
                 
+            }
+            //beeld instellingen
+            else if (((Button)sender).Name == "tbSaveBeeld")
+            {
+                data[20] = tbBeeKortBov.Text;
+                data[21] = tbBeeKortOnd.Text;
+                data[22] = tbBeeKortLin.Text;
+                data[23] = tbBeeKortRec.Text;
+                data[24] = tbBeeLanBov.Text;
+                data[25] = tbBeeLanOnd.Text;
+                data[26] = tbBeeLanLin.Text;
+                data[27] = tbBeeLanRec.Text;
             }
             //textbestand opnieuw schrijven
             FileInfo file = new FileInfo("settings.txt");
