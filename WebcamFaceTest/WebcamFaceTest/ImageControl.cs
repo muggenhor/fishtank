@@ -27,14 +27,16 @@ namespace VideoStreamMerger
         //standaard variabelen
         private Bitmap imageLinks=null, imageRechts=null, imageMidden = null, image = null; //de 4 afbeedlignen (3 vd webcams en 1 uiteindelijke)
         private VideoInput videoL = null, videoR = null, videoM = null; //de input van de webcams
-        private byte[] dataImage = null, dataLinks=null, dataRechts=null, dataMidden=null; //de 4 dataArrys (streams) 3 vd webcams, 1 uiteindelijke
+        private byte[] dataImage = null, dataLinks=null, dataRechts=null, dataMidden=null, dataImagebackup=null;//de 4 dataArrys (streams) 3 vd webcams, 1 uiteindelijke
         private bool doorgaan=true, motionZoeken=false; //doorgaan: doorgaan met streamen, motionZoeken: beweging zoeken
         private TCPOut socket, socketMotion, sockFace; //de sockets voor het verzenden van de stream en coordinaten van de motion
         private MotionDetection detector; //de bewegingsdetector
-        private System.Timers.Timer timer, timerGezichtherk, timerGC; //de timer voor de bewegingdetector
+        private System.Timers.Timer timer, timerGC, timerGezicht; //de timer voor de bewegingdetector
         private ShortSide kleineZijde; //de webcambeelden voor dekleine kant
-        private face gezichtHer;
+        private face gezichtHerk=null;
 
+        private int Alinks, Arechts, Aboven, Aonder;
+        private bool gezichtZoeken = true;
         private int eindLinks, begMidden, eindMidden, begRechts; //de start/eind posities in de streams voor het samenveogen van de streams tot 1
         private int width = 0, height = 0, totaal, imgLen; // de grootte van het uiteindelijk afbeeldingen in aantal bytes (imgLen is de lengte van 1 rij van een stream van een webcam)
 
@@ -63,7 +65,8 @@ namespace VideoStreamMerger
         /// <param name="intervalMotionCheck">het aantal miliseconden dat er op beweging gekeken moet worden (500ms is standaard)</param>
         public ImageControl(int hoogteKolomVergelijken, int aantalKolomVergelijken, int aantalFramesVergelijken, int aantalPixelsBekijken, 
             float decPercentageHetzelfde, int ratioInOut, int verschilImages, int verschilBackground, TCPOut socketStream, TCPOut socketMotion,
-            int detectieVerschil, int intervalMotionCheck, TCPOut socketGezichtsHerkenning, int intervalFaceCheck)
+            int detectieVerschil, int intervalMotionCheck, TCPOut socketGezichtsHerkenning, int intervalFaceCheck,
+            int links, int rechts, int boven, int onder)
         {
             this.hoogteKolom = hoogteKolomVergelijken;
             this.kolom = aantalKolomVergelijken;
@@ -77,132 +80,34 @@ namespace VideoStreamMerger
             this.detVerschil = detectieVerschil;
             this.socketMotion = socketMotion;
             this.sockFace = socketGezichtsHerkenning;
+            this.Aboven = boven;
+            this.Alinks = links;
+            this.Aonder = onder;
+            this.Arechts = rechts;
             this.timer = new System.Timers.Timer(intervalMotionCheck);
             timer.Enabled = false;
             timer.Elapsed += new System.Timers.ElapsedEventHandler(timer_Elapsed);
-            timerGezichtherk = new System.Timers.Timer(intervalFaceCheck);
-            timerGezichtherk.Enabled = false;
-            timerGezichtherk.Elapsed += new System.Timers.ElapsedEventHandler(timerGezichtherk_Elapsed);
+            timerGezicht = new System.Timers.Timer(intervalFaceCheck);
+            timerGezicht.Enabled = false;
+            timerGezicht.Elapsed += new System.Timers.ElapsedEventHandler(timerGezicht_Elapsed);
             timerGC = new System.Timers.Timer(1000);
             timerGC.Enabled = true;
-            timerGC.Elapsed += new System.Timers.ElapsedEventHandler(timerGC_Elapsed);
+            timerGC.Elapsed += new System.Timers.ElapsedEventHandler(timerGC_Elapsed);           
+        }
 
+        void timerGezicht_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            if (!gezichtZoeken)
+                gezichtZoeken = true;
         }
         //een standaard imageControl, oorspronkelijk voor avi bestanden
         public ImageControl()
-            : this(80, 5, 20, 5, (float)0.95, 1, 15, 20, new TCPOut("127.0.0.1", 7779), new TCPOut("127.0.0.1", 7780), 20, 500, new TCPOut("127.0.0.1", 7781), 100) { }
+            : this(80, 5, 20, 5, (float)0.95, 1, 15, 20, new TCPOut("127.0.0.1", 7779), new TCPOut("127.0.0.1", 7780), 20, 500, new TCPOut("127.0.0.1", 7781), 100, 100, 100, 100, 100) { }
 
         //garbage collecteren (omdat er soms geheugen niet vrijgemaakt word)
         void timerGC_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
            System.GC.Collect();
-        }
-
-        //timer voor gezichtsherkenning en tevens ook naar gezichten zoeken
-        void timerGezichtherk_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            
-            try
-            {
-             //   Console.WriteLine("START");
-               Console.WriteLine("x = " + gezichtHer.x);
-               Console.WriteLine("faces: " + gezichtHer.facex);
-                int aantal = 0;
-                Bitmap imageG = null;
-                if (imageLinks != null)
-                    imageG = (Bitmap)imageLinks.Clone();
-                if (imageG != null)
-                {
-                    switch (gezichtHer.start(imageG))
-                    {
-
-                        case 0:
-                            imageG = null;
-                            if (imageMidden != null)
-                                imageG = (Bitmap)imageMidden.Clone();
-                            if (imageG != null)
-                            {
-                                switch (gezichtHer.start(imageG))
-                                {
-                                    case 0:
-                                        imageG = null;
-                                        if (imageRechts != null)
-                                            imageG = (Bitmap)imageRechts.Clone();
-                                        if (imageG != null)
-                                        {
-                                            if (gezichtHer.start(imageG) == 1)
-                                            {
-                                                //coordianten versturen
-                                                //sockFace.Verzenden(gezichtHer.Coordinaten);
-                                                Console.WriteLine("gezicht gevonden rechts");
-                                                imageG.Dispose();
-                                                return;
-                                            }
-                                            return;
-                                        }
-                                        break;
-                                    case 1:
-                                        imageG = null;
-                                        if (imageRechts != null)
-                                            imageG = (Bitmap)imageRechts.Clone();
-                                        if (imageG != null)
-                                        {
-                                            if (gezichtHer.start(imageG) == 0)
-                                            {
-                                                //links gevonden en voor de rest niets
-                                                Console.WriteLine("gezicht gevonden midden: " + gezichtHer.x);
-                                                imageG.Dispose();
-                                                return;
-                                            }
-                                            //meerdere gevonden dus retuorneren
-                                            return;
-                                        }
-                                        return;
-                                    default:
-                                        return;
-                                }
-                            }
-                            return;
-                        case 1:
-                            aantal++; //aantal verhogen want heeft iets in links gevonden maar evengoed in andere 2 beelden kijken
-                            imageG = null;
-                            if (imageMidden != null)
-                                imageG = (Bitmap)imageMidden.Clone();
-                            if (imageG != null)
-                            {
-                                if (gezichtHer.start(imageG) == 0)
-                                {
-                                    imageG = null;
-                                    if (imageRechts != null)
-                                        imageG = (Bitmap)imageRechts.Clone();
-                                    if (imageG != null)
-                                    {
-                                        if (gezichtHer.start(imageG) == 0)
-                                        {
-                                            //links gevonden en voor de rest niets
-                                            Console.WriteLine("gezicht gevonden links");
-                                            imageG.Dispose();
-                                            return;
-                                        }
-                                        //meerdere gevonden dus retuorneren
-                                        return;
-                                    }
-                                }
-                                //meerdere gevonden
-                                return;
-                            }
-                            return; //word nooit bereikt
-                        default:
-                            return;
-                    }
-                }
-          //      Console.WriteLine("EINDE");
-            }
-            catch
-            {
-              //  gezichtHer = new face();
-
-            }
         }
 
         //timer voor beweging zoeken en tevens ook naar beweging zoeken
@@ -216,7 +121,10 @@ namespace VideoStreamMerger
                 {
                     byte[] data;
                     if ((data = detector.BewegingZoeken((byte[])dataImage.Clone())) != null)
+                    {
                         detector.Socket.Verzenden(data);
+                        Console.WriteLine("Beweging op: " + (int)data[0] + ":" + (int)data[1]);
+                    }
                 }
                 motionZoeken = false;
             }
@@ -271,35 +179,35 @@ namespace VideoStreamMerger
         //webcam laden en achergrond laden
         public bool WebcamLadenEnAchtergrondBepalen(CaptureDevice webcamLinks, CaptureDevice webcamRechts, CaptureDevice webcamMidden)
         {
-            try
+      //      try
             {
                 //linkerwebcam
                 videoL = new VideoInput(webcamLinks, frames, pixels, verBack);
                 while (!videoL.BackgroundFound) { }
                 imageLinks = videoL.backGround;
                 imageLinks.Save("c://achtergrond_links.bmp");
-                Console.WriteLine(" Achtergrond gevonden van linkerwebcam,");
-                Console.WriteLine("  afbeelding opgeslagen in c://achtergrond_links.bmp");
+                Console.WriteLine("  Achtergrond gevonden van linkerwebcam,");
+                Console.WriteLine("   afbeelding opgeslagen in c://achtergrond_links.bmp");
                 //middenwebcam
                 videoM = new VideoInput(webcamMidden, frames, pixels, verBack);
                 while (!videoM.BackgroundFound) { }
                 imageMidden = videoM.backGround;
                 imageMidden.Save("c://achtergrond_midden.bmp");
-                Console.WriteLine(" Achtergrond gevonden van middenwebcam,");
-                Console.WriteLine("  afbeelding opgeslagen in c://achtergrond_midden.bmp");
+                Console.WriteLine("  Achtergrond gevonden van middenwebcam,");
+                Console.WriteLine("   afbeelding opgeslagen in c://achtergrond_midden.bmp");
                 //rechterwebcam
                 videoR = new VideoInput(webcamRechts, frames, pixels, verBack);
                 while (!videoR.BackgroundFound) { }
                 imageRechts = videoR.backGround;
                 imageRechts.Save("c://achtergrond_rechts.bmp");
-                Console.WriteLine(" Achtergrond gevonden van rechterwebcam,");
-                Console.WriteLine("  afbeelding opgeslagen in c://achtergrond_rechts.bmp");
+                Console.WriteLine("  Achtergrond gevonden van rechterwebcam,");
+                Console.WriteLine("   afbeelding opgeslagen in c://achtergrond_rechts.bmp");
 
                 //hoogte van image bepalen
                 height = imageMidden.Height;
                 return true;
             }
-            catch { return false; }
+       //     catch { return false; }
         }
 
         //images vergelijken voor het bepalen van de stream met de webcams Links en Rechts (2 webcams gebruiken)
@@ -397,6 +305,7 @@ namespace VideoStreamMerger
                 {
                     eindLinks = imageLinks.Width - (zoeknr / 2);
                     begRechts = zoeknr / 2;
+           //         begRechts += 50; //ZEER TIJDELIJK
                     return true;
                 }
 
@@ -497,9 +406,10 @@ namespace VideoStreamMerger
                 tempverschillenLM.Add(verschil);
                 if (verschil >= percentage)
                 {
-                    eindLinks = imageLinks.Width - (zoeknr / 2);
+                    eindLinks = imageLinks.Width - zoeknr;
+                    //eindLinks = imageLinks.Width - (zoeknr / 2);
                     begMidden = zoeknr / 2;
-                    return true;
+           //         return true;
                 }
                 //zoeknr nu alleen verhogen als links ne rechts geprobeert is
                 if (!links)
@@ -770,7 +680,7 @@ namespace VideoStreamMerger
                 timer.Enabled = true;
 
                 //webcam voor kleine zijde streamen
-                kleineZijde.Start();
+                kleineZijde.Start(Alinks, Arechts, Aonder, Aboven);
 
                 //2 bitmaps samenvoegen (voor altijd blijven doen)
                 videoL.frame += new VideoInput.EventHandler(videoL_frame);
@@ -802,18 +712,34 @@ namespace VideoStreamMerger
         //alleen doen als het pogramma snel genoeg is...
         void videoL_frame(Bitmap frame)
         {
-            if (imageLinks == null)
+            if (imageLinks == null) //indien stream is samengevoegd, nieuwe frame accepteren
                 imageLinks = frame;
-        }
-        void videoR_frame(Bitmap frame)
-        {
-            if (imageRechts == null)
-                imageRechts = frame;
+            if (gezichtHerk.Webcam == 0 && gezichtZoeken)
+            {
+                gezichtHerk.newFrame(frame);
+                gezichtZoeken = false;
+            }
         }
         void videoM_frame(Bitmap frame)
         {
+            if (imageRechts == null)
+                imageRechts = frame;
+            //voor gezichtsherkenning
+            if (gezichtHerk.Webcam == 1 && gezichtZoeken)
+            {
+                gezichtHerk.newFrame(frame);
+                gezichtZoeken = false;
+            }
+        }
+        void videoR_frame(Bitmap frame)
+        {
             if (imageMidden == null)
                 imageMidden = frame;
+            if (gezichtHerk.Webcam == 2 && gezichtZoeken)
+            {
+                gezichtHerk.newFrame(frame);
+                gezichtZoeken = false;
+            }
         }
 
         private void MotionDetectionInitialiseren()
@@ -846,14 +772,19 @@ namespace VideoStreamMerger
             }
         }
 
-        
+        //zo fout....
+        public void ScheidingHardwarematig(int zoeknr)
+        {
+            eindLinks = imageLinks.Width - (zoeknr / 2);
+            begRechts = zoeknr / 2;
+        }
 
         public bool NieuweImageInitialiseren2()
         {
             //    try
             {
                 //totale lengte van samengevoegde image (hoogte is al gedaan)
-                width = eindMidden + imageRechts.Width - begRechts;
+                width = eindLinks + imageRechts.Width - begRechts;
 
                 image = new Bitmap(width, height, PixelFormat.Format24bppRgb);
                 int xR = begRechts, xL = 0;
@@ -904,7 +835,7 @@ namespace VideoStreamMerger
         //de twee achtergrond samen voegen en 1 afbeelding ervan maken
         private byte[] ImagesSamenvoegen2()
         {
-            //     try
+                 try
             {
                 MemoryStream msL = new MemoryStream();
                 imageLinks.Save(msL, ImageFormat.Bmp);
@@ -926,7 +857,8 @@ namespace VideoStreamMerger
                     if (x >= width) //eerst alleen >
                     {
                         x = 0;
-                        xL = xR = 54;
+                        xL = 54;
+                        xR = 54 + begRechts;
                         y++;
 
                         dataImage[i++] = 0;
@@ -948,13 +880,14 @@ namespace VideoStreamMerger
                 }
 
                 //klaar dus alles weer terugzetten naar default en de data voor videostream retourneren
-                //        Bitmap.FromStream(new MemoryStream(dataImage)).Save("c://achtergrondStream.bmp");
+              //          Bitmap.FromStream(new MemoryStream(dataImage)).Save("c://achtergrondStream.bmp");
                 imageLinks = imageRechts = null;
+                dataImagebackup = dataImage; //soms blijft die ergens hangen, hierdoor word de oude videostream doorgestuurd
                 return dataImage;
             }
-            //          catch
+                      catch
             {
-                return null;
+                return dataImagebackup;
             }
         }
 
@@ -962,20 +895,20 @@ namespace VideoStreamMerger
         {
             //       try
             {
-                gezichtHer = new face();
-                timerGezichtherk.Enabled = true;
-
                 //verbinding maken, indien mislukt false retourneren
                 if (!socket.Start())
-                    throw new Exception("GEEN VERBEINGING MET HET AQUARIUM");
+                    throw new Exception("GEEN VERBINDING MET HET AQUARIUM");
                 //return false;
 
                 //motion detection
                 MotionDetectionInitialiseren();
                 timer.Enabled = true;
 
+                //gezichts herkenning opstarten, zowel timer als socket
+                gezichtHerk = new face(sockFace);
+
                 //webcam voor kleine zijde streamen
-                kleineZijde.Start();
+                kleineZijde.Start(Alinks, Arechts, Aonder, Aboven);
 
                 //2 bitmaps samenvoegen (voor altijd blijven doen)
                 videoL.frame += new VideoInput.EventHandler(videoL_frame);
@@ -1002,5 +935,7 @@ namespace VideoStreamMerger
             //gebruiker heeft afgesloten en alles is goed gegaan, true retourneren
             return true;
         }
+
+
     }
 }

@@ -18,29 +18,28 @@ namespace Webcam_Project
         /// </summary>
         static public void AllesStarten()
         {
-            try
+     //       try
             {
-                Console.WriteLine("Webcam Programma voor het Vissen Project\n\r----------------------------------------");
-                Console.WriteLine("Eigendom van: Fontys Hogescholen\n\rGemaakt door: Gijs Trepels & Rik Timmers\n\r----------------------------------------\n\r");
                 //alles initialiseren
                 Console.WriteLine("PROGRAMMA INITIALISEREN");
                 VideoStreamMerger.ImageControl imageC;
                 VideoSource.CaptureDevice[] webcams = new VideoSource.CaptureDevice[4];
-                string[] data = new string[20];
+                string[] data = new string[28];
                 Console.WriteLine(" Bezig met instellingen lezen (settings.txt)...");
                 System.IO.StreamReader sr = System.IO.File.OpenText("settings.txt");
-                for (int i = 0; i < 18; i++)
+                for (int i = 0; i < data.Length; i++)
                     data[i] = sr.ReadLine();
+                sr.Close();
                 //alle webcams zoeken op de pc
                 Console.WriteLine(" Bezig met webcams openen...");
                 dshow.FilterCollection filters = new dshow.FilterCollection(dshow.Core.FilterCategory.VideoInputDevice);
                 for (int i = 0; i < filters.Count; i++)
                     Console.WriteLine("  Webcam '" + filters[i].Name + "' gevonden");
                 //de 4 webcams
-                webcams[0].VideoSource = filters[Convert.ToInt32(data[0])].MonikerString;
-                webcams[1].VideoSource = filters[Convert.ToInt32(data[1])].MonikerString;
-                webcams[2].VideoSource = filters[Convert.ToInt32(data[2])].MonikerString;
-                webcams[3].VideoSource = filters[Convert.ToInt32(data[3])].MonikerString;
+                webcams[0] = new VideoSource.CaptureDevice();  webcams[0].VideoSource = filters[Convert.ToInt32(data[0])].MonikerString;
+                webcams[1] = new VideoSource.CaptureDevice();  webcams[1].VideoSource = filters[Convert.ToInt32(data[1])].MonikerString;
+                webcams[2] = new VideoSource.CaptureDevice();  webcams[2].VideoSource = filters[Convert.ToInt32(data[2])].MonikerString;
+                webcams[3] = new VideoSource.CaptureDevice();  webcams[3].VideoSource = filters[Convert.ToInt32(data[3])].MonikerString;
                 //imagecontrol aanmaken
                 //en de imagecontrol alles laten doen
                 Console.WriteLine("PROGRAMMA STARTEN");
@@ -50,7 +49,7 @@ namespace Webcam_Project
                     Convert.ToInt32(data[14]),
                     Convert.ToInt32(data[10]),
                     Convert.ToInt32(data[9]),
-                    ((float)Convert.ToInt32(data[16])) / (float)100,
+                    (float)Convert.ToDouble(data[16]),
                     1,
                     Convert.ToInt32(data[17]),
                     Convert.ToInt32(data[11]),
@@ -59,7 +58,11 @@ namespace Webcam_Project
                     Convert.ToInt32(data[13]),
                     Convert.ToInt32(data[12]),
                     new VideoStreamMerger.TCPOut(data[4], Convert.ToInt32(data[5])),
-                    Convert.ToInt32(data[19]));
+                    Convert.ToInt32(data[19]),
+                    Convert.ToInt32(data[22]),
+                    Convert.ToInt32(data[23]),
+                    Convert.ToInt32(data[20]),
+                    Convert.ToInt32(data[21]));
                 imageC.WebcamVoorKleineZijdeLaden(
                     webcams[0],
                     new VideoStreamMerger.TCPOut(data[4], Convert.ToInt32(data[6])));
@@ -72,11 +75,11 @@ namespace Webcam_Project
                 if (data[18] == "3") //indien 3 webcams
                 {
                     if (!imageC.ImagesVergelijkenRechtsMidden())
-                        Console.WriteLine("  Geen vergelijking tussen Rechts en Midden gevonden");
+                        throw new Exception("Geen vergelijking Rechts-Midden");    
                     Console.WriteLine("  Vergelijking tussen Rechts en Midden gevonden");
                     if (!imageC.ImagesVergelijkenLinksMidden())
-                        Console.WriteLine("  Geen vergelijking tussen Links en Midden gevonden");
-                    Console.WriteLine("  Vergelijking tussen Rechts en Midden gevonden");
+                        throw new Exception("Geen vergelijking Links-Midden"); 
+                    Console.WriteLine("  Vergelijking tussen Links en Midden gevonden");
                     Console.WriteLine(" Nieuwe videostream aanmaken voor de lange zijde...");
                     imageC.NieuweImageInitialiseren();
                     Console.WriteLine(" Bezig met streamen naar " + data[4] + " op poorten " + data[5] + ", " + data[6] + ", " + data[7] + ", " + data[8] + "...");
@@ -84,9 +87,10 @@ namespace Webcam_Project
                 }
                 else //2 webcams
                 {
-                    if (!imageC.ImagesVergelijkenRechtsLinks())
-                        Console.WriteLine("  Geen vergelijking tussen Links en Rechts gevonden");
-                    Console.WriteLine("  Vergelijking tussen Links en Rechts gevonden");
+                    imageC.ScheidingHardwarematig(160);
+             //       if (!imageC.ImagesVergelijkenRechtsLinks())
+               //         Console.WriteLine("  Geen vergelijking tussen Links en Rechts gevonden");
+                 //   Console.WriteLine("  Vergelijking tussen Links en Rechts gevonden");
                     Console.WriteLine(" Nieuwe videostream aanmaken voor de lange zijde...");
                     imageC.NieuweImageInitialiseren2();
                     Console.WriteLine(" Bezig met streamen naar " + data[4] + " op poorten " + data[5] + ", " + data[6] + ", " + data[7] + ", " + data[8] + "...");
@@ -96,7 +100,7 @@ namespace Webcam_Project
                 if (imageC.StreamsAfsluiten)
                     Console.WriteLine("Webcams zijn 'losgekoppeld' van het programma");
             }
-            catch
+    //        catch
             {
                 Console.Write("\n\rERROR - Het probleem kan verholpen worden door het programma \n\ropnieuw op te starten,");
                 Console.Write(" druk op Enter om programma af te sluiten"); Console.ReadLine();
