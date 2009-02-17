@@ -85,6 +85,17 @@
             this.label12 = new System.Windows.Forms.Label();
             this.btSaveUitgebreid = new System.Windows.Forms.Button();
             this.Beeld = new System.Windows.Forms.TabPage();
+            this.btOphalenBeeld = new System.Windows.Forms.Button();
+            this.btSaveBeeld = new System.Windows.Forms.Button();
+            this.label34 = new System.Windows.Forms.Label();
+            this.tbBeeLanRec = new System.Windows.Forms.TextBox();
+            this.tbBeeLanOnd = new System.Windows.Forms.TextBox();
+            this.label35 = new System.Windows.Forms.Label();
+            this.label36 = new System.Windows.Forms.Label();
+            this.tbBeeLanLin = new System.Windows.Forms.TextBox();
+            this.tbBeeLanBov = new System.Windows.Forms.TextBox();
+            this.label37 = new System.Windows.Forms.Label();
+            this.label33 = new System.Windows.Forms.Label();
             this.label28 = new System.Windows.Forms.Label();
             this.label29 = new System.Windows.Forms.Label();
             this.tbBeeKortRec = new System.Windows.Forms.TextBox();
@@ -94,17 +105,12 @@
             this.tbBeeKortLin = new System.Windows.Forms.TextBox();
             this.tbBeeKortBov = new System.Windows.Forms.TextBox();
             this.label32 = new System.Windows.Forms.Label();
-            this.label33 = new System.Windows.Forms.Label();
-            this.label34 = new System.Windows.Forms.Label();
-            this.tbBeeLanRec = new System.Windows.Forms.TextBox();
-            this.tbBeeLanOnd = new System.Windows.Forms.TextBox();
-            this.label35 = new System.Windows.Forms.Label();
-            this.label36 = new System.Windows.Forms.Label();
-            this.tbBeeLanLin = new System.Windows.Forms.TextBox();
-            this.tbBeeLanBov = new System.Windows.Forms.TextBox();
-            this.label37 = new System.Windows.Forms.Label();
-            this.btOphalenBeeld = new System.Windows.Forms.Button();
-            this.btSaveBeeld = new System.Windows.Forms.Button();
+            this.labHelp2 = new System.Windows.Forms.Label();
+            this.label38 = new System.Windows.Forms.Label();
+            this.cbBeeHand = new System.Windows.Forms.CheckBox();
+            this.label39 = new System.Windows.Forms.Label();
+            this.label40 = new System.Windows.Forms.Label();
+            this.tbBeeTot = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.Algemeen.SuspendLayout();
             this.Uitgebreid.SuspendLayout();
@@ -678,6 +684,12 @@
             // 
             // Beeld
             // 
+            this.Beeld.Controls.Add(this.tbBeeTot);
+            this.Beeld.Controls.Add(this.label40);
+            this.Beeld.Controls.Add(this.label39);
+            this.Beeld.Controls.Add(this.cbBeeHand);
+            this.Beeld.Controls.Add(this.label38);
+            this.Beeld.Controls.Add(this.labHelp2);
             this.Beeld.Controls.Add(this.btOphalenBeeld);
             this.Beeld.Controls.Add(this.btSaveBeeld);
             this.Beeld.Controls.Add(this.label34);
@@ -702,155 +714,8 @@
             this.Beeld.Name = "Beeld";
             this.Beeld.Size = new System.Drawing.Size(281, 453);
             this.Beeld.TabIndex = 3;
-            this.Beeld.Text = "Beeld";
+            this.Beeld.Text = "Knippen";
             this.Beeld.UseVisualStyleBackColor = true;
-            // 
-            // label28
-            // 
-            this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(3, 10);
-            this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(77, 13);
-            this.label28.TabIndex = 42;
-            this.label28.Text = "KORTE ZIJDE";
-            // 
-            // label29
-            // 
-            this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(11, 37);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(39, 13);
-            this.label29.TabIndex = 34;
-            this.label29.Text = "Onder:";
-            // 
-            // tbBeeKortRec
-            // 
-            this.tbBeeKortRec.Location = new System.Drawing.Point(171, 112);
-            this.tbBeeKortRec.Name = "tbBeeKortRec";
-            this.tbBeeKortRec.Size = new System.Drawing.Size(100, 20);
-            this.tbBeeKortRec.TabIndex = 41;
-            // 
-            // tbBeeKortOnd
-            // 
-            this.tbBeeKortOnd.Location = new System.Drawing.Point(171, 34);
-            this.tbBeeKortOnd.Name = "tbBeeKortOnd";
-            this.tbBeeKortOnd.Size = new System.Drawing.Size(100, 20);
-            this.tbBeeKortOnd.TabIndex = 35;
-            // 
-            // label30
-            // 
-            this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(11, 115);
-            this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(44, 13);
-            this.label30.TabIndex = 40;
-            this.label30.Text = "Rechts:";
-            // 
-            // label31
-            // 
-            this.label31.AutoSize = true;
-            this.label31.Location = new System.Drawing.Point(11, 63);
-            this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(41, 13);
-            this.label31.TabIndex = 36;
-            this.label31.Text = "Boven:";
-            // 
-            // tbBeeKortLin
-            // 
-            this.tbBeeKortLin.Location = new System.Drawing.Point(171, 86);
-            this.tbBeeKortLin.Name = "tbBeeKortLin";
-            this.tbBeeKortLin.Size = new System.Drawing.Size(100, 20);
-            this.tbBeeKortLin.TabIndex = 39;
-            // 
-            // tbBeeKortBov
-            // 
-            this.tbBeeKortBov.Location = new System.Drawing.Point(171, 60);
-            this.tbBeeKortBov.Name = "tbBeeKortBov";
-            this.tbBeeKortBov.Size = new System.Drawing.Size(100, 20);
-            this.tbBeeKortBov.TabIndex = 37;
-            // 
-            // label32
-            // 
-            this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(11, 89);
-            this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(35, 13);
-            this.label32.TabIndex = 38;
-            this.label32.Text = "Links:";
-            // 
-            // label33
-            // 
-            this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(3, 141);
-            this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(76, 13);
-            this.label33.TabIndex = 51;
-            this.label33.Text = "LANGE ZIJDE";
-            // 
-            // label34
-            // 
-            this.label34.AutoSize = true;
-            this.label34.Location = new System.Drawing.Point(11, 171);
-            this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(39, 13);
-            this.label34.TabIndex = 52;
-            this.label34.Text = "Onder:";
-            // 
-            // tbBeeLanRec
-            // 
-            this.tbBeeLanRec.Location = new System.Drawing.Point(171, 246);
-            this.tbBeeLanRec.Name = "tbBeeLanRec";
-            this.tbBeeLanRec.Size = new System.Drawing.Size(100, 20);
-            this.tbBeeLanRec.TabIndex = 59;
-            // 
-            // tbBeeLanOnd
-            // 
-            this.tbBeeLanOnd.Location = new System.Drawing.Point(171, 168);
-            this.tbBeeLanOnd.Name = "tbBeeLanOnd";
-            this.tbBeeLanOnd.Size = new System.Drawing.Size(100, 20);
-            this.tbBeeLanOnd.TabIndex = 53;
-            // 
-            // label35
-            // 
-            this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(11, 249);
-            this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(44, 13);
-            this.label35.TabIndex = 58;
-            this.label35.Text = "Rechts:";
-            // 
-            // label36
-            // 
-            this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(11, 197);
-            this.label36.Name = "label36";
-            this.label36.Size = new System.Drawing.Size(41, 13);
-            this.label36.TabIndex = 54;
-            this.label36.Text = "Boven:";
-            // 
-            // tbBeeLanLin
-            // 
-            this.tbBeeLanLin.AcceptsTab = true;
-            this.tbBeeLanLin.Location = new System.Drawing.Point(171, 220);
-            this.tbBeeLanLin.Name = "tbBeeLanLin";
-            this.tbBeeLanLin.Size = new System.Drawing.Size(100, 20);
-            this.tbBeeLanLin.TabIndex = 57;
-            // 
-            // tbBeeLanBov
-            // 
-            this.tbBeeLanBov.Location = new System.Drawing.Point(171, 194);
-            this.tbBeeLanBov.Name = "tbBeeLanBov";
-            this.tbBeeLanBov.Size = new System.Drawing.Size(100, 20);
-            this.tbBeeLanBov.TabIndex = 55;
-            // 
-            // label37
-            // 
-            this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(11, 223);
-            this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(35, 13);
-            this.label37.TabIndex = 56;
-            this.label37.Text = "Links:";
             // 
             // btOphalenBeeld
             // 
@@ -871,6 +736,228 @@
             this.btSaveBeeld.Text = "Opslaan";
             this.btSaveBeeld.UseVisualStyleBackColor = true;
             this.btSaveBeeld.Click += new System.EventHandler(this.btSaveUitgebreid_Click);
+            // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Location = new System.Drawing.Point(11, 171);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(39, 13);
+            this.label34.TabIndex = 52;
+            this.label34.Text = "Onder:";
+            this.label34.MouseHover += new System.EventHandler(this.label1_MouseHover);
+            // 
+            // tbBeeLanRec
+            // 
+            this.tbBeeLanRec.Location = new System.Drawing.Point(171, 246);
+            this.tbBeeLanRec.Name = "tbBeeLanRec";
+            this.tbBeeLanRec.Size = new System.Drawing.Size(100, 20);
+            this.tbBeeLanRec.TabIndex = 59;
+            this.tbBeeLanRec.MouseHover += new System.EventHandler(this.tbWebKort_MouseHover);
+            // 
+            // tbBeeLanOnd
+            // 
+            this.tbBeeLanOnd.Location = new System.Drawing.Point(171, 168);
+            this.tbBeeLanOnd.Name = "tbBeeLanOnd";
+            this.tbBeeLanOnd.Size = new System.Drawing.Size(100, 20);
+            this.tbBeeLanOnd.TabIndex = 53;
+            this.tbBeeLanOnd.MouseHover += new System.EventHandler(this.tbWebKort_MouseHover);
+            // 
+            // label35
+            // 
+            this.label35.AutoSize = true;
+            this.label35.Location = new System.Drawing.Point(11, 249);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(44, 13);
+            this.label35.TabIndex = 58;
+            this.label35.Text = "Rechts:";
+            this.label35.MouseHover += new System.EventHandler(this.label1_MouseHover);
+            // 
+            // label36
+            // 
+            this.label36.AutoSize = true;
+            this.label36.Location = new System.Drawing.Point(11, 197);
+            this.label36.Name = "label36";
+            this.label36.Size = new System.Drawing.Size(41, 13);
+            this.label36.TabIndex = 54;
+            this.label36.Text = "Boven:";
+            this.label36.MouseHover += new System.EventHandler(this.label1_MouseHover);
+            // 
+            // tbBeeLanLin
+            // 
+            this.tbBeeLanLin.AcceptsTab = true;
+            this.tbBeeLanLin.Location = new System.Drawing.Point(171, 220);
+            this.tbBeeLanLin.Name = "tbBeeLanLin";
+            this.tbBeeLanLin.Size = new System.Drawing.Size(100, 20);
+            this.tbBeeLanLin.TabIndex = 57;
+            this.tbBeeLanLin.MouseHover += new System.EventHandler(this.tbWebKort_MouseHover);
+            // 
+            // tbBeeLanBov
+            // 
+            this.tbBeeLanBov.Location = new System.Drawing.Point(171, 194);
+            this.tbBeeLanBov.Name = "tbBeeLanBov";
+            this.tbBeeLanBov.Size = new System.Drawing.Size(100, 20);
+            this.tbBeeLanBov.TabIndex = 55;
+            this.tbBeeLanBov.MouseHover += new System.EventHandler(this.tbWebKort_MouseHover);
+            // 
+            // label37
+            // 
+            this.label37.AutoSize = true;
+            this.label37.Location = new System.Drawing.Point(11, 223);
+            this.label37.Name = "label37";
+            this.label37.Size = new System.Drawing.Size(35, 13);
+            this.label37.TabIndex = 56;
+            this.label37.Text = "Links:";
+            this.label37.MouseHover += new System.EventHandler(this.label1_MouseHover);
+            // 
+            // label33
+            // 
+            this.label33.AutoSize = true;
+            this.label33.Location = new System.Drawing.Point(3, 141);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(76, 13);
+            this.label33.TabIndex = 51;
+            this.label33.Text = "LANGE ZIJDE";
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(3, 10);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(77, 13);
+            this.label28.TabIndex = 42;
+            this.label28.Text = "KORTE ZIJDE";
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(11, 37);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(39, 13);
+            this.label29.TabIndex = 34;
+            this.label29.Text = "Onder:";
+            this.label29.MouseHover += new System.EventHandler(this.label1_MouseHover);
+            // 
+            // tbBeeKortRec
+            // 
+            this.tbBeeKortRec.Location = new System.Drawing.Point(171, 112);
+            this.tbBeeKortRec.Name = "tbBeeKortRec";
+            this.tbBeeKortRec.Size = new System.Drawing.Size(100, 20);
+            this.tbBeeKortRec.TabIndex = 41;
+            this.tbBeeKortRec.MouseHover += new System.EventHandler(this.tbWebKort_MouseHover);
+            // 
+            // tbBeeKortOnd
+            // 
+            this.tbBeeKortOnd.Location = new System.Drawing.Point(171, 34);
+            this.tbBeeKortOnd.Name = "tbBeeKortOnd";
+            this.tbBeeKortOnd.Size = new System.Drawing.Size(100, 20);
+            this.tbBeeKortOnd.TabIndex = 35;
+            this.tbBeeKortOnd.MouseHover += new System.EventHandler(this.tbWebKort_MouseHover);
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Location = new System.Drawing.Point(11, 115);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(44, 13);
+            this.label30.TabIndex = 40;
+            this.label30.Text = "Rechts:";
+            this.label30.MouseHover += new System.EventHandler(this.label1_MouseHover);
+            // 
+            // label31
+            // 
+            this.label31.AutoSize = true;
+            this.label31.Location = new System.Drawing.Point(11, 63);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(41, 13);
+            this.label31.TabIndex = 36;
+            this.label31.Text = "Boven:";
+            this.label31.MouseHover += new System.EventHandler(this.label1_MouseHover);
+            // 
+            // tbBeeKortLin
+            // 
+            this.tbBeeKortLin.Location = new System.Drawing.Point(171, 86);
+            this.tbBeeKortLin.Name = "tbBeeKortLin";
+            this.tbBeeKortLin.Size = new System.Drawing.Size(100, 20);
+            this.tbBeeKortLin.TabIndex = 39;
+            this.tbBeeKortLin.MouseHover += new System.EventHandler(this.tbWebKort_MouseHover);
+            // 
+            // tbBeeKortBov
+            // 
+            this.tbBeeKortBov.Location = new System.Drawing.Point(171, 60);
+            this.tbBeeKortBov.Name = "tbBeeKortBov";
+            this.tbBeeKortBov.Size = new System.Drawing.Size(100, 20);
+            this.tbBeeKortBov.TabIndex = 37;
+            this.tbBeeKortBov.MouseHover += new System.EventHandler(this.tbWebKort_MouseHover);
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Location = new System.Drawing.Point(11, 89);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(35, 13);
+            this.label32.TabIndex = 38;
+            this.label32.Text = "Links:";
+            this.label32.MouseHover += new System.EventHandler(this.label1_MouseHover);
+            // 
+            // labHelp2
+            // 
+            this.labHelp2.Location = new System.Drawing.Point(11, 392);
+            this.labHelp2.Name = "labHelp2";
+            this.labHelp2.Size = new System.Drawing.Size(265, 31);
+            this.labHelp2.TabIndex = 62;
+            this.labHelp2.Text = " ";
+            // 
+            // label38
+            // 
+            this.label38.AutoSize = true;
+            this.label38.Location = new System.Drawing.Point(3, 277);
+            this.label38.Name = "label38";
+            this.label38.Size = new System.Drawing.Size(90, 13);
+            this.label38.TabIndex = 63;
+            this.label38.Text = "SAMENVOEGEN";
+            // 
+            // cbBeeHand
+            // 
+            this.cbBeeHand.AutoSize = true;
+            this.cbBeeHand.Checked = true;
+            this.cbBeeHand.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbBeeHand.Location = new System.Drawing.Point(171, 300);
+            this.cbBeeHand.Name = "cbBeeHand";
+            this.cbBeeHand.Size = new System.Drawing.Size(77, 17);
+            this.cbBeeHand.TabIndex = 64;
+            this.cbBeeHand.Text = "Handmatig";
+            this.cbBeeHand.UseVisualStyleBackColor = true;
+            this.cbBeeHand.CheckedChanged += new System.EventHandler(this.cbBeeHand_CheckedChanged);
+            this.cbBeeHand.MouseHover += new System.EventHandler(this.cbBeeHand_MouseHover);
+            // 
+            // label39
+            // 
+            this.label39.AutoSize = true;
+            this.label39.Location = new System.Drawing.Point(11, 300);
+            this.label39.Name = "label39";
+            this.label39.Size = new System.Drawing.Size(102, 13);
+            this.label39.TabIndex = 65;
+            this.label39.Text = "Vergelijking zoeken:";
+            this.label39.MouseHover += new System.EventHandler(this.label1_MouseHover);
+            // 
+            // label40
+            // 
+            this.label40.AutoSize = true;
+            this.label40.Location = new System.Drawing.Point(11, 326);
+            this.label40.Name = "label40";
+            this.label40.Size = new System.Drawing.Size(79, 13);
+            this.label40.TabIndex = 66;
+            this.label40.Text = "Totale breedte:";
+            this.label40.MouseHover += new System.EventHandler(this.label1_MouseHover);
+            // 
+            // tbBeeTot
+            // 
+            this.tbBeeTot.Location = new System.Drawing.Point(171, 323);
+            this.tbBeeTot.Name = "tbBeeTot";
+            this.tbBeeTot.Size = new System.Drawing.Size(100, 20);
+            this.tbBeeTot.TabIndex = 67;
+            this.tbBeeTot.MouseHover += new System.EventHandler(this.tbWebKort_MouseHover);
             // 
             // Form1
             // 
@@ -970,6 +1057,12 @@
         private System.Windows.Forms.Label label32;
         private System.Windows.Forms.Button btOphalenBeeld;
         private System.Windows.Forms.Button btSaveBeeld;
+        private System.Windows.Forms.Label labHelp2;
+        private System.Windows.Forms.Label label39;
+        private System.Windows.Forms.CheckBox cbBeeHand;
+        private System.Windows.Forms.Label label38;
+        private System.Windows.Forms.TextBox tbBeeTot;
+        private System.Windows.Forms.Label label40;
     }
 }
 

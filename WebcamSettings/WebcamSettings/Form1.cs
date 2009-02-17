@@ -28,7 +28,7 @@ namespace WebcamSettings
 
         private void GegevensOphalen()
         {
-            data = new string[20];
+            data = new string[30];
             StreamReader sr = null;
             //openen
             try
@@ -49,7 +49,7 @@ namespace WebcamSettings
                 sw.WriteLine(100); sw.WriteLine(100); sw.WriteLine(100);
                 sw.WriteLine(100); sw.WriteLine(100); sw.WriteLine(100);
                 sw.WriteLine(100); sw.WriteLine(100);
-                sw.Close();
+                sw.WriteLine(1); sw.WriteLine(160); sw.Close();
                 sr = File.OpenText("settings.txt");
             }
             //algemene instellingen
@@ -82,6 +82,28 @@ namespace WebcamSettings
             tbBeeLanOnd.Text = data[25] = sr.ReadLine();
             tbBeeLanLin.Text = data[26] = sr.ReadLine();
             tbBeeLanRec.Text = data[27] = sr.ReadLine();
+            if ((data[28] = sr.ReadLine()) == "1") //handmatig
+            {
+                cbBeeHand.Checked = true;
+                label17.Visible = label18.Visible = label19.Visible = label22.Visible = false;
+                tbStreamAantalKolom.Visible = tbStreamKolomHoogte.Visible = tbStreamPerc.Visible = tbStreamVersPixels.Visible = false;
+                label17.MouseHover -= label1_MouseHover;
+                label18.MouseHover -= label1_MouseHover;
+                label19.MouseHover -= label1_MouseHover;
+                label22.MouseHover -= label1_MouseHover;
+                tbStreamVersPixels.MouseHover -= tbWebKort_MouseHover;
+                tbStreamAantalKolom.MouseHover -= tbWebKort_MouseHover;
+                tbStreamKolomHoogte.MouseHover -= tbWebKort_MouseHover;
+                tbStreamPerc.MouseHover -= tbWebKort_MouseHover;
+            }
+            else
+            {
+                cbBeeHand.Checked = false;
+                label40.Visible = tbBeeTot.Visible = false;
+                tbBeeTot.MouseHover -= tbWebKort_MouseHover;
+                label40.MouseHover -= label1_MouseHover;
+            }
+            tbBeeTot.Text = data[29] = sr.ReadLine();
             //afsluiten
             sr.Close();
         }
@@ -182,8 +204,39 @@ namespace WebcamSettings
                 
             }
             //beeld instellingen
-            else if (((Button)sender).Name == "tbSaveBeeld")
+            else if (((Button)sender).Name == "btSaveBeeld")
             {
+                int[] datat = new int[9];
+
+                //kijken of alles klopt
+                //heel simpel kijken of het allemaal getallen zijn
+                try
+                {
+                    datat[0] = Convert.ToInt32(tbBeeKortBov.Text);
+                    datat[1] = Convert.ToInt32(tbBeeKortOnd.Text);
+                    datat[2] = Convert.ToInt32(tbBeeKortLin.Text);
+                    datat[3] = Convert.ToInt32(tbBeeKortRec.Text);
+                    datat[4] = Convert.ToInt32(tbBeeLanBov.Text);
+                    datat[5] = Convert.ToInt32(tbBeeLanOnd.Text);
+                    datat[6] = Convert.ToInt32(tbBeeLanLin.Text);
+                    datat[7] = Convert.ToInt32(tbBeeLanRec.Text);
+                    datat[8] = Convert.ToInt32(tbBeeTot.Text);
+                }
+                catch
+                {
+                    MessageBox.Show("Alleen getallen zijn toegestaan.");
+                    return;
+                }
+                for (int i=0; i<9; i++)
+                    if ((datat[i] % 4) != 0)
+                    {
+                        MessageBox.Show("Alleen getallen die deelbaar zijn door 4 zijn toegstaan.");
+                        return;
+                    }
+
+                if (cbBeeHand.Checked) data[28] = "1";
+                else data[28] = "0";
+
                 data[20] = tbBeeKortBov.Text;
                 data[21] = tbBeeKortOnd.Text;
                 data[22] = tbBeeKortLin.Text;
@@ -192,6 +245,7 @@ namespace WebcamSettings
                 data[25] = tbBeeLanOnd.Text;
                 data[26] = tbBeeLanLin.Text;
                 data[27] = tbBeeLanRec.Text;
+                data[29] = tbBeeTot.Text;
             }
             //textbestand opnieuw schrijven
             FileInfo file = new FileInfo("settings.txt");
@@ -199,13 +253,13 @@ namespace WebcamSettings
             foreach (string regel in data)
                 sw.WriteLine(regel);
             sw.Close();
-            labHelp.Text = labHelp1.Text = "Gegevens opgeslagen";
+            labHelp.Text = labHelp1.Text = labHelp2.Text = "Gegevens opgeslagen";
         }
 
         private void btVorigUitgebreid_Click(object sender, EventArgs e)
         {
             GegevensOphalen();
-            labHelp.Text = labHelp1.Text = "Gegevens opgehaald";
+            labHelp.Text = labHelp1.Text = labHelp2.Text = "Gegevens opgehaald";
         }
 
         private void label1_MouseHover(object sender, EventArgs e)
@@ -271,6 +325,36 @@ namespace WebcamSettings
                     break;
                 case "26": //gezicht - tijdsinterval
                     labHelp1.Text = "De tijdsinterval waarmee er op gezichten gekeken word, interval is in miliseconden";
+                    break;
+                case "29": //kort - onder
+                    labHelp2.Text = "Hoeveel beeld er word afgesneden aan de onderkant van de alleenstaande webcam.";
+                    break;
+                case "30": //kort - boven
+                    labHelp2.Text = "Hoeveel beeld er word afgesneden aan de bovenkant van de alleenstaande webcam.";
+                    break;
+                case "31": //kort - links
+                    labHelp2.Text = "Hoeveel beeld er word afgesneden aan de linkerkant van de alleenstaande webcam.";
+                    break;
+                case "32": //kort - rechts
+                    labHelp2.Text = "Hoeveel beeld er word afgesneden aan de rechterkant van de alleenstaande webcam.";
+                    break;
+                case "34": //lang - onder
+                    labHelp2.Text = "Hoeveel beeld er word afgesneden aan de onderkant van de meerdere webcams.";
+                    break;
+                case "35": //lang - boven
+                    labHelp2.Text = "Hoeveel beeld er word afgesneden aan de bovenkant van de meerdere webcams.";
+                    break;
+                case "36": //lang - links
+                    labHelp2.Text = "Hoeveel beeld er word afgesneden aan de linkerkant van de meerdere webcams.";
+                    break;
+                case "37": //lang - rechts
+                    labHelp2.Text = "Hoeveel beeld er word afgesneden aan de rechterkant van de meerdere webcams.";
+                    break;
+                case "39": //checkbox handmatig vergelijken
+                    labHelp2.Text = "Of het vergelijken tussen de linker- en rechterstream automatisch moet of handmatig.";
+                    break;
+                case "40": //handmatig vergelijken
+                    labHelp2.Text = "Hoeveel er van elke kant van de linker en rechterwebcam verwijderd moet worden om er 1 vloeiende beeld van te maken.";
                     break;
             }
         }
@@ -339,7 +423,77 @@ namespace WebcamSettings
                 case "tbFaceInterval": //gezicht- tijdsinterval
                     labHelp1.Text = "De tijdsinterval waarmee er op gezichten gekeken word, interval is in miliseconden";
                     break;
+                case "tbBeeKortOnd": //kort - onder
+                    labHelp2.Text = "Hoeveel beeld er word afgesneden aan de onderkant van de alleenstaande webcam.";
+                    break;
+                case "tbBeeKortBov": //kort - boven
+                    labHelp2.Text = "Hoeveel beeld er word afgesneden aan de bovenkant van de alleenstaande webcam.";
+                    break;
+                case "tbBeeKortLin": //kort - links
+                    labHelp2.Text = "Hoeveel beeld er word afgesneden aan de linkerkant van de alleenstaande webcam.";
+                    break;
+                case "tbBeeKortRec": //kort - rechts
+                    labHelp2.Text = "Hoeveel beeld er word afgesneden aan de rechterkant van de alleenstaande webcam.";
+                    break;
+                case "tbBeeLanOnd": //lang - onder
+                    labHelp2.Text = "Hoeveel beeld er word afgesneden aan de onderkant van de meerdere webcams.";
+                    break;
+                case "tbBeeLanBov": //lang - boven
+                    labHelp2.Text = "Hoeveel beeld er word afgesneden aan de bovenkant van de meerdere webcams.";
+                    break;
+                case "tbBeeLanLin": //lang - links
+                    labHelp2.Text = "Hoeveel beeld er word afgesneden aan de linkerkant van de meerdere webcams.";
+                    break;
+                case "tbBeeLanRec": //lang - rechts
+                    labHelp2.Text = "Hoeveel beeld er word afgesneden aan de rechterkant van de meerdere webcams.";
+                    break;
+                case "tbBeeTot": //handmatig vergelijken
+                    labHelp2.Text = "Hoeveel er van elke kant van de linker en rechterwebcam verwijderd moet worden om er 1 vloeiende beeld van te maken.";
+                    break;
             }
+        }
+
+        private void cbBeeHand_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cbBeeHand.Checked) //handmatig
+            {
+                label17.Visible = label18.Visible = label19.Visible = label22.Visible = false;
+                tbStreamAantalKolom.Visible = tbStreamKolomHoogte.Visible = tbStreamPerc.Visible = tbStreamVersPixels.Visible = false;
+                label17.MouseHover -= label1_MouseHover;
+                label18.MouseHover -= label1_MouseHover;
+                label19.MouseHover -= label1_MouseHover;
+                label22.MouseHover -= label1_MouseHover;
+                tbStreamVersPixels.MouseHover -= tbWebKort_MouseHover;
+                tbStreamAantalKolom.MouseHover -= tbWebKort_MouseHover;
+                tbStreamKolomHoogte.MouseHover -= tbWebKort_MouseHover;
+                tbStreamPerc.MouseHover -= tbWebKort_MouseHover;
+
+                label40.Visible = tbBeeTot.Visible = true;
+                tbBeeTot.MouseHover += tbWebKort_MouseHover;
+                label40.MouseHover += label1_MouseHover;
+            }
+            else //automatisch
+            {
+                label40.Visible = tbBeeTot.Visible = false;
+                tbBeeTot.MouseHover -= tbWebKort_MouseHover;
+                label40.MouseHover -= label1_MouseHover;
+
+                label17.Visible = label18.Visible = label19.Visible = label22.Visible = true;
+                tbStreamAantalKolom.Visible = tbStreamKolomHoogte.Visible = tbStreamPerc.Visible = tbStreamVersPixels.Visible = true;
+                label17.MouseHover += label1_MouseHover;
+                label16.MouseHover += label1_MouseHover;
+                label19.MouseHover += label1_MouseHover;
+                label22.MouseHover += label1_MouseHover;
+                tbStreamVersPixels.MouseHover += tbWebKort_MouseHover;
+                tbStreamAantalKolom.MouseHover += tbWebKort_MouseHover;
+                tbStreamKolomHoogte.MouseHover += tbWebKort_MouseHover;
+                tbStreamPerc.MouseHover += tbWebKort_MouseHover;
+            }
+        }
+
+        private void cbBeeHand_MouseHover(object sender, EventArgs e)
+        {
+             labHelp2.Text = "Of het vergelijken tussen de linker- en rechterstream automatisch moet of handmatig.";
         }
     }
 }
