@@ -24,7 +24,7 @@ namespace Webcam_Project
                 Console.WriteLine("PROGRAMMA INITIALISEREN");
                 VideoStreamMerger.ImageControl imageC;
                 VideoSource.CaptureDevice[] webcams = new VideoSource.CaptureDevice[4];
-                string[] data = new string[28];
+                string[] data = new string[30];
                 Console.WriteLine(" Bezig met instellingen lezen (settings.txt)...");
                 System.IO.StreamReader sr = System.IO.File.OpenText("settings.txt");
                 for (int i = 0; i < data.Length; i++)
@@ -91,10 +91,18 @@ namespace Webcam_Project
                 }
                 else //2 webcams
                 {
-                    imageC.ScheidingHardwarematig(160);
-             //       if (!imageC.ImagesVergelijkenRechtsLinks())
-               //         Console.WriteLine("  Geen vergelijking tussen Links en Rechts gevonden");
-                 //   Console.WriteLine("  Vergelijking tussen Links en Rechts gevonden");
+                    //handmatig
+                    if (data[28] == "1") imageC.ScheidingHardwarematig(Convert.ToInt32(data[29]));
+                    //automatisch
+                    else
+                    {
+                        if (!imageC.ImagesVergelijkenRechtsLinks())
+                        {
+                            Console.WriteLine("  Geen vergelijking tussen Links en Rechts gevonden");
+                            throw new Exception("ER MOET EEN VERGELIJKING GEVONDEN WORDEN, PROBEER NOG EENS OF HANDMATIG (VIA WEBCAMSETTINGS->KNIPPEN)");
+                        }
+                        Console.WriteLine("  Vergelijking tussen Links en Rechts gevonden");
+                    }
                     Console.WriteLine(" Nieuwe videostream aanmaken voor de lange zijde...");
                     imageC.NieuweImageInitialiseren2();
                     Console.WriteLine(" Bezig met streamen naar " + data[4] + " op poorten " + data[5] + ", " + data[6] + ", " + data[7] + ", " + data[8] + "...");
