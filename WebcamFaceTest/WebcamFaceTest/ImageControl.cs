@@ -789,7 +789,52 @@ namespace VideoStreamMerger
         {
             //    try
             {
+                height = imageRechts.Height - Mboven - Monder;
                 //totale lengte van samengevoegde image (hoogte is al gedaan)
+                width = eindLinks + imageRechts.Width - begRechts - Mlinks - Mrechts;
+
+                image = new Bitmap(width, height, PixelFormat.Format24bppRgb);
+                int xR = begRechts, xL = Mlinks;
+                //voor elke x coordinaat
+                for (int y = 0; y < height; y++)
+                {
+                    //voor elke y coordinaat
+                    for (int x = 0; x < width; x++)
+                    {
+                        //linkerimage
+                        if (x < (eindLinks - Mlinks))
+                        {
+                            image.SetPixel(x, y, imageLinks.GetPixel(xL++, y));
+                        }
+                        //rechterimage
+                        else
+                        {
+                            image.SetPixel(x, y, imageRechts.GetPixel(xR++, y));
+                        }
+                    }
+                    xL = Mlinks;
+                    xR = begRechts;
+                }
+
+                //de afbeelding in het geheugen zetten zodat het aangepast kan worden
+                MemoryStream mstemp = new MemoryStream();
+                image.Save(mstemp, ImageFormat.Bmp);
+                mstemp.Flush();
+                dataImage = mstemp.ToArray();
+                mstemp.Close();
+
+                //variabelen invullen voor het samenvoegen van de streams
+                eindLinks *= 3;
+                begRechts *= 3;
+                //         width += links;
+                Mlinks *= 3;
+                width *= 3;
+                width -= 2;
+                //      width -= links;
+                totaal = width * height + 54;
+                imgLen = imageLinks.Width * 3;
+
+            /*    //totale lengte van samengevoegde image (hoogte is al gedaan)
                 width = eindLinks + imageRechts.Width - begRechts;
 
                 image = new Bitmap(width, height, PixelFormat.Format24bppRgb);
@@ -829,7 +874,7 @@ namespace VideoStreamMerger
                 width -= 2;
                 totaal = width * height + 54;
                 imgLen = imageLinks.Width * 3;
-
+                */
                 //alles terugzetten naar default en true retourneren
                 Bitmap.FromStream(new MemoryStream(dataImage)).Save("c://achtergrond.bmp");
                 imageLinks = imageRechts = null;
@@ -855,7 +900,37 @@ namespace VideoStreamMerger
                 dataRechts = msR.ToArray();
                 msR.Close();
 
-                int x = 0, xL = 54, xR = 54 + begRechts, y = 0;
+                int x = 0, xL = 54 + Mlinks, xR = 54 + begRechts, y = Monder, totlinks = eindLinks - Mlinks;
+
+                for (int i = 53; i < totaal; i++, x++)
+                {
+                    //nieuwe regel
+                    if (x >= width) //eerst alleen >
+                    {
+                        x = 0;
+                        xL = 54 + Mlinks;
+                        xR = 54 + begRechts;
+                        y++;
+
+                        dataImage[i++] = 0;
+                        dataImage[i++] = 0;
+                    }
+                    else
+                    {
+                        //linkerImage
+                        if (x <= totlinks)
+                        {
+                            dataImage[i] = dataLinks[xL++ + (y * imgLen)];
+                        }
+                        //rechterImage
+                        else
+                        {
+                            dataImage[i] = dataRechts[xR++ + (y * imgLen)];
+                        }
+                    }
+                }
+
+     /*           int x = 0, xL = 54, xR = 54 + begRechts, y = 0;
 
                 for (int i = 53; i < totaal; i++, x++)
                 {
@@ -883,7 +958,7 @@ namespace VideoStreamMerger
                             dataImage[i] = dataRechts[xR++ + (y * imgLen)];
                         }
                     }
-                }
+                }*/
 
                 //klaar dus alles weer terugzetten naar default en de data voor videostream retourneren
               //          Bitmap.FromStream(new MemoryStream(dataImage)).Save("c://achtergrondStream.bmp");

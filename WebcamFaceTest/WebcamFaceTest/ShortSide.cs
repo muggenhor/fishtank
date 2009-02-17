@@ -65,7 +65,6 @@ namespace VideoStreamMerger
                 x2 = links;
             }
 
-            Console.WriteLine("start opslaan");
             imageFinal.Save("c://temp.bmp");
 
             MemoryStream ms = new MemoryStream();
@@ -88,7 +87,7 @@ namespace VideoStreamMerger
 
         private bool ImageVervormen(Bitmap image)
         {
-            Console.WriteLine("start vervormen");
+  //          Console.WriteLine("start vervormen");
 
             MemoryStream ms = new MemoryStream();
             image.Save(ms, ImageFormat.Bmp);
@@ -98,11 +97,12 @@ namespace VideoStreamMerger
 
             int x = links;
             int y = onder;
+            int totLinks = breedte - 2;
 
             int i;
             for (i = 54; i < totaal; i++, x++)
             {
-                if (x >= breedte - 2)
+                if (x >= totLinks)
                 {
                     x = links;
                     y++;
@@ -114,13 +114,11 @@ namespace VideoStreamMerger
                     data[i] = data2[x + 54 + (y * imgLen)];
             }
 
-            Console.WriteLine("start opslaan");
-            Bitmap bm = (Bitmap)Bitmap.FromStream(new MemoryStream(data));
-            bm.Save("c://temp2.bmp");
+   //         Console.WriteLine("start opslaan");
+   //         Bitmap bm = (Bitmap)Bitmap.FromStream(new MemoryStream(data));
+  //          bm.Save("c://temp2.bmp");
 
-            socket.Verzenden(data);
-
-            return true;
+            return socket.Verzenden(data);
         }
 
 
