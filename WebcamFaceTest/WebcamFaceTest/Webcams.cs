@@ -62,7 +62,11 @@ namespace Webcam_Project
                     Convert.ToInt32(data[22]),
                     Convert.ToInt32(data[23]),
                     Convert.ToInt32(data[20]),
-                    Convert.ToInt32(data[21]));
+                    Convert.ToInt32(data[21]),
+                    Convert.ToInt32(data[26]),
+                    Convert.ToInt32(data[27]),
+                    Convert.ToInt32(data[24]),
+                    Convert.ToInt32(data[25]));
                 imageC.WebcamVoorKleineZijdeLaden(
                     webcams[0],
                     new VideoStreamMerger.TCPOut(data[4], Convert.ToInt32(data[6])));

@@ -36,6 +36,7 @@ namespace VideoStreamMerger
         private face gezichtHerk=null;
 
         private int Alinks, Arechts, Aboven, Aonder;
+        private int Mlinks, Mrechts, Mboven, Monder;
         private bool gezichtZoeken = true;
         private int eindLinks, begMidden, eindMidden, begRechts; //de start/eind posities in de streams voor het samenveogen van de streams tot 1
         private int width = 0, height = 0, totaal, imgLen; // de grootte van het uiteindelijk afbeeldingen in aantal bytes (imgLen is de lengte van 1 rij van een stream van een webcam)
@@ -66,7 +67,7 @@ namespace VideoStreamMerger
         public ImageControl(int hoogteKolomVergelijken, int aantalKolomVergelijken, int aantalFramesVergelijken, int aantalPixelsBekijken, 
             float decPercentageHetzelfde, int ratioInOut, int verschilImages, int verschilBackground, TCPOut socketStream, TCPOut socketMotion,
             int detectieVerschil, int intervalMotionCheck, TCPOut socketGezichtsHerkenning, int intervalFaceCheck,
-            int links, int rechts, int boven, int onder)
+            int links, int rechts, int boven, int onder, int Mlinks, int Mrechts, int Mboven, int Monder)
         {
             this.hoogteKolom = hoogteKolomVergelijken;
             this.kolom = aantalKolomVergelijken;
@@ -84,6 +85,10 @@ namespace VideoStreamMerger
             this.Alinks = links;
             this.Aonder = onder;
             this.Arechts = rechts;
+            this.Mboven = Mboven;
+            this.Mlinks = Mlinks;
+            this.Monder = Monder;
+            this.Mrechts = Mrechts;
             this.timer = new System.Timers.Timer(intervalMotionCheck);
             timer.Enabled = false;
             timer.Elapsed += new System.Timers.ElapsedEventHandler(timer_Elapsed);
@@ -102,7 +107,8 @@ namespace VideoStreamMerger
         }
         //een standaard imageControl, oorspronkelijk voor avi bestanden
         public ImageControl()
-            : this(80, 5, 20, 5, (float)0.95, 1, 15, 20, new TCPOut("127.0.0.1", 7779), new TCPOut("127.0.0.1", 7780), 20, 500, new TCPOut("127.0.0.1", 7781), 100, 100, 100, 100, 100) { }
+            : this(80, 5, 20, 5, (float)0.95, 1, 15, 20, new TCPOut("127.0.0.1", 7779), new TCPOut("127.0.0.1", 7780), 
+                20, 500, new TCPOut("127.0.0.1", 7781), 100, 100, 100, 100, 100, 100, 100, 100, 100) { }
 
         //garbage collecteren (omdat er soms geheugen niet vrijgemaakt word)
         void timerGC_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
