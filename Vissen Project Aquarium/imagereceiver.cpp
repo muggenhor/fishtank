@@ -304,7 +304,7 @@ bool ImageReceiver::ReceiveSegment(){
 
 	const size_t wanted_buffer_size = image_size>header_size ? image_size : header_size;
 	if(buffer.size()<wanted_buffer_size)buffer.resize(wanted_buffer_size);
-	const size_t bytes_to_receive=wanted_buffer_size-buffered_bytes;
+	const int bytes_to_receive=wanted_buffer_size-buffered_bytes;
 	if(bytes_to_receive<0){
 		std::cerr<<"Stream is corrupt(2), closing connection!"<<std::endl;
 		m_socket_stream.Close();
