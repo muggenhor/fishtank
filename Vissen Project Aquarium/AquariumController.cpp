@@ -22,25 +22,25 @@ float my_random()
 
 AquariumController::AquariumController(void):
 		//voeg grond toe
-		ground("./data/heightmap.jpg", 30, "./data/ground.jpg"),
+		ground("./Data/heightmap.jpg", 30, "./Data/ground.jpg"),
 		//voeg de muren toe
 		wall1(math3::Vec3d(-0.5*aquariumSize.x, -0.5*aquariumSize.y + balkSize, -0.5*aquariumSize.z + balkSize),
 					math3::Vec3d(-0.5*aquariumSize.x, 0.5*aquariumSize.y - balkSize, -0.5*aquariumSize.z + balkSize),
 					math3::Vec3d(-0.5*aquariumSize.x, 0.5*aquariumSize.y - balkSize, 0.5*aquariumSize.z - balkSize),
-					math3::Vec3d(-0.5*aquariumSize.x, -0.5*aquariumSize.y + balkSize, 0.5*aquariumSize.z - balkSize), "./data/wall1.jpg"),
+					math3::Vec3d(-0.5*aquariumSize.x, -0.5*aquariumSize.y + balkSize, 0.5*aquariumSize.z - balkSize), "./Data/wall1.jpg"),
 		wall2(math3::Vec3d(-0.5*aquariumSize.x + balkSize, -0.5*aquariumSize.y + balkSize, -0.5*aquariumSize.z),
 					math3::Vec3d(-0.5*aquariumSize.x + balkSize, 0.5*aquariumSize.y - balkSize, -0.5*aquariumSize.z),
 					math3::Vec3d(0.5*aquariumSize.x - balkSize, 0.5*aquariumSize.y - balkSize, -0.5*aquariumSize.z),
-					math3::Vec3d(0.5*aquariumSize.x - balkSize, -0.5*aquariumSize.y + balkSize, -0.5*aquariumSize.z), "./data/wall2.jpg"),
+					math3::Vec3d(0.5*aquariumSize.x - balkSize, -0.5*aquariumSize.y + balkSize, -0.5*aquariumSize.z), "./Data/wall2.jpg"),
 		/*ceiling(math3::Vec3d(-0.5*aquariumSize.x + balkSize, 0.5*aquariumSize.y, 0.5*aquariumSize.z - balkSize),
 					math3::Vec3d(-0.5*aquariumSize.x + balkSize, 0.5*aquariumSize.y, -0.5*aquariumSize.z + balkSize),
 					math3::Vec3d(0.5*aquariumSize.x - balkSize, 0.5*aquariumSize.y, -0.5*aquariumSize.z + balkSize),
-					math3::Vec3d(0.5*aquariumSize.x - balkSize, 0.5*aquariumSize.y, 0.5*aquariumSize.z - balkSize), "./data/ceiling.jpg")*/
+					math3::Vec3d(0.5*aquariumSize.x - balkSize, 0.5*aquariumSize.y, 0.5*aquariumSize.z - balkSize), "./Data/ceiling.jpg")*/
 		//voeg het plafond toe
 		ceiling(math3::Vec3d(-0.5*aquariumSize.x, 0.5*aquariumSize.y, 0.5*aquariumSize.z),
 					math3::Vec3d(-0.5*aquariumSize.x, 0.5*aquariumSize.y, -0.5*aquariumSize.z),
 					math3::Vec3d(0.5*aquariumSize.x, 0.5*aquariumSize.y, -0.5*aquariumSize.z),
-					math3::Vec3d(0.5*aquariumSize.x, 0.5*aquariumSize.y, 0.5*aquariumSize.z), "./data/ceiling.jpg")
+					math3::Vec3d(0.5*aquariumSize.x, 0.5*aquariumSize.y, 0.5*aquariumSize.z), "./Data/ceiling.jpg")
 {
 	facePosition = math3::Vec2d(50, 50);
 }
