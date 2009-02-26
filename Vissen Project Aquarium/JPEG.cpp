@@ -2,12 +2,13 @@
 #include "Main.h"
 #include <iostream>
 
-#ifdef LINUX
-#include <jpeglib.h>
-#else
-extern "C" {
-#include "include/jpeglib.h"
+#ifdef WIN32
+extern "C"
+{
+# include "include/jpeglib.h"
 }
+#else
+# include <jpeglib.h>
 #endif
 
 void DecodeJPG(jpeg_decompress_struct* cinfo, tImageJPG *pImageData, bool flipY)
