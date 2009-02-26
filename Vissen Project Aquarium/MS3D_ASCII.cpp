@@ -386,34 +386,21 @@ void Material::reloadTexture( void )
 //										The Model Class
 /////////////////////////////////////////////////////////////////////////////////////////////////
 Model::Model():
-bb_l(0,0,0),
-bb_h(0,0,0)
+	bb_l(0, 0, 0),
+	bb_h(0, 0, 0),
+	num_shapes(0),
+	shapes(NULL),
+	material_indices(NULL),
+	num_materials(0),
+	materials(NULL)
 {
-	num_shapes = 0;
-	shapes = NULL;
-	num_materials = 0;
-	materials = NULL;
-	material_indices=NULL;
 }
 
 Model::~Model()
 {
-
-	if (shapes != NULL)
-	{
-		delete[] shapes;
-		shapes = NULL;
-	}
-	if (materials != NULL)
-	{
-		delete[] materials;
-		materials = NULL;
-	}
-	if (material_indices != NULL)
-	{
-		delete[] material_indices;
-		material_indices = NULL;
-	}
+	delete [] shapes;
+	delete [] materials;
+	delete [] material_indices;
 }
 
 bool Model::loadFromMs3dAsciiFile( const char *filename, const math3::Matrix4x4f &transform )
@@ -562,8 +549,7 @@ x=q*sin(2*b*l)/(2*b) + p*l
 	double p=0.5*(c+1);
 	double s_a=0.5*q/b;
 
-
-
+	// FIXME: O(n^3) performance
 	for (k = 0; k < num_shapes; k++)	// for each shape
 	{
 		int materialIndex = material_indices[k];
@@ -625,4 +611,3 @@ x=q*sin(2*b*l)/(2*b) + p*l
 		glEnd();
 	}
 }
-
