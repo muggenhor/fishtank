@@ -24,14 +24,14 @@ using namespace std;
 using namespace math3;
 
 //scherm resolutie
-int win_width=0, win_height=0;
+static int win_width=0, win_height=0;
 //de schermpositie
-int win_move_x = 5, win_move_y = 30;
+static int win_move_x = 5, win_move_y = 30;
 
 //oogafstand van het aquarium
-float eye_distance=300;
+static float eye_distance=300;
 
-map<string, Model> models;
+static map<string, Model> models;
 
 //laad de settings uit het opgegeven bestand
 void LoadSettings(std::istream &input_file)
@@ -162,13 +162,13 @@ void LoadModels(std::istream &input_file, AquariumController *aquariumController
 	}
 }
 
-ImageReceiver image_receiver(7778);
-ImageReceiver image_receiver2(7779);
+static ImageReceiver image_receiver(7778);
+static ImageReceiver image_receiver2(7779);
 
-PositionReceiver position_receiver(0, 7780);
-PositionReceiver faceposition_receiver(1, 7781);
+static PositionReceiver position_receiver(0, 7780);
+static PositionReceiver faceposition_receiver(1, 7781);
 
-unsigned int background_id;
+static unsigned int background_id;
 
 //teken de de webcam schermen en balken, afhankelijk van de huidige campositie. cam1 == true: grote scherm. cam1 == false: kleine scherm
 void DrawBackground(bool cam1){
