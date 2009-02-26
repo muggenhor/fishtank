@@ -1,5 +1,5 @@
-CFLAGS=-g3 -Wall
-CXXFLAGS=-g3 -Wall
+CFLAGS=-g3 -Wall -Wextra
+CXXFLAGS=-g3 -Wall -Wextra
 LIBS=`pkg-config --libs libglfw` -lGLU -ljpeg
 
 all: VissenProject

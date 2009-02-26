@@ -337,7 +337,7 @@ void DrawBackground(bool cam1){
 	glColor3f(1,1,1);
 }
 
-int main(int argc, char **argv)
+int main()
 {
 	srand(time(NULL));/// make random numbers sequence depend to program start time.
 

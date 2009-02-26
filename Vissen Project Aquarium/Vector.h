@@ -56,7 +56,7 @@ class Vector
 		/*	Normalize (make it a unit vector). */
 		void normalize();
 
-		const float operator[]( int index ) const { return m_vector[index]; }
+		float operator[]( int index ) const { return m_vector[index]; }
 
 	private:
 		//	Vector data
