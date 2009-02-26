@@ -10,7 +10,6 @@ extern "C" {
 }
 #endif
 
-
 void DecodeJPG(jpeg_decompress_struct* cinfo, tImageJPG *pImageData, bool flipY)
 {
 	jpeg_read_header(cinfo, TRUE);
@@ -44,9 +43,6 @@ void DecodeJPG(jpeg_decompress_struct* cinfo, tImageJPG *pImageData, bool flipY)
 	jpeg_finish_decompress(cinfo);
 }
 
-
-
-
 tImageJPG *LoadJPG(const char *filename, bool flipY)
 {
 	struct jpeg_decompress_struct cinfo;
@@ -79,7 +75,6 @@ tImageJPG *LoadJPG(const char *filename, bool flipY)
 	return pImageData;
 }
 
-
 void JPEG_Texture(UINT textureArray[], tImageJPG *pImage, int textureID)
 {
 	if(pImage == NULL)	exit(0);
@@ -102,9 +97,6 @@ void JPEG_Texture(UINT textureArray[], tImageJPG *pImage, int textureID)
 	}
 }
 
-
-
-
 void JPEG_Texture(UINT textureArray[], const std::string &strFileName, int textureID)
 {
 	if(strFileName.empty())return;
@@ -113,8 +105,3 @@ void JPEG_Texture(UINT textureArray[], const std::string &strFileName, int textu
 
 	JPEG_Texture(textureArray, pImage, textureID);
 }
-
-
-
-
-
