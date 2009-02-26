@@ -98,8 +98,6 @@ void LoadModels(std::istream &input_file, AquariumController *aquariumController
 
 	for (int i = 0; i < n; i++)
 	{
-		bool exsists = false;
-
 		string model_name;
 		safe_getline(input_file, model_name);
 		map<string, Model>::iterator model_iterator=models.find(model_name);
@@ -125,8 +123,6 @@ void LoadModels(std::istream &input_file, AquariumController *aquariumController
 	n=atoi(s.c_str());
 	for (int i = 0; i < n; i++)
 	{
-		bool exsists = false;
-
 		string model_name;
 		safe_getline(input_file, model_name);
 		map<string, Model>::iterator model_iterator=models.find(model_name);

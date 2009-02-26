@@ -47,15 +47,18 @@ StartupHax StartupHax_init;
 #include <errno.h>
 
 
-bool SimpleSocketStream::WriteString(const std::string &line){
-	int s=Write(&line[0],line.size());
-	if (s!=line.size()){
+bool SimpleSocketStream::WriteString(const std::string &line)
+{
+	const size_t s = Write(&line[0],line.size());
+	if (s != line.size())
+	{
 		//wxLogMessage(_T("Socket write failed, size=%d"),s);
 		std::ostringstream ss;
 		ss<<"write failed: want to write "<<line.size()<<" but only wrote "<<s;
 		m_error_string=ss.str();
 		return false;
 	}
+
 	return true;
 }
 
@@ -215,7 +218,7 @@ typedef struct tagBitmapInfoHeader {
 } BitmapInfoHeader;
 #pragma pack(pop,bitmap_data)
 
-const int header_size=sizeof(BitmapFileHeader)+sizeof(BitmapInfoHeader);
+static const size_t header_size=sizeof(BitmapFileHeader)+sizeof(BitmapInfoHeader);
 
 ImageReceiver::ImageReceiver(int port)
 {
@@ -299,9 +302,9 @@ bool ImageReceiver::ReceiveSegment(){
 		buffer.resize(image_size);/// header pointer is not valid anymore after resize
 	}
 
-	int wanted_buffer_size = image_size>header_size ? image_size : header_size;
+	const size_t wanted_buffer_size = image_size>header_size ? image_size : header_size;
 	if(buffer.size()<wanted_buffer_size)buffer.resize(wanted_buffer_size);
-	int bytes_to_receive=wanted_buffer_size-buffered_bytes;
+	const size_t bytes_to_receive=wanted_buffer_size-buffered_bytes;
 	if(bytes_to_receive<0){
 		std::cerr<<"Stream is corrupt(2), closing connection!"<<std::endl;
 		m_socket_stream.Close();
@@ -329,9 +332,9 @@ unsigned int ImageReceiver::TextureID(){
 }
 
 using namespace std;
-void ImageReceiver::ReceivedImage(){
+void ImageReceiver::ReceivedImage()
+{
 	//std::cerr<<"Received an image"<<std::endl;
-	BitmapFileHeader *header=(BitmapFileHeader *)(&buffer[0]);
 	BitmapInfoHeader *info=(BitmapInfoHeader *)(&buffer[sizeof(BitmapFileHeader)]);
 	//std::cerr<<"resolution: "<<(info->biWidth)<<"x"<<(info->biHeight)<<std::endl;
 /*

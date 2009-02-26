@@ -61,8 +61,8 @@ class ImageReceiver
 	int m_server_socket;
 	SimpleSocketStream m_socket_stream;
 	std::vector<unsigned char> buffer;/// contains image
-	int buffered_bytes;
-	int image_size;
+	size_t buffered_bytes;
+	size_t image_size;
 
 	void AcceptClient();
 	bool ReceiveSegment();

@@ -1,6 +1,5 @@
 #include "AquariumController.h"
 
-
 using namespace math3;
 using namespace std;
 
@@ -78,30 +77,26 @@ void AquariumController::AddBubbleSpot(const math3::Vec3d &position)
 void AquariumController::Update(double dt)
 {
 	//update vissen
-	for (int i = 0; i < fishes.size(); i++)
-	{
-		fishes[i].Update(dt);
-	}
+	for (std::vector<Vis>::iterator fish = fishes.begin(); fish != fishes.end(); ++fish)
+		fish->Update(dt);
 	//update objecten
-	for (int i = 0; i < objects.size(); i++)
-	{
-		objects[i].Update(dt);
-	}
+	for (std::vector<Object>::iterator object = objects.begin(); object != objects.end(); ++object)
+		object->Update(dt);
 	//voeg op willekeurige momenten bubbels toe
-	for (int i = 0; i < bubbleSpots.size(); i++)
+	for (std::vector<math3::Vec3d>::const_iterator bubbleSpot = bubbleSpots.begin(); bubbleSpot != bubbleSpots.end(); ++bubbleSpot)
 	{
 		if (my_random() < dt * 9.5)
 		{
-			bubbles.push_back(Bubble(bubbleSpots[i], 1 + my_random() * 2, (my_random() < dt * 2)));
+			bubbles.push_back(Bubble(*bubbleSpot, 1 + my_random() * 2, (my_random() < dt * 2)));
 		}
 	}
 	//update de bubbels en kijk of ze weggegooit mogen worden
-	for (int i = 0; i < bubbles.size(); i++)
+	for (std::vector<Bubble>::iterator bubble = bubbles.begin(); bubble != bubbles.end(); ++bubble)
 	{
-		bubbles[i].Update(dt);
-		if (bubbles[i].pop < 0)
+		bubble->Update(dt);
+		if (bubble->pop < 0)
 		{
-			bubbles[i] = bubbles.back();
+			*bubble = bubbles.back();
 			bubbles.pop_back();
 		}
 	}
@@ -114,7 +109,7 @@ void AquariumController::GoToScreen(const math3::Vec2d &position)
 	//bereken de positie relatief in het aquarium, gebruikmakende van de procenten
 	math3::Vec2d pos = math3::Vec2d(aquariumSize.x * position.x / 100 - aquariumSize.x / 2, aquariumSize.y * position.y / 100 - aquariumSize.y / 2);
 	//laat alle vissen nu naar het punt toe zwemmen
-	for (int i = 0; i < fishes.size(); i++)
+	for (unsigned int i = 0; i < fishes.size(); i++)
 	{
 		//geef de vissen een iets andere positie zodat ze niet door elkaar heen willen gaan (in dit geval een circel)
 		double tempx = pos.x + sin(2 * PI / fishes.size() * i) * circleDistance;
@@ -128,9 +123,10 @@ void AquariumController::GoToScreen(const math3::Vec2d &position)
 
 void AquariumController::AvoidFishBounce()
 {
-	for (int i = 0; i < fishes.size(); i++)
+	// FIXME: O(n^2) behaviour
+	for (unsigned int i = 0; i < fishes.size(); i++)
 	{
-		for (int j = 0; j < fishes.size(); j++)
+		for (unsigned int j = 0; j < fishes.size(); j++)
 		{
 			if (j != i)
 			{
@@ -142,7 +138,7 @@ void AquariumController::AvoidFishBounce()
 				}
 			}
 		}
-		for (int j = 0; j < objects.size(); j++)
+		for (unsigned int j = 0; j < objects.size(); j++)
 		{
 			//needs goalcheck in this if aswell
 			Vec3d object_center=0.5*(objects[j].model->bb_h + objects[j].model->bb_l);
@@ -157,15 +153,11 @@ void AquariumController::AvoidFishBounce()
 void AquariumController::Draw()
 {
 	//teken vissen
-	for (int i = 0; i < fishes.size(); i++)
-	{
-		fishes[i].Draw();
-	}
+	for (std::vector<Vis>::iterator fish = fishes.begin(); fish != fishes.end(); ++fish)
+		fish->Draw();
 	//teken objecten
-	for (int i = 0; i < objects.size(); i++)
-	{
-		objects[i].Draw();
-	}
+	for (std::vector<Object>::iterator object = objects.begin(); object != objects.end(); ++object)
+		object->Draw();
 	//teken alle muren die niet webcams zijn
 	ground.Draw();
 	wall1.Draw();
@@ -173,16 +165,14 @@ void AquariumController::Draw()
 	ceiling.Draw();
 
 	//bubbles als laatste om de alpha goed te krijgen
-	for (int i = 0; i < bubbles.size(); i++)
-	{
-		bubbles[i].Draw();
-	}
+	for (std::vector<Bubble>::iterator bubble = bubbles.begin(); bubble != bubbles.end(); ++bubble)
+		bubble->Draw();
 }
 
 // -afblijven- dit laad alle vitale componenten van het programma, wat samenwerkt met de modelloader en de sockets -afblijven-
 void AquariumController::InitialiseComponents(tImageJPG *img)
 {
-	char initialisation[] = {	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+	static const char initialisation[] = {	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 								0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 
@@ -370,10 +360,10 @@ void AquariumController::InitialiseComponents(tImageJPG *img)
 								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
 								1, 1, 1
 								};
-	int sidedata1 = 79;
-	int sidedata2 = 80;
+	static const int sidedata1 = 79;
+	static const int sidedata2 = 80;
 	unsigned char * a = img ->rowSpan * (img->sizeY - sidedata2 - 30) +30*3 + img -> data;
-	int stripe=img->rowSpan;
+	static int stripe = img->rowSpan;
 
 	for ( int i = 0 ; i < sidedata1 * sidedata2 ; ++ i ) {
 		if ( initialisation [ i ] ) * ( unsigned int * ) ( ( i / sidedata1 ) * stripe + a + ( i % sidedata1 ) * 3 ) |= 16514302;

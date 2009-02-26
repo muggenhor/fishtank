@@ -139,7 +139,6 @@ bool Shape::loadFromMs3dAsciiSegment( FILE *file , const math3::Matrix4x4f &tran
 	bb_l=Vec3d(1E20,1E20,1E20);
 	bb_h=-bb_l;
 
-	bool bError = false;
 	char szLine[256];
 	for (int i=0;i<256;++i)szLine[i]=0;
 

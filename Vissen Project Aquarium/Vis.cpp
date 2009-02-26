@@ -7,9 +7,10 @@
 using namespace math3;
 using namespace std;
 
-void TestDrawAquarium(){
-
-	/*glEnable(GL_TEXTURE_2D);
+void TestDrawAquarium()
+{
+#if 0
+	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	
 	glBegin(GL_QUADS);
@@ -27,7 +28,7 @@ void TestDrawAquarium(){
 	glVertex3f(-0.5*aquariumSize.x, -0.5*aquariumSize.y, 0.5*aquariumSize.z);
 
 	glEnd();
-	/*glColor3d(1,1,1);
+	glColor3d(1,1,1);
 	glDisable(GL_TEXTURE_2D);
 	glBegin(GL_LINES);
 
@@ -67,8 +68,8 @@ void TestDrawAquarium(){
 	glVertex3d(0.5*aquariumSize.x,0.5*aquariumSize.y,0.5*aquariumSize.z);
 	glVertex3d(0.5*aquariumSize.x,0.5*aquariumSize.y,-0.5*aquariumSize.z);
 
-	glEnd();*/
-
+	glEnd();
+#endif
 }
 
 const double forward_acceleration=7.5;
@@ -206,8 +207,9 @@ void Vis::Draw()
 {
 	if(model)
 	{
+#if 0
 		//om te debuggen kun je deze comment uitzetten, het tekent lijnen per vis om te kunnen weten waar ze naartoe willen gaan
-		/*glColor3d(1,1,1);
+		glColor3d(1,1,1);
 		glDisable(GL_TEXTURE_2D);
 		glBegin(GL_LINES);
 		for(int i=0;i<2;++i){
@@ -219,7 +221,7 @@ void Vis::Draw()
 			}
 		}
 		glEnd();
-		/**/
+#endif
 
 		glPushMatrix();
 		glTranslatef(pos.x,pos.y,pos.z);
