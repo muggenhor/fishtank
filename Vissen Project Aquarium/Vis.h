@@ -62,7 +62,7 @@ class Vis
 		bool IsGoingTowards(const math3::Vec3d &object);
 
 		//geeft een willekeurige posite binnen de zwemarea, rekening houdende met de maxFloorHeight
-		math3::Vec3d Vis::RandomPos();
+		math3::Vec3d RandomPos();
 		// - afblijven - de update van de vis, deze houd het bewegen van de vis bij en voert een stap uit - afblijven -
 		void Update(double dt);
 		//teken de vis
