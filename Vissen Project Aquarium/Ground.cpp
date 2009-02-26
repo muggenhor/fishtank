@@ -48,7 +48,7 @@ void Ground::GenerateGroundFromImage(const string &filename)
 
 
 	//cleanup
-	if (image->data)
+	if (image)
 	{
 		free(image->data);
 	}

@@ -47,13 +47,12 @@ void DecodeJPG(jpeg_decompress_struct* cinfo, tImageJPG *pImageData, bool flipY)
 tImageJPG *LoadJPG(const char *filename, bool flipY)
 {
 	struct jpeg_decompress_struct cinfo;
-	tImageJPG *pImageData = NULL;
-	FILE *pFile;
 
-	if((pFile = fopen(filename, "rb")) == NULL)
+	FILE* const file = fopen(filename, "rb");
+	if (file == NULL)
 	{
 		//MessageBox(hWnd, "Unable to load JPG File!", "Error", MB_OK);
-		std::cerr<<"Unable to load JPG File '"<<filename<<"'"<<std::endl;
+		std::cerr << "Unable to load JPG File '" << filename << "'" << std::endl;
 		return NULL;
 	}
 
@@ -63,22 +62,23 @@ tImageJPG *LoadJPG(const char *filename, bool flipY)
 
 	jpeg_create_decompress(&cinfo);
 
-	jpeg_stdio_src(&cinfo, pFile);
+	jpeg_stdio_src(&cinfo, file);
 
-	pImageData = (tImageJPG*)malloc(sizeof(tImageJPG));
+	tImageJPG* const pImageData = (tImageJPG*)malloc(sizeof(*pImageData));
 
 	DecodeJPG(&cinfo, pImageData, flipY);
 
 	jpeg_destroy_decompress(&cinfo);
 
-	fclose(pFile);
+	fclose(file);
 
 	return pImageData;
 }
 
 void JPEG_Texture(UINT textureArray[], tImageJPG *pImage, int textureID)
 {
-	if(pImage == NULL)	exit(0);
+	if (pImage == NULL)
+		exit(EXIT_FAILURE);
 
 	glGenTextures(1, &textureArray[textureID]);
 	glBindTexture(GL_TEXTURE_2D, textureArray[textureID]);
@@ -89,13 +89,10 @@ void JPEG_Texture(UINT textureArray[], tImageJPG *pImage, int textureID)
 
 	if (pImage)
 	{
-		if (pImage->data)
-		{
-			free(pImage->data);
-		}
-
-		free(pImage);
+		free(pImage->data);
 	}
+
+	free(pImage);
 }
 
 void JPEG_Texture(UINT textureArray[], const std::string &strFileName, int textureID)
