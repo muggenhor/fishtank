@@ -1,6 +1,7 @@
 #ifndef _MS3D_ASCII_H
 #define _MS3D_ASCII_H
 
+#include "GL/GLee.h"
 #define GLFW_BUILD_DLL
 #include <GL/glfw.h>
 

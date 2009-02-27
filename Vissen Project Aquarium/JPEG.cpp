@@ -1,7 +1,7 @@
 #include "JPEG.h"
 #include "Main.h"
 #include <iostream>
-#include <GL/GLee.h>
+#include "GL/GLee.h"
 #include <cassert>
 
 #ifdef WIN32

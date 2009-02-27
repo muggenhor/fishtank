@@ -1,7 +1,7 @@
 #ifndef JPEG_H
 #define JPEG_H
 
-#include <GL/GLee.h>
+#include "GL/GLee.h"
 #include <string.h>
 #include <stdio.h>
 #include <string>

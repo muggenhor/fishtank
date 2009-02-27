@@ -1,7 +1,7 @@
 #ifndef math3gl_h_
 #define math3gl_h_
 #include "math3.h"
-#include "GL/gl.h"
+#include "GL/GLee.h"
 /* (C) 2004 by Dmytry Lavrov.
 contact: dmytry lavrov at fastmail dot fm
  You can use it almost freely but

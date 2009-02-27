@@ -1,7 +1,6 @@
 CFLAGS=-g3 -Wall -Wextra
 CXXFLAGS=-g3 -Wall -Wextra
 LDFLAGS=
-CPPFLAGS=-I.
 
 # Enable profiling
 CFLAGS+=-pg
