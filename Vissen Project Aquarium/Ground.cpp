@@ -5,54 +5,42 @@
 using namespace math3;
 using namespace std;
 
-Ground::Ground(const string &filename, int maxHeight, const std::string &texturename):
-texture_id(0)
+Ground::Ground(const string &filename, int maxHeight, const std::string &texturename) :
+	maxHeight(maxHeight),
+	file(filename)
 {
-	this->maxHeight = maxHeight;
 	//GenerateGroundFromImage(filename);
 
-	file = filename;
-
-	if(!texturename.empty()){/// if got texture name
-		JPEG_Texture(&texture_id, texturename.c_str(), 0);
+	if (!texturename.empty())
+	{/// if got texture name
+		texture = Texture(Image::LoadJPG(texturename.c_str()));
 	}
-}
-
-Ground::~Ground(void)
-{
 }
 
 void Ground::GenerateGroundFromImage(const string &filename)
 {
-	//malloc
-	tImageJPG *image = LoadJPG(filename.c_str());
-	if (!image)
+	Image image = Image::LoadJPG(filename.c_str());
+#if 0
+	if (error_loading_image)
 	{
 		widthAmount = 2;
 		lengthAmount = 2;
 		ground.resize(widthAmount * lengthAmount, -aquariumSize.y / 2);
 		return;
 	}
+#endif
 
-	widthAmount = image->sizeX;
-	lengthAmount = image->sizeY;
+	widthAmount = image.width;
+	lengthAmount = image.height;
 	ground.resize(widthAmount * lengthAmount, -aquariumSize.y / 2);
 
 	for (int y = 0; y < lengthAmount; y++)
 	{
  		for (int x = 0; x < widthAmount; x++)
  		{
- 	 		ground[x + y*widthAmount] = -aquariumSize.y / 2 + ((unsigned char)(image->data[x * 3 + y * image->rowSpan])) / 255.0 * maxHeight;
+ 	 		ground[x + y*widthAmount] = -aquariumSize.y / 2 + ((unsigned char)(image.data[x * 3 + y * image.rowSpan])) / 255.0 * maxHeight;
  		}
 	}
-
-
-	//cleanup
-	if (image)
-	{
-		free(image->data);
-	}
-	free(image);
 }
 
 double Ground::HeightAt(int x, int y){
@@ -97,17 +85,19 @@ void Ground::Draw()
 	glMaterialfv ( GL_FRONT_AND_BACK, GL_EMISSION, black ) ;
 	glColorMaterial ( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE ) ;
 
-	if(texture_id){
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, texture_id);
+	if (texture.is_null_texture())
+	{
+		glColor3f(1,0.8,0.1);
+	}
+	else
+	{
+		texture.bind();
 		glMatrixMode(GL_TEXTURE);
 		glLoadIdentity();
 		glScalef(1.0/widthAmount,1.0/lengthAmount,1.0);
 		glMatrixMode(GL_MODELVIEW);
 		glColor3f(1,1,1);
 		//glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_MODULATE);
-	}else{
-		glColor3f(1,0.8,0.1);
 	}
 
 	for(int j=1; j<lengthAmount; ++j)
@@ -134,7 +124,8 @@ void Ground::Draw()
 	glDisable(GL_LIGHT0);
 	glDisable(GL_COLOR_MATERIAL) ;
 
-	if(texture_id){
+	if (!texture.is_null_texture())
+	{
 		glDisable(GL_TEXTURE_2D);
 		glMatrixMode(GL_TEXTURE);
 		glLoadIdentity();

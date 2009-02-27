@@ -1,33 +1,47 @@
 #ifndef JPEG_H
 #define JPEG_H
 
+#include <GL/gl.h>
 #include <string.h>
 #include <stdio.h>
-
 #include <string>
+#include <vector>
 
+class Texture;
 
-// This structure below was added for GameTutorials.com purposes.  This is in
-// no way connected to the jpeg library and can be deleted or changed.
-
-// This stores the important jpeg data
-struct tImageJPG
+class Image
 {
-	int rowSpan;
-	int sizeX;
-	int sizeY;
-	unsigned char *data;
+	public:
+		static Image LoadJPG(const char* filename, bool flipY = false);
+
+	private:
+		Image(unsigned int rowSpan_, unsigned int width_, unsigned int height_);
+
+	public:
+		unsigned int rowSpan;
+		unsigned int width, height;
+		std::vector<unsigned char> data;
 };
 
-tImageJPG *LoadJPG(const char *filename, bool flipY=false);
+class Texture
+{
+	public:
+		Texture();
+		Texture(const Image& img);
+		~Texture();
 
-typedef unsigned int UINT;
+		Texture(const Texture& rhs);
+		Texture& operator=(const Texture& rhs);
 
-/// Note: frees image data.
-void JPEG_Texture(UINT textureArray[], tImageJPG *pImageData, int textureID);
-void JPEG_Texture(UINT textureArray[], const std::string &strFileName, int textureID);
+		void bind() const;
+		bool is_null_texture() const { return !_img; }
 
+	private:
+		void upload_texture() const;
 
-
+	private:
+		Image*  _img;
+		GLuint  _texture;
+};
 
 #endif

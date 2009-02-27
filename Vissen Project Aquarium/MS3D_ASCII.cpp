@@ -295,13 +295,7 @@ void Material::activate( void )
 	glMaterialfv( GL_FRONT, GL_EMISSION, Emissive );
 	glMaterialf( GL_FRONT, GL_SHININESS, Shininess );
 
-	if ( texture > 0 )
-	{
-		glBindTexture( GL_TEXTURE_2D, texture );
-		glEnable( GL_TEXTURE_2D );
-	}
-	else
-		glDisable( GL_TEXTURE_2D );
+	texture.bind();
 }
 
 bool Material::loadFromMs3dAsciiSegment( FILE *file, std::string path_ )
@@ -374,9 +368,12 @@ void Material::reloadTexture( void )
 	if ( strlen(DiffuseTexture) > 0 )
 	{
 		std::string tmp(path+DiffuseTexture);
-		JPEG_Texture(&texture, tmp.c_str(), 0);
+		texture = Texture(Image::LoadJPG(tmp.c_str()));
 	}
-	else	texture = 0;
+	else
+	{
+		texture = Texture();
+	}
 }
 
 

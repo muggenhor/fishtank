@@ -4,20 +4,12 @@
 #include <string>
 #include "math3.h"
 #include "Main.h"
+#include "JPEG.h"
 
 class Ground
 {
 	public:
-		//de hoogtes in een vector
-		std::vector<int> ground;
-		//de dimenties
-		int widthAmount, lengthAmount, maxHeight;
-		//het texture id
-		GLuint texture_id;
-		std::string file;
-	public:
 		Ground(const std::string &filename, int maxHeight, const std::string &texturename="");/// use no texture name if want no texture
-		~Ground(void);
 
 		//let op: y telt voor lengte hier, niet hoogte, zoals in het aquarium
 		//verkrijg de hoogte op een bepaalde positie
@@ -30,4 +22,14 @@ class Ground
 		void Draw();
 		//genereer de hoogtes, gebazeerd op een hoogtemap, gegeven als path
 		void GenerateGroundFromImage(const std::string &filename);
+
+		int widthAmount, lengthAmount, maxHeight;
+		std::string file;
+
+	private:
+		//de hoogtes in een vector
+		std::vector<int> ground;
+		//de dimenties
+		//het texture id
+		Texture texture;
 };

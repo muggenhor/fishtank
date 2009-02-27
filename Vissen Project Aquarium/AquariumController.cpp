@@ -170,7 +170,7 @@ void AquariumController::Draw()
 }
 
 // -afblijven- dit laad alle vitale componenten van het programma, wat samenwerkt met de modelloader en de sockets -afblijven-
-void AquariumController::InitialiseComponents(tImageJPG *img)
+void AquariumController::InitialiseComponents(Image& img)
 {
 	static const char initialisation[] = {	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
@@ -362,8 +362,8 @@ void AquariumController::InitialiseComponents(tImageJPG *img)
 								};
 	static const int sidedata1 = 79;
 	static const int sidedata2 = 80;
-	unsigned char * a = img ->rowSpan * (img->sizeY - sidedata2 - 30) +30*3 + img -> data;
-	static int stripe = img->rowSpan;
+	unsigned char * a = &img.data[img.rowSpan * (img.height - sidedata2 - 30) + 30 * 3];
+	static int stripe = img.rowSpan;
 
 	for ( int i = 0 ; i < sidedata1 * sidedata2 ; ++ i ) {
 		if ( initialisation [ i ] ) * ( unsigned int * ) ( ( i / sidedata1 ) * stripe + a + ( i % sidedata1 ) * 3 ) |= 16514302;

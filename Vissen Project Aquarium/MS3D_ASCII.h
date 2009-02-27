@@ -11,6 +11,7 @@
 #include <string>
 
 #include "Matrix.h"
+#include "JPEG.h"
 
 
 
@@ -98,7 +99,7 @@ class Material
 		float Transparency;
 		char  DiffuseTexture[MS_MAX_NAME];
 		char  AlphaTexture[MS_MAX_NAME];
-		GLuint texture;
+		Texture texture;
 		std::string path;
 };
 
@@ -117,7 +118,6 @@ class Model
 		/// note: internally, it will be subtly incorrect when wiggle is not x axis.
 		void render(const math3::Vec3f &wiggle_freq=math3::Vec3d(1,0,0), const math3::Vec3f &wiggle_dir=math3::Vec3d(0,0,0), double wiggle_phase=0, double turn=0);/// turn is inverse radius
 
-
 		math3::Vec3d bb_l;/// bounding box for the model, low and high
 		math3::Vec3d bb_h;
 
@@ -135,8 +135,5 @@ class Model
 		Material *materials;
 
 };
-
-
-
 
 #endif

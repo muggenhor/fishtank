@@ -11,95 +11,153 @@ extern "C"
 # include <jpeglib.h>
 #endif
 
-void DecodeJPG(jpeg_decompress_struct* cinfo, tImageJPG *pImageData, bool flipY)
+Image::Image(const unsigned int rowSpan_, const unsigned int width_, const unsigned int height_) :
+	rowSpan(rowSpan_),
+	width(width_),
+	height(height_)
 {
-	jpeg_read_header(cinfo, TRUE);
-
-	jpeg_start_decompress(cinfo);
-
-	pImageData->rowSpan = cinfo->image_width * cinfo->num_components;
-	pImageData->sizeX   = cinfo->image_width;
-	pImageData->sizeY   = cinfo->image_height;
-
-	pImageData->data = new unsigned char[pImageData->rowSpan * pImageData->sizeY];
-
-	unsigned char** rowPtr = new unsigned char*[pImageData->sizeY];
-	if(flipY){
-		for (int i = 0; i < pImageData->sizeY; i++){
-			rowPtr[i] = &(pImageData->data[(pImageData->sizeY-i-1)*pImageData->rowSpan]);
-		}
-	}else{
-		for (int i = 0; i < pImageData->sizeY; i++){
-			rowPtr[i] = &(pImageData->data[i*pImageData->rowSpan]);
-		}
-	}
-	int rowsRead = 0;
-	while (cinfo->output_scanline < cinfo->output_height)
-	{
-		rowsRead += jpeg_read_scanlines(cinfo, &rowPtr[rowsRead], cinfo->output_height-rowsRead);
-	}
-
-	delete [] rowPtr;
-
-	jpeg_finish_decompress(cinfo);
+	data.resize(rowSpan * height);
 }
 
-tImageJPG *LoadJPG(const char *filename, bool flipY)
+Image Image::LoadJPG(const char* const filename, bool flipY)
 {
-	struct jpeg_decompress_struct cinfo;
-
 	FILE* const file = fopen(filename, "rb");
 	if (file == NULL)
 	{
-		//MessageBox(hWnd, "Unable to load JPG File!", "Error", MB_OK);
 		std::cerr << "Unable to load JPG File '" << filename << "'" << std::endl;
-		return NULL;
-	}
-
-	jpeg_error_mgr jerr;
-
-	cinfo.err = jpeg_std_error(&jerr);
-
-	jpeg_create_decompress(&cinfo);
-
-	jpeg_stdio_src(&cinfo, file);
-
-	tImageJPG* const pImageData = (tImageJPG*)malloc(sizeof(*pImageData));
-
-	DecodeJPG(&cinfo, pImageData, flipY);
-
-	jpeg_destroy_decompress(&cinfo);
-
-	fclose(file);
-
-	return pImageData;
-}
-
-void JPEG_Texture(UINT textureArray[], tImageJPG *pImage, int textureID)
-{
-	if (pImage == NULL)
 		exit(EXIT_FAILURE);
-
-	glGenTextures(1, &textureArray[textureID]);
-	glBindTexture(GL_TEXTURE_2D, textureArray[textureID]);
-	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, pImage->sizeX, pImage->sizeY, GL_RGB, GL_UNSIGNED_BYTE, pImage->data);
-
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR_MIPMAP_LINEAR);
-
-	if (pImage)
-	{
-		free(pImage->data);
 	}
 
-	free(pImage);
+	try
+	{
+		// Create a JPEG decompressor
+		struct jpeg_decompress_struct cinfo;
+		jpeg_error_mgr jerr;
+		cinfo.err = jpeg_std_error(&jerr);
+		jpeg_create_decompress(&cinfo);
+
+		// Decompress the file
+		jpeg_stdio_src(&cinfo, file);
+		jpeg_read_header(&cinfo, TRUE);
+		jpeg_start_decompress(&cinfo);
+
+		Image img(cinfo.image_width * cinfo.num_components, cinfo.image_width, cinfo.image_height);
+
+		unsigned char* rowPtr[img.height];
+		for (unsigned int i = 0; i < img.height; ++i)
+		{
+			const unsigned int rowIndex = flipY
+			                             ? img.height - 1 - i
+			                             : i;
+
+			rowPtr[i] = &img.data[rowIndex * img.rowSpan];
+		}
+
+		int rowsRead = 0;
+		while (cinfo.output_scanline < cinfo.output_height)
+		{
+			rowsRead += jpeg_read_scanlines(&cinfo, &rowPtr[rowsRead], cinfo.output_height-rowsRead);
+		}
+
+		jpeg_finish_decompress(&cinfo);
+		jpeg_destroy_decompress(&cinfo);
+		fclose(file);
+
+		return img;
+	}
+	catch (...)
+	{
+		fclose(file);
+		throw;
+	}
 }
 
-void JPEG_Texture(UINT textureArray[], const std::string &strFileName, int textureID)
+Texture::Texture() :
+	_img(NULL)
 {
-	if(strFileName.empty())return;
+}
 
-	tImageJPG *pImage = LoadJPG(strFileName.c_str(), true);
+Texture::Texture(const Image& img) :
+	_img(new Image(img))
+{
+	// Create a texture ID
+	glGenTextures(1, &_texture);
 
-	JPEG_Texture(textureArray, pImage, textureID);
+	upload_texture();
+}
+
+Texture::~Texture()
+{
+	if (_img)
+	{
+		glDeleteTextures(1, &_texture);
+		delete _img;
+	}
+}
+
+Texture::Texture(const Texture& rhs) :
+	_img(rhs._img ? new Image(*rhs._img) : NULL)
+{
+	// Create a texture ID
+	glGenTextures(1, &_texture);
+
+	upload_texture();
+}
+
+Texture& Texture::operator=(const Texture& rhs)
+{
+	delete _img;
+
+	if (rhs._img)
+	{
+		if (!_img)
+			glGenTextures(1, &_texture);
+		_img = new Image(*rhs._img);
+
+		upload_texture();
+	}
+	else
+	{
+		if (_img)
+			glDeleteTextures(1, &_texture);
+		_img = NULL;
+	}
+
+	return *this;
+}
+
+void Texture::bind() const
+{
+	if (is_null_texture())
+	{
+		glDisable(GL_TEXTURE_2D);
+	}
+	else
+	{
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, _texture);
+	}
+}
+
+void Texture::upload_texture() const
+{
+	GLint previous_texture;
+	glGetIntegerv(GL_TEXTURE_2D_BINDING_EXT, &previous_texture);
+
+	// Upload the texture
+	glBindTexture(GL_TEXTURE_2D, _texture);
+	try
+	{
+		gluBuild2DMipmaps(GL_TEXTURE_2D, 3, _img->width, _img->height, GL_RGB, GL_UNSIGNED_BYTE, &_img->data[0]);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+		glBindTexture(GL_TEXTURE_2D, previous_texture);
+	}
+	catch (...)
+	{
+		glBindTexture(GL_TEXTURE_2D, previous_texture);
+		throw;
+	}
 }

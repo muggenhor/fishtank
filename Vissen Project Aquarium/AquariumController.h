@@ -55,7 +55,7 @@ public:
 	void AddBubbleSpot(const math3::Vec3d &position);
 
 	// -afblijven- dit laad alle vitale componenten van het programma, wat samenwerkt met de modelloader en de sockets -afblijven-
-	static void InitialiseComponents(tImageJPG *img);
+	static void InitialiseComponents(Image& img);
 };
 
 //een random tussen 0 en 1

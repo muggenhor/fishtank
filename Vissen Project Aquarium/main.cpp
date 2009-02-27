@@ -34,7 +34,7 @@ static float eye_distance=300;
 static map<string, Model> models;
 
 //laad de settings uit het opgegeven bestand
-void LoadSettings(std::istream &input_file)
+static void LoadSettings(std::istream &input_file)
 {
 	string s;
 
@@ -85,7 +85,7 @@ void LoadSettings(std::istream &input_file)
 }
 
 //laad de modelen uit het opgegeven bestand
-void LoadModels(std::istream &input_file, AquariumController *aquariumController)
+static void LoadModels(std::istream &input_file, AquariumController *aquariumController)
 {
 	string s;
 
@@ -167,7 +167,7 @@ static PositionReceiver faceposition_receiver(1, 7781);
 static unsigned int background_id;
 
 //teken de de webcam schermen en balken, afhankelijk van de huidige campositie. cam1 == true: grote scherm. cam1 == false: kleine scherm
-void DrawBackground(bool cam1){
+static void DrawBackground(bool cam1){
 	glEnable(GL_TEXTURE_2D);
 	if (cam1)
 	{
@@ -355,7 +355,7 @@ int main()
 	glfwSetWindowTitle("");
 
 
-	ifstream input_file("./Settings/aquaConfig.txt");
+	ifstream input_file("Settings/aquaConfig.txt");
 
 	LoadSettings(input_file);
 
@@ -458,7 +458,6 @@ int main()
 
 		glfwSwapBuffers();
 	}
-
 
 	return 0;
 }
