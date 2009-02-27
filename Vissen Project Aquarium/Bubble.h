@@ -16,7 +16,6 @@ class Bubble
 		math3::Vec3d velocity;
 	public:
 		Bubble(math3::Vec3d startpos, double size, bool wiggle);
-		~Bubble(void);
 
 		//de huidige positie van de bubbel
 		math3::Vec3d pos;

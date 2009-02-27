@@ -23,11 +23,6 @@ Bubble::Bubble(Vec3d startpos, double size, bool wiggle)
 	pop = 1 + my_random() * 0.8;
 }
 
-Bubble::~Bubble(void)
-{
-
-}
-
 void Bubble::Update(double dt)
 {
 	pos += velocity*dt;
