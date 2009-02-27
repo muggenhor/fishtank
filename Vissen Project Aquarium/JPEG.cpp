@@ -1,7 +1,7 @@
 #include "JPEG.h"
-#include "Main.h"
 #include <iostream>
 #include "GL/GLee.h"
+#include <GL/glu.h>
 #include <boost/scoped_array.hpp>
 #include <cassert>
 
@@ -95,28 +95,28 @@ Texture::~Texture()
 	if (_img)
 	{
 		glDeleteTextures(1, &_texture);
-		delete _img;
 	}
 }
 
 Texture::Texture(const Texture& rhs) :
 	_img(rhs._img ? new Image(*rhs._img) : NULL)
 {
-	// Create a texture ID
-	glGenTextures(1, &_texture);
+	if (_img)
+	{
+		// Create a texture ID
+		glGenTextures(1, &_texture);
 
-	upload_texture();
+		upload_texture();
+	}
 }
 
 Texture& Texture::operator=(const Texture& rhs)
 {
-	delete _img;
-
 	if (rhs._img)
 	{
 		if (!_img)
 			glGenTextures(1, &_texture);
-		_img = new Image(*rhs._img);
+		_img.reset(new Image(*rhs._img));
 
 		upload_texture();
 	}
@@ -124,7 +124,7 @@ Texture& Texture::operator=(const Texture& rhs)
 	{
 		if (_img)
 			glDeleteTextures(1, &_texture);
-		_img = NULL;
+		_img.reset();
 	}
 
 	return *this;
@@ -146,6 +146,7 @@ void Texture::bind() const
 void Texture::upload_texture() const
 {
 	assert(GLEE_EXT_texture_object);
+	assert(_img);
 
 	GLint previous_texture;
 	glGetIntegerv(GL_TEXTURE_2D_BINDING_EXT, &previous_texture);

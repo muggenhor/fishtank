@@ -2,9 +2,7 @@
 #define JPEG_H
 
 #include "GL/GLee.h"
-#include <string.h>
-#include <stdio.h>
-#include <string>
+#include <boost/scoped_ptr.hpp>
 #include <vector>
 
 class Texture;
@@ -40,8 +38,8 @@ class Texture
 		void upload_texture() const;
 
 	private:
-		Image*  _img;
-		GLuint  _texture;
+		boost::scoped_ptr<Image>        _img;
+		GLuint                          _texture;
 };
 
 #endif
