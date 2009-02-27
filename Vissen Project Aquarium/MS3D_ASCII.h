@@ -10,6 +10,7 @@
 #include <GL/gl.h>
 #include <assert.h>
 #include <string>
+#include <vector>
 
 #include "Matrix.h"
 #include "JPEG.h"
@@ -28,9 +29,7 @@ class Vec
 		void	transform( const Matrix& m );
 		void	transform3( const Matrix& m );
 		float	x,y,z;
-		float	w;
 		float	u,v;							// Texture position
-		int		bone;
 };
 
 
@@ -56,22 +55,16 @@ class Shape
 {
 	public:
 		Shape();
-		~Shape();
 
 		//bool loadFromFile( const char *filename );
 		bool loadFromMs3dAsciiSegment( FILE *file, const math3::Matrix4x4f &transform=math3::Matrix4x4f(1,0,0,0 ,0,1,0,0, 0,0,1,0, 0,0,0,1));/// identity transform by default.
 
 		//bool saveToFile( const char *filename );
-		void render( void );
+		void render();
 
-		int	num_vertices;
-		Vec	*vertices;
-
-		int	num_triangles;
-		Tri	*triangles;
-
-		int	num_normals;
-		Normal	*normals;
+		std::vector<Vec>        vertices;
+		std::vector<Tri>        triangles;
+		std::vector<Normal>     normals;
 
 		math3::Vec3d bb_l, bb_h;
 };
@@ -83,9 +76,6 @@ class Shape
 class Material
 {
 	public:
-		Material();
-		~Material();
-
 		bool loadFromMs3dAsciiSegment( FILE *file, std::string path_ );
 		void activate( void );
 		void reloadTexture( void );
@@ -112,10 +102,9 @@ class Model
 {
 	public:
 		Model();
-		~Model();
 
 		bool loadFromMs3dAsciiFile( const char *filename, const math3::Matrix4x4f &transform=math3::Matrix4x4f(1,0,0,0 ,0,1,0,0, 0,0,1,0, 0,0,0,1));
-		void reloadTextures( void );
+		void reloadTextures();
 		/// note: internally, it will be subtly incorrect when wiggle is not x axis.
 		void render(const math3::Vec3f &wiggle_freq=math3::Vec3d(1,0,0), const math3::Vec3f &wiggle_dir=math3::Vec3d(0,0,0), double wiggle_phase=0, double turn=0);/// turn is inverse radius
 
@@ -128,13 +117,9 @@ class Model
 		float x,y,z;
 
 	private:
-		int	num_shapes;
-		Shape *shapes;
-		int	*material_indices;
-
-		int	num_materials;
-		Material *materials;
-
+		std::vector<Shape>      shapes;
+		std::vector<int>        material_indices;
+		std::vector<Material>   materials;
 };
 
 #endif

@@ -1,66 +1,50 @@
+#include <boost/foreach.hpp>
 #include "JPEG.h"
 #include "MS3D_ASCII.h"
-
 #include <string>
+
+#define foreach BOOST_FOREACH
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //										The Shape Class
 /////////////////////////////////////////////////////////////////////////////////////////////////
-Shape::Shape():
-bb_l(1E20,1E20,1E20),
-bb_h(-bb_l)
+Shape::Shape() :
+	bb_l(1E20, 1E20, 1E20),
+	bb_h(-bb_l)
 {
-	num_vertices = 0;
-	vertices = NULL;
-	num_triangles = 0;
-	triangles = NULL;
-	num_normals = 0;
-	normals = NULL;
 }
 
-Shape::~Shape()
-{
-	if (vertices != NULL)
-		delete[] vertices;
-	if (triangles != NULL)
-		delete[] triangles;
-	if (normals != NULL)
-		delete[] normals;
-}
-
-/*
+#if 0
 bool Shape::loadFromFile( const char *filename )
 {
-	FILE	*fp;
-	int	i;
-
-	fp = fopen(filename, "r");
+	FILE* const fp = fopen(filename, "r");
 	if (fp == NULL)
 		return false;
 
-	fscanf(fp, "%d\n", &num_vertices );
+	size_t num_vertices;
+	fscanf(fp, "%zu\n", &num_vertices );
 
-	vertices = new Vec[num_vertices];
-
-	for (i = 0 ; i < num_vertices; i++)
+	vertices.resize(num_vertices);
+	foreach (Vec& vertex, vertices)
 	{
 		fscanf(fp, "%f %f %f %f %f\n",
-					 &vertices[i].x,
-					 &vertices[i].y,
-					 &vertices[i].z,
-					 &vertices[i].u,
-					 &vertices[i].v );
+					 &vertex.x,
+					 &vertex.y,
+					 &vertex.z,
+					 &vertex.u,
+					 &vertex.v);
 	}
 
-	fscanf(fp, "%d\n", &num_triangles );
+	size_t num_triangles;
+	fscanf(fp, "%zu\n", &num_triangles );
 
-	triangles = new Tri[num_triangles];
-	for (i = 0 ; i < num_triangles; i++)
+	triangles.resize(num_triangles);
+	foreach (Tri& triangle, triangles)
 	{
 		fscanf(fp, "%d %d %d\n",
-					 &triangles[i].v[0],
-					 &triangles[i].v[1],
-					 &triangles[i].v[2] );
+					 &triangle.v[0],
+					 &triangle.v[1],
+					 &triangle.v[2]);
 	}
 
 	fclose(fp);
@@ -68,63 +52,54 @@ bool Shape::loadFromFile( const char *filename )
 	return true;
 }
 
-
-bool Shape::saveToFile( const char *filename )
+bool Shape::saveToFile(const char* filename)
 {
-	FILE	*fp;
-	int	i;
-
-	fp = fopen(filename, "w");
+	FILE* const fp = fopen(filename, "w");
 	if (fp == NULL)
 		return false;
 
-	fprintf(fp, "%d\n", num_vertices );
+	fprintf(fp, "%zu\n", vertices.size());
 
-	for (i = 0 ; i < num_vertices; i++)
+	foreach (const Vec& vertex, vertices)
 	{
 		fprintf(fp, "%f %f %f %f %f\n",
-						vertices[i].x,
-						vertices[i].y,
-						vertices[i].z,
-						vertices[i].u,
-						vertices[i].v );
+						vertex.x,
+						vertex.y,
+						vertex.z,
+						vertex.u,
+						vertex.v);
 	}
 
-	fprintf(fp, "%d\n", num_triangles );
+	fprintf(fp, "%zu\n", triangles.size());
 
-	for (i = 0 ; i < num_triangles; i++)
+	foreach (const Tri& triangle, triangles)
 	{
 		fprintf(fp, "%d %d %d\n",
-						triangles[i].v[0],
-						triangles[i].v[1],
-						triangles[i].v[2] );
+						triangle.v[0],
+						triangle.v[1],
+						triangle.v[2] );
 	}
+
 	fclose(fp);
 	return true;
 }
-*/
+#endif
 
 void Shape::render( void )
 {
-	int	i,j;
-	Tri	*tri;
-	Vec	*vec;
-	Normal *N;
-
 	glBegin(GL_TRIANGLES);
-	for (i = 0; i < num_triangles; i++)				// for each triangle
+	foreach (const Tri& tri, triangles)
 	{
-		tri = triangles + i;						// pointer to triangle
-
-		for (j = 0; j < 3; j++)						// 3 vertices of the triangle
+		// Draw all 3 vertices of the triangle
+		for (unsigned int j = 0; j < 3; ++j)
 		{
-			N = normals + tri->n[j];
-			glNormal3f(N->x, N->y, N->z);			// set normal vector  (object space)
+			const Normal& N = normals[tri.n[j]];
+			glNormal3f(N.x, N.y, N.z);
 
-			vec = vertices + tri->v[j];				// pointer to vertex
-			glTexCoord2f (vec->u, vec->v);			// texture coordinate
+			const Vec& vec = vertices[tri.v[j]];
+			glTexCoord2f(vec.u, vec.v);
 
-			glVertex3f( vec->x, vec->y, vec->z );	// 3d coordinate (object space)
+			glVertex3f(vec.x, vec.y, vec.z);
 		}
 	}
 	glEnd();
@@ -142,7 +117,7 @@ bool Shape::loadFromMs3dAsciiSegment( FILE *file , const math3::Matrix4x4f &tran
 	char szLine[256];
 	for (int i=0;i<256;++i)szLine[i]=0;
 
-	int nFlags, nIndex, j;
+	int nFlags, nIndex;
 
 
 	// vertices
@@ -152,13 +127,14 @@ bool Shape::loadFromMs3dAsciiSegment( FILE *file , const math3::Matrix4x4f &tran
 		return false;
 	}
 
-	if (sscanf (szLine, "%d", &num_vertices) != 1)
+	size_t num_vertices;
+	if (sscanf (szLine, "%zu", &num_vertices) != 1)
 	{
 		return false;
 	}
-	vertices = new Vec[num_vertices];
+	vertices.resize(num_vertices);
 
-	for (j = 0; j < num_vertices; j++)
+	for (size_t j = 0; j < num_vertices; ++j)
 	{
 		if (!fgets (szLine, 256, file))
 		{
@@ -204,13 +180,14 @@ bool Shape::loadFromMs3dAsciiSegment( FILE *file , const math3::Matrix4x4f &tran
 		return false;
 	}
 
-	if (sscanf (szLine, "%d", &num_normals) != 1)
+	size_t num_normals;
+	if (sscanf (szLine, "%zu", &num_normals) != 1)
 	{
 		return false;
 	}
-	normals = new Normal[num_normals];
+	normals.resize(num_normals);
 
-	for (j = 0; j < num_normals; j++)
+	for (size_t j = 0; j < num_normals; ++j)
 	{
 		if (!fgets (szLine, 256, file))
 		{
@@ -241,13 +218,14 @@ bool Shape::loadFromMs3dAsciiSegment( FILE *file , const math3::Matrix4x4f &tran
 		return false;
 	}
 
-	if (sscanf (szLine, "%d", &num_triangles) != 1)
+	size_t num_triangles;
+	if (sscanf (szLine, "%zu", &num_triangles) != 1)
 	{
 		return false;
 	}
-	triangles = new Tri[num_triangles];
+	triangles.resize(num_triangles);
 
-	for (j = 0; j < num_triangles; j++)
+	for (size_t j = 0; j < num_triangles; ++j)
 	{
 		if (!fgets (szLine, 256, file))
 		{
@@ -272,19 +250,6 @@ bool Shape::loadFromMs3dAsciiSegment( FILE *file , const math3::Matrix4x4f &tran
 	}
 
 	return true;
-}
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////
-//										The Material Class
-/////////////////////////////////////////////////////////////////////////////////////////////////
-Material::Material()
-{
-}
-
-Material::~Material()
-{
 }
 
 void Material::activate( void )
@@ -384,41 +349,31 @@ void Material::reloadTexture( void )
 /////////////////////////////////////////////////////////////////////////////////////////////////
 Model::Model():
 	bb_l(0, 0, 0),
-	bb_h(0, 0, 0),
-	num_shapes(0),
-	shapes(NULL),
-	material_indices(NULL),
-	num_materials(0),
-	materials(NULL)
+	bb_h(0, 0, 0)
 {
-}
-
-Model::~Model()
-{
-	delete [] shapes;
-	delete [] materials;
-	delete [] material_indices;
 }
 
 bool Model::loadFromMs3dAsciiFile( const char *filename, const math3::Matrix4x4f &transform )
 {
-
-	path=filename;
+	path = filename;
 	/// i'd use rfind but duh it cant search for both \\ and /
-	int i;
-	for(i=path.size()-1; i>=0; --i){
-		if(path[i]=='/' || path[i]=='\\'){
+	int path_length;
+	for (path_length = path.size() - 1; path_length >= 0; --path_length)
+	{
+		if (path[path_length]=='/'
+		 || path[path_length]=='\\')
+		{
 			break;
 		}
 	}
-	path.resize(i+1);/// downsize the string to cut out name from path
+	path.resize(path_length + 1);/// downsize the string to cut out name from path
 
 	bb_l=Vec3d(1E20,1E20,1E20);
 	bb_h=-bb_l;
 
 	bool	bError = false;
 	char	szLine[256];
-	int		nFlags, nIndex;
+	int		nFlags;
 
 	FILE *file = fopen (filename, "rt");
 	if (!file)
@@ -429,15 +384,18 @@ bool Model::loadFromMs3dAsciiFile( const char *filename, const math3::Matrix4x4f
 		if (!strncmp (szLine, "//", 2))
 			continue;
 
-		if (sscanf (szLine, "Meshes: %d", &num_shapes) == 1)
+		size_t num_shapes;
+		if (sscanf (szLine, "Meshes: %zu", &num_shapes) == 1)
 		{
 			char	szName[MS_MAX_NAME];
 
-			shapes = new Shape[num_shapes];
-			material_indices = new int[num_shapes];
+			shapes.resize(num_shapes);
+			material_indices.resize(num_shapes);
 
-			for (i = 0; i < num_shapes && !bError; i++)
+			for (size_t i = 0; i < num_shapes && !bError; ++i)
 			{
+				Shape& shape = shapes[i];
+				int& material_index = material_indices[i];
 
 				if (!fgets (szLine, 256, file))
 				{
@@ -446,26 +404,31 @@ bool Model::loadFromMs3dAsciiFile( const char *filename, const math3::Matrix4x4f
 				}
 
 				// mesh: name, flags, material index
-				if (sscanf (szLine, "\"%[^\"]\" %d %d",szName, &nFlags, &nIndex) != 3)
-				{
-					bError = true;
-					break;
-				}
-				material_indices[i] = nIndex;
-
-				if ( ! shapes[i].loadFromMs3dAsciiSegment(file, transform) )
+				if (sscanf(szLine, "\"%[^\"]\" %d %d",szName, &nFlags, &material_index) != 3)
 				{
 					bError = true;
 					break;
 				}
 
-				if(shapes[i].bb_l.x<bb_l.x)bb_l.x=shapes[i].bb_l.x;
-				if(shapes[i].bb_l.y<bb_l.y)bb_l.y=shapes[i].bb_l.y;
-				if(shapes[i].bb_l.z<bb_l.z)bb_l.z=shapes[i].bb_l.z;
+				if (!shape.loadFromMs3dAsciiSegment(file, transform))
+				{
+					bError = true;
+					break;
+				}
 
-				if(shapes[i].bb_h.x>bb_h.x)bb_h.x=shapes[i].bb_h.x;
-				if(shapes[i].bb_h.y>bb_h.y)bb_h.y=shapes[i].bb_h.y;
-				if(shapes[i].bb_h.z>bb_h.z)bb_h.z=shapes[i].bb_h.z;
+				if (shape.bb_l.x < bb_l.x)
+					bb_l.x = shape.bb_l.x;
+				if (shape.bb_l.y < bb_l.y)
+					bb_l.y = shape.bb_l.y;
+				if (shape.bb_l.z < bb_l.z)
+					bb_l.z = shape.bb_l.z;
+
+				if (shape.bb_h.x > bb_h.x)
+					bb_h.x = shape.bb_h.x;
+				if (shape.bb_h.y > bb_h.y)
+					bb_h.y = shape.bb_h.y;
+				if (shape.bb_h.z > bb_h.z)
+					bb_h.z = shape.bb_h.z;
 
 			}
 			continue;
@@ -473,24 +436,20 @@ bool Model::loadFromMs3dAsciiFile( const char *filename, const math3::Matrix4x4f
 
 
 		// materials
-
-		if (sscanf (szLine, "Materials: %d", &num_materials) == 1)
+		size_t num_materials;
+		if (sscanf (szLine, "Materials: %zu", &num_materials) == 1)
 		{
-			int i;
+			materials.resize(num_materials);
 
-			materials = new Material[num_materials];
-
-			for (i = 0; i < num_materials && !bError; i++)
+			foreach (Material& material, materials)
 			{
-				if ( ! materials[i].loadFromMs3dAsciiSegment(file, path) )
+				if (!material.loadFromMs3dAsciiSegment(file, path))
 				{
 					bError = true;
 					break;
 				}
 			}
-			continue;
 		}
-
 	}
 
 	fclose (file);
@@ -502,24 +461,14 @@ bool Model::loadFromMs3dAsciiFile( const char *filename, const math3::Matrix4x4f
 
 
 
-void Model::reloadTextures( void )
+void Model::reloadTextures()
 {
-	int	i;
-
-	for (i = 0; i < num_materials; i++)	// for each shape
-	{
-		materials[i].reloadTexture();
-	}
+	foreach (Material& material, materials)
+		material.reloadTexture();
 }
 
 void Model::render(const math3::Vec3f &wiggle_freq, const math3::Vec3f &wiggle_dir, double wiggle_phase, double turn)
 {
-	int	k;
-	int	i, j;
-	Tri	*tri;
-	Vec	*vec;
-	Normal *N;
-
 	/*
 	// approximate elliptic integral with sine... just an approximation, not correct formula
 
@@ -547,8 +496,9 @@ x=q*sin(2*b*l)/(2*b) + p*l
 	double s_a=0.5*q/b;
 
 	// FIXME: O(n^3) performance
-	for (k = 0; k < num_shapes; k++)	// for each shape
+	for (size_t k = 0; k < shapes.size(); ++k)	// for each shape
 	{
+		const Shape& shape = shapes[k];
 		int materialIndex = material_indices[k];
 		if ( materialIndex >= 0 )
 		{
@@ -561,21 +511,19 @@ x=q*sin(2*b*l)/(2*b) + p*l
 		}
 
 		glBegin(GL_TRIANGLES);
-		for (i = 0; i < shapes[k].num_triangles; i++)	// for each triangle
+		foreach (const Tri& tri, shape.triangles)
 		{
-			tri = shapes[k].triangles + i;				// pointer to triangle
-
-			for (j = 0; j < 3; j++)						// 3 vertices of the triangle
+			for (unsigned int j = 0; j < 3; ++j)						// 3 vertices of the triangle
 			{
-				N = shapes[k].normals + tri->n[j];
+				const Normal& N = shape.normals[tri.n[j]];
 				/// todo: also apply wiggle to normals? (thats much harder.)
-				glNormal3f(N->x, N->y, N->z);			// set normal vector  (object space)
+				glNormal3f(N.x, N.y, N.z);			// set normal vector  (object space)
 
-				vec = shapes[k].vertices + tri->v[j];	// pointer to vertex
-				glTexCoord2f (vec->u, vec->v);			// texture coordinate
+				const Vec& vec = shape.vertices[tri.v[j]];	// pointer to vertex
+				glTexCoord2f (vec.u, vec.v);			// texture coordinate
 
 				/// wiggle position
-				Vec3f pos(vec->x , vec->y, vec->z);
+				Vec3f pos(vec.x , vec.y, vec.z);
 				float alpha=DotProd(pos, wiggle_freq);
 
 				Vec3f wiggled_pos=pos + wiggle_dir*float(sin(alpha+wiggle_phase)) ;
