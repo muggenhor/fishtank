@@ -219,10 +219,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\safe_getline.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Vector.cpp"
 				>
 			</File>
@@ -286,10 +282,6 @@
 			</File>
 			<File
 				RelativePath=".\Object.h"
-				>
-			</File>
-			<File
-				RelativePath=".\safe_getline.h"
 				>
 			</File>
 			<File

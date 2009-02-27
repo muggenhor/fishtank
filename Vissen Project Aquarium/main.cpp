@@ -13,11 +13,10 @@
 #include <cstdlib>
 #include <ctime>
 
+#include <algorithm>
 #include <iostream>
 #include <vector>
-
 #include <map>
-#include "safe_getline.h"
 
 #include "imagereceiver.h"
 
@@ -35,37 +34,37 @@ static float eye_distance=300;
 static map<string, Model> models;
 
 //laad de settings uit het opgegeven bestand
-static void LoadSettings(std::istream &input_file)
+static void LoadSettings(std::istream& input_file)
 {
 	string s;
 
-	safe_getline(input_file, s);
+	getline(input_file, s);
 	win_width = atoi(s.c_str());
-	safe_getline(input_file, s);
+	getline(input_file, s);
 	win_height = atoi(s.c_str());
 
-	safe_getline(input_file, s);
+	getline(input_file, s);
 	win_move_x = atoi(s.c_str());
-	safe_getline(input_file, s);
+	getline(input_file, s);
 	win_move_y = atoi(s.c_str());
 
-	safe_getline(input_file, s);
+	getline(input_file, s);
 	int xx = atoi(s.c_str());
-	safe_getline(input_file, s);
+	getline(input_file, s);
 	int yy = atoi(s.c_str());
-	safe_getline(input_file, s);
+	getline(input_file, s);
 	int zz = atoi(s.c_str());
 	aquariumSize = math3::Vec3d(xx, yy, zz);
 
-	safe_getline(input_file, s);
+	getline(input_file, s);
 	xx = atoi(s.c_str());
-	safe_getline(input_file, s);
+	getline(input_file, s);
 	yy = atoi(s.c_str());
-	safe_getline(input_file, s);
+	getline(input_file, s);
 	zz = atoi(s.c_str());
 	swimArea = math3::Vec3d(xx, yy, zz);
 
-	safe_getline(input_file, s);
+	getline(input_file, s);
 	balkSize2 = atoi(s.c_str());
 	if (balkSize2 >= 1)
 	{
@@ -76,12 +75,12 @@ static void LoadSettings(std::istream &input_file)
 		balkSize = balkSize2;
 	}
 
-	safe_getline(input_file, s);
+	getline(input_file, s);
 	eye_distance = atof(s.c_str());
 
-	safe_getline(input_file, s);
+	getline(input_file, s);
 	range_x = atoi(s.c_str());
-	safe_getline(input_file, s);
+	getline(input_file, s);
 	range_y = atoi(s.c_str());
 }
 
@@ -90,17 +89,17 @@ static void LoadModels(std::istream &input_file, AquariumController *aquariumCon
 {
 	string s;
 
-	safe_getline(input_file, s);
+	getline(input_file, s);
 	aquariumController->ground.maxHeight = atoi(s.c_str());
 	aquariumController->ground.GenerateGroundFromImage(aquariumController->ground.file);
 
-	safe_getline(input_file, s);
+	getline(input_file, s);
 	int n=atoi(s.c_str());
 
 	for (int i = 0; i < n; i++)
 	{
 		string model_name;
-		safe_getline(input_file, model_name);
+		getline(input_file, model_name);
 		map<string, Model>::iterator model_iterator=models.find(model_name);
 		//model bestaat niet
 		if(model_iterator==models.end())
@@ -109,9 +108,9 @@ static void LoadModels(std::istream &input_file, AquariumController *aquariumCon
 		}
 
 		string propertieFile;
-		safe_getline(input_file, propertieFile);
+		getline(input_file, propertieFile);
 
-		safe_getline(input_file, s);
+		getline(input_file, s);
 		int m=atoi(s.c_str());
 		for (int j = 0; j < m; j++)
 		{
@@ -120,12 +119,12 @@ static void LoadModels(std::istream &input_file, AquariumController *aquariumCon
 	}
 
 
-	safe_getline(input_file, s);
+	getline(input_file, s);
 	n=atoi(s.c_str());
 	for (int i = 0; i < n; i++)
 	{
 		string model_name;
-		safe_getline(input_file, model_name);
+		getline(input_file, model_name);
 		map<string, Model>::iterator model_iterator=models.find(model_name);
 		//model bestaat niet
 		if(model_iterator==models.end())
@@ -134,24 +133,24 @@ static void LoadModels(std::istream &input_file, AquariumController *aquariumCon
 		}
 
 		string propertieFile;
-		safe_getline(input_file, propertieFile);
+		getline(input_file, propertieFile);
 
-		safe_getline(input_file, s);
+		getline(input_file, s);
 		int x = -(aquariumSize.x / 2) + atoi(s.c_str());
-		safe_getline(input_file, s);
+		getline(input_file, s);
 		int z = -(aquariumSize.z / 2) + atoi(s.c_str());
 		int groundposx = (x + (aquariumSize.x / 2)) / aquariumSize.x * (aquariumController->ground.widthAmount);
 		int groundposy = (z + (aquariumSize.z / 2)) / aquariumSize.z * (aquariumController->ground.lengthAmount);
 		aquariumController->AddObject(&models[model_name], propertieFile, math3::Vec3d(x, aquariumController->ground.HeightAt(groundposx, groundposy), z));
 	}
 
-	safe_getline(input_file, s);
+	getline(input_file, s);
 	n=atoi(s.c_str());
 	for (int i = 0; i < n; i++)
 	{
-		safe_getline(input_file, s);
+		getline(input_file, s);
 		int x = -(aquariumSize.x / 2) + atoi(s.c_str());
-		safe_getline(input_file, s);
+		getline(input_file, s);
 		int z = -(aquariumSize.z / 2) + atoi(s.c_str());
 		int groundposx = (x + (aquariumSize.x / 2)) / aquariumSize.x * (aquariumController->ground.widthAmount);
 		int groundposy = (z + (aquariumSize.z / 2)) / aquariumSize.z * (aquariumController->ground.lengthAmount);
