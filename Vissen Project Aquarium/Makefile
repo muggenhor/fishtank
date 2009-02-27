@@ -1,11 +1,18 @@
-CFLAGS=-g3 -Wall -Wextra -pg
-CXXFLAGS=-g3 -Wall -Wextra -pg
-LDFLAGS=-pg
+CFLAGS=-g3 -Wall -Wextra
+CXXFLAGS=-g3 -Wall -Wextra
+LDFLAGS=
+CPPFLAGS=-I.
+
+# Enable profiling
+CFLAGS+=-pg
+CXXFLAGS+=-pg
+LDFLAGS+=-pg
+
 LIBS=`pkg-config --libs libglfw` -lGLU -ljpeg
 
 all: VissenProject
 
-VissenProject: AquariumController.o Bubble.o Environment.o getline.o Ground.o imagereceiver.o JPEG.o main.o Matrix.o MS3D_ASCII.o Object.o safe_getline.o Vector.o Vis.o
+VissenProject: AquariumController.o Bubble.o Environment.o getline.o GL/GLee.o Ground.o imagereceiver.o JPEG.o main.o Matrix.o MS3D_ASCII.o Object.o safe_getline.o Vector.o Vis.o
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 clean:

@@ -1,6 +1,8 @@
 #include "JPEG.h"
 #include "Main.h"
 #include <iostream>
+#include <GL/GLee.h>
+#include <cassert>
 
 #ifdef WIN32
 extern "C"
@@ -142,6 +144,8 @@ void Texture::bind() const
 
 void Texture::upload_texture() const
 {
+	assert(GLEE_EXT_texture_object);
+
 	GLint previous_texture;
 	glGetIntegerv(GL_TEXTURE_2D_BINDING_EXT, &previous_texture);
 
