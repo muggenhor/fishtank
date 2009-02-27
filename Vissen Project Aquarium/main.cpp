@@ -165,10 +165,9 @@ static ImageReceiver image_receiver2(7779);
 static PositionReceiver position_receiver(0, 7780);
 static PositionReceiver faceposition_receiver(1, 7781);
 
-static unsigned int background_id;
-
 //teken de de webcam schermen en balken, afhankelijk van de huidige campositie. cam1 == true: grote scherm. cam1 == false: kleine scherm
-static void DrawBackground(bool cam1){
+static void DrawBackground(bool cam1)
+{
 	glEnable(GL_TEXTURE_2D);
 	if (cam1)
 	{
