@@ -24,6 +24,7 @@ Image Image::LoadJPG(const char* const filename, bool flipY)
 	FILE* const file = fopen(filename, "rb");
 	if (file == NULL)
 	{
+		/// @TODO throw exception instead
 		std::cerr << "Unable to load JPG File '" << filename << "'" << std::endl;
 		exit(EXIT_FAILURE);
 	}
