@@ -2,6 +2,7 @@
 #include "Main.h"
 #include <iostream>
 #include "GL/GLee.h"
+#include <boost/scoped_array.hpp>
 #include <cassert>
 
 #ifdef WIN32
@@ -46,7 +47,7 @@ Image Image::LoadJPG(const char* const filename, bool flipY)
 
 		Image img(cinfo.image_width * cinfo.num_components, cinfo.image_width, cinfo.image_height);
 
-		unsigned char* rowPtr[img.height];
+		boost::scoped_array<unsigned char*> rowPtr(new unsigned char*[img.height]);
 		for (unsigned int i = 0; i < img.height; ++i)
 		{
 			const unsigned int rowIndex = flipY
