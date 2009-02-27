@@ -12,10 +12,6 @@
 #include <sstream>
 #include <iostream>
 
-#ifdef _MSC_VER
-#define WIN32
-#endif
-
 #ifdef WIN32
 #include "WinSock2.h"
 #include <io.h>
