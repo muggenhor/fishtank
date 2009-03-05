@@ -47,10 +47,6 @@ AquariumController::AquariumController(void):
 	facePosition = math3::Vec2d(50, 50);
 }
 
-AquariumController::~AquariumController(void)
-{
-}
-
 //geeft een willekeurige positie, maar houd het wel op de grond
 Vec3d RandomBubblePos()
 {

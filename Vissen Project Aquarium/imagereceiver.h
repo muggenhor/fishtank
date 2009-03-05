@@ -23,8 +23,6 @@ class SimpleOStream{
 
 class SimpleIOStream: public SimpleIStream, SimpleOStream
 {
-  public:
-  virtual ~SimpleIOStream(){};
 };
 
 class SimpleSocketStream: public SimpleIOStream
@@ -74,7 +72,7 @@ class ImageReceiver
 	public:
 	/// port: the port to listen on.
 		ImageReceiver(int port=7779);
-		virtual ~ImageReceiver();
+		virtual ~ImageReceiver() {};
 		void Update();
 
 		unsigned int TextureID();
@@ -95,7 +93,7 @@ class PositionReceiver
 	public:
 	/// port: the port to listen on.
 		PositionReceiver(int type, int port=7779);
-		virtual ~PositionReceiver();
+		virtual ~PositionReceiver() {};
 		void Update(AquariumController *aquariumController);
 
 		unsigned int TextureID();

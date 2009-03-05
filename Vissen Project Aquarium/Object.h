@@ -22,8 +22,6 @@ class Object
 		int sphere;
 
 		Object(Model *model, const std::string &propertiesFile, const math3::Vec3d &position);
-		~Object(void);
-
 		//haalt info uit de file, gegeven als path
 		void LoadProperties(const std::string &propertiesFile);
 		//update voor de wiggle

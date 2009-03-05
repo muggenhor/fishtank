@@ -131,10 +131,6 @@ Vis::Vis(Model *model, const std::string &propertiesFile, int maxFloorHeight) //
 	sphere = 20;
 }
 
-Vis::~Vis(void)
-{
-}
-
 Vec3d Vis::RandomPos()
 {
 	Vec3d result;

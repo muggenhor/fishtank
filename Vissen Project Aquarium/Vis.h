@@ -52,8 +52,6 @@ class Vis
 		int maxFloorHeight;
 
 		Vis(Model *model, const std::string &propertiesFile, int maxFloorHeight); //hihi
-		~Vis(void);
-
 		//draag de vis op om een andere positie te pakken (iets te ontwijken)
 		void Avade();
 		//geeft true als de vis botst met een ander object, hier gegeven in een positie en een botsarea

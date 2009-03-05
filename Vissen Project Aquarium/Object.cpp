@@ -19,10 +19,6 @@ Object::Object(Model *model, const std::string &propertiesFile, const math3::Vec
 	LoadProperties(propertiesFile);
 }
 
-Object::~Object(void)
-{
-}
-
 void Object::LoadProperties(const string &propertiesFile)
 {
 	string s;

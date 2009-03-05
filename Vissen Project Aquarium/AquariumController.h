@@ -35,7 +35,6 @@ public:
 	math3::Vec2d facePosition;
 
 	AquariumController(void);
-	~AquariumController(void);
 
 	//update alle posities van vissen en laat ze nadenken (laat ze even een stapje leven)
 	void Update(double dt);

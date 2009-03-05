@@ -133,7 +133,8 @@ SimpleSocketStream::SimpleSocketStream(int sock_):
 {
 }
 
-SimpleSocketStream::~SimpleSocketStream(){
+SimpleSocketStream::~SimpleSocketStream()
+{
 	if (m_sock!=-1)close(m_sock);
 }
 
@@ -248,11 +249,6 @@ ImageReceiver::ImageReceiver(int port)
 #else
 	fcntl(m_server_socket, F_SETFL, O_NONBLOCK);
 #endif
-
-}
-
-ImageReceiver::~ImageReceiver()
-{
 
 }
 
@@ -429,11 +425,6 @@ PositionReceiver::PositionReceiver(int type, int port)
 #else
 	fcntl(m_server_socket, F_SETFL, O_NONBLOCK);
 #endif
-
-}
-
-PositionReceiver::~PositionReceiver()
-{
 
 }
 
