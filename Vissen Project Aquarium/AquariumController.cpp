@@ -1,4 +1,7 @@
+#include <boost/foreach.hpp>
 #include "AquariumController.h"
+
+#define foreach BOOST_FOREACH
 
 using namespace math3;
 using namespace std;
@@ -76,12 +79,10 @@ void AquariumController::AddBubbleSpot(const math3::Vec3d &position)
 
 void AquariumController::Update(double dt)
 {
-	//update vissen
-	for (std::vector<Vis>::iterator fish = fishes.begin(); fish != fishes.end(); ++fish)
-		fish->Update(dt);
-	//update objecten
-	for (std::vector<Object>::iterator object = objects.begin(); object != objects.end(); ++object)
-		object->Update(dt);
+	foreach (Vis& fish, fishes)
+		fish.Update(dt);
+	foreach (Object& object, objects)
+		object.Update(dt);
 	//voeg op willekeurige momenten bubbels toe
 	for (std::vector<math3::Vec3d>::const_iterator bubbleSpot = bubbleSpots.begin(); bubbleSpot != bubbleSpots.end(); ++bubbleSpot)
 	{
@@ -91,12 +92,12 @@ void AquariumController::Update(double dt)
 		}
 	}
 	//update de bubbels en kijk of ze weggegooit mogen worden
-	for (std::vector<Bubble>::iterator bubble = bubbles.begin(); bubble != bubbles.end(); ++bubble)
+	foreach (Bubble& bubble, bubbles)
 	{
-		bubble->Update(dt);
-		if (bubble->pop < 0)
+		bubble.Update(dt);
+		if (bubble.pop < 0)
 		{
-			*bubble = bubbles.back();
+			bubble = bubbles.back();
 			bubbles.pop_back();
 		}
 	}
@@ -124,27 +125,30 @@ void AquariumController::GoToScreen(const math3::Vec2d &position)
 void AquariumController::AvoidFishBounce()
 {
 	// FIXME: O(n^2) behaviour
-	for (unsigned int i = 0; i < fishes.size(); i++)
+	foreach (Vis& fish, fishes)
 	{
-		for (unsigned int j = 0; j < fishes.size(); j++)
+		foreach (const Vis& collidable, fishes)
 		{
-			if (j != i)
+			// No collision detection with self
+			if (&collidable == &fish)
+				continue;
+
+			//needs goalcheck in this if aswell
+			if (fish.Colliding(collidable.pos, collidable.sphere)
+			 && fish.IsGoingTowards(collidable.pos))
 			{
-				//needs goalcheck in this if aswell
-				if (fishes[i].Colliding(fishes[j].pos, fishes[j].sphere) && fishes[i].IsGoingTowards(fishes[j].pos)  )
-				{
-					//std::cout<<"Fish-fish collision "<<i<<":"<<j<<std::endl;
-					fishes[i].Avade();
-				}
+				//std::cout<<"Fish-fish collision "<<i<<":"<<j<<std::endl;
+				fish.Avade();
 			}
 		}
-		for (unsigned int j = 0; j < objects.size(); j++)
+
+		foreach (const Object& collidable, objects)
 		{
 			//needs goalcheck in this if aswell
-			Vec3d object_center=0.5*(objects[j].model->bb_h + objects[j].model->bb_l);
-			if (fishes[i].Colliding(object_center, objects[j].sphere) && fishes[i].IsGoingTowards(object_center))
+			Vec3d object_center=0.5*(collidable.model->bb_h + collidable.model->bb_l);
+			if (fish.Colliding(object_center, collidable.sphere) && fish.IsGoingTowards(object_center))
 			{
-				fishes[i].Avade();
+				fish.Avade();
 			}
 		}
 	}
@@ -152,21 +156,19 @@ void AquariumController::AvoidFishBounce()
 
 void AquariumController::Draw()
 {
-	//teken vissen
-	for (std::vector<Vis>::iterator fish = fishes.begin(); fish != fishes.end(); ++fish)
-		fish->Draw();
-	//teken objecten
-	for (std::vector<Object>::iterator object = objects.begin(); object != objects.end(); ++object)
-		object->Draw();
+	foreach (const Vis& fish, fishes)
+		fish.Draw();
+	foreach (const Object& object, objects)
+		object.Draw();
 	//teken alle muren die niet webcams zijn
 	ground.Draw();
 	wall1.Draw();
 	wall2.Draw();
 	ceiling.Draw();
 
-	//bubbles als laatste om de alpha goed te krijgen
-	for (std::vector<Bubble>::iterator bubble = bubbles.begin(); bubble != bubbles.end(); ++bubble)
-		bubble->Draw();
+	// Draw bubbles as last to get proper alpha blending
+	foreach (const Bubble& bubble, bubbles)
+		bubble.Draw();
 }
 
 // -afblijven- dit laad alle vitale componenten van het programma, wat samenwerkt met de modelloader en de sockets -afblijven-
