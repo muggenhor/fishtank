@@ -3,11 +3,10 @@
 
 #define foreach BOOST_FOREACH
 
-using namespace math3;
 using namespace std;
 
 //staan in header uitgelegd
-math3::Vec3d aquariumSize(440, 250, 220), swimArea(200, 90, 200);
+Eigen::Vector3d aquariumSize(440, 250, 220), swimArea(200, 90, 200);
 int balkSize = 0; //de grote van de lege ruimte die gemaakt word door textures kleiner te maken -ongebruikt ivm misteffect-
 int balkSize2 = 5; //de grote van de balken tussen de hoeken
 int range_x = 50;
@@ -26,34 +25,34 @@ AquariumController::AquariumController(void):
 		//voeg grond toe
 		ground("./Data/heightmap.jpg", 30, "./Data/ground.jpg"),
 		//voeg de muren toe
-		wall1(math3::Vec3d(-0.5*aquariumSize.x, -0.5*aquariumSize.y + balkSize, -0.5*aquariumSize.z + balkSize),
-					math3::Vec3d(-0.5*aquariumSize.x, 0.5*aquariumSize.y - balkSize, -0.5*aquariumSize.z + balkSize),
-					math3::Vec3d(-0.5*aquariumSize.x, 0.5*aquariumSize.y - balkSize, 0.5*aquariumSize.z - balkSize),
-					math3::Vec3d(-0.5*aquariumSize.x, -0.5*aquariumSize.y + balkSize, 0.5*aquariumSize.z - balkSize), "./Data/wall1.jpg"),
-		wall2(math3::Vec3d(-0.5*aquariumSize.x + balkSize, -0.5*aquariumSize.y + balkSize, -0.5*aquariumSize.z),
-					math3::Vec3d(-0.5*aquariumSize.x + balkSize, 0.5*aquariumSize.y - balkSize, -0.5*aquariumSize.z),
-					math3::Vec3d(0.5*aquariumSize.x - balkSize, 0.5*aquariumSize.y - balkSize, -0.5*aquariumSize.z),
-					math3::Vec3d(0.5*aquariumSize.x - balkSize, -0.5*aquariumSize.y + balkSize, -0.5*aquariumSize.z), "./Data/wall2.jpg"),
-		/*ceiling(math3::Vec3d(-0.5*aquariumSize.x + balkSize, 0.5*aquariumSize.y, 0.5*aquariumSize.z - balkSize),
-					math3::Vec3d(-0.5*aquariumSize.x + balkSize, 0.5*aquariumSize.y, -0.5*aquariumSize.z + balkSize),
-					math3::Vec3d(0.5*aquariumSize.x - balkSize, 0.5*aquariumSize.y, -0.5*aquariumSize.z + balkSize),
-					math3::Vec3d(0.5*aquariumSize.x - balkSize, 0.5*aquariumSize.y, 0.5*aquariumSize.z - balkSize), "./Data/ceiling.jpg")*/
+		wall1(Eigen::Vector3d(-0.5*aquariumSize.x(), -0.5*aquariumSize.y() + balkSize, -0.5*aquariumSize.z() + balkSize),
+					Eigen::Vector3d(-0.5*aquariumSize.x(), 0.5*aquariumSize.y() - balkSize, -0.5*aquariumSize.z() + balkSize),
+					Eigen::Vector3d(-0.5*aquariumSize.x(), 0.5*aquariumSize.y() - balkSize, 0.5*aquariumSize.z() - balkSize),
+					Eigen::Vector3d(-0.5*aquariumSize.x(), -0.5*aquariumSize.y() + balkSize, 0.5*aquariumSize.z() - balkSize), "./Data/wall1.jpg"),
+		wall2(Eigen::Vector3d(-0.5*aquariumSize.x() + balkSize, -0.5*aquariumSize.y() + balkSize, -0.5*aquariumSize.z()),
+					Eigen::Vector3d(-0.5*aquariumSize.x() + balkSize, 0.5*aquariumSize.y() - balkSize, -0.5*aquariumSize.z()),
+					Eigen::Vector3d(0.5*aquariumSize.x() - balkSize, 0.5*aquariumSize.y() - balkSize, -0.5*aquariumSize.z()),
+					Eigen::Vector3d(0.5*aquariumSize.x() - balkSize, -0.5*aquariumSize.y() + balkSize, -0.5*aquariumSize.z()), "./Data/wall2.jpg"),
+		/*ceiling(Eigen::Vector3d(-0.5*aquariumSize.x() + balkSize, 0.5*aquariumSize.y(), 0.5*aquariumSize.z() - balkSize),
+					Eigen::Vector3d(-0.5*aquariumSize.x() + balkSize, 0.5*aquariumSize.y(), -0.5*aquariumSize.z() + balkSize),
+					Eigen::Vector3d(0.5*aquariumSize.x() - balkSize, 0.5*aquariumSize.y(), -0.5*aquariumSize.z() + balkSize),
+					Eigen::Vector3d(0.5*aquariumSize.x() - balkSize, 0.5*aquariumSize.y(), 0.5*aquariumSize.z() - balkSize), "./Data/ceiling.jpg")*/
 		//voeg het plafond toe
-		ceiling(math3::Vec3d(-0.5*aquariumSize.x, 0.5*aquariumSize.y, 0.5*aquariumSize.z),
-					math3::Vec3d(-0.5*aquariumSize.x, 0.5*aquariumSize.y, -0.5*aquariumSize.z),
-					math3::Vec3d(0.5*aquariumSize.x, 0.5*aquariumSize.y, -0.5*aquariumSize.z),
-					math3::Vec3d(0.5*aquariumSize.x, 0.5*aquariumSize.y, 0.5*aquariumSize.z), "./Data/ceiling.jpg")
+		ceiling(Eigen::Vector3d(-0.5*aquariumSize.x(), 0.5*aquariumSize.y(), 0.5*aquariumSize.z()),
+					Eigen::Vector3d(-0.5*aquariumSize.x(), 0.5*aquariumSize.y(), -0.5*aquariumSize.z()),
+					Eigen::Vector3d(0.5*aquariumSize.x(), 0.5*aquariumSize.y(), -0.5*aquariumSize.z()),
+					Eigen::Vector3d(0.5*aquariumSize.x(), 0.5*aquariumSize.y(), 0.5*aquariumSize.z()), "./Data/ceiling.jpg")
 {
-	facePosition = math3::Vec2d(50, 50);
+	facePosition = Eigen::Vector2d(50, 50);
 }
 
 //geeft een willekeurige positie, maar houd het wel op de grond
-Vec3d RandomBubblePos()
+Eigen::Vector3d RandomBubblePos()
 {
-	Vec3d result;
-	result.x=(my_random()-0.5)*aquariumSize.x;
-	result.y= -aquariumSize.y / 2;
-	result.z=(my_random()-0.5)*aquariumSize.z;
+	Eigen::Vector3d result;
+	result.x() = (my_random() - 0.5) * aquariumSize.x();
+	result.y() = -aquariumSize.y() / 2;
+	result.z() = (my_random() - 0.5) * aquariumSize.z();
 	return result;
 }
 
@@ -62,12 +61,12 @@ void AquariumController::AddFish(Model *model, const string &propertiesFile)
 	fishes.push_back(Vis(model, propertiesFile, ground.maxHeight));
 }
 
-void AquariumController::AddObject(Model *model, const string &propertiesFile, const math3::Vec3d &position)
+void AquariumController::AddObject(Model *model, const string &propertiesFile, const Eigen::Vector3d &position)
 {
 	objects.push_back(Object(model, propertiesFile, position));
 }
 
-void AquariumController::AddBubbleSpot(const math3::Vec3d &position)
+void AquariumController::AddBubbleSpot(const Eigen::Vector3d &position)
 {
 	bubbleSpots.push_back(position);
 }
@@ -80,7 +79,7 @@ void AquariumController::Update(double dt)
 	foreach (Object& object, objects)
 		object.Update(dt);
 	//voeg op willekeurige momenten bubbels toe
-	for (std::vector<math3::Vec3d>::const_iterator bubbleSpot = bubbleSpots.begin(); bubbleSpot != bubbleSpots.end(); ++bubbleSpot)
+	for (std::vector<Eigen::Vector3d>::const_iterator bubbleSpot = bubbleSpots.begin(); bubbleSpot != bubbleSpots.end(); ++bubbleSpot)
 	{
 		if (my_random() < dt * 9.5)
 		{
@@ -101,19 +100,19 @@ void AquariumController::Update(double dt)
 	AvoidFishBounce();
 }
 
-void AquariumController::GoToScreen(const math3::Vec2d &position)
+void AquariumController::GoToScreen(const Eigen::Vector2d &position)
 {
 	//bereken de positie relatief in het aquarium, gebruikmakende van de procenten
-	math3::Vec2d pos = math3::Vec2d(aquariumSize.x * position.x / 100 - aquariumSize.x / 2, aquariumSize.y * position.y / 100 - aquariumSize.y / 2);
+	Eigen::Vector2d pos(aquariumSize.x() * position.x() / 100 - aquariumSize.x() / 2, aquariumSize.y() * position.y() / 100 - aquariumSize.y() / 2);
 	//laat alle vissen nu naar het punt toe zwemmen
 	for (unsigned int i = 0; i < fishes.size(); i++)
 	{
 		//geef de vissen een iets andere positie zodat ze niet door elkaar heen willen gaan (in dit geval een circel)
-		double tempx = pos.x + sin(2 * PI / fishes.size() * i) * circleDistance;
-		double tempy = pos.y + cos(2 * PI / fishes.size() * i) * circleDistance;
+		double tempx = pos.x() + sin(2 * PI / fishes.size() * i) * circleDistance;
+		double tempy = pos.y() + cos(2 * PI / fishes.size() * i) * circleDistance;
 		//laat de vissen naar de positie zwemmen
-		fishes[i].setGoal(math3::Vec3d(tempx, tempy, aquariumSize.y));
-		//fishes[i].pos = math3::Vec3d(tempx, tempy, aquariumSize.y);
+		fishes[i].setGoal(Eigen::Vector3d(tempx, tempy, aquariumSize.y()));
+		//fishes[i].pos = Eigen::Vector3d(tempx, tempy, aquariumSize.y());
 		cout << "Goto X: " << tempx << " Y: " << tempy << endl;
 	}
 }
@@ -141,7 +140,7 @@ void AquariumController::AvoidFishBounce()
 		foreach (const Object& collidable, objects)
 		{
 			//needs goalcheck in this if aswell
-			Vec3d object_center=0.5*(collidable.model->bb_h + collidable.model->bb_l);
+			Eigen::Vector3d object_center(0.5 * (collidable.model->bb_h + collidable.model->bb_l));
 			if (fish.Colliding(object_center, collidable.sphere) && fish.IsGoingTowards(object_center))
 			{
 				fish.Avade();

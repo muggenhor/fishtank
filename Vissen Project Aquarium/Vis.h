@@ -1,8 +1,9 @@
-#pragma once
+#ifndef __INCLUDED_VIS_H__
+#define __INCLUDED_VIS_H__
 
-#include "math3.h"
-#include "MS3D_ASCII.h"
+#include <Eigen/Core>
 
+class Model;
 
 class Vis
 {
@@ -10,7 +11,7 @@ class Vis
 		//pos = huidige positie
 		//goalPos = positie waar de vis naartoe wil zwemmen (deze is finalgoalpos, tenzij de vis iets moet ontwijken, en met een omweg zwemt)
 		//finalgoalpos = de positie waar de vis wil belanden
-		math3::Vec3d pos, goalPos, finalGoalPos, velocity;
+		Eigen::Vector3d pos, goalPos, finalGoalPos, velocity;
 		//true als goalpos gebruikt wordt als tijdelijk doel, om te ontwijken
 		bool usingTempGoal;
 
@@ -55,12 +56,12 @@ class Vis
 		//draag de vis op om een andere positie te pakken (iets te ontwijken)
 		void Avade();
 		//geeft true als de vis botst met een ander object, hier gegeven in een positie en een botsarea
-		bool Colliding(const math3::Vec3d &object, int sphere);
+		bool Colliding(const Eigen::Vector3d& object, int sphere);
 		//geeft true als de vis richting het gegeven punt aan het zwemmen is
-		bool IsGoingTowards(const math3::Vec3d &object);
+		bool IsGoingTowards(const Eigen::Vector3d& object);
 
 		//geeft een willekeurige posite binnen de zwemarea, rekening houdende met de maxFloorHeight
-		math3::Vec3d RandomPos();
+		Eigen::Vector3d RandomPos();
 		// - afblijven - de update van de vis, deze houd het bewegen van de vis bij en voert een stap uit - afblijven -
 		void Update(double dt);
 		//teken de vis
@@ -69,9 +70,11 @@ class Vis
 		void LoadProperties(const std::string &propertiesFile);
 		//positiebeheer
 		void newGoal();
-		void setGoal(const math3::Vec3d &final_goal);/// use that to set goal
-		void setTemporaryGoal(const math3::Vec3d &temp_goal);/// use that to set temporary goal when avoiding collision or something.
+		void setGoal(const Eigen::Vector3d& final_goal);/// use that to set goal
+		void setTemporaryGoal(const Eigen::Vector3d& temp_goal);/// use that to set temporary goal when avoiding collision or something.
 };
 
 //teken het aquarium, gebruikmakende van witte lijnen
 void TestDrawAquarium();
+
+#endif // __INCLUDED_VIS_H__

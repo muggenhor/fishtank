@@ -463,12 +463,12 @@ void PositionReceiver::ReceiveSegment(AquariumController *aquariumController){
 		{
 			if (type == 0)
 			{
-				aquariumController->GoToScreen(math3::Vec2d(pos.x, pos.y));
+				aquariumController->GoToScreen(Eigen::Vector2d(pos.x, pos.y));
 				cout << "Zwempositie X: " << int(pos.x) << " Y: " << int(pos.y) << endl;
 			}
 			else
 			{
-				aquariumController->facePosition = math3::Vec2d(pos.x, pos.y);
+				aquariumController->facePosition = Eigen::Vector2d(pos.x, pos.y);
 				cout << "Gezichtpositie X: " << int(pos.x) << " Y: " << int(pos.y) << endl;
 			}
         }

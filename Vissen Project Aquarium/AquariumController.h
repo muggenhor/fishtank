@@ -1,18 +1,19 @@
-#pragma once
+#ifndef __INCLUDED_AQUARIUM_CONTROLLER_H__
+#define __INCLUDED_AQUARIUM_CONTROLLER_H__
 
+#include <Eigen/Core>
 #include <vector>
 #include "Vis.h"
 #include "Object.h"
 #include "Bubble.h"
 #include "Ground.h"
 #include "Environment.h"
-#include "math3.h"
 #include "JPEG.h"
 
 //de grootte van het aquarium
-extern math3::Vec3d aquariumSize;
+extern Eigen::Vector3d aquariumSize;
 //de grootte van de ruimte waar de vissen mogen zwemmen
-extern math3::Vec3d swimArea;
+extern Eigen::Vector3d swimArea;
 //de grootte van de zwarten balken (word geladen in main)
 extern int balkSize;
 extern int balkSize2;
@@ -26,13 +27,13 @@ private:
 	std::vector<Object> objects;
 	std::vector<Vis> fishes;
 	std::vector<Bubble> bubbles;
-	std::vector<math3::Vec3d> bubbleSpots;
+	std::vector<Eigen::Vector3d> bubbleSpots;
 public:
 	Ground ground;
 	//de linker en achtermuur en het plafond
 	Environment wall1, wall2, ceiling;
 	//de positie van een persoon die voor het scherm staat
-	math3::Vec2d facePosition;
+	Eigen::Vector2d facePosition;
 
 	AquariumController(void);
 
@@ -44,14 +45,14 @@ public:
 	//deze functie kijkt voor elke vis of ze botsen, zo ja, dan nemen ze een actie in om te ontwijken
 	void AvoidFishBounce();
 	//deze functie zorgt ervoor dat de vissen naar het scherm toe zwemmen
-	void GoToScreen(const math3::Vec2d &position);
+	void GoToScreen(const Eigen::Vector2d &position);
 
 	//voeg een vis toe in het aquarium
 	void AddFish(Model *model, const std::string &propertiesFile);
 	//voeg een object toe in het aquarium
-	void AddObject(Model *model, const std::string &propertiesFile, const math3::Vec3d &position);
+	void AddObject(Model *model, const std::string &propertiesFile, const Eigen::Vector3d &position);
 	//voeg een bubbel maker toe in het aquarium
-	void AddBubbleSpot(const math3::Vec3d &position);
+	void AddBubbleSpot(const Eigen::Vector3d &position);
 
 	// -afblijven- dit laad alle vitale componenten van het programma, wat samenwerkt met de modelloader en de sockets -afblijven-
 	static void InitialiseComponents(Image& img);
@@ -59,3 +60,5 @@ public:
 
 //een random tussen 0 en 1
 float my_random();
+
+#endif // __INCLUDED_AQUARIUM_CONTROLLER_H__

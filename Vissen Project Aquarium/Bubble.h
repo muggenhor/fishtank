@@ -1,6 +1,7 @@
-#pragma once
+#ifndef __INCLUDED_BUBBLE_H__
+#define __INCLUDED_BUBBLE_H__
 
-#include "math3.h"
+#include <Eigen/Core>
 #include "MS3D_ASCII.h"
 
 class Bubble
@@ -13,12 +14,13 @@ class Bubble
 		//het type beweging dat de bubbel maakt, true is een sinus, false een exponentiele beweging omhoog
 		bool wiggle;
 		//snelheid
-		math3::Vec3d velocity;
+		Eigen::Vector3d velocity;
+
 	public:
-		Bubble(math3::Vec3d startpos, double size, bool wiggle);
+		Bubble(const Eigen::Vector3d& startpos, double size, bool wiggle);
 
 		//de huidige positie van de bubbel
-		math3::Vec3d pos;
+		Eigen::Vector3d pos;
 		//dit houd bij wanneer een bubbel op het oppervlak kapot moet gaan
 		double pop;
 
@@ -27,3 +29,5 @@ class Bubble
 		//deze funtie tekend de bubbel
 		void Draw() const;
 };
+
+#endif // __INCLUDED_BUBBLE_H__

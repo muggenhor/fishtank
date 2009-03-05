@@ -1,13 +1,14 @@
 #include "AquariumController.h"
 #include "Object.h"
 #include <cstdlib>
+#include <cmath>
 #include <ctime>
 #include <fstream>
 #include <string>
-using namespace math3;
+
 using namespace std;
 
-Object::Object(Model *model, const std::string &propertiesFile, const math3::Vec3d &position)
+Object::Object(Model *model, const std::string &propertiesFile, const Eigen::Vector3d& position)
 {
 	this->model = model;
 
@@ -30,12 +31,12 @@ void Object::LoadProperties(const string &propertiesFile)
 
 	getline(input_file, s);/// randomize
 	float n = atof(s.c_str());
-	object_height  = object_height  + my_random() * n;
+	object_height = object_height + my_random() * n;
 
-	sphere = Length(model->bb_h - model->bb_l);
+	sphere = (model->bb_h - model->bb_l).norm();
 
 	if(model){
-		scale = object_height / ( model->bb_h.y - model->bb_l.y );
+		scale = object_height / (model->bb_h.y() - model->bb_l.y());
 	}else{
 		scale = object_height;
 		std::cerr<<"Error: trying to load properties for object that has no model, cant determine scaling"<<std::endl;
@@ -49,11 +50,11 @@ void Object::LoadProperties(const string &propertiesFile)
 void Object::Draw() const
 {
 	glPushMatrix();
-	glTranslatef(pos.x,pos.y,pos.z);
+	glTranslatef(pos.x(), pos.y(), pos.z());
 
 	glScalef(scale,scale,scale);
 	glEnable(GL_NORMALIZE);
-	model->render(Vec3f(0,0.1 * scale,0), Vec3f(2.0 / scale,0,0),wiggle_phase, 0);
+	model->render(Eigen::Vector3f(0.f, 0.1 * scale, 0), Eigen::Vector3f(2.0 / scale, 0.f, 0.f), wiggle_phase, 0);
 
 	glPopMatrix();
 }
@@ -68,5 +69,6 @@ void Object::Update(double dt)
 
 	/// wraparound not to lose precision over time.
 
-	if(wiggle_phase>2*pi)wiggle_phase-=2*pi;
+	if (wiggle_phase > 2 * M_PI)
+		wiggle_phase -= 2 * M_PI;
 }

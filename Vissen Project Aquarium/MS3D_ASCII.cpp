@@ -1,9 +1,13 @@
 #include <boost/foreach.hpp>
+#include <Eigen/Geometry>
+#include <Eigen/LU>
 #include "JPEG.h"
 #include "MS3D_ASCII.h"
 #include <string>
 
 #define foreach BOOST_FOREACH
+
+using namespace Eigen;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //										The Shape Class
@@ -93,26 +97,31 @@ void Shape::render( void )
 		// Draw all 3 vertices of the triangle
 		for (unsigned int j = 0; j < 3; ++j)
 		{
-			const Normal& N = normals[tri.n[j]];
-			glNormal3f(N.x, N.y, N.z);
+			glNormal3fv(normals[tri.n[j]].data());
 
 			const Vec& vec = vertices[tri.v[j]];
-			glTexCoord2f(vec.u, vec.v);
 
-			glVertex3f(vec.x, vec.y, vec.z);
+			glTexCoord2fv(vec.texcoord.data());
+			glVertex3fv(vec.vertex.data());
 		}
 	}
 	glEnd();
 }
-using namespace math3;
 
-
-bool Shape::loadFromMs3dAsciiSegment( FILE *file , const math3::Matrix4x4f &transform)
+bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transform)
 {
-	Matrix4x4f normals_transform=Transpose(Inverse(transform));
+	Eigen::Transform3f normals_transform;
+	{
+		Eigen::Matrix4f normals_transform_matrix;
+		transform.computeInverse(&normals_transform_matrix);
+		normals_transform_matrix.transposeInPlace();
 
-	bb_l=Vec3d(1E20,1E20,1E20);
-	bb_h=-bb_l;
+		normals_transform = normals_transform_matrix;
+	}
+	Eigen::Transform3f vertex_transform(transform);
+
+	bb_l = Vector3d(1E20,1E20,1E20);
+	bb_h = -bb_l;
 
 	int nFlags, nIndex;
 
@@ -131,33 +140,32 @@ bool Shape::loadFromMs3dAsciiSegment( FILE *file , const math3::Matrix4x4f &tran
 		float f;
 		if (fscanf(file, "%d %f %f %f %f %f %f",
 								&nFlags,
-								&vertices[j].x, &vertices[j].y, &vertices[j].z,
-								&vertices[j].u, &vertices[j].v, &f
+								&vertices[j].vertex.x(), &vertices[j].vertex.y(), &vertices[j].vertex.z(),
+								&vertices[j].texcoord.x(), &vertices[j].texcoord.y(), &f
 							 ) != 7)
 		{
 			return false;
 		}
 		/// dizekat: apply vertice transform
-		Vec3f tmp1(vertices[j].x, vertices[j].y, vertices[j].z);
-		Vec3f tmp2=Mulw1(transform,tmp1);
+		vertex_transform.translate(vertices[j].vertex);
 		/// done transform.
 
-		vertices[j].x=tmp2.x;
-		vertices[j].y=tmp2.y;
-		vertices[j].z=tmp2.z;
+		if (vertices[j].vertex.x() < bb_l.x())
+			bb_l.x() = vertices[j].vertex.x();
+		if (vertices[j].vertex.y() < bb_l.y())
+			bb_l.y() = vertices[j].vertex.y();
+		if (vertices[j].vertex.z() < bb_l.z())
+			bb_l.z() = vertices[j].vertex.z();
 
-		if(tmp2.x<bb_l.x)bb_l.x=tmp2.x;
-		if(tmp2.y<bb_l.y)bb_l.y=tmp2.y;
-		if(tmp2.z<bb_l.z)bb_l.z=tmp2.z;
-
-		if(tmp2.x>bb_h.x)bb_h.x=tmp2.x;
-		if(tmp2.y>bb_h.y)bb_h.y=tmp2.y;
-		if(tmp2.z>bb_h.z)bb_h.z=tmp2.z;
-
-
+		if (vertices[j].vertex.x() > bb_h.x())
+			bb_h.x() = vertices[j].vertex.x();
+		if (vertices[j].vertex.y() > bb_h.y())
+			bb_h.y() = vertices[j].vertex.y();
+		if (vertices[j].vertex.z() > bb_h.z())
+			bb_h.z() = vertices[j].vertex.z();
 
 		// adjust the y direction of the texture coordinate
-		vertices[j].v = 1.0f - vertices[j].v;
+		vertices[j].texcoord.y() = 1.f - vertices[j].texcoord.y();
 	}
 
 
@@ -173,18 +181,14 @@ bool Shape::loadFromMs3dAsciiSegment( FILE *file , const math3::Matrix4x4f &tran
 	for (size_t j = 0; j < num_normals; ++j)
 	{
 		if (fscanf(file, "%f %f %f",
-								&normals[j].x, &normals[j].y, &normals[j].z) != 3)
+								&normals[j].x(), &normals[j].y(), &normals[j].z()) != 3)
 		{
 			return false;
 		}
 
-				/// dizekat: apply vertice transform
-		Vec3f tmp1(normals[j].x, normals[j].y, normals[j].z);
-		Vec3f tmp2=Mulw0(normals_transform,tmp1);
-		Normalize(tmp2);
-		normals[j].x=tmp2.x;
-		normals[j].y=tmp2.y;
-		normals[j].z=tmp2.z;
+		/// dizekat: apply vertice transform
+		normals_transform.translate(normals[j]);
+		normals[j].normalize();
 		/// done transform.
 
 	}
@@ -301,7 +305,7 @@ Model::Model():
 {
 }
 
-bool Model::loadFromMs3dAsciiFile( const char *filename, const math3::Matrix4x4f &transform )
+bool Model::loadFromMs3dAsciiFile(const char* filename, const Eigen::Matrix4f& transform)
 {
 	path = filename;
 	/// i'd use rfind but duh it cant search for both \\ and /
@@ -316,8 +320,8 @@ bool Model::loadFromMs3dAsciiFile( const char *filename, const math3::Matrix4x4f
 	}
 	path.resize(path_length + 1);/// downsize the string to cut out name from path
 
-	bb_l=Vec3d(1E20,1E20,1E20);
-	bb_h=-bb_l;
+	bb_l = Vector3d(1E20,1E20,1E20);
+	bb_h = -bb_l;
 
 	bool	bError = false;
 	char	szLine[256];
@@ -364,20 +368,19 @@ bool Model::loadFromMs3dAsciiFile( const char *filename, const math3::Matrix4x4f
 					break;
 				}
 
-				if (shape.bb_l.x < bb_l.x)
-					bb_l.x = shape.bb_l.x;
-				if (shape.bb_l.y < bb_l.y)
-					bb_l.y = shape.bb_l.y;
-				if (shape.bb_l.z < bb_l.z)
-					bb_l.z = shape.bb_l.z;
+				if (shape.bb_l.x() < bb_l.x())
+					bb_l.x() = shape.bb_l.x();
+				if (shape.bb_l.y() < bb_l.y())
+					bb_l.y() = shape.bb_l.y();
+				if (shape.bb_l.z() < bb_l.z())
+					bb_l.z() = shape.bb_l.z();
 
-				if (shape.bb_h.x > bb_h.x)
-					bb_h.x = shape.bb_h.x;
-				if (shape.bb_h.y > bb_h.y)
-					bb_h.y = shape.bb_h.y;
-				if (shape.bb_h.z > bb_h.z)
-					bb_h.z = shape.bb_h.z;
-
+				if (shape.bb_h.x() > bb_h.x())
+					bb_h.x() = shape.bb_h.x();
+				if (shape.bb_h.y() > bb_h.y())
+					bb_h.y() = shape.bb_h.y();
+				if (shape.bb_h.z() > bb_h.z())
+					bb_h.z() = shape.bb_h.z();
 			}
 			continue;
 		}
@@ -412,7 +415,7 @@ void Model::reloadTextures()
 		material.reloadTexture();
 }
 
-void Model::render(const math3::Vec3f &wiggle_freq, const math3::Vec3f &wiggle_dir, double wiggle_phase, double turn) const
+void Model::render(const Eigen::Vector3f& wiggle_freq, const Eigen::Vector3f& wiggle_dir, double wiggle_phase, double turn) const
 {
 	/*
 	// approximate elliptic integral with sine... just an approximation, not correct formula
@@ -432,9 +435,9 @@ dx/dl=q*cos(2*l*b)+p
 x=q*sin(2*b*l)/(2*b) + p*l
 	*/
 
-
-	double a=2.0*Length(wiggle_dir)+(1E-20);/// prevent divisions by zero
-	double b=Length(wiggle_freq)+(1E-20);
+	const double i_turn = 1. / turn;
+	double a = 2.0 * wiggle_dir.norm() + 1E-20; /// prevent divisions by zero
+	double b = wiggle_freq.norm() + 1E-20;
 	double c=1.0/sqrt(a*a*b*b+1);
 	double q=0.5*(1-c);
 	double p=0.5*(c+1);
@@ -460,42 +463,41 @@ x=q*sin(2*b*l)/(2*b) + p*l
 		{
 			for (unsigned int j = 0; j < 3; ++j)						// 3 vertices of the triangle
 			{
-				const Normal& N = shape.normals[tri.n[j]];
 				/// todo: also apply wiggle to normals? (thats much harder.)
-				glNormal3f(N.x, N.y, N.z);			// set normal vector  (object space)
+				glNormal3fv(shape.normals[tri.n[j]].data());
 
 				const Vec& vec = shape.vertices[tri.v[j]];	// pointer to vertex
-				glTexCoord2f (vec.u, vec.v);			// texture coordinate
+				glTexCoord2fv(vec.texcoord.data());
 
 				/// wiggle position
-				Vec3f pos(vec.x , vec.y, vec.z);
-				float alpha=DotProd(pos, wiggle_freq);
+				Vector3f pos(vec.vertex);
+				const float alpha = pos.dot(wiggle_freq);
 
-				Vec3f wiggled_pos=pos + wiggle_dir*float(sin(alpha+wiggle_phase)) ;
+				Vector3f wiggled_pos = pos + wiggle_dir * float(sin(alpha + wiggle_phase));
 
 				/// approximate the elliptic integral.
-				wiggled_pos.x=wiggled_pos.x*p+sin(2*alpha+wiggle_phase)*s_a;
+				wiggled_pos.x() = wiggled_pos.x() * p + sin(2 * alpha + wiggle_phase) * s_a;
 				/// approximate the elliptic integral, weirder but better looking (?).
-				//wiggled_pos+=wiggle_freq*float(sin(2*alpha+wiggle_phase)*s_a/b);
+				//wiggled_pos += wiggle_freq * float(sin(2 * alpha + wiggle_phase) * s_a / b);
 
 				/// turns:
-				if(fabs(turn)>1E-5){
-					double i_turn=1.0/turn;
-					double turn_a=wiggled_pos.x*turn;
-					if(turn>0){
-						wiggled_pos.x=sin(turn_a)*(i_turn+wiggled_pos.z);
-						wiggled_pos.z=cos(turn_a)*(i_turn+wiggled_pos.z)-i_turn;
-					}else{
-						turn_a=-turn_a;
-						i_turn=-i_turn;
-						wiggled_pos.x=sin(turn_a)*(i_turn-wiggled_pos.z);
-						wiggled_pos.z=i_turn-cos(turn_a)*(i_turn-wiggled_pos.z);
+				if (fabs(turn) > 1E-5)
+				{
+					const double turn_a = wiggled_pos.x() * turn;
+
+					if (turn > 0)
+					{
+						wiggled_pos.x() = sin(turn_a) *(i_turn + wiggled_pos.z());
+						wiggled_pos.z() = cos(turn_a) *(i_turn + wiggled_pos.z()) - i_turn;
+					}
+					else
+					{
+						wiggled_pos.x() = sin(-turn_a) * (-i_turn - wiggled_pos.z());
+						wiggled_pos.z() = -i_turn - cos(-turn_a) * (-i_turn - wiggled_pos.z());
 					}
 				}
 
-
-				glVertex3f( wiggled_pos.x , wiggled_pos.y, wiggled_pos.z);
-
+				glVertex3fv(wiggled_pos.data());
 			}
 		}
 		glEnd();

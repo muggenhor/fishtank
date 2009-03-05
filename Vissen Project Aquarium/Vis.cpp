@@ -1,10 +1,11 @@
 #include "AquariumController.h"
 #include "Vis.h"
+#include <cmath>
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
 #include <string>
-using namespace math3;
+
 using namespace std;
 
 void TestDrawAquarium()
@@ -77,9 +78,9 @@ const double vertical_acceleration=5;
 
 const double pitch_factor=0.5;/// how much fish tilts when swimming up and down
 
-const double max_pitch=10*(pi/180.0);///max angle when swimming up
+const double max_pitch= 10. * (M_PI / 180.);///max angle when swimming up
 const double min_pitch=-max_pitch;///ditto for swimming down.
-const double pitch_change_speed=5*(pi/180.0);/// speed of change of pitch
+const double pitch_change_speed = 5. * (M_PI / 180.0);/// speed of change of pitch
 //const double max_vertical_speed=10;
 
 const double wiggle_speed_factor=2.5;/// larger = fish has to wiggle more to move.
@@ -95,8 +96,8 @@ Vis::Vis(Model *model, const std::string &propertiesFile, int maxFloorHeight) //
 	this->scale = 200;
 
 	pos = RandomPos();
-	finalGoalPos=Vec3d(0,0,0);
-	velocity=Vec3d(0,0,0);
+	finalGoalPos = Eigen::Vector3d(0., 0., 0.);
+	velocity=Eigen::Vector3d(0., 0., 0.);
 	speed=0;
 	turn_speed=0;
 	bending=0;
@@ -131,13 +132,13 @@ Vis::Vis(Model *model, const std::string &propertiesFile, int maxFloorHeight) //
 	sphere = 20;
 }
 
-Vec3d Vis::RandomPos()
+Eigen::Vector3d Vis::RandomPos()
 {
-	Vec3d result;
-	result.x=(my_random()-0.5)*swimArea.x;
-	int noswim = maxFloorHeight - model->bb_l.y * scale;
-	result.y=(my_random()-0.5)*(swimArea.y - noswim) + (noswim / 2);
-	result.z=(my_random()-0.5)*swimArea.z;
+	Eigen::Vector3d result;
+	result.x() = (my_random() - 0.5) * swimArea.x();
+	int noswim = maxFloorHeight - model->bb_l.y() * scale;
+	result.y() = (my_random() - 0.5) * (swimArea.y() - noswim) + (noswim / 2);
+	result.z() = (my_random() - 0.5) * swimArea.z();
 	return result;
 }
 
@@ -154,9 +155,12 @@ void Vis::LoadProperties(const string &propertiesFile)
 	float random_length = atof(s.c_str());
 	fish_length = fish_length + my_random() * random_length;
 
-	if(model){
-		scale = fish_length / ( model->bb_h.x - model->bb_l.x );
-	}else{
+	if (model)
+	{
+		scale = fish_length / (model->bb_h.x() - model->bb_l.x());
+	}
+	else
+	{
 		scale = fish_length;
 		std::cerr<<"Error: trying to load properties for fish that has no model, cant determine scaling"<<std::endl;
 	}
@@ -170,7 +174,7 @@ void Vis::LoadProperties(const string &propertiesFile)
 
 	//sphere
 	getline(input_file, s);
-	sphere = Length(model->bb_h - model->bb_l) * scale * 0.5 + atoi(s.c_str());
+	sphere = (model->bb_h - model->bb_l).norm() * scale * 0.5 + atoi(s.c_str());
 
 	//wiggle
 	getline(input_file, s);
@@ -187,16 +191,17 @@ void Vis::LoadProperties(const string &propertiesFile)
 	turn_acceleration = atof(s.c_str()) / 100;
 }
 
-bool Vis::Colliding(const math3::Vec3d &object, int otherSphere)
+bool Vis::Colliding(const Eigen::Vector3d& object, int otherSphere)
 {
-	double distance = Length(object - pos);
+	double distance = (object - pos).norm();
 	distance -= otherSphere;
 	distance -= sphere;
 	return (distance < 0);
 }
 
-bool Vis::IsGoingTowards(const math3::Vec3d &object){
-	return DotProd(goalPos-pos, object-pos)>0;
+bool Vis::IsGoingTowards(const Eigen::Vector3d& object)
+{
+	return (goalPos - pos).dot(object - pos) > 0;
 }
 
 void Vis::Draw() const
@@ -220,14 +225,14 @@ void Vis::Draw() const
 #endif
 
 		glPushMatrix();
-		glTranslatef(pos.x,pos.y,pos.z);
-		glRotatef(-swimDirAngle*180.0/pi, 0,1,0);
+		glTranslatef(pos.x(), pos.y(), pos.z());
+		glRotatef(-swimDirAngle * 180. / M_PI, 0,1,0);
 
-		glRotatef(pitch*180.0/pi, 0,0,1);
+		glRotatef(pitch * 180. / M_PI, 0,0,1);
 
 		glScalef(scale,scale,scale);
 		glEnable(GL_NORMALIZE);
-		model->render(Vec3f(wiggle_freq*scale,0,0), Vec3f(0,0,wiggle_amplitude/scale),wiggle_phase, bending*scale);
+		model->render(Eigen::Vector3f(wiggle_freq * scale, 0, 0), Eigen::Vector3f(0, 0, wiggle_amplitude / scale), wiggle_phase, bending * scale);
 
 		glPopMatrix();
 	}
@@ -253,7 +258,7 @@ void Vis::newGoal()
 	}
 }
 
-void Vis::setGoal(const math3::Vec3d &final_goal){
+void Vis::setGoal(const Eigen::Vector3d& final_goal){
 	if(usingTempGoal)
 	{
 		finalGoalPos=final_goal;
@@ -263,7 +268,7 @@ void Vis::setGoal(const math3::Vec3d &final_goal){
 		goalPos=final_goal;
 	}
 }
-void Vis::setTemporaryGoal(const math3::Vec3d &temp_goal){
+void Vis::setTemporaryGoal(const Eigen::Vector3d& temp_goal){
 	//zonder tempgoal, wordt het een finalgoal
 	if(!usingTempGoal)
 	{
@@ -290,15 +295,15 @@ void Vis::Update(double dt)
 {
 	pos += velocity*dt;
 
-	Vec3d delta = goalPos-pos;
-	double dist = Length(delta);
+	Eigen::Vector3d delta = goalPos - pos;
+	double dist = delta.norm();
 	if (dist<desired_speed)/// if we're about to pass goal in less than second, change the goal
 	{
 		newGoal();
 		return;
 	}
 	/*
-	//Vec3d desiredVelocity=delta*(speed/dist);
+	//Eigen::Vector3d desiredVelocity=delta*(speed/dist);
 	if(desiredVelocity.y>velocity.y){/// vertical movement.
 		velocity.y+=dt*acceleration;
 	}else{
@@ -307,42 +312,42 @@ void Vis::Update(double dt)
 
 	*/
 	//horisontale beweging
-	Vec3d fishForward(cos(swimDirAngle),0,sin(swimDirAngle));
+	Eigen::Vector3d fishForward(cos(swimDirAngle), 0, sin(swimDirAngle));
 
 	double dfs=dt*forward_acceleration;
 	speed=TowardsGoalBy(speed, desired_speed, dfs);
 
-	velocity.x=fishForward.x*speed;
-	velocity.z=fishForward.z*speed;
+	velocity.x() = fishForward.x() * speed;
+	velocity.z() = fishForward.z() * speed;
 	//vertikale beweging
-	double desired_vertical_speed=delta.y*speed/dist;// /sqrt(delta.x*delta.x+delta.z*delta.z)
-	double dvs=vertical_acceleration*dt;
+	double desired_vertical_speed = delta.y() * speed/ dist;// /sqrt(delta.x*delta.x+delta.z*delta.z)
+	double dvs = vertical_acceleration * dt;
 
-	velocity.y=TowardsGoalBy(velocity.y, desired_vertical_speed, dvs);
+	velocity.y() = TowardsGoalBy(velocity.y(), desired_vertical_speed, dvs);
 
-	//double forwardFactor=DotProd(fishForward,Normalized(desiredVelocity));
+	//double forwardFactor = fishForward.dot(desiredVelocity.normalized());
 
 	//velocity+=dt*fishForward*acceleration;// *forwardFactor
 
 /*
-	double current_speed=Length(velocity);
+	double current_speed = velocity.norm();
 	if(current_speed>speed){/// moving too fast - slow down to exactly speed. TODO: do it smootly for less robotic turns.
 		velocity*=speed/current_speed;
 	}
 	*/
 
 	//omdraaien
-	double goalHeading=atan2(delta.z, delta.x);
+	double goalHeading = atan2(delta.z(), delta.x());
 
 	double angleDelta=goalHeading-swimDirAngle;
-	//maak de kleinst mogelijke draai (-pi to +pi)
-	if(angleDelta>pi)
+	//maak de kleinst mogelijke draai (-M_PI to +M_PI)
+	if(angleDelta > M_PI)
 	{
-		angleDelta -= 2 * pi;
+		angleDelta -= 2 * M_PI;
 	}
-	if(angleDelta<-pi)
+	if(angleDelta < -M_PI)
 	{
-		angleDelta += 2 * pi;
+		angleDelta += 2 * M_PI;
 	}
 
 
@@ -361,13 +366,13 @@ void Vis::Update(double dt)
 	swimDirAngle+=dt*turn_speed;
 
 
-	if(swimDirAngle>pi)
+	if(swimDirAngle > M_PI)
 	{
-		swimDirAngle-=2*pi;
+		swimDirAngle -= 2 * M_PI;
 	}
-	if(swimDirAngle<-pi)
+	if(swimDirAngle < -M_PI)
 	{
-		swimDirAngle+=2*pi;
+		swimDirAngle += 2 * M_PI;
 	}
 
 	//vibreren
@@ -386,7 +391,7 @@ void Vis::Update(double dt)
 	}
 
 	//pitch
-	double desired_pitch=atan2(pitch_factor*velocity.y,sqrt(velocity.x*velocity.x+velocity.z*velocity.z));
+	double desired_pitch = atan2(pitch_factor * velocity.y(), sqrt(velocity.x() * velocity.x() + velocity.z() * velocity.z()));
 	if(desired_pitch < min_pitch)
 	{
 		desired_pitch = min_pitch;
@@ -401,11 +406,10 @@ void Vis::Update(double dt)
 	/// stabielheid dingen:
 
 	//even zorgen dat de wiggle_phase niet te hoog wordt
-	if(wiggle_phase>2*pi)
+	if(wiggle_phase > 2 * M_PI)
 	{
-		wiggle_phase-=2*pi;
+		wiggle_phase -= 2 * M_PI;
 	}
-
 
 	myWaitTime -= dt;
 	if (myWaitTime < 0)

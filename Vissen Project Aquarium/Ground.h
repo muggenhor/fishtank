@@ -1,8 +1,9 @@
-#pragma once
+#ifndef __INCLUDED_GROUND_H__
+#define __INCLUDED_GROUND_H__
 
+#include <Eigen/Core>
 #include <vector>
 #include <string>
-#include "math3.h"
 #include "JPEG.h"
 
 class Ground
@@ -13,9 +14,9 @@ class Ground
 		//let op: y telt voor lengte hier, niet hoogte, zoals in het aquarium
 		//verkrijg de hoogte op een bepaalde positie
 		double HeightAt(int x, int y);
-		math3::Vec3d PosAt(int x, int y);
+		Eigen::Vector3d PosAt(int x, int y);
 		// - afblijven -
-		math3::Vec3d NormalAt(int x, int y);
+		Eigen::Vector3d NormalAt(int x, int y);
 
 		//teken de vloer
 		void Draw();
@@ -32,3 +33,5 @@ class Ground
 		//het texture id
 		Texture texture;
 };
+
+#endif // __INCLUDED_GROUND_H__

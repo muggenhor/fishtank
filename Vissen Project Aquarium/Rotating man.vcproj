@@ -253,14 +253,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\math3.h"
-				>
-			</File>
-			<File
-				RelativePath=".\math3gl.h"
-				>
-			</File>
-			<File
 				RelativePath=".\MS3D_ASCII.h"
 				>
 			</File>

@@ -1,15 +1,16 @@
-#pragma once
+#ifndef __INCLUDED_ENVIRONMENT_H__
+#define __INCLUDED_ENVIRONMENT_H__
 
+#include <Eigen/Core>
 #include <vector>
 #include <string>
-#include "math3.h"
 #include "JPEG.h"
 
 //een plaatje dat getekend word, kunnen we gebruiken als muur
 class Environment
 {
 	public:
-		Environment(const math3::Vec3d &pos1, const math3::Vec3d &pos2, const math3::Vec3d &pos3, const math3::Vec3d &pos4, const std::string &texturename="");/// use no texture name if want no texture
+		Environment(const Eigen::Vector3d& pos1, const Eigen::Vector3d& pos2, const Eigen::Vector3d& pos3, const Eigen::Vector3d& pos4, const std::string &texturename="");/// use no texture name if want no texture
 
 		//teken de muur
 		void Draw();
@@ -17,5 +18,7 @@ class Environment
 	private:
 		Texture texture;
 		//de 4 hoeken van het plaatje
-		math3::Vec3d pos1, pos2, pos3, pos4;
+		Eigen::Vector3d pos1, pos2, pos3, pos4;
 };
+
+#endif // __INCLUDED_ENVIRONMENT_H__

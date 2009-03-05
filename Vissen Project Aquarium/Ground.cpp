@@ -1,9 +1,9 @@
+#include <Eigen/Geometry>
 #include "Ground.h"
 #include "AquariumController.h"
 #include "JPEG.h"
 #include "math-helpers.hpp"
 
-using namespace math3;
 using namespace std;
 
 Ground::Ground(const string &filename, int maxHeight, const std::string &texturename) :
@@ -26,20 +26,20 @@ void Ground::GenerateGroundFromImage(const string &filename)
 	{
 		widthAmount = 2;
 		lengthAmount = 2;
-		ground.resize(widthAmount * lengthAmount, -aquariumSize.y / 2);
+		ground.resize(widthAmount * lengthAmount, -aquariumSize.y() / 2);
 		return;
 	}
 #endif
 
 	widthAmount = image.width;
 	lengthAmount = image.height;
-	ground.resize(widthAmount * lengthAmount, -aquariumSize.y / 2);
+	ground.resize(widthAmount * lengthAmount, -aquariumSize.y() / 2);
 
 	for (int y = 0; y < lengthAmount; y++)
 	{
  		for (int x = 0; x < widthAmount; x++)
  		{
- 	 		ground[x + y*widthAmount] = -aquariumSize.y / 2 + ((unsigned char)(image.data[x * 3 + y * image.rowSpan])) / 255.0 * maxHeight;
+ 	 		ground[x + y*widthAmount] = -aquariumSize.y() / 2 + ((unsigned char)(image.data[x * 3 + y * image.rowSpan])) / 255.0 * maxHeight;
  		}
 	}
 }
@@ -52,16 +52,16 @@ double Ground::HeightAt(int x, int y)
 	return ground[x + y * widthAmount];
 }
 
-Vec3d Ground::PosAt(int x, int y)
+Eigen::Vector3d Ground::PosAt(int x, int y)
 {
 	const double h = HeightAt(x, y);
 
-	return Vec3d(x * aquariumSize.x / float(widthAmount - 1) - 0.5 * aquariumSize.x, h, y * aquariumSize.z / float(lengthAmount - 1) - 0.5 * aquariumSize.z);
+	return Eigen::Vector3d(x * aquariumSize.x() / float(widthAmount - 1) - 0.5 * aquariumSize.x(), h, y * aquariumSize.z() / float(lengthAmount - 1) - 0.5 * aquariumSize.z());
 }
 
-Vec3d Ground::NormalAt(int x, int y)
+Eigen::Vector3d Ground::NormalAt(int x, int y)
 {
-	return -Normalized(CrossProd(PosAt(x+1,y)-PosAt(x-1,y),PosAt(x,y+1)-PosAt(x,y-1)));
+	return -(PosAt(x + 1, y) - PosAt(x - 1, y)).cross(PosAt(x, y + 1) - PosAt(x, y - 1)).normalized();
 }
 
 void Ground::Draw()
@@ -111,17 +111,17 @@ void Ground::Draw()
 		for(int i=0; i<widthAmount; ++i)
 		{
 			//Vec2d p=pos(i,j);
-			Vec3d p=PosAt(i,j);
-			Vec3d n=NormalAt(i,j);
+			Eigen::Vector3d p = PosAt(i,j);
+			Eigen::Vector3d n = NormalAt(i,j);
 
-			glTexCoord2i(i,j);
-			glNormal3f(n.x,n.y,n.z);
-			glVertex3f(p.x,p.y,p.z);
-			p=PosAt(i,j-1);
-			n=NormalAt(i,j-1);
-			glTexCoord2i(i,j-1);
-			glNormal3f(n.x,n.y,n.z);
-			glVertex3f(p.x,p.y,p.z);
+			glTexCoord2i(i, j);
+			glNormal3dv(n.data());
+			glVertex3dv(p.data());
+			p = PosAt(i, j - 1);
+			n = NormalAt(i, j - 1);
+			glTexCoord2i(i, j - 1);
+			glNormal3dv(n.data());
+			glVertex3dv(p.data());
 		}
 		glEnd();
 	}
