@@ -23,34 +23,22 @@
 #include "math3.h"
 
 
-class Vec
+struct Vec
 {
-	public:
-		void	transform( const Matrix& m );
-		void	transform3( const Matrix& m );
-		float	x,y,z;
-		float	u,v;							// Texture position
+	float   x,y,z;
+
+	/// Texture coordinates
+	float   u,v;
 };
 
-
-class Tri
+struct Tri
 {
-	public:
-		int		v[3];
-		int		n[3];
+	int     v[3];
+	int     n[3];
 };
 
+typedef math3::Vec3<float> Normal;
 
-class Normal
-{
-	public:
-		float	x,y,z;
-};
-
-
-//////////////////////////////////////
-//The Shape Class
-//////////////////////////////////////
 class Shape
 {
 	public:
