@@ -207,19 +207,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Matrix.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\MS3D_ASCII.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\Object.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Vector.cpp"
 				>
 			</File>
 			<File
@@ -273,19 +265,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Matrix.h"
-				>
-			</File>
-			<File
 				RelativePath=".\MS3D_ASCII.h"
 				>
 			</File>
 			<File
 				RelativePath=".\Object.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Vector.h"
 				>
 			</File>
 			<File

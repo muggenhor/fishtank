@@ -12,16 +12,12 @@
 #include <string>
 #include <vector>
 
-#include "Matrix.h"
 #include "JPEG.h"
-
-
 
 #define MS_MAX_NAME 128
 #define MS_MAX_PATH 256
 
 #include "math3.h"
-
 
 struct Vec
 {
