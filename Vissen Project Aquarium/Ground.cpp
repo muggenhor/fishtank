@@ -1,6 +1,7 @@
 #include "Ground.h"
 #include "AquariumController.h"
 #include "JPEG.h"
+#include "math-helpers.hpp"
 
 using namespace math3;
 using namespace std;
@@ -43,19 +44,23 @@ void Ground::GenerateGroundFromImage(const string &filename)
 	}
 }
 
-double Ground::HeightAt(int x, int y){
-	if(x<0)x=0;
-	if(x>=widthAmount)x=widthAmount-1;
-	if(y<0)y=0;
-	if(y>=lengthAmount)y=lengthAmount-1;
-	return ground[x+y*widthAmount];
-}
-Vec3d Ground::PosAt(int x, int y){
-	double h=HeightAt(x,y);
-	return Vec3d(x*aquariumSize.x/float(widthAmount - 1)-0.5*aquariumSize.x, h, y*aquariumSize.z/float(lengthAmount - 1)-0.5*aquariumSize.z);
+double Ground::HeightAt(int x, int y)
+{
+	x = clip(x, 0, widthAmount - 1);
+	y = clip(y, 0, lengthAmount - 1);
+
+	return ground[x + y * widthAmount];
 }
 
-Vec3d Ground::NormalAt(int x, int y){
+Vec3d Ground::PosAt(int x, int y)
+{
+	const double h = HeightAt(x, y);
+
+	return Vec3d(x * aquariumSize.x / float(widthAmount - 1) - 0.5 * aquariumSize.x, h, y * aquariumSize.z / float(lengthAmount - 1) - 0.5 * aquariumSize.z);
+}
+
+Vec3d Ground::NormalAt(int x, int y)
+{
 	return -Normalized(CrossProd(PosAt(x+1,y)-PosAt(x-1,y),PosAt(x,y+1)-PosAt(x,y-1)));
 }
 
