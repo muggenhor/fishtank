@@ -50,7 +50,7 @@ void Bubble::Update(double dt)
 	}
 }
 
-void Bubble::Draw()
+void Bubble::Draw() const
 {
 	glPushMatrix();
 	glTranslatef(pos.x,pos.y,pos.z);

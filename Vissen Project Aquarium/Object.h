@@ -29,5 +29,5 @@ class Object
 		//update voor de wiggle
 		void Update(double dt);
 		//teken het object
-		void Draw();
+		void Draw() const;
 };

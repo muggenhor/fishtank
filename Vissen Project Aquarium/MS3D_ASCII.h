@@ -65,7 +65,7 @@ class Material
 {
 	public:
 		bool loadFromMs3dAsciiSegment( FILE *file, std::string path_ );
-		void activate( void );
+		void activate() const;
 		void reloadTexture( void );
 
 	private:
@@ -94,7 +94,7 @@ class Model
 		bool loadFromMs3dAsciiFile( const char *filename, const math3::Matrix4x4f &transform=math3::Matrix4x4f(1,0,0,0 ,0,1,0,0, 0,0,1,0, 0,0,0,1));
 		void reloadTextures();
 		/// note: internally, it will be subtly incorrect when wiggle is not x axis.
-		void render(const math3::Vec3f &wiggle_freq=math3::Vec3d(1,0,0), const math3::Vec3f &wiggle_dir=math3::Vec3d(0,0,0), double wiggle_phase=0, double turn=0);/// turn is inverse radius
+		void render(const math3::Vec3f &wiggle_freq=math3::Vec3d(1,0,0), const math3::Vec3f &wiggle_dir=math3::Vec3d(0,0,0), double wiggle_phase=0, double turn=0) const;/// turn is inverse radius
 
 		math3::Vec3d bb_l;/// bounding box for the model, low and high
 		math3::Vec3d bb_h;

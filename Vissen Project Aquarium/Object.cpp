@@ -50,7 +50,7 @@ void Object::LoadProperties(const string &propertiesFile)
 	wiggle_freq = (40.0/object_height) * atof(s.c_str()) / 100;
 }
 
-void Object::Draw()
+void Object::Draw() const
 {
 	glPushMatrix();
 	glTranslatef(pos.x,pos.y,pos.z);

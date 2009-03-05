@@ -220,7 +220,7 @@ bool Shape::loadFromMs3dAsciiSegment( FILE *file , const math3::Matrix4x4f &tran
 	return true;
 }
 
-void Material::activate( void )
+void Material::activate() const
 {
 	glMaterialfv( GL_FRONT, GL_AMBIENT, Ambient );
 	glMaterialfv( GL_FRONT, GL_DIFFUSE, Diffuse );
@@ -412,7 +412,7 @@ void Model::reloadTextures()
 		material.reloadTexture();
 }
 
-void Model::render(const math3::Vec3f &wiggle_freq, const math3::Vec3f &wiggle_dir, double wiggle_phase, double turn)
+void Model::render(const math3::Vec3f &wiggle_freq, const math3::Vec3f &wiggle_dir, double wiggle_phase, double turn) const
 {
 	/*
 	// approximate elliptic integral with sine... just an approximation, not correct formula

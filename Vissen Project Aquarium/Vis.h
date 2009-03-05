@@ -66,7 +66,7 @@ class Vis
 		// - afblijven - de update van de vis, deze houd het bewegen van de vis bij en voert een stap uit - afblijven -
 		void Update(double dt);
 		//teken de vis
-		void Draw();
+		void Draw() const;
 		//haalt info uit de file, gegeven als path
 		void LoadProperties(const std::string &propertiesFile);
 		//positiebeheer

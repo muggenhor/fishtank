@@ -203,7 +203,7 @@ bool Vis::IsGoingTowards(const math3::Vec3d &object){
 	return DotProd(goalPos-pos, object-pos)>0;
 }
 
-void Vis::Draw()
+void Vis::Draw() const
 {
 	if(model)
 	{
