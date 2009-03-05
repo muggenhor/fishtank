@@ -3,7 +3,6 @@
 #include <vector>
 #include <string>
 #include "math3.h"
-#include "Main.h"
 #include "JPEG.h"
 
 //een plaatje dat getekend word, kunnen we gebruiken als muur

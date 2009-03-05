@@ -253,10 +253,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Main.h"
-				>
-			</File>
-			<File
 				RelativePath=".\math3.h"
 				>
 			</File>

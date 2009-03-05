@@ -1,7 +1,5 @@
-#include "Main.h"
-#include <GL/glu.h>
-
 #include "imagereceiver.h"
+#include <GL/glu.h>
 #include "AquariumController.h"
 
 #include <algorithm>
