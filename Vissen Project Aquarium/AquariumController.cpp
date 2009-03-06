@@ -111,7 +111,7 @@ void AquariumController::GoToScreen(const Eigen::Vector2d &position)
 		double tempx = pos.x() + sin(2 * PI / fishes.size() * i) * circleDistance;
 		double tempy = pos.y() + cos(2 * PI / fishes.size() * i) * circleDistance;
 		//laat de vissen naar de positie zwemmen
-		fishes[i].setGoal(Eigen::Vector3d(tempx, tempy, aquariumSize.y()));
+		fishes[i].setGoal(Eigen::Vector3f(tempx, tempy, aquariumSize.y()));
 		//fishes[i].pos = Eigen::Vector3d(tempx, tempy, aquariumSize.y());
 		cout << "Goto X: " << tempx << " Y: " << tempy << endl;
 	}
@@ -140,7 +140,7 @@ void AquariumController::AvoidFishBounce()
 		foreach (const Object& collidable, objects)
 		{
 			//needs goalcheck in this if aswell
-			Eigen::Vector3d object_center(0.5 * (collidable.model->bb_h + collidable.model->bb_l));
+			Eigen::Vector3f object_center(0.5f * (collidable.model->bb_h + collidable.model->bb_l));
 			if (fish.Colliding(object_center, collidable.sphere) && fish.IsGoingTowards(object_center))
 			{
 				fish.Avade();

@@ -77,7 +77,7 @@ class Shape
 		std::vector<Tri>        triangles;
 		std::vector<Normal>     normals;
 
-		Eigen::Vector3d bb_l, bb_h;
+		Eigen::Vector3f bb_l, bb_h;
 };
 
 
@@ -119,8 +119,8 @@ class Model
 		/// note: internally, it will be subtly incorrect when wiggle is not x axis.
 		void render(const Eigen::Vector3f& wiggle_freq = Eigen::Vector3f::UnitX(), const Eigen::Vector3f& wiggle_dir = Eigen::Vector3f::Zero(), double wiggle_phasew = 0, double turn = 0) const;/// turn is inverse radius
 
-		Eigen::Vector3d bb_l;/// bounding box for the model, low and high
-		Eigen::Vector3d bb_h;
+		Eigen::Vector3f bb_l;/// bounding box for the model, low and high
+		Eigen::Vector3f bb_h;
 
 		std::string path;
 

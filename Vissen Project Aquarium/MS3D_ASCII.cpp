@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <boost/foreach.hpp>
 #include <Eigen/Geometry>
 #include <Eigen/LU>
@@ -7,6 +8,7 @@
 
 #define foreach BOOST_FOREACH
 
+using namespace std;
 using namespace Eigen;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -117,7 +119,7 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 	}
 	Eigen::Transform3f vertex_transform(transform);
 
-	bb_l = Vector3d(1E20,1E20,1E20);
+	bb_l = Vector3f(1E20,1E20,1E20);
 	bb_h = -bb_l;
 
 	int nFlags, nIndex;
@@ -147,19 +149,13 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 		vertex_transform.translate(vertices[j].vertex);
 		/// done transform.
 
-		if (vertices[j].vertex.x() < bb_l.x())
-			bb_l.x() = vertices[j].vertex.x();
-		if (vertices[j].vertex.y() < bb_l.y())
-			bb_l.y() = vertices[j].vertex.y();
-		if (vertices[j].vertex.z() < bb_l.z())
-			bb_l.z() = vertices[j].vertex.z();
+		bb_l.x() = min(bb_l.x(), vertices[j].vertex.x());
+		bb_l.y() = min(bb_l.y(), vertices[j].vertex.y());
+		bb_l.z() = min(bb_l.z(), vertices[j].vertex.z());
 
-		if (vertices[j].vertex.x() > bb_h.x())
-			bb_h.x() = vertices[j].vertex.x();
-		if (vertices[j].vertex.y() > bb_h.y())
-			bb_h.y() = vertices[j].vertex.y();
-		if (vertices[j].vertex.z() > bb_h.z())
-			bb_h.z() = vertices[j].vertex.z();
+		bb_h.x() = max(bb_h.x(), vertices[j].vertex.x());
+		bb_h.y() = max(bb_h.y(), vertices[j].vertex.y());
+		bb_h.z() = max(bb_h.z(), vertices[j].vertex.z());
 
 		// adjust the y direction of the texture coordinate
 		vertices[j].texcoord.y() = 1.f - vertices[j].texcoord.y();
@@ -317,7 +313,7 @@ bool Model::loadFromMs3dAsciiFile(const char* filename, const Eigen::Matrix4f& t
 	}
 	path.resize(path_length + 1);/// downsize the string to cut out name from path
 
-	bb_l = Vector3d(1E20,1E20,1E20);
+	bb_l = Vector3f(1E20,1E20,1E20);
 	bb_h = -bb_l;
 
 	char	szLine[256];
@@ -361,19 +357,13 @@ bool Model::loadFromMs3dAsciiFile(const char* filename, const Eigen::Matrix4f& t
 					return false;
 				}
 
-				if (shape.bb_l.x() < bb_l.x())
-					bb_l.x() = shape.bb_l.x();
-				if (shape.bb_l.y() < bb_l.y())
-					bb_l.y() = shape.bb_l.y();
-				if (shape.bb_l.z() < bb_l.z())
-					bb_l.z() = shape.bb_l.z();
+				bb_l.x() = min(bb_l.x(), shape.bb_l.x());
+				bb_l.y() = min(bb_l.y(), shape.bb_l.y());
+				bb_l.z() = min(bb_l.z(), shape.bb_l.z());
 
-				if (shape.bb_h.x() > bb_h.x())
-					bb_h.x() = shape.bb_h.x();
-				if (shape.bb_h.y() > bb_h.y())
-					bb_h.y() = shape.bb_h.y();
-				if (shape.bb_h.z() > bb_h.z())
-					bb_h.z() = shape.bb_h.z();
+				bb_h.x() = max(bb_h.x(), shape.bb_h.x());
+				bb_h.y() = max(bb_h.y(), shape.bb_h.y());
+				bb_h.z() = max(bb_h.z(), shape.bb_h.z());
 			}
 			continue;
 		}

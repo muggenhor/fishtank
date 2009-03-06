@@ -96,8 +96,8 @@ Vis::Vis(Model *model, const std::string &propertiesFile, int maxFloorHeight) //
 	this->scale = 200;
 
 	pos = RandomPos();
-	finalGoalPos = Eigen::Vector3d(0., 0., 0.);
-	velocity=Eigen::Vector3d(0., 0., 0.);
+	finalGoalPos = Eigen::Vector3f(0., 0., 0.);
+	velocity=Eigen::Vector3f(0., 0., 0.);
 	speed=0;
 	turn_speed=0;
 	bending=0;
@@ -132,9 +132,9 @@ Vis::Vis(Model *model, const std::string &propertiesFile, int maxFloorHeight) //
 	sphere = 20;
 }
 
-Eigen::Vector3d Vis::RandomPos()
+Eigen::Vector3f Vis::RandomPos() const
 {
-	Eigen::Vector3d result;
+	Eigen::Vector3f result;
 	result.x() = (my_random() - 0.5) * swimArea.x();
 	int noswim = maxFloorHeight - model->bb_l.y() * scale;
 	result.y() = (my_random() - 0.5) * (swimArea.y() - noswim) + (noswim / 2);
@@ -191,7 +191,7 @@ void Vis::LoadProperties(const string &propertiesFile)
 	turn_acceleration = atof(s.c_str()) / 100;
 }
 
-bool Vis::Colliding(const Eigen::Vector3d& object, int otherSphere)
+bool Vis::Colliding(const Eigen::Vector3f& object, int otherSphere)
 {
 	double distance = (object - pos).norm();
 	distance -= otherSphere;
@@ -199,7 +199,7 @@ bool Vis::Colliding(const Eigen::Vector3d& object, int otherSphere)
 	return (distance < 0);
 }
 
-bool Vis::IsGoingTowards(const Eigen::Vector3d& object)
+bool Vis::IsGoingTowards(const Eigen::Vector3f& object)
 {
 	return (goalPos - pos).dot(object - pos) > 0;
 }
@@ -258,17 +258,20 @@ void Vis::newGoal()
 	}
 }
 
-void Vis::setGoal(const Eigen::Vector3d& final_goal){
+void Vis::setGoal(const Eigen::Vector3f& final_goal)
+{
 	if(usingTempGoal)
 	{
-		finalGoalPos=final_goal;
+		finalGoalPos = final_goal;
 	}
 	else
 	{
 		goalPos=final_goal;
 	}
 }
-void Vis::setTemporaryGoal(const Eigen::Vector3d& temp_goal){
+
+void Vis::setTemporaryGoal(const Eigen::Vector3f& temp_goal)
+{
 	//zonder tempgoal, wordt het een finalgoal
 	if(!usingTempGoal)
 	{
@@ -293,9 +296,9 @@ double TowardsGoalBy(double a, double goal, double by){
 // - afblijven - de update van de vis, deze houd het bewegen van de vis bij en voert een stap uit - afblijven -
 void Vis::Update(double dt)
 {
-	pos += velocity*dt;
+	pos += velocity * dt;
 
-	Eigen::Vector3d delta = goalPos - pos;
+	Eigen::Vector3f delta = goalPos - pos;
 	double dist = delta.norm();
 	if (dist<desired_speed)/// if we're about to pass goal in less than second, change the goal
 	{
