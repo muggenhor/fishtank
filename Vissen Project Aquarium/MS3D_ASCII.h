@@ -60,8 +60,6 @@ struct Tri
 	int     n[3];
 };
 
-typedef Eigen::Vector3f Normal;
-
 class Shape
 {
 	public:
@@ -71,13 +69,17 @@ class Shape
 		bool loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transform = Eigen::Matrix4f::Identity());/// identity transform by default.
 
 		//bool saveToFile( const char *filename );
-		void render();
+		void render() const;
 
-		std::vector<Vec>        vertices;
-		std::vector<Tri>        triangles;
-		std::vector<Normal>     normals;
+		std::vector<Eigen::Vector3f>    vertices;
+		std::vector<Eigen::Vector2f>    texcoords;
+		std::vector<Eigen::Vector3f>    normals;
+		std::vector<unsigned int>       indices;
 
 		Eigen::Vector3f bb_l, bb_h;
+
+	private:
+		void AddPoint(const Eigen::Vector3f& vertex, const Eigen::Vector2f& texcoord, const Eigen::Vector3f& normal);
 };
 
 

@@ -3,6 +3,7 @@
 #include <Eigen/Geometry>
 #include <Eigen/LU>
 #include "JPEG.h"
+#include "math-helpers.hpp"
 #include "MS3D_ASCII.h"
 #include <string>
 
@@ -88,23 +89,27 @@ bool Shape::saveToFile(const char* filename)
 }
 #endif
 
-void Shape::render( void )
+void Shape::render() const
 {
-	glBegin(GL_TRIANGLES);
-	foreach (const Tri& tri, triangles)
-	{
-		// Draw all 3 vertices of the triangle
-		for (unsigned int j = 0; j < 3; ++j)
-		{
-			glNormal3fv(normals[tri.n[j]].data());
+	if (indices.empty())
+		return;
 
-			const Vec& vec = vertices[tri.v[j]];
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-			glTexCoord2fv(vec.texcoord.data());
-			glVertex3fv(vec.vertex.data());
-		}
-	}
-	glEnd();
+	glVertexPointer(3, GL_FLOAT, 0, vertices[0].data());
+	glNormalPointer(GL_FLOAT, 0, normals[0].data());
+	glTexCoordPointer(2, GL_FLOAT, 0, texcoords[0].data());
+
+	if (GLEE_VERSION_2_1)
+		glDrawRangeElements(GL_TRIANGLES, 0, vertices.size() - 1, indices.size(), GL_UNSIGNED_INT, &indices[0]);
+	else
+		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, &indices[0]);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transform)
@@ -132,33 +137,41 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 	{
 		return false;
 	}
-	vertices.resize(num_vertices);
+
+	std::vector<Eigen::Vector3f> parsingVertices;
+	std::vector<Eigen::Vector2f> parsingTexcoords;
 
 	for (size_t j = 0; j < num_vertices; ++j)
 	{
+		Eigen::Vector3f vertex;
+		Eigen::Vector2f texcoord;
+
 		float f;
 		if (fscanf(file, "%d %f %f %f %f %f %f\n",
 								&nFlags,
-								&vertices[j].vertex.x(), &vertices[j].vertex.y(), &vertices[j].vertex.z(),
-								&vertices[j].texcoord.x(), &vertices[j].texcoord.y(), &f
+								&vertex.x(), &vertex.y(), &vertex.z(),
+								&texcoord.x(), &texcoord.y(), &f
 							 ) != 7)
 		{
 			return false;
 		}
 		/// dizekat: apply vertice transform
-		vertex_transform.translate(vertices[j].vertex);
+		vertex_transform.translate(vertex);
 		/// done transform.
 
-		bb_l.x() = min(bb_l.x(), vertices[j].vertex.x());
-		bb_l.y() = min(bb_l.y(), vertices[j].vertex.y());
-		bb_l.z() = min(bb_l.z(), vertices[j].vertex.z());
+		bb_l.x() = min(bb_l.x(), vertex.x());
+		bb_l.y() = min(bb_l.y(), vertex.y());
+		bb_l.z() = min(bb_l.z(), vertex.z());
 
-		bb_h.x() = max(bb_h.x(), vertices[j].vertex.x());
-		bb_h.y() = max(bb_h.y(), vertices[j].vertex.y());
-		bb_h.z() = max(bb_h.z(), vertices[j].vertex.z());
+		bb_h.x() = max(bb_h.x(), vertex.x());
+		bb_h.y() = max(bb_h.y(), vertex.y());
+		bb_h.z() = max(bb_h.z(), vertex.z());
 
 		// adjust the y direction of the texture coordinate
-		vertices[j].texcoord.y() = 1.f - vertices[j].texcoord.y();
+		texcoord.y() = 1.f - texcoord.y();
+
+		parsingVertices.push_back(vertex);
+		parsingTexcoords.push_back(texcoord);
 	}
 
 
@@ -169,21 +182,25 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 	{
 		return false;
 	}
-	normals.resize(num_normals);
+
+	std::vector<Eigen::Vector3f> parsingNormals;
 
 	for (size_t j = 0; j < num_normals; ++j)
 	{
+		Eigen::Vector3f normal;
+
 		if (fscanf(file, "%f %f %f\n",
-								&normals[j].x(), &normals[j].y(), &normals[j].z()) != 3)
+								&normal.x(), &normal.y(), &normal.z()) != 3)
 		{
 			return false;
 		}
 
 		/// dizekat: apply vertice transform
-		normals_transform.translate(normals[j]);
-		normals[j].normalize();
+		normals_transform.translate(normal);
+		normal.normalize();
 		/// done transform.
 
+		parsingNormals.push_back(normal);
 	}
 
 	// triangles
@@ -193,28 +210,73 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 	{
 		return false;
 	}
-	triangles.resize(num_triangles);
+
+	vertices.clear();
+	texcoords.clear();
+	normals.clear();
+	indices.clear();
 
 	for (size_t j = 0; j < num_triangles; ++j)
 	{
-		if (fscanf(file, "%d %d %d %d %d %d %d %d\n",
+		struct
+		{
+			unsigned int v[3], n[3];
+		} triangle;
+
+		if (fscanf(file, "%d %u %u %u %u %u %u %d\n",
 								&nFlags,
-								&triangles[j].v[0], &triangles[j].v[1], &triangles[j].v[2],
-								&triangles[j].n[0], &triangles[j].n[1], &triangles[j].n[2],
+								&triangle.v[0], &triangle.v[1], &triangle.v[2],
+								&triangle.n[0], &triangle.n[1], &triangle.n[2],
 								&nIndex
 							 ) != 8)
 		{
 			return false;
 		}
-		assert(triangles[j].v[0] >= 0);
-		assert(triangles[j].v[0] < num_vertices);
-		assert(triangles[j].v[1] >= 0);
-		assert(triangles[j].v[1] < num_vertices);
-		assert(triangles[j].v[2] >= 0);
-		assert(triangles[j].v[2] < num_vertices);
+		assert(triangle.v[0] < parsingVertices.size());
+		assert(triangle.v[1] < parsingVertices.size());
+		assert(triangle.v[2] < parsingVertices.size());
+		assert(triangle.n[0] < parsingNormals.size());
+		assert(triangle.n[1] < parsingNormals.size());
+		assert(triangle.n[2] < parsingNormals.size());
+
+		// Add all three triangle's corners
+		for (unsigned int i = 0; i < 3; ++i)
+			AddPoint(parsingVertices[triangle.v[i]],
+			         parsingTexcoords[triangle.v[i]],
+			         parsingNormals[triangle.n[i]]);
 	}
 
 	return true;
+}
+
+void Shape::AddPoint(const Eigen::Vector3f& vertex, const Eigen::Vector2f& texcoord, const Eigen::Vector3f& normal)
+{
+	unsigned int index = 0;
+
+	// Try to find an instance for the given vertex
+	for (; index < vertices.size(); ++index)
+	{
+		if (vertices[index]  == vertex
+		 && texcoords[index] == texcoord
+		 && normals[index]   == normal)
+		{
+			/* If we found a vertex that's the same then add the
+			 * index to the index table and bail out.
+			 */
+			indices.push_back(index);
+			return;
+		}
+	}
+
+	vertices.push_back(vertex);
+	texcoords.push_back(texcoord);
+	normals.push_back(normal);
+
+	assert(vertices.size()  - 1 == index);
+	assert(texcoords.size() - 1 == index);
+	assert(normals.size()   - 1 == index);
+
+	indices.push_back(index);
 }
 
 void Material::activate() const
@@ -286,12 +348,6 @@ void Material::reloadTexture( void )
 	}
 }
 
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////
-//										The Model Class
-/////////////////////////////////////////////////////////////////////////////////////////////////
 Model::Model():
 	bb_l(0, 0, 0),
 	bb_h(0, 0, 0)
@@ -415,6 +471,7 @@ x=q*sin(2*b*l)/(2*b) + p*l
 	*/
 
 	const double i_turn = 1. / turn;
+
 	double a = 2.0 * wiggle_dir.norm() + 1E-20; /// prevent divisions by zero
 	double b = wiggle_freq.norm() + 1E-20;
 	double c=1.0/sqrt(a*a*b*b+1);
@@ -437,48 +494,53 @@ x=q*sin(2*b*l)/(2*b) + p*l
 			glDisable( GL_TEXTURE_2D );
 		}
 
-		glBegin(GL_TRIANGLES);
-		foreach (const Tri& tri, shape.triangles)
+		std::vector<Eigen::Vector3f> wiggledVertices;
+		wiggledVertices.reserve(shape.vertices.size());
+		foreach (const Eigen::Vector3f& vertex, shape.vertices)
 		{
-			for (unsigned int j = 0; j < 3; ++j)						// 3 vertices of the triangle
+			// Wiggle position
+			const float alpha = vertex.dot(wiggle_freq);
+			Eigen::Vector3f wiggled_pos = vertex + wiggle_dir * float(sin(alpha + wiggle_phase));
+
+			// approximate the elliptic integral.
+			wiggled_pos.x() += p * sin(2 * alpha + wiggle_phase) * s_a;
+
+			/// approximate the elliptic integral, weirder but better looking (?).
+			//wiggled_pos += wiggle_freq * float(sin(2 * alpha + wiggle_phase) * s_a / b);
+
+			// turns:
+			if (fabs(turn) > 1E-5)
 			{
-				/// todo: also apply wiggle to normals? (thats much harder.)
-				glNormal3fv(shape.normals[tri.n[j]].data());
+				double turn_a = wiggled_pos.x() * turn;
 
-				const Vec& vec = shape.vertices[tri.v[j]];	// pointer to vertex
-				glTexCoord2fv(vec.texcoord.data());
-
-				/// wiggle position
-				Vector3f pos(vec.vertex);
-				const float alpha = pos.dot(wiggle_freq);
-
-				Vector3f wiggled_pos = pos + wiggle_dir * float(sin(alpha + wiggle_phase));
-
-				/// approximate the elliptic integral.
-				wiggled_pos.x() = wiggled_pos.x() * p + sin(2 * alpha + wiggle_phase) * s_a;
-				/// approximate the elliptic integral, weirder but better looking (?).
-				//wiggled_pos += wiggle_freq * float(sin(2 * alpha + wiggle_phase) * s_a / b);
-
-				/// turns:
-				if (fabs(turn) > 1E-5)
+				if (turn > 0)
 				{
-					const double turn_a = wiggled_pos.x() * turn;
-
-					if (turn > 0)
-					{
-						wiggled_pos.x() = sin(turn_a) *(i_turn + wiggled_pos.z());
-						wiggled_pos.z() = cos(turn_a) *(i_turn + wiggled_pos.z()) - i_turn;
-					}
-					else
-					{
-						wiggled_pos.x() = sin(-turn_a) * (-i_turn - wiggled_pos.z());
-						wiggled_pos.z() = -i_turn - cos(-turn_a) * (-i_turn - wiggled_pos.z());
-					}
+					wiggled_pos.x() = sin(turn_a) * (i_turn + wiggled_pos.z());
+					wiggled_pos.z() = cos(turn_a) * (i_turn + wiggled_pos.z()) - i_turn;
 				}
-
-				glVertex3fv(wiggled_pos.data());
+				else
+				{
+					wiggled_pos.x() = sin(-turn_a) * (-i_turn - wiggled_pos.z());
+					wiggled_pos.z() = -i_turn - cos(-turn_a) * (-i_turn - wiggled_pos.z());
+				}
 			}
+
+			wiggledVertices.push_back(wiggled_pos);
 		}
-		glEnd();
+
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_NORMAL_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+		glVertexPointer(3, GL_FLOAT, 0, wiggledVertices[0].data());
+		/// todo: also apply wiggle to normals? (thats much harder.)
+		glNormalPointer(GL_FLOAT, 0, shape.normals[0].data());
+		glTexCoordPointer(2, GL_FLOAT, 0, shape.texcoords[0].data());
+
+		glDrawElements(GL_TRIANGLES, shape.indices.size(), GL_UNSIGNED_INT, &shape.indices[0]);
+
+		glDisableClientState(GL_VERTEX_ARRAY);
+		glDisableClientState(GL_NORMAL_ARRAY);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
 }
