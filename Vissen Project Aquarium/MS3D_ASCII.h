@@ -16,6 +16,36 @@
 #define MS_MAX_NAME 128
 #define MS_MAX_PATH 256
 
+class FileWrap
+{
+	public:
+		FileWrap(FILE* const file) :
+			file(file)
+		{
+		}
+
+		~FileWrap()
+		{
+			if (file)
+			{
+				fclose(file);
+			}
+		}
+
+		operator FILE*() const
+		{
+			return file;
+		}
+
+	private:
+		// Disallow copying
+		FileWrap(const FileWrap&);
+		FileWrap& operator=(const FileWrap&);
+
+	private:
+		FILE* const file;
+};
+
 struct Vec
 {
 	Eigen::Vector3f vertex;
@@ -93,9 +123,6 @@ class Model
 		Eigen::Vector3d bb_h;
 
 		std::string path;
-
-	protected:
-		float x,y,z;
 
 	private:
 		std::vector<Shape>      shapes;

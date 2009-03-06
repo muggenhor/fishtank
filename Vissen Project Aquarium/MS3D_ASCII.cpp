@@ -21,7 +21,7 @@ Shape::Shape() :
 #if 0
 bool Shape::loadFromFile( const char *filename )
 {
-	FILE* const fp = fopen(filename, "r");
+	FileWrap const fp(fopen(filename, "r"));
 	if (fp == NULL)
 		return false;
 
@@ -51,14 +51,12 @@ bool Shape::loadFromFile( const char *filename )
 					 &triangle.v[2]);
 	}
 
-	fclose(fp);
-
 	return true;
 }
 
 bool Shape::saveToFile(const char* filename)
 {
-	FILE* const fp = fopen(filename, "w");
+	FileWrap const fp(fopen(filename, "r"));
 	if (fp == NULL)
 		return false;
 
@@ -84,7 +82,6 @@ bool Shape::saveToFile(const char* filename)
 						triangle.v[2] );
 	}
 
-	fclose(fp);
 	return true;
 }
 #endif
@@ -129,7 +126,7 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 	// vertices
 
 	size_t num_vertices;
-	if (fscanf(file, "%zu", &num_vertices) != 1)
+	if (fscanf(file, "%zu\n", &num_vertices) != 1)
 	{
 		return false;
 	}
@@ -138,7 +135,7 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 	for (size_t j = 0; j < num_vertices; ++j)
 	{
 		float f;
-		if (fscanf(file, "%d %f %f %f %f %f %f",
+		if (fscanf(file, "%d %f %f %f %f %f %f\n",
 								&nFlags,
 								&vertices[j].vertex.x(), &vertices[j].vertex.y(), &vertices[j].vertex.z(),
 								&vertices[j].texcoord.x(), &vertices[j].texcoord.y(), &f
@@ -172,7 +169,7 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 	// normals
 
 	size_t num_normals;
-	if (fscanf(file, "%zu", &num_normals) != 1)
+	if (fscanf(file, "%zu\n", &num_normals) != 1)
 	{
 		return false;
 	}
@@ -180,7 +177,7 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 
 	for (size_t j = 0; j < num_normals; ++j)
 	{
-		if (fscanf(file, "%f %f %f",
+		if (fscanf(file, "%f %f %f\n",
 								&normals[j].x(), &normals[j].y(), &normals[j].z()) != 3)
 		{
 			return false;
@@ -196,7 +193,7 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 	// triangles
 
 	size_t num_triangles;
-	if (fscanf(file, "%zu", &num_triangles) != 1)
+	if (fscanf(file, "%zu\n", &num_triangles) != 1)
 	{
 		return false;
 	}
@@ -204,7 +201,7 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 
 	for (size_t j = 0; j < num_triangles; ++j)
 	{
-		if (fscanf(file, "%d %d %d %d %d %d %d %d",
+		if (fscanf(file, "%d %d %d %d %d %d %d %d\n",
 								&nFlags,
 								&triangles[j].v[0], &triangles[j].v[1], &triangles[j].v[2],
 								&triangles[j].n[0], &triangles[j].n[1], &triangles[j].n[2],
@@ -240,40 +237,40 @@ bool Material::loadFromMs3dAsciiSegment( FILE *file, std::string path_ )
 	path=path_;
 
 	// name
-	if (fscanf(file, "\"%[^\"]\"", Name) != 1)
+	if (fscanf(file, "\"%[^\"]\"\n", Name) != 1)
 		return false;
 
 	// ambient
-	if (fscanf(file, "%f %f %f %f", &Ambient[0], &Ambient[1], &Ambient[2], &Ambient[3]) != 4)
+	if (fscanf(file, "%f %f %f %f\n", &Ambient[0], &Ambient[1], &Ambient[2], &Ambient[3]) != 4)
 		return false;
 
 	// diffuse
-	if (fscanf(file, "%f %f %f %f", &Diffuse[0], &Diffuse[1], &Diffuse[2], &Diffuse[3]) != 4)
+	if (fscanf(file, "%f %f %f %f\n", &Diffuse[0], &Diffuse[1], &Diffuse[2], &Diffuse[3]) != 4)
 		return false;
 
 	// specular
-	if (fscanf(file, "%f %f %f %f", &Specular[0], &Specular[1], &Specular[2], &Specular[3]) != 4)
+	if (fscanf(file, "%f %f %f %f\n", &Specular[0], &Specular[1], &Specular[2], &Specular[3]) != 4)
 		return false;
 
 	// emissive
-	if (fscanf(file, "%f %f %f %f", &Emissive[0], &Emissive[1], &Emissive[2], &Emissive[3]) != 4)
+	if (fscanf(file, "%f %f %f %f\n", &Emissive[0], &Emissive[1], &Emissive[2], &Emissive[3]) != 4)
 		return false;
 
 	// shininess
-	if (fscanf(file, "%f", &Shininess) != 1)
+	if (fscanf(file, "%f\n", &Shininess) != 1)
 		return false;
 
 	// transparency
-	if (fscanf(file, "%f", &Transparency) != 1)
+	if (fscanf(file, "%f\n", &Transparency) != 1)
 		return false;
 
 	// diffuse texture
 	strcpy(DiffuseTexture, "");
-	fscanf(file, "\"%[^\"]\"", DiffuseTexture);
+	fscanf(file, "\"%[^\"]\"\n", DiffuseTexture);
 
 	// alpha texture
 	strcpy(AlphaTexture, "");
-	fscanf(file, "\"%[^\"]\"", AlphaTexture);
+	fscanf(file, "\"%[^\"]\"\n", AlphaTexture);
 
 	reloadTexture();
 
@@ -323,15 +320,14 @@ bool Model::loadFromMs3dAsciiFile(const char* filename, const Eigen::Matrix4f& t
 	bb_l = Vector3d(1E20,1E20,1E20);
 	bb_h = -bb_l;
 
-	bool	bError = false;
 	char	szLine[256];
 	int		nFlags;
 
-	FILE *file = fopen (filename, "rt");
+	FileWrap const file(fopen(filename, "rt"));
 	if (!file)
 		return false;
 
-	while (fgets (szLine, 256, file) != NULL  && !bError)
+	while (fgets (szLine, 256, file) != NULL)
 	{
 		if (!strncmp (szLine, "//", 2))
 			continue;
@@ -344,28 +340,25 @@ bool Model::loadFromMs3dAsciiFile(const char* filename, const Eigen::Matrix4f& t
 			shapes.resize(num_shapes);
 			material_indices.resize(num_shapes);
 
-			for (size_t i = 0; i < num_shapes && !bError; ++i)
+			for (size_t i = 0; i < num_shapes; ++i)
 			{
 				Shape& shape = shapes[i];
 				int& material_index = material_indices[i];
 
 				if (!fgets (szLine, 256, file))
 				{
-					bError = true;
-					break;
+					return false;
 				}
 
 				// mesh: name, flags, material index
 				if (sscanf(szLine, "\"%[^\"]\" %d %d",szName, &nFlags, &material_index) != 3)
 				{
-					bError = true;
-					break;
+					return false;
 				}
 
 				if (!shape.loadFromMs3dAsciiSegment(file, transform))
 				{
-					bError = true;
-					break;
+					return false;
 				}
 
 				if (shape.bb_l.x() < bb_l.x())
@@ -396,15 +389,11 @@ bool Model::loadFromMs3dAsciiFile(const char* filename, const Eigen::Matrix4f& t
 			{
 				if (!material.loadFromMs3dAsciiSegment(file, path))
 				{
-					bError = true;
-					break;
+					return false;
 				}
 			}
 		}
 	}
-
-	fclose (file);
-
 
 	return true;
 }
