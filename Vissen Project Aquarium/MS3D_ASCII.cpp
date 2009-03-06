@@ -156,7 +156,7 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 			return false;
 		}
 		/// dizekat: apply vertice transform
-		vertex_transform.translate(vertex);
+		vertex = vertex_transform * vertex;
 		/// done transform.
 
 		bb_l.x() = min(bb_l.x(), vertex.x());
@@ -196,7 +196,7 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 		}
 
 		/// dizekat: apply vertice transform
-		normals_transform.translate(normal);
+		normal = normals_transform * normal;
 		normal.normalize();
 		/// done transform.
 
