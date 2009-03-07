@@ -6,8 +6,8 @@
 
 void WiggleTransformation::update(const Eigen::Vector3f& wiggle_freq,
                                   const Eigen::Vector3f& wiggle_dir,
-                                  const double wiggle_phase,
-                                  const double turn)
+                                  const float wiggle_phase,
+                                  const float turn)
 {
 	// Copy parameters
 	_wiggle_freq  = wiggle_freq;
@@ -33,13 +33,13 @@ dx/dl=q*cos(2*l*b)+p
 x=q*sin(2*b*l)/(2*b) + p*l
 */
 
-	_i_turn = 1. / _turn;
-	a = 2.0 * _wiggle_dir.norm() + 1E-20; /// prevent divisions by zero
+	_i_turn = 1.f / _turn;
+	a = 2.f * _wiggle_dir.norm() + 1E-20; /// prevent divisions by zero
 	b = _wiggle_freq.norm() + 1E-20;
-	c = 1.0 / sqrt(a * a * b * b + 1);
-	q = 0.5 * (1 - c);
-	p = 0.5 * (c + 1);
-	s_a = 0.5 * q / b;
+	c = 1.f / sqrt(a * a * b * b + 1.f);
+	q = 0.5f * (1.f - c);
+	p = 0.5f * (c + 1.f);
+	s_a = 0.5f * q / b;
 
 }
 
@@ -58,7 +58,7 @@ void WiggleTransformation::operator()(const std::vector<Eigen::Vector3f>& vertic
 		Eigen::Vector3f wiggled_pos = vertex + _wiggle_dir * float(sin(alpha + _wiggle_phase));
 
 		// approximate the elliptic integral.
-		wiggled_pos.x() += p * sin(2 * alpha + _wiggle_phase) * s_a;
+		wiggled_pos.x() += p * sin(2.f * alpha + _wiggle_phase) * s_a;
 
 		/// approximate the elliptic integral, weirder but better looking (?).
 		//wiggled_pos += wiggle_freq * float(sin(2 * alpha + wiggle_phase) * s_a / b);
@@ -66,9 +66,9 @@ void WiggleTransformation::operator()(const std::vector<Eigen::Vector3f>& vertic
 		// turns:
 		if (fabs(_turn) > 1E-5)
 		{
-			double turn_a = wiggled_pos.x() * _turn;
+			float turn_a = wiggled_pos.x() * _turn;
 
-			if (_turn > 0)
+			if (_turn > 0.f)
 			{
 				wiggled_pos.x() = sin(turn_a) * (_i_turn + wiggled_pos.z());
 				wiggled_pos.z() = cos(turn_a) * (_i_turn + wiggled_pos.z()) - _i_turn;

@@ -15,8 +15,8 @@ class WiggleTransformation
 		 */
 		void update(const Eigen::Vector3f& wiggle_freq = Eigen::Vector3f::UnitX(),
 		            const Eigen::Vector3f& wiggle_dir = Eigen::Vector3f::Zero(),
-		            const double wiggle_phase = 0,
-		            const double turn = 0);
+		            const float wiggle_phase = 0,
+		            const float turn = 0);
 
 		void operator()(const std::vector<Eigen::Vector3f>& vertices,
 		                const std::vector<Eigen::Vector2f>& texcoords,
@@ -27,10 +27,10 @@ class WiggleTransformation
 		mutable std::vector<Eigen::Vector3f> wiggledVertices;
 		Eigen::Vector3f _wiggle_freq;
 		Eigen::Vector3f _wiggle_dir;
-		double          _wiggle_phase;
-		double          _turn;
-		double          _i_turn;
-		double          a, b, c, p, q, s_a;
+		float           _wiggle_phase;
+		float           _turn;
+		float           _i_turn;
+		float           a, b, c, p, q, s_a;
 };
 
 #endif // __INCLUDED_WIGGLE_HPP__
