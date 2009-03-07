@@ -127,13 +127,20 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 	bb_l = Vector3f(1E20,1E20,1E20);
 	bb_h = -bb_l;
 
+	char szLine[256] = { 0 };
+
 	int nFlags, nIndex;
 
 
 	// vertices
 
+	if (!fgets(szLine, sizeof(szLine), file))
+	{
+		return false;
+	}
+
 	size_t num_vertices;
-	if (fscanf(file, "%zu\n", &num_vertices) != 1)
+	if (sscanf(szLine, "%zu", &num_vertices) != 1)
 	{
 		return false;
 	}
@@ -146,8 +153,12 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 		Eigen::Vector3f vertex;
 		Eigen::Vector2f texcoord;
 
+		if (!fgets(szLine, sizeof(szLine), file))
+		{
+			return false;
+		}
 		float f;
-		if (fscanf(file, "%d %f %f %f %f %f %f\n",
+		if (sscanf(szLine, "%d %f %f %f %f %f %f",
 								&nFlags,
 								&vertex.x(), &vertex.y(), &vertex.z(),
 								&texcoord.x(), &texcoord.y(), &f
@@ -177,8 +188,13 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 
 	// normals
 
+	if (!fgets(szLine, sizeof(szLine), file))
+	{
+		return false;
+	}
+
 	size_t num_normals;
-	if (fscanf(file, "%zu\n", &num_normals) != 1)
+	if (sscanf(szLine, "%zu", &num_normals) != 1)
 	{
 		return false;
 	}
@@ -189,7 +205,12 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 	{
 		Eigen::Vector3f normal;
 
-		if (fscanf(file, "%f %f %f\n",
+		if (!fgets(szLine, sizeof(szLine), file))
+		{
+			return false;
+		}
+
+		if (sscanf(szLine, "%f %f %f",
 								&normal.x(), &normal.y(), &normal.z()) != 3)
 		{
 			return false;
@@ -205,8 +226,13 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 
 	// triangles
 
+	if (!fgets(szLine, sizeof(szLine), file))
+	{
+		return false;
+	}
+
 	size_t num_triangles;
-	if (fscanf(file, "%zu\n", &num_triangles) != 1)
+	if (sscanf(szLine, "%zu", &num_triangles) != 1)
 	{
 		return false;
 	}
@@ -223,7 +249,12 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 			unsigned int v[3], n[3];
 		} triangle;
 
-		if (fscanf(file, "%d %u %u %u %u %u %u %d\n",
+		if (!fgets(szLine, sizeof(szLine), file))
+		{
+			return false;
+		}
+
+		if (sscanf(szLine, "%d %d %d %d %d %d %d %d",
 								&nFlags,
 								&triangle.v[0], &triangle.v[1], &triangle.v[2],
 								&triangle.n[0], &triangle.n[1], &triangle.n[2],
@@ -293,42 +324,62 @@ void Material::activate() const
 bool Material::loadFromMs3dAsciiSegment( FILE *file, std::string path_ )
 {
 	path=path_;
+	char szLine[256];
 
 	// name
-	if (fscanf(file, "\"%[^\"]\"\n", Name) != 1)
+	if (!fgets(szLine, sizeof(szLine), file))
+		return false;
+	if (sscanf(szLine, "\"%[^\"]\"", Name) != 1)
 		return false;
 
 	// ambient
-	if (fscanf(file, "%f %f %f %f\n", &Ambient[0], &Ambient[1], &Ambient[2], &Ambient[3]) != 4)
+	if (!fgets(szLine, sizeof(szLine), file))
+		return false;
+
+	if (sscanf(szLine, "%f %f %f %f", &Ambient[0], &Ambient[1], &Ambient[2], &Ambient[3]) != 4)
 		return false;
 
 	// diffuse
-	if (fscanf(file, "%f %f %f %f\n", &Diffuse[0], &Diffuse[1], &Diffuse[2], &Diffuse[3]) != 4)
+	if (!fgets(szLine, sizeof(szLine), file))
+		return false;
+	if (sscanf(szLine, "%f %f %f %f", &Diffuse[0], &Diffuse[1], &Diffuse[2], &Diffuse[3]) != 4)
 		return false;
 
 	// specular
-	if (fscanf(file, "%f %f %f %f\n", &Specular[0], &Specular[1], &Specular[2], &Specular[3]) != 4)
+	if (!fgets(szLine, sizeof(szLine), file))
+		return false;
+	if (sscanf(szLine, "%f %f %f %f", &Specular[0], &Specular[1], &Specular[2], &Specular[3]) != 4)
 		return false;
 
 	// emissive
-	if (fscanf(file, "%f %f %f %f\n", &Emissive[0], &Emissive[1], &Emissive[2], &Emissive[3]) != 4)
+	if (!fgets(szLine, sizeof(szLine), file))
+		return false;
+	if (sscanf(szLine, "%f %f %f %f", &Emissive[0], &Emissive[1], &Emissive[2], &Emissive[3]) != 4)
 		return false;
 
 	// shininess
-	if (fscanf(file, "%f\n", &Shininess) != 1)
+	if (!fgets(szLine, sizeof(szLine), file))
+		return false;
+	if (sscanf(szLine, "%f", &Shininess) != 1)
 		return false;
 
 	// transparency
-	if (fscanf(file, "%f\n", &Transparency) != 1)
+	if (!fgets(szLine, sizeof(szLine), file))
+		return false;
+	if (sscanf(szLine, "%f", &Transparency) != 1)
 		return false;
 
 	// diffuse texture
+	if (!fgets(szLine, sizeof(szLine), file))
+		return false;
 	strcpy(DiffuseTexture, "");
-	fscanf(file, "\"%[^\"]\"\n", DiffuseTexture);
+	sscanf(szLine, "\"%[^\"]\"", DiffuseTexture);
 
 	// alpha texture
+	if (!fgets(szLine, sizeof(szLine), file))
+		return false;
 	strcpy(AlphaTexture, "");
-	fscanf(file, "\"%[^\"]\"\n", AlphaTexture);
+	sscanf(szLine, "\"%[^\"]\"", AlphaTexture);
 
 	reloadTexture();
 
@@ -379,13 +430,13 @@ bool Model::loadFromMs3dAsciiFile(const char* filename, const Eigen::Matrix4f& t
 	if (!file)
 		return false;
 
-	while (fgets (szLine, 256, file) != NULL)
+	while (fgets(szLine, sizeof(szLine), file) != NULL)
 	{
 		if (!strncmp (szLine, "//", 2))
 			continue;
 
 		size_t num_shapes;
-		if (sscanf (szLine, "Meshes: %zu", &num_shapes) == 1)
+		if (sscanf(szLine, "Meshes: %zu", &num_shapes) == 1)
 		{
 			char	szName[MS_MAX_NAME];
 
@@ -397,7 +448,7 @@ bool Model::loadFromMs3dAsciiFile(const char* filename, const Eigen::Matrix4f& t
 				Shape& shape = shapes[i];
 				int& material_index = material_indices[i];
 
-				if (!fgets (szLine, 256, file))
+				if (!fgets(szLine, sizeof(szLine), file))
 				{
 					return false;
 				}
@@ -427,7 +478,7 @@ bool Model::loadFromMs3dAsciiFile(const char* filename, const Eigen::Matrix4f& t
 
 		// materials
 		size_t num_materials;
-		if (sscanf (szLine, "Materials: %zu", &num_materials) == 1)
+		if (sscanf(szLine, "Materials: %zu", &num_materials) == 1)
 		{
 			materials.resize(num_materials);
 
