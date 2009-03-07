@@ -89,7 +89,7 @@ bool Shape::saveToFile(const char* filename)
 }
 #endif
 
-void Shape::render() const
+void Shape::render(const transform_function& function) const
 {
 	if (indices.empty())
 		return;
@@ -101,6 +101,11 @@ void Shape::render() const
 	glVertexPointer(3, GL_FLOAT, 0, vertices[0].data());
 	glNormalPointer(GL_FLOAT, 0, normals[0].data());
 	glTexCoordPointer(2, GL_FLOAT, 0, texcoords[0].data());
+
+	if (function)
+	{
+		function(vertices, texcoords, normals, indices);
+	}
 
 	if (GLEE_VERSION_2_1)
 		glDrawRangeElements(GL_TRIANGLES, 0, vertices.size() - 1, indices.size(), GL_UNSIGNED_INT, &indices[0]);
@@ -501,36 +506,8 @@ void Model::reloadTextures()
 		material.reloadTexture();
 }
 
-void Model::render(const Eigen::Vector3f& wiggle_freq, const Eigen::Vector3f& wiggle_dir, double wiggle_phase, double turn) const
+void Model::render(const Shape::transform_function& function) const
 {
-	/*
-	// approximate elliptic integral with sine... just an approximation, not correct formula
-
-	a*sin(l*b) ' = a*b*cos(l*b)
-
-dl=sqrt((a*b*cos(x*b))^2 + 1)*dt
-
-dl min =dx
-dl max = sqrt((a*b)^2 + 1)*dx
-
-dx/dl max = 1  (x*b=pi/2)
-dx/dl min = 1/sqrt((a*b)^2 + 1)  (l*b=0)
-q=(1-1/sqrt((a*b)^2 + 1)))/2
-p=(1/sqrt((a*b)^2 + 1)+1)/2
-dx/dl=q*cos(2*l*b)+p
-x=q*sin(2*b*l)/(2*b) + p*l
-	*/
-
-	const double i_turn = 1. / turn;
-
-	double a = 2.0 * wiggle_dir.norm() + 1E-20; /// prevent divisions by zero
-	double b = wiggle_freq.norm() + 1E-20;
-	double c=1.0/sqrt(a*a*b*b+1);
-	double q=0.5*(1-c);
-	double p=0.5*(c+1);
-	double s_a=0.5*q/b;
-
-	// FIXME: O(n^3) performance
 	for (size_t k = 0; k < shapes.size(); ++k)	// for each shape
 	{
 		const Shape& shape = shapes[k];
@@ -545,53 +522,6 @@ x=q*sin(2*b*l)/(2*b) + p*l
 			glDisable( GL_TEXTURE_2D );
 		}
 
-		std::vector<Eigen::Vector3f> wiggledVertices;
-		wiggledVertices.reserve(shape.vertices.size());
-		foreach (const Eigen::Vector3f& vertex, shape.vertices)
-		{
-			// Wiggle position
-			const float alpha = vertex.dot(wiggle_freq);
-			Eigen::Vector3f wiggled_pos = vertex + wiggle_dir * float(sin(alpha + wiggle_phase));
-
-			// approximate the elliptic integral.
-			wiggled_pos.x() += p * sin(2 * alpha + wiggle_phase) * s_a;
-
-			/// approximate the elliptic integral, weirder but better looking (?).
-			//wiggled_pos += wiggle_freq * float(sin(2 * alpha + wiggle_phase) * s_a / b);
-
-			// turns:
-			if (fabs(turn) > 1E-5)
-			{
-				double turn_a = wiggled_pos.x() * turn;
-
-				if (turn > 0)
-				{
-					wiggled_pos.x() = sin(turn_a) * (i_turn + wiggled_pos.z());
-					wiggled_pos.z() = cos(turn_a) * (i_turn + wiggled_pos.z()) - i_turn;
-				}
-				else
-				{
-					wiggled_pos.x() = sin(-turn_a) * (-i_turn - wiggled_pos.z());
-					wiggled_pos.z() = -i_turn - cos(-turn_a) * (-i_turn - wiggled_pos.z());
-				}
-			}
-
-			wiggledVertices.push_back(wiggled_pos);
-		}
-
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glEnableClientState(GL_NORMAL_ARRAY);
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-		glVertexPointer(3, GL_FLOAT, 0, wiggledVertices[0].data());
-		/// todo: also apply wiggle to normals? (thats much harder.)
-		glNormalPointer(GL_FLOAT, 0, shape.normals[0].data());
-		glTexCoordPointer(2, GL_FLOAT, 0, shape.texcoords[0].data());
-
-		glDrawElements(GL_TRIANGLES, shape.indices.size(), GL_UNSIGNED_INT, &shape.indices[0]);
-
-		glDisableClientState(GL_VERTEX_ARRAY);
-		glDisableClientState(GL_NORMAL_ARRAY);
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		shape.render(function);
 	}
 }

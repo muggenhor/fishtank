@@ -1,6 +1,7 @@
 #ifndef _MS3D_ASCII_H
 #define _MS3D_ASCII_H
 
+#include <boost/function.hpp>
 #include "GL/GLee.h"
 #define GLFW_BUILD_DLL
 #include <GL/glfw.h>
@@ -63,13 +64,18 @@ struct Tri
 class Shape
 {
 	public:
+		typedef boost::function<void (const std::vector<Eigen::Vector3f>& vertices,
+		                              const std::vector<Eigen::Vector2f>& texcoords,
+		                              const std::vector<Eigen::Vector3f>& normals,
+		                              const std::vector<unsigned int>& indices)> transform_function;
+
 		Shape();
 
 		//bool loadFromFile( const char *filename );
 		bool loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transform = Eigen::Matrix4f::Identity());/// identity transform by default.
 
 		//bool saveToFile( const char *filename );
-		void render() const;
+		void render(const transform_function& function = transform_function()) const;
 
 		std::vector<Eigen::Vector3f>    vertices;
 		std::vector<Eigen::Vector2f>    texcoords;
@@ -118,8 +124,7 @@ class Model
 
 		bool loadFromMs3dAsciiFile(const char* filename, const Eigen::Matrix4f& transform = Eigen::Matrix4f::Identity());
 		void reloadTextures();
-		/// note: internally, it will be subtly incorrect when wiggle is not x axis.
-		void render(const Eigen::Vector3f& wiggle_freq = Eigen::Vector3f::UnitX(), const Eigen::Vector3f& wiggle_dir = Eigen::Vector3f::Zero(), double wiggle_phasew = 0, double turn = 0) const;/// turn is inverse radius
+		void render(const Shape::transform_function& function = Shape::transform_function()) const;
 
 		Eigen::Vector3f bb_l;/// bounding box for the model, low and high
 		Eigen::Vector3f bb_h;

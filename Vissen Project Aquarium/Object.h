@@ -9,20 +9,6 @@
 class Object
 {
 	public:
-		Eigen::Vector3d pos;
-		//het model
-		boost::shared_ptr<Model> model;
-
-		//de hoogte
-		double scale;
-
-		//voor de vibratie
-		double wiggle_phase;
-		double wiggle_freq;
-
-		//de botsarea
-		int sphere;
-
 		Object(boost::shared_ptr<Model> model, const std::string& propertiesFile, const Eigen::Vector3d& position);
 		//haalt info uit de file, gegeven als path
 		void LoadProperties(const std::string &propertiesFile);
@@ -30,6 +16,16 @@ class Object
 		void Update(double dt);
 		//teken het object
 		void Draw() const;
+
+		boost::shared_ptr<Model> model;
+		// Collision area
+		int sphere;
+
+	private:
+		Eigen::Vector3d pos;
+
+		//de hoogte
+		double scale;
 };
 
 #endif // __INCLUDED_OBJECT_H__

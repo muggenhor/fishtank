@@ -12,7 +12,7 @@ LIBS=`pkg-config --libs libglfw` -lGLU -ljpeg
 
 all: VissenProject
 
-VissenProject: AquariumController.o Bubble.o Environment.o GL/GLee.o Ground.o imagereceiver.o JPEG.o main.o MS3D_ASCII.o Object.o Vis.o
+VissenProject: AquariumController.o Bubble.o Environment.o GL/GLee.o Ground.o imagereceiver.o JPEG.o main.o MS3D_ASCII.o Object.o Vis.o wiggle.o
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 clean:

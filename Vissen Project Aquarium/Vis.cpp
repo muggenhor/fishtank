@@ -230,7 +230,13 @@ void Vis::Draw() const
 
 		glScalef(scale,scale,scale);
 		glEnable(GL_NORMALIZE);
-		model->render(Eigen::Vector3f(wiggle_freq * scale, 0, 0), Eigen::Vector3f(0, 0, wiggle_amplitude / scale), wiggle_phase, bending * scale);
+
+		_wiggle.update(Eigen::Vector3f(wiggle_freq * scale, 0, 0),
+		               Eigen::Vector3f(0, 0, wiggle_amplitude / scale),
+		               wiggle_phase,
+		               bending * scale);
+
+		model->render(_wiggle);
 
 		glPopMatrix();
 	}

@@ -3,6 +3,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <Eigen/Core>
+#include "wiggle.hpp"
 
 class Model;
 
@@ -73,6 +74,9 @@ class Vis
 		void newGoal();
 		void setGoal(const Eigen::Vector3f& final_goal);/// use that to set goal
 		void setTemporaryGoal(const Eigen::Vector3f& temp_goal);/// use that to set temporary goal when avoiding collision or something.
+
+	private:
+		mutable WiggleTransformation _wiggle;
 };
 
 //teken het aquarium, gebruikmakende van witte lijnen
