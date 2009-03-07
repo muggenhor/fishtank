@@ -87,14 +87,12 @@ const double wiggle_speed_factor=2.5;/// larger = fish has to wiggle more to mov
 const double bending_factor=0.75;/// larger = fish has to bend more to move. (note: long fish can entirely coil up)
 
 
-Vis::Vis(Model *model, const std::string &propertiesFile, int maxFloorHeight) //defines model
+Vis::Vis(boost::shared_ptr<Model> model, const std::string& propertiesFile, int maxFloorHeight) :
+	usingTempGoal(false),
+	model(model),
+	scale(200),
+	maxFloorHeight(maxFloorHeight)
 {
-	this->maxFloorHeight = maxFloorHeight;
-	usingTempGoal=false;
-	this->model = model;
-
-	this->scale = 200;
-
 	pos = RandomPos();
 	finalGoalPos = Eigen::Vector3f(0., 0., 0.);
 	velocity=Eigen::Vector3f(0., 0., 0.);

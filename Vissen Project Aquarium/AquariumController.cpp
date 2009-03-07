@@ -56,12 +56,12 @@ Eigen::Vector3d RandomBubblePos()
 	return result;
 }
 
-void AquariumController::AddFish(Model *model, const string &propertiesFile)
+void AquariumController::AddFish(boost::shared_ptr<Model> model, const string &propertiesFile)
 {
 	fishes.push_back(Vis(model, propertiesFile, ground.maxHeight));
 }
 
-void AquariumController::AddObject(Model *model, const string &propertiesFile, const Eigen::Vector3d &position)
+void AquariumController::AddObject(boost::shared_ptr<Model> model, const string &propertiesFile, const Eigen::Vector3d &position)
 {
 	objects.push_back(Object(model, propertiesFile, position));
 }

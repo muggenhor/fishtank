@@ -8,15 +8,12 @@
 
 using namespace std;
 
-Object::Object(Model *model, const std::string &propertiesFile, const Eigen::Vector3d& position)
+Object::Object(boost::shared_ptr<Model> model, const std::string& propertiesFile, const Eigen::Vector3d& position) :
+	pos(position),
+	model(model),
+	wiggle_phase(0),
+	wiggle_freq(0)
 {
-	this->model = model;
-
-	pos = position;
-
-	wiggle_phase = 0;
-	wiggle_freq = 0;
-
 	LoadProperties(propertiesFile);
 }
 

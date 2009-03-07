@@ -1,6 +1,7 @@
 #ifndef __INCLUDED_OBJECT_H__
 #define __INCLUDED_OBJECT_H__
 
+#include <boost/shared_ptr.hpp>
 #include <Eigen/Core>
 #include "MS3D_ASCII.h"
 
@@ -10,7 +11,7 @@ class Object
 	public:
 		Eigen::Vector3d pos;
 		//het model
-		Model *model;
+		boost::shared_ptr<Model> model;
 
 		//de hoogte
 		double scale;
@@ -22,7 +23,7 @@ class Object
 		//de botsarea
 		int sphere;
 
-		Object(Model *model, const std::string &propertiesFile, const Eigen::Vector3d& position);
+		Object(boost::shared_ptr<Model> model, const std::string& propertiesFile, const Eigen::Vector3d& position);
 		//haalt info uit de file, gegeven als path
 		void LoadProperties(const std::string &propertiesFile);
 		//update voor de wiggle

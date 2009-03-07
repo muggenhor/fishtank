@@ -1,6 +1,7 @@
 #ifndef __INCLUDED_VIS_H__
 #define __INCLUDED_VIS_H__
 
+#include <boost/shared_ptr.hpp>
 #include <Eigen/Core>
 
 class Model;
@@ -16,7 +17,7 @@ class Vis
 		bool usingTempGoal;
 
 		//het model
-		Model *model;
+		boost::shared_ptr<Model> model;
 
 		//informatie voor het gedrag van de vis
 		double swimDirAngle;
@@ -52,7 +53,7 @@ class Vis
 		//de vloerhoogte, om ervoor te zorgen dat de vissen niet lager dan dit gaan zwemmen
 		int maxFloorHeight;
 
-		Vis(Model *model, const std::string &propertiesFile, int maxFloorHeight); //hihi
+		Vis(boost::shared_ptr<Model> model, const std::string& propertiesFile, int maxFloorHeight); //hihi
 		//draag de vis op om een andere positie te pakken (iets te ontwijken)
 		void Avade();
 		//geeft true als de vis botst met een ander object, hier gegeven in een positie en een botsarea

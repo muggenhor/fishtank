@@ -1,3 +1,4 @@
+#include <boost/shared_ptr.hpp>
 #include "GL/GLee.h"
 #define GLFW_BUILD_DLL
 #include <GL/glfw.h>
@@ -30,7 +31,7 @@ static int win_move_x = 5, win_move_y = 30;
 //oogafstand van het aquarium
 static float eye_distance=300;
 
-static map<string, Model> models;
+static map<string, boost::shared_ptr<Model> > models;
 
 //laad de settings uit het opgegeven bestand
 static void LoadSettings(std::istream& input_file)
@@ -108,11 +109,13 @@ static void LoadModels(std::istream& input_file, AquariumController& aquariumCon
 	{
 		string model_name;
 		getline(input_file, model_name);
-		map<string, Model>::iterator model_iterator=models.find(model_name);
+		map<string, boost::shared_ptr<Model> >::iterator model_iterator = models.find(model_name);
 		//model bestaat niet
 		if(model_iterator==models.end())
 		{
-			models[model_name].loadFromMs3dAsciiFile(("./Data/Vissen/Modellen/" + model_name + ".txt").c_str(), model_matrix);
+			boost::shared_ptr<Model> model(new Model);
+			model->loadFromMs3dAsciiFile(("./Data/Vissen/Modellen/" + model_name + ".txt").c_str(), model_matrix);
+			models[model_name] = model;
 		}
 
 		string propertieFile;
@@ -122,7 +125,7 @@ static void LoadModels(std::istream& input_file, AquariumController& aquariumCon
 		int m=atoi(s.c_str());
 		for (int j = 0; j < m; j++)
 		{
-			aquariumController.AddFish(&models[model_name], propertieFile);
+			aquariumController.AddFish(models[model_name], propertieFile);
 		}
 	}
 
@@ -133,11 +136,13 @@ static void LoadModels(std::istream& input_file, AquariumController& aquariumCon
 	{
 		string model_name;
 		getline(input_file, model_name);
-		map<string, Model>::iterator model_iterator=models.find(model_name);
+		map<string, boost::shared_ptr<Model> >::iterator model_iterator = models.find(model_name);
 		//model bestaat niet
 		if(model_iterator==models.end())
 		{
-			models[model_name].loadFromMs3dAsciiFile(("./Data/Objecten/Modellen/" +model_name+ ".txt").c_str(), model_matrix);
+			boost::shared_ptr<Model> model(new Model);
+			model->loadFromMs3dAsciiFile(("./Data/Objecten/Modellen/" + model_name + ".txt").c_str(), model_matrix);
+			models[model_name] = model;
 		}
 
 		string propertieFile;
@@ -149,7 +154,7 @@ static void LoadModels(std::istream& input_file, AquariumController& aquariumCon
 		int z = -(aquariumSize.z() / 2) + atoi(s.c_str());
 		int groundposx = (x + (aquariumSize.x() / 2)) / aquariumSize.x() * (aquariumController.ground.widthAmount);
 		int groundposy = (z + (aquariumSize.z() / 2)) / aquariumSize.z() * (aquariumController.ground.lengthAmount);
-		aquariumController.AddObject(&models[model_name], propertieFile, Eigen::Vector3d(x, aquariumController.ground.HeightAt(groundposx, groundposy), z));
+		aquariumController.AddObject(models[model_name], propertieFile, Eigen::Vector3d(x, aquariumController.ground.HeightAt(groundposx, groundposy), z));
 	}
 
 	getline(input_file, s);
