@@ -59,7 +59,7 @@ bool Shape::loadFromFile( const char *filename )
 
 bool Shape::saveToFile(const char* filename)
 {
-	FileWrap const fp(fopen(filename, "r"));
+	FileWrap const fp(fopen(filename, "w"));
 	if (fp == NULL)
 		return false;
 
