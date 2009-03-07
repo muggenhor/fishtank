@@ -34,12 +34,16 @@ void Ground::GenerateGroundFromImage(const string &filename)
 	widthAmount = image.width;
 	lengthAmount = image.height;
 	ground.resize(widthAmount * lengthAmount, -aquariumSize.y() / 2);
+	normals.resize(widthAmount * lengthAmount);
 
 	for (int y = 0; y < lengthAmount; y++)
 	{
  		for (int x = 0; x < widthAmount; x++)
  		{
- 	 		ground[x + y*widthAmount] = -aquariumSize.y() / 2 + ((unsigned char)(image.data[x * 3 + y * image.rowSpan])) / 255.0 * maxHeight;
+			ground[x + y * widthAmount] = -aquariumSize.y() / 2 + ((unsigned char)(image.data[x * 3 + y * image.rowSpan])) / 255.0 * maxHeight;
+
+			// Generate a cache of normals
+			normals[x + y * widthAmount] = -(PosAt(x + 1, y) - PosAt(x - 1, y)).cross(PosAt(x, y + 1) - PosAt(x, y - 1)).normalized();
  		}
 	}
 }
@@ -61,7 +65,10 @@ Eigen::Vector3d Ground::PosAt(int x, int y)
 
 Eigen::Vector3d Ground::NormalAt(int x, int y)
 {
-	return -(PosAt(x + 1, y) - PosAt(x - 1, y)).cross(PosAt(x, y + 1) - PosAt(x, y - 1)).normalized();
+	x = clip(x, 0, widthAmount - 1);
+	y = clip(y, 0, lengthAmount - 1);
+
+	return normals[x + y * widthAmount];
 }
 
 void Ground::Draw()

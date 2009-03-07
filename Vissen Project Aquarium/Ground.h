@@ -29,6 +29,7 @@ class Ground
 	private:
 		//de hoogtes in een vector
 		std::vector<int> ground;
+		std::vector<Eigen::Vector3d> normals;
 		//de dimenties
 		//het texture id
 		Texture texture;
