@@ -47,20 +47,6 @@ class FileWrap
 		FILE* const file;
 };
 
-struct Vec
-{
-	Eigen::Vector3f vertex;
-
-	/// Texture coordinates
-	Eigen::Vector2f texcoord;
-};
-
-struct Tri
-{
-	int     v[3];
-	int     n[3];
-};
-
 class Shape
 {
 	public:
