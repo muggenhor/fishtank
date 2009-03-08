@@ -32,7 +32,7 @@ void main(void)
 		if (turn > 0.)
 		{
 			wiggled_pos.x = sin(turn_a) * (i_turn + wiggled_pos.z);
-			wiggled_pos.z = cos(turn_a) * (i_turn + wiggled_pos.z);
+			wiggled_pos.z = cos(turn_a) * (i_turn + wiggled_pos.z) - i_turn;
 		}
 		else
 		{
