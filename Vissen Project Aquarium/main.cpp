@@ -1,6 +1,5 @@
 #include <boost/shared_ptr.hpp>
 #include "GL/GLee.h"
-#define GLFW_BUILD_DLL
 #include <GL/glfw.h>
 #include <GL/gl.h>
 #include <Eigen/Core>

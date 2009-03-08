@@ -3,7 +3,6 @@
 
 #include <boost/function.hpp>
 #include "GL/GLee.h"
-#define GLFW_BUILD_DLL
 #include <GL/glfw.h>
 
 #include <stdio.h>
