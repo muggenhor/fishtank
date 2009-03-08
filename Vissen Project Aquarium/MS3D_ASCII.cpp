@@ -102,15 +102,28 @@ void Shape::render(const transform_function& function) const
 	glNormalPointer(GL_FLOAT, 0, normals[0].data());
 	glTexCoordPointer(2, GL_FLOAT, 0, texcoords[0].data());
 
-	if (function)
+	boost::function<void ()> finish_function;
+	try
 	{
-		function(vertices, texcoords, normals, indices);
+		if (function)
+		{
+			finish_function = function(vertices, texcoords, normals, indices);
+		}
+
+		if (GLEE_VERSION_2_1)
+			glDrawRangeElements(GL_TRIANGLES, 0, vertices.size() - 1, indices.size(), GL_UNSIGNED_INT, &indices[0]);
+		else
+			glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, &indices[0]);
+	}
+	catch (...)
+	{
+		if (finish_function)
+			finish_function();
+		throw;
 	}
 
-	if (GLEE_VERSION_2_1)
-		glDrawRangeElements(GL_TRIANGLES, 0, vertices.size() - 1, indices.size(), GL_UNSIGNED_INT, &indices[0]);
-	else
-		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, &indices[0]);
+	if (finish_function)
+		finish_function();
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);

@@ -50,10 +50,10 @@ class FileWrap
 class Shape
 {
 	public:
-		typedef boost::function<void (const std::vector<Eigen::Vector3f>& vertices,
-		                              const std::vector<Eigen::Vector2f>& texcoords,
-		                              const std::vector<Eigen::Vector3f>& normals,
-		                              const std::vector<unsigned int>& indices)> transform_function;
+		typedef boost::function<boost::function<void ()> (const std::vector<Eigen::Vector3f>& vertices,
+		                                                  const std::vector<Eigen::Vector2f>& texcoords,
+		                                                  const std::vector<Eigen::Vector3f>& normals,
+		                                                  const std::vector<unsigned int>& indices)> transform_function;
 
 		Shape();
 

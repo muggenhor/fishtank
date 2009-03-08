@@ -1,6 +1,7 @@
 #ifndef __INCLUDED_WIGGLE_HPP__
 #define __INCLUDED_WIGGLE_HPP__
 
+#include <boost/function.hpp>
 #include <Eigen/Core>
 #include <vector>
 
@@ -18,10 +19,10 @@ class WiggleTransformation
 		            const float wiggle_phase = 0,
 		            const float turn = 0);
 
-		void operator()(const std::vector<Eigen::Vector3f>& vertices,
-		                const std::vector<Eigen::Vector2f>& texcoords,
-		                const std::vector<Eigen::Vector3f>& normals,
-		                const std::vector<unsigned int>& indices) const;
+		boost::function<void ()> operator()(const std::vector<Eigen::Vector3f>& vertices,
+		                                    const std::vector<Eigen::Vector2f>& texcoords,
+		                                    const std::vector<Eigen::Vector3f>& normals,
+		                                    const std::vector<unsigned int>& indices) const;
 
 	private:
 		mutable std::vector<Eigen::Vector3f> wiggledVertices;

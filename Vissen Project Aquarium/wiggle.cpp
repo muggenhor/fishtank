@@ -43,10 +43,10 @@ x=q*sin(2*b*l)/(2*b) + p*l
 
 }
 
-void WiggleTransformation::operator()(const std::vector<Eigen::Vector3f>& vertices,
-                                      const std::vector<Eigen::Vector2f>& /* texcoords */,
-                                      const std::vector<Eigen::Vector3f>& /* normals */,
-                                      const std::vector<unsigned int>& /* indices */) const
+boost::function<void ()> WiggleTransformation::operator()(const std::vector<Eigen::Vector3f>& vertices,
+                                                          const std::vector<Eigen::Vector2f>& /* texcoords */,
+                                                          const std::vector<Eigen::Vector3f>& /* normals */,
+                                                          const std::vector<unsigned int>& /* indices */) const
 {
 	wiggledVertices.clear();
 	wiggledVertices.reserve(vertices.size());
@@ -85,4 +85,6 @@ void WiggleTransformation::operator()(const std::vector<Eigen::Vector3f>& vertic
 
 	glVertexPointer(3, GL_FLOAT, 0, wiggledVertices[0].data());
 	/// todo: also apply wiggle to normals? (thats much harder.)
+
+	return boost::function<void ()>();
 }
