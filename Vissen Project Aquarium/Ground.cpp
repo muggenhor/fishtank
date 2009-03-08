@@ -33,7 +33,7 @@ void Ground::GenerateGroundFromImage(const string &filename)
 
 	widthAmount = image.width;
 	lengthAmount = image.height;
-	ground.resize(widthAmount * lengthAmount, -aquariumSize.y() / 2);
+	ground.resize(widthAmount * lengthAmount);
 	normals.resize(widthAmount * lengthAmount);
 
 	for (int y = 0; y < lengthAmount; y++)

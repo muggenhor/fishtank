@@ -19,6 +19,7 @@
 #include <map>
 
 #include "imagereceiver.h"
+#include "glexcept.hpp"
 
 using namespace std;
 
@@ -350,125 +351,146 @@ static void DrawBackground(bool cam1)
 
 int main()
 {
-	srand(time(NULL));/// make random numbers sequence depend to program start time.
+#if defined(__GNUC__)
+	// Report uncaught exceptions in a nicer way than terminating alone.
+	std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
+#endif
 
-	cout << "Created by Jasper Lammers and Dmytry Lavrov" << endl;
-
-	glfwInit();
-
-	if( !glfwOpenWindow( win_width, win_height,  0,0,0,0,  16, 	 0, GLFW_WINDOW ))
-	{/// width, height, rgba bits (4 params), depth bits, stencil bits, mode.
-		cout << "Bye world! Open window failed" << endl;
-		return 1;
-	}
-	glEnable(GL_DEPTH_TEST);
-	glDepthMask(GL_TRUE);
-	glfwSetWindowTitle("");
-
-
-	ifstream input_file("Settings/aquaConfig.txt");
-
-	LoadSettings(input_file);
-
-	AquariumController aquariumController;
-
-	LoadModels(input_file, aquariumController);
-
-
-	glfwSetWindowSize(win_width * 3, win_height);
-	glfwSetWindowPos(win_move_x, win_move_y);
-
-
-	double curTime;
-	double oldTime = 0;
-
-	//gebruik mist voor het "water effect"
-	GLfloat fogColor[4]= {0.3f, 0.4f, 0.7f, 1.0f};
-	//glClearColor(fogColor[0], fogColor[1], fogColor[2], fogColor[3]); // make it clear to fog color?
-
-	glFogi(GL_FOG_MODE, GL_EXP);
-	//glFogi(GL_FOG_COORD_SRC, GL_FRAGMENT_DEPTH);
-	//mist kleur
-	glFogfv(GL_FOG_COLOR, fogColor);
-	//mist dichtheid
-	glFogf(GL_FOG_DENSITY, 1.0f/(eye_distance+aquariumSize.z()+aquariumSize.x()));
-	/// niet nodig
-	//glHint(GL_FOG_HINT, GL_NICEST);
-	//glFogf(GL_FOG_START, eye_distance);
-	//glFogf(GL_FOG_END, eye_distance+aquariumSize.z()+aquariumSize.x());
-	glEnable(GL_FOG);
-
-	while(glfwGetWindowParam( GLFW_OPENED ))
+	try
 	{
-		//update
-		curTime = glfwGetTime();
-		double dt = curTime - oldTime;
-		if(dt > 0.1)
-		{
-			dt=0.1;
+		srand(time(NULL));/// make random numbers sequence depend to program start time.
+
+		cout << "Created by Jasper Lammers and Dmytry Lavrov" << endl;
+
+		glfwInit();
+
+		if( !glfwOpenWindow( win_width, win_height,  0,0,0,0,  16, 	 0, GLFW_WINDOW ))
+		{/// width, height, rgba bits (4 params), depth bits, stencil bits, mode.
+			cout << "Bye world! Open window failed" << endl;
+			return 1;
 		}
-		aquariumController.Update(dt);
-
-		image_receiver.Update();
-		image_receiver2.Update();
-
-		position_receiver.Update(&aquariumController);
-		faceposition_receiver.Update(&aquariumController);
+		glEnable(GL_DEPTH_TEST);
+		glDepthMask(GL_TRUE);
+		glfwSetWindowTitle("");
 
 
-		oldTime = curTime;
+		ifstream input_file("Settings/aquaConfig.txt");
+
+		LoadSettings(input_file);
+
+		AquariumController aquariumController;
+
+		LoadModels(input_file, aquariumController);
 
 
-		glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT);
-
-		glfwGetWindowSize(&win_width,&win_height);/// get window size
-
-		double port1_width = win_width *2.0/3.0;
-		double port2_width = win_width *1.0/3.0;
-
-		//linker view
-		glViewport(0, 0, port1_width, win_height);
-
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		double kx=0.25*aquariumSize.x();
-		double ky=((double)win_height/(double)port1_width)*kx;
-
-		Eigen::Vector2d size = Eigen::Vector2d(aquariumSize.x() * (range_x / 100.0), aquariumSize.y() * (range_y / 100.0));
-		Eigen::Vector2d pos = Eigen::Vector2d(size.x() * aquariumController.facePosition.x() / 100.0 - size.x() / 2.0, size.y() * aquariumController.facePosition.y() / 100.0 - size.y() / 2.0);
-
-		glFrustum(-kx - 0.5 * pos.x(), kx - 0.5 * pos.x(), -ky - 0.5 * pos.y(), ky - 0.5 * pos.y(), 0.5 * eye_distance, eye_distance * 2 + aquariumSize.z());
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-
-		glTranslatef(-pos.x(), -pos.y(), -(eye_distance+aquariumSize.z()*0.5));
-
-		DrawBackground(true);
-		aquariumController.Draw();
-
-		//rechter view
-		glViewport(port1_width, 0, port2_width, win_height);
-
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-
-		kx=0.25*aquariumSize.z();
-		ky=((double)win_height/(double)port2_width)*kx;
-		glFrustum( -kx, kx, -ky, ky, 0.5*eye_distance, eye_distance*2+aquariumSize.x() );
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
+		glfwSetWindowSize(win_width * 3, win_height);
+		glfwSetWindowPos(win_move_x, win_move_y);
 
 
-		glTranslatef(0,0,-(eye_distance+aquariumSize.x()*0.5));
-		glRotatef(270,0,1,0);
-		
-		DrawBackground(false);
-		aquariumController.Draw();
+		double curTime;
+		double oldTime = 0;
 
-		//TestDrawAquarium();
+		//gebruik mist voor het "water effect"
+		GLfloat fogColor[4]= {0.3f, 0.4f, 0.7f, 1.0f};
+		//glClearColor(fogColor[0], fogColor[1], fogColor[2], fogColor[3]); // make it clear to fog color?
 
-		glfwSwapBuffers();
+		glFogi(GL_FOG_MODE, GL_EXP);
+		//glFogi(GL_FOG_COORD_SRC, GL_FRAGMENT_DEPTH);
+		//mist kleur
+		glFogfv(GL_FOG_COLOR, fogColor);
+		//mist dichtheid
+		glFogf(GL_FOG_DENSITY, 1.0f/(eye_distance+aquariumSize.z()+aquariumSize.x()));
+		/// niet nodig
+		//glHint(GL_FOG_HINT, GL_NICEST);
+		//glFogf(GL_FOG_START, eye_distance);
+		//glFogf(GL_FOG_END, eye_distance+aquariumSize.z()+aquariumSize.x());
+		glEnable(GL_FOG);
+
+		while(glfwGetWindowParam( GLFW_OPENED ))
+		{
+			//update
+			curTime = glfwGetTime();
+			double dt = curTime - oldTime;
+			if(dt > 0.1)
+			{
+				dt=0.1;
+			}
+			aquariumController.Update(dt);
+
+			image_receiver.Update();
+			image_receiver2.Update();
+
+			position_receiver.Update(&aquariumController);
+			faceposition_receiver.Update(&aquariumController);
+
+
+			oldTime = curTime;
+
+
+			glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT);
+
+			glfwGetWindowSize(&win_width,&win_height);/// get window size
+
+			double port1_width = win_width *2.0/3.0;
+			double port2_width = win_width *1.0/3.0;
+
+			//linker view
+			glViewport(0, 0, port1_width, win_height);
+
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			double kx=0.25*aquariumSize.x();
+			double ky=((double)win_height/(double)port1_width)*kx;
+
+			Eigen::Vector2d size = Eigen::Vector2d(aquariumSize.x() * (range_x / 100.0), aquariumSize.y() * (range_y / 100.0));
+			Eigen::Vector2d pos = Eigen::Vector2d(size.x() * aquariumController.facePosition.x() / 100.0 - size.x() / 2.0, size.y() * aquariumController.facePosition.y() / 100.0 - size.y() / 2.0);
+
+			glFrustum(-kx - 0.5 * pos.x(), kx - 0.5 * pos.x(), -ky - 0.5 * pos.y(), ky - 0.5 * pos.y(), 0.5 * eye_distance, eye_distance * 2 + aquariumSize.z());
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+
+			glTranslatef(-pos.x(), -pos.y(), -(eye_distance+aquariumSize.z()*0.5));
+
+			DrawBackground(true);
+			aquariumController.Draw();
+
+			//rechter view
+			glViewport(port1_width, 0, port2_width, win_height);
+
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+
+			kx=0.25*aquariumSize.z();
+			ky=((double)win_height/(double)port2_width)*kx;
+			glFrustum( -kx, kx, -ky, ky, 0.5*eye_distance, eye_distance*2+aquariumSize.x() );
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+
+
+			glTranslatef(0,0,-(eye_distance+aquariumSize.x()*0.5));
+			glRotatef(270,0,1,0);
+			
+			DrawBackground(false);
+			aquariumController.Draw();
+
+			//TestDrawAquarium();
+
+			glfwSwapBuffers();
+		}
+
+		return 0;
 	}
-
-	return 0;
+	catch (const OpenGL::shader_source_error& e)
+	{
+		std::cerr << "Unhandled OpenGL::shader_source_error exception caught: " << e.what() << "\n"
+		          << "Info log contains:\n"
+		          << e.infoLog() << "\n";
+		throw;
+	}
+	catch (const OpenGL::shader_uniform_location_error& e)
+	{
+		std::cerr << "Unhandled OpenGL::shader_uniform_location_error exception caught: " << e.what() << "\n"
+		          << "Uniform name is: \"" << e.uniform_name() << "\"\n";
+		throw;
+	}
 }

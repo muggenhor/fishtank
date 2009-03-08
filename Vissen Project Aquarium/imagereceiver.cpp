@@ -65,7 +65,7 @@ size_t SimpleSocketStream::Read(char *data, size_t max_size){
 	int e;
 	int actual_size;
 	/* emulate MSG_DONTWAIT for moronic windoze. */
-#ifdef _MSC_VER
+#ifdef WIN32
 	fd_set rfds1;
 	FD_ZERO (&rfds1);
 	FD_SET (m_sock, &rfds1);
