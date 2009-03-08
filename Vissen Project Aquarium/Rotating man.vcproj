@@ -218,6 +218,10 @@
 				RelativePath=".\Vis.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\wiggle.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -253,6 +257,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\math-helpers.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\MS3D_ASCII.h"
 				>
 			</File>
@@ -262,6 +270,10 @@
 			</File>
 			<File
 				RelativePath=".\Vis.h"
+				>
+			</File>
+			<File
+				RelativePath=".\wiggle.hpp"
 				>
 			</File>
 		</Filter>
