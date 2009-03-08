@@ -41,7 +41,7 @@ void main(void)
 		}
 	}
 
-	gl_Position = wiggled_pos * gl_ModelViewProjectionMatrix;
+	gl_Position = gl_ModelViewProjectionMatrix * wiggled_pos;
 	gl_FrontColor = gl_Color;
 	gl_BackColor = gl_Color;
 	gl_FrontSecondaryColor = gl_SecondaryColor;
