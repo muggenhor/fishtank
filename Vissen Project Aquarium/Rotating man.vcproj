@@ -219,6 +219,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\shaders.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Vis.cpp"
 				>
 			</File>
@@ -274,6 +278,10 @@
 			</File>
 			<File
 				RelativePath=".\Object.h"
+				>
+			</File>
+			<File
+				RelativePath=".\shaders.hpp"
 				>
 			</File>
 			<File
