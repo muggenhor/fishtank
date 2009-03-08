@@ -19,7 +19,7 @@ void main(void)
 	vec4 wiggled_pos = gl_Vertex + new_wiggle_dir * sin(alpha + wiggle_phase);
 
 	// Approximate the elliptic integral
-	wiggled_pos.x += p * sin(2. * alpha + wiggle_phase) * s_a;
+	wiggled_pos.x = wiggled_pos.x * p + sin(2. * alpha + wiggle_phase) * s_a;
 
 	// Approximate the elliptic integral, weirder but better looking.
 	// wiggled_pos.xyz += wiggle_freq.xyz * (sin(2. * alpha + wiggle_phase) * s_a / b);
