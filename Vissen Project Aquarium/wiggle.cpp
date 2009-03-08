@@ -1,8 +1,24 @@
-#include "wiggle.hpp"
+#include <boost/bind.hpp>
 #include <boost/foreach.hpp>
+#include <fstream>
+#include <iostream>
+#include "wiggle.hpp"
 #include "GL/GLee.h"
+#include "glexcept.hpp"
 
 #define foreach BOOST_FOREACH
+
+WiggleTransformation::WiggleTransformation()
+{
+	try
+	{
+		shader.reset(new WiggleShaderProgram);
+	}
+	catch (const OpenGL::missing_capabilities& e)
+	{
+		std::cerr << "Failed to create WiggleShaderProgram due to missing OpenGL capabilities: " << e.what() << "\n";
+	}
+}
 
 void WiggleTransformation::update(const Eigen::Vector3f& wiggle_freq,
                                   const Eigen::Vector3f& wiggle_dir,
@@ -41,6 +57,19 @@ x=q*sin(2*b*l)/(2*b) + p*l
 	p = 0.5f * (c + 1.f);
 	s_a = 0.5f * q / b;
 
+	if (shader)
+	{
+		OpenGL::use_scoped_program use_shader(*shader);
+
+		shader->wiggle_freq(_wiggle_freq);
+		shader->wiggle_dir(_wiggle_dir);
+		shader->wiggle_phase(_wiggle_phase);
+		shader->turn(_turn);
+	}
+}
+
+static void shader_lock(boost::shared_ptr<OpenGL::use_scoped_program> /* shader_lock */)
+{
 }
 
 boost::function<void ()> WiggleTransformation::operator()(const std::vector<Eigen::Vector3f>& vertices,
@@ -48,6 +77,10 @@ boost::function<void ()> WiggleTransformation::operator()(const std::vector<Eige
                                                           const std::vector<Eigen::Vector3f>& /* normals */,
                                                           const std::vector<unsigned int>& /* indices */) const
 {
+	// Use the shader if it's available
+	if (shader)
+		return boost::bind(&shader_lock, boost::shared_ptr<OpenGL::use_scoped_program>(new OpenGL::use_scoped_program(*shader)));
+
 	wiggledVertices.clear();
 	wiggledVertices.reserve(vertices.size());
 
@@ -87,4 +120,43 @@ boost::function<void ()> WiggleTransformation::operator()(const std::vector<Eige
 	/// todo: also apply wiggle to normals? (thats much harder.)
 
 	return boost::function<void ()>();
+}
+
+WiggleTransformation::WiggleShaderProgram::WiggleShaderProgram()
+{
+	static const char shaderFile[] = "./Data/wiggle.glsl";
+
+	std::ifstream source(shaderFile);
+	if (!source.is_open())
+		throw std::runtime_error("Couldn't find file " + std::string(shaderFile));
+
+	_shader.loadSource(source);
+	_shader.compile();
+
+	attachShader(_shader);
+	link();
+	_wiggle_freq = getUniformLocation("wiggle_freq");
+	_wiggle_dir = getUniformLocation("wiggle_dir");
+	_wiggle_phase = getUniformLocation("wiggle_phase");
+	_turn = getUniformLocation("turn");
+}
+
+void WiggleTransformation::WiggleShaderProgram::wiggle_freq(const Eigen::Vector3f& v)
+{
+	uniform(_wiggle_freq, v);
+}
+
+void WiggleTransformation::WiggleShaderProgram::wiggle_dir(const Eigen::Vector3f& v)
+{
+	uniform(_wiggle_dir, v);
+}
+
+void WiggleTransformation::WiggleShaderProgram::wiggle_phase(float v)
+{
+	uniform(_wiggle_phase, v);
+}
+
+void WiggleTransformation::WiggleShaderProgram::turn(float v)
+{
+	uniform(_turn, v);
 }
