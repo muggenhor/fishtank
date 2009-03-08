@@ -4,6 +4,7 @@
 #include <GL/glu.h>
 #include <boost/scoped_array.hpp>
 #include <cassert>
+#include "glexcept.hpp"
 
 #ifdef WIN32
 extern "C"
@@ -145,8 +146,11 @@ void Texture::bind() const
 
 void Texture::upload_texture() const
 {
-	assert(GLEE_EXT_texture_object);
-	assert(_img);
+	if (!_img)
+		return;
+
+	if (!GLEE_EXT_texture_object)
+		throw OpenGL::missing_capabilities("The GL_EXT_texture_object extension is required to find out what the current texture binding is.");
 
 	GLint previous_texture;
 	glGetIntegerv(GL_TEXTURE_2D_BINDING_EXT, &previous_texture);

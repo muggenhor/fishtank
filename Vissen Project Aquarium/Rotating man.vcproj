@@ -191,6 +191,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\glexcept.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Ground.cpp"
 				>
 			</File>
@@ -242,6 +246,10 @@
 			</File>
 			<File
 				RelativePath=".\GL\GLee.h"
+				>
+			</File>
+			<File
+				RelativePath=".\glexcept.hpp"
 				>
 			</File>
 			<File
