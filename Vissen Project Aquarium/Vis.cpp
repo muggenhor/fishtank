@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
+#include "math-helpers.hpp"
 #include <string>
 
 using namespace std;
@@ -76,10 +77,10 @@ void TestDrawAquarium()
 const double forward_acceleration=7.5;
 const double vertical_acceleration=5;
 
-const double pitch_factor=0.5;/// how much fish tilts when swimming up and down
+const float pitch_factor = 0.5;/// how much fish tilts when swimming up and down
 
-const double max_pitch= 10. * (M_PI / 180.);///max angle when swimming up
-const double min_pitch=-max_pitch;///ditto for swimming down.
+const float max_pitch = 10.f * (M_PI / 180.f);///max angle when swimming up
+const float min_pitch = -max_pitch;///ditto for swimming down.
 const double pitch_change_speed = 5. * (M_PI / 180.0);/// speed of change of pitch
 //const double max_vertical_speed=10;
 
@@ -398,15 +399,9 @@ void Vis::Update(double dt)
 	}
 
 	//pitch
-	double desired_pitch = atan2(pitch_factor * velocity.y(), sqrt(velocity.x() * velocity.x() + velocity.z() * velocity.z()));
-	if(desired_pitch < min_pitch)
-	{
-		desired_pitch = min_pitch;
-	}
-	if(desired_pitch > max_pitch)
-	{
-		desired_pitch = max_pitch;
-	}
+	const float desired_pitch = clip(atan2f(pitch_factor * velocity.y(), sqrt(velocity.x() * velocity.x() + velocity.z() * velocity.z())),
+	                                 min_pitch,
+	                                 max_pitch);
 	pitch = TowardsGoalBy(pitch, desired_pitch, pitch_change_speed*dt);
 
 
