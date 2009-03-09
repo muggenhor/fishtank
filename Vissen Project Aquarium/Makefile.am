@@ -39,4 +39,4 @@ noinst_HEADERS = \
 	wiggle.hpp
 
 fishtank_LDADD = $(builddir)/GL/libGLee.a $(GLFW_LIBS) $(OPENGL_LIBS) $(JPEG_LIBS)
-fishtank_CPPFLAGS = $(GLFW_CFLAGS)
+fishtank_CPPFLAGS = $(GLFW_CFLAGS) $(BOOST_CPPFLAGS)
