@@ -45,7 +45,6 @@ void main(void)
 
 	gl_Position = gl_ModelViewProjectionMatrix * wiggled_pos;
 	gl_FrontSecondaryColor = gl_SecondaryColor;
-	gl_BackSecondaryColor = gl_SecondaryColor;
 	gl_TexCoord[0] = gl_MultiTexCoord0;
 
 	// Apply diffuse lighting using the non-transformed normals
@@ -54,8 +53,7 @@ void main(void)
 	vec4 V = gl_ModelViewMatrix * wiggled_pos;
 	vec3 L = normalize(lightPos - V.xyz);
 
-	vec4 NdotL = vec4(max(0.0, dot(N, L)));
+	float NdotL = max(0.0, dot(N, L));
 
-	gl_FrontColor = gl_Color * NdotL;
-	gl_BackColor = gl_Color * NdotL;
+	gl_FrontColor = gl_Color * vec4(NdotL);
 }
