@@ -3,6 +3,8 @@ uniform vec3  wiggle_dir;
 uniform float wiggle_phase;
 uniform float turn;
 
+const vec3 lightPos = vec3(0., 200., 0.);
+
 void main(void)
 {
 	float a = 2.0 * length(wiggle_dir);
@@ -42,9 +44,18 @@ void main(void)
 	}
 
 	gl_Position = gl_ModelViewProjectionMatrix * wiggled_pos;
-	gl_FrontColor = gl_Color;
-	gl_BackColor = gl_Color;
 	gl_FrontSecondaryColor = gl_SecondaryColor;
 	gl_BackSecondaryColor = gl_SecondaryColor;
 	gl_TexCoord[0] = gl_MultiTexCoord0;
+
+	// Apply diffuse lighting using the non-transformed normals
+	// TODO: transform the normals as well
+	vec3 N = normalize(gl_NormalMatrix * gl_Normal);
+	vec4 V = gl_ModelViewMatrix * wiggled_pos;
+	vec3 L = normalize(lightPos - V.xyz);
+
+	vec4 NdotL = vec4(max(0.0, dot(N, L)));
+
+	gl_FrontColor = gl_Color * NdotL;
+	gl_BackColor = gl_Color * NdotL;
 }
