@@ -22,6 +22,15 @@ AC_PROG_CC_STDC
 AC_PROG_RANLIB
 PKG_PROG_PKG_CONFIG
 
+# Check for operating system
+case ${host_os} in
+	*mingw32*)
+		host_os_mingw32=yes
+		WIN32_LIBS='-lwsock32'
+		AC_SUBST([WIN32_LIBS])
+		;;
+esac
+
 # pkg-config hooks:
 
 AC_ARG_VAR([PKGCONFIG_PREFIX], [Prefix path to look in for pkg-config templates])
@@ -86,7 +95,8 @@ AC_CHECK_HEADER([jpeglib.h], ,
 	AC_MSG_ERROR([JPEG headers not found]))
 AC_CHECK_LIB([jpeg], [jpeg_start_decompress],
 	AC_SUBST([JPEG_LIBS], [-ljpeg]),
-	AC_MSG_ERROR([JPEG not found]))
+	AC_MSG_ERROR([JPEG not found]),
+	[${WIN32_LIBS}])
 
 # Checks for header files.
 AC_HEADER_STDC

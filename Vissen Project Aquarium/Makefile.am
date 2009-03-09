@@ -38,5 +38,5 @@ noinst_HEADERS = \
 	Vis.h \
 	wiggle.hpp
 
-fishtank_LDADD = $(builddir)/GL/libGLee.a $(GLFW_LIBS) $(OPENGL_LIBS) $(JPEG_LIBS)
+fishtank_LDADD = $(builddir)/GL/libGLee.a $(GLFW_LIBS) $(OPENGL_LIBS) $(JPEG_LIBS) $(WIN32_LIBS)
 fishtank_CPPFLAGS = $(GLFW_CFLAGS) $(BOOST_CPPFLAGS)
