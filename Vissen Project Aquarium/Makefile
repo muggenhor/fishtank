@@ -1,6 +1,6 @@
 CFLAGS=-g3 -Wall -Wextra
 CXXFLAGS=-g3 -Wall -Wextra
-CPPFLAGS=-I/usr/include/eigen2
+CPPFLAGS=-I/usr/include/eigen2 -DDEBUG_MODELS=1
 LDFLAGS=
 
 # Enable profiling

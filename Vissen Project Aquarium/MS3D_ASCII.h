@@ -62,6 +62,9 @@ class Shape
 		//bool saveToFile( const char *filename );
 		void render(const transform_function& function = transform_function()) const;
 
+		size_t vertex_count() const;
+		size_t index_count() const;
+
 		Eigen::Vector3f bb_l, bb_h;
 
 	private:

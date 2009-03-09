@@ -130,6 +130,16 @@ void Shape::render(const transform_function& function) const
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
+size_t Shape::vertex_count() const
+{
+	return vertices.size();
+}
+
+size_t Shape::index_count() const
+{
+	return indices.size();
+}
+
 bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transform)
 {
 	Eigen::Transform3f normals_transform;
@@ -509,6 +519,21 @@ bool Model::loadFromMs3dAsciiFile(const char* filename, const Eigen::Matrix4f& t
 			}
 		}
 	}
+
+#ifdef DEBUG_MODELS
+	size_t vertices = 0, indices = 0;
+	cerr << "Finished loading model " << filename << '\n';
+	foreach (const Shape& shape, shapes)
+	{
+		cerr << shape.vertex_count() << " vertices\n"
+		     << shape.index_count() << " indices\n";
+		vertices += shape.vertex_count();
+		indices += shape.index_count();
+	}
+	cerr << "------------------------\n"
+	     << vertices << " vertices\n"
+	     << indices << " indices\n\n";
+#endif
 
 	return true;
 }
