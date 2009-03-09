@@ -21,6 +21,12 @@
 #include "imagereceiver.h"
 #include "glexcept.hpp"
 
+#ifdef WIN32
+# include <windows.h>
+#else
+# include <unistd.h>
+#endif
+
 using namespace std;
 
 //scherm resolutie
@@ -476,6 +482,12 @@ int main()
 			//TestDrawAquarium();
 
 			glfwSwapBuffers();
+			/// @TODO Make the time to sleep dynamic to maintain a steady framerate
+#ifdef WIN32
+			Sleep(1);
+#else
+			usleep(1000);
+#endif
 		}
 
 		return 0;
