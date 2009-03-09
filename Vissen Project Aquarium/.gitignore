@@ -1,8 +1,26 @@
+/.deps
 /Debug
+/Makefile
+/Makefile.in
 /Release
 /Rotating man.ncb
 /Rotating man.vcproj.*
 /Vissen Project.exe
 /Vissen Project.ncb
 /VissenProject
+/aclocal.m4
+/autom4te.cache
+/config.guess
+/config.h
+/config.h.in
+/config.log
+/config.status
+/config.sub
+/configure
+/depcomp
+/fishtank
+/fishtank.exe
+/install-sh
+/missing
 /msvcr90.dll
+/stamp-h1
