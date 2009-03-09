@@ -8,11 +8,15 @@
 
 #define foreach BOOST_FOREACH
 
+boost::shared_ptr<WiggleTransformation::WiggleShaderProgram> WiggleTransformation::shader;
+
 WiggleTransformation::WiggleTransformation()
 {
 	try
 	{
-		shader.reset(new WiggleShaderProgram);
+		// Create the shader if it hasn't been created yet
+		if (!shader)
+			shader.reset(new WiggleShaderProgram);
 	}
 	catch (const OpenGL::missing_capabilities& e)
 	{

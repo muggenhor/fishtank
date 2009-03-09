@@ -53,7 +53,7 @@ class WiggleTransformation
 		float           _i_turn;
 		float           a, b, c, p, q, s_a;
 
-		boost::shared_ptr<WiggleShaderProgram> shader;
+		static boost::shared_ptr<WiggleShaderProgram> shader;
 };
 
 #endif // __INCLUDED_WIGGLE_HPP__
