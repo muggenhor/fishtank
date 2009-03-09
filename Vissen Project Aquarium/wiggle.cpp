@@ -18,6 +18,12 @@ WiggleTransformation::WiggleTransformation()
 	{
 		std::cerr << "Failed to create WiggleShaderProgram due to missing OpenGL capabilities: " << e.what() << "\n";
 	}
+	catch (const OpenGL::shader_source_error& e)
+	{
+		std::cerr << "Failed to compile, link or validate the WiggleShaderProgram: " << e.what() << "\n"
+		          << "Info log contains:\n"
+		          << e.infoLog() << "\n";
+	}
 }
 
 void WiggleTransformation::update(const Eigen::Vector3f& wiggle_freq,
