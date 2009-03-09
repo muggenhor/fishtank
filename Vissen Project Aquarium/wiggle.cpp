@@ -141,6 +141,7 @@ WiggleTransformation::WiggleShaderProgram::WiggleShaderProgram()
 
 	attachShader(_shader);
 	link();
+	validate();
 	_wiggle_freq = getUniformLocation("wiggle_freq");
 	_wiggle_dir = getUniformLocation("wiggle_dir");
 	_wiggle_phase = getUniformLocation("wiggle_phase");
