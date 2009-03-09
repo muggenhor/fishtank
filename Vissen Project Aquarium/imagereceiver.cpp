@@ -11,7 +11,7 @@
 #include <iostream>
 
 #ifdef WIN32
-#include "WinSock2.h"
+#include <winsock2.h>
 #include <io.h>
 #include <ws2tcpip.h>
 
