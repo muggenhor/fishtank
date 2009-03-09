@@ -62,15 +62,16 @@ class Shape
 		//bool saveToFile( const char *filename );
 		void render(const transform_function& function = transform_function()) const;
 
-		std::vector<Eigen::Vector3f>    vertices;
-		std::vector<Eigen::Vector2f>    texcoords;
-		std::vector<Eigen::Vector3f>    normals;
-		std::vector<unsigned int>       indices;
-
 		Eigen::Vector3f bb_l, bb_h;
 
 	private:
 		void AddPoint(const Eigen::Vector3f& vertex, const Eigen::Vector2f& texcoord, const Eigen::Vector3f& normal);
+
+	private:
+		std::vector<Eigen::Vector3f>    vertices;
+		std::vector<Eigen::Vector2f>    texcoords;
+		std::vector<Eigen::Vector3f>    normals;
+		std::vector<unsigned int>       indices;
 };
 
 
