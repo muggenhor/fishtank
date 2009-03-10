@@ -28,12 +28,12 @@
 #include "vertexarray.hpp"
 #include "texcoordarray.hpp"
 
-template <typename IndexIntegerType, typename VertexCoordType, typename TexCoordType, std::size_t VertexCoordinateCount = 3, std::size_t TexCoordCount = 2>
+template <typename IndexIntegerType, typename VertexCoordType, typename TexCoordType, bool supportVertexVBOs = true, bool supportTexVBOs = true, std::size_t VertexCoordinateCount = 3, std::size_t TexCoordCount = 2>
 class TriangleArray
 {
     public:
-        typedef typename VertexArray<VertexCoordType, VertexCoordinateCount>::value_type vertex_type;
-        typedef typename TexCoordArray<TexCoordType, TexCoordCount>::value_type texcoord_type;
+        typedef typename VertexArray<VertexCoordType, VertexCoordinateCount, supportVertexVBOs>::value_type vertex_type;
+        typedef typename TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs>::value_type texcoord_type;
 
         void draw() const
         {
@@ -67,6 +67,16 @@ class TriangleArray
             // Disable the GL_VERTEX_ARRAY client state to prevent strange behaviour
             glDisableClientState(GL_VERTEX_ARRAY);
             glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        }
+
+        bool HasVertexVBO() const
+        {
+            return _VertexArray.HasVBO();
+        }
+
+        bool HasTexVBO() const
+        {
+            return _TexCoordArray.HasVBO();
         }
 
         std::size_t uniqueVertices() const

@@ -38,6 +38,11 @@ class AbstractArray<CoordType, CoordinateCount, false>
          */
         virtual ~AbstractArray() {}
 
+        bool HasVBO() const
+        {
+            return false;
+        }
+
         /** Passes all of this AbstractArray's data to the OpenGL API.
          */
         void draw() const
@@ -104,6 +109,11 @@ class AbstractArray<CoordType, CoordinateCount, true>
          *  destructor as well.
          */
         virtual ~AbstractArray() {}
+
+        bool HasVBO() const
+        {
+            return _vbo != 0;
+        }
 
         void UseVBO()
         {
