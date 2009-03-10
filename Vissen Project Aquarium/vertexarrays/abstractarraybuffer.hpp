@@ -23,9 +23,7 @@
 #include <vector>
 #include <eigen/vector.h>
 #include <cassert>
-#include <stdexcept>
-#include <GLee.h>
-#include <GL/gl.h>
+#include "vertexbuffer.hpp"
 
 template <typename CoordType, std::size_t CoordinateCount>
 class AbstractArrayBuffer
@@ -34,120 +32,16 @@ class AbstractArrayBuffer
         typedef AbstractArrayBuffer<CoordType, CoordinateCount> this_type;
         typedef Eigen::Vector<CoordType, CoordinateCount>       value_type;
 
-        /** Used to indicate how often this VBO will be updated. This is a
-         *  performance hint.
-         */
-        enum buffer_usage
-        {
-            /** The data stored in the buffer object is unlikely to change and
-             *  will be used possibly many times as a source for drawing. This
-             *  hint tells the implementation to put the data somewhere it's
-             *  quick to draw from, but probably not quick to update.
-             */
-            static_draw    = GL_STATIC_DRAW,
-
-            /** The data stored in the buffer object is likely to change
-             *  frequently but is likely to be used as a source for drawing
-             *  several times between changes. This hint tells the
-             *  implementation to put the data somewhere it won't be too painful
-             *  to update once in a while.
-             */
-            dynamic_draw   = GL_DYNAMIC_DRAW,
-
-            /** The data stored in the buffer object is likely to change
-             *  frequently and will be used only once (or at least very few
-             *  times) in between changes. This hint tells the implementation
-             *  that you have time-sensitive data such as animated geometry that
-             *  will be used once and then replaced. It is crucial that data be
-             *  placed somewhere quick to update, even at the expense of faster
-             *  rendering.
-             */
-            streaming_draw = GL_STREAM_DRAW,
-        };
-
         AbstractArrayBuffer() :
             _data_updated(true),
-            _vbo_created(false),
             _vbo_updated(false)
         {
-            assert(supported() && "This version of OpenGL doesn't support VBOs!");
-            if (!supported())
-                throw std::domain_error("No OpenGL VBO extensions available! AbstractArrayBuffers shouldn't be used!");
-
-            // Reset the current error code
-            glGetError();
-
-            // Generate our vertex buffer object
-            if (GLEE_VERSION_1_5)
-                glGenBuffers(1, &_vbo);
-            else if (GLEE_ARB_vertex_buffer_object)
-                glGenBuffersARB(1, &_vbo);
-
-            // Check to see whether buffer generation was succesful
-            const GLenum error = glGetError();
-            switch (error)
-            {
-                case GL_NO_ERROR:
-                    // No error occurred
-                    break;
-
-                case GL_INVALID_VALUE:
-                    // Should only happen if the first parameter to glGenBuffers
-                    // is negative.
-                    assert(!"Negative buffer count provided for glGenBuffers!?");
-                    break;
-
-                case GL_INVALID_OPERATION:
-                    // This error is generated if glGenBuffers is executed
-                    // between the execution of glBegin and the corresponding
-                    // execution of glEnd.
-                    // So this would be a programming error by the client
-                    // programmer, so assert() and throw.
-                    assert(!"Construction of AbstractArrayBuffer must not occur between a glBegin and glEnd call!");
-                    throw std::domain_error("Construction of AbstractArrayBuffer occurred between a glBegin and glEnd call, this should _not_ be done!");
-                    break;
-            }
         }
 
         /** Virtual destructor to make sure that all subclasses have a virtual
          *  destructor as well.
          */
-        virtual ~AbstractArrayBuffer()
-        {
-            // Reset the current error code
-            glGetError();
-
-            // Delete our vertex buffer object
-            if (GLEE_VERSION_1_5)
-                glDeleteBuffers(1, &_vbo);
-            else if (GLEE_ARB_vertex_buffer_object)
-                glDeleteBuffersARB(1, &_vbo);
-
-            // Check to see whether texture destruction was successful
-            GLenum error = glGetError();
-            switch (error)
-            {
-                case GL_NO_ERROR:
-                    // No error occurred
-                    break;
-
-                case GL_INVALID_VALUE:
-                    // Should only happen if the first parameter to
-                    // glDeleteBuffers is negative.
-                    assert(!"Negative texture count provided for glDeleteBuffers!?");
-                    break;
-
-                case GL_INVALID_OPERATION:
-                    // This error is generated if glDeleteBuffers is executed
-                    // between the execution of glBegin and the corresponding
-                    // execution of glEnd.
-                    // So this would be a programming error by the client
-                    // programmer, so assert() and throw.
-                    assert(!"Destruction of AbstractArrayBuffer must not occur between a glBegin and glEnd call! (So make sure to call glEnd _before_ leaving the scope of this AbstractArrayBuffer).");
-                    throw std::domain_error("Destruction of AbstractArrayBuffer occurred between a glBegin and glEnd call, this should _not_ be done!");
-                    break;
-            }
-        }
+        virtual ~AbstractArrayBuffer() {}
 
         /** Passes all of this AbstractArrayBuffer's data to the OpenGL API.
          */
@@ -155,9 +49,9 @@ class AbstractArrayBuffer
         {
             if (_vbo_updated)
             {
-                bind();
+                _vbo.bind();
                 glPassPointer(0);
-                unbind();
+                _vbo.unbind();
             }
             else if (_data_updated)
             {
@@ -248,6 +142,7 @@ class AbstractArrayBuffer
             _data.swap(tmp);
 
             _data_updated = true;
+            _vbo_updated = false;
 
             // Update the VBO right away (to relinquish the VRAM memory
             // associated with it).
@@ -260,7 +155,7 @@ class AbstractArrayBuffer
          *                 This will be slower to update, but will waste less
          *                 video RAM.
          */
-        void updateBuffer(const buffer_usage usage = static_draw, const bool realloc = false)
+        void updateBuffer(const VertexBufferObject::buffer_usage usage = VertexBufferObject::STATIC_DRAW, const bool realloc = false)
         {
             assert(_data_updated || _vbo_updated);
 
@@ -273,55 +168,23 @@ class AbstractArrayBuffer
             if (_vbo_updated)
                 return;
 
-            bind();
-
             // Check whether we need to (re)allocate our buffer (by using
-            // glBufferData instead of glBufferSubData).
-            const bool allocate_buffer = !_vbo_created
-                                      || (_vbo_size != _data.size() && realloc)
-                                      || _vbo_size  < _data.size();
+            // VertexBufferObject::bufferData instead of
+            // VertexBufferObject::bufferSubData).
+            const bool allocate_buffer = (_vbo.size() != _data.size() && realloc)
+                                      || _vbo.size()  < _data.size();
 
-            if (GLEE_VERSION_1_5)
+            if (allocate_buffer)
             {
-                if (allocate_buffer)
-                {
-                    glBufferData(GL_ARRAY_BUFFER, _data.size() * sizeof(value_type), &_data[0], usage);
-                    _vbo_size = _data.size();
-                }
-                else
-                {
-                    glBufferSubData(GL_ARRAY_BUFFER, 0, _data.size(), &_data[0]);
-                }
-            }
-            else if (GLEE_ARB_vertex_buffer_object)
-            {
-                if (allocate_buffer)
-                {
-                    glBufferDataARB(GL_ARRAY_BUFFER, _data.size() * sizeof(value_type), &_data[0], usage);
-                    _vbo_size = _data.size();
-                }
-                else
-                {
-                    glBufferSubDataARB(GL_ARRAY_BUFFER, 0, _data.size(), &_data[0]);
-                }
+                _vbo.bufferData(_data.size() * sizeof(value_type), &_data[0], usage);
             }
             else
-                assert(!"No OpenGL VBO extensions available ? The constructor should have thrown already!");
+            {
+                _vbo.bufferSubData(0, _data.size() * sizeof(value_type), &_data[0]);
+            }
 
-            unbind();
-
-            _vbo_created = true;
             _vbo_updated = true;
-        }
-
-        /** Will unbind the currently bound (if any) Vertex Buffer Object.
-         */
-        static void unbind()
-        {
-            if (GLEE_VERSION_1_5)
-                glBindBuffer(GL_ARRAY_BUFFER, 0);
-            else if (GLEE_ARB_vertex_buffer_object)
-                glBindBufferARB(GL_ARRAY_BUFFER, 0);
+            _vbo_size = _data.size();
         }
 
         /** Checks whether AbstractArrayBuffer is supported on this OpenGL
@@ -331,7 +194,7 @@ class AbstractArrayBuffer
          */
         static bool supported()
         {
-            return GLEE_VERSION_1_5 || GLEE_ARB_vertex_buffer_object;
+            return VertexBufferObject::is_supported();
         }
 
     protected:
@@ -351,31 +214,11 @@ class AbstractArrayBuffer
             // Make sure all data fits into our client memory buffer
             _data.resize(_vbo_size);
 
-            // Bind our buffer so we can read from it
-            bind();
-
             // Retrieve all elements from video memory and dump it into our own
             // client memory.
-            if (GLEE_VERSION_1_5)
-                glGetBufferSubData(GL_ARRAY_BUFFER, 0, _vbo_size, &_data[0]);
-            else if (GLEE_ARB_vertex_buffer_object)
-                glGetBufferSubDataARB(GL_ARRAY_BUFFER, 0, _vbo_size, &_data[0]);
-            else
-                assert(!"No OpenGL VBO extensions available ? The constructor should have thrown already!");
-
-            unbind();
+            _vbo.getSubData(0, _vbo_size, &_data[0]);
 
             _data_updated = true;
-        }
-
-        void bind() const
-        {
-            if (GLEE_VERSION_1_5)
-                glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-            else if (GLEE_ARB_vertex_buffer_object)
-                glBindBufferARB(GL_ARRAY_BUFFER, _vbo);
-            else
-                assert(!"No OpenGL VBO extensions available ? The constructor should have thrown already!");
         }
 
     private:
@@ -383,8 +226,7 @@ class AbstractArrayBuffer
          */
         mutable std::vector<value_type> _data;
         mutable bool                    _data_updated;
-        GLuint                          _vbo;
-        bool                            _vbo_created;
+        VertexBufferObject              _vbo;
         bool                            _vbo_updated;
         std::size_t                     _vbo_size;
 };

@@ -60,6 +60,8 @@ bool VertexBufferObject::is_supported()
 VertexBufferObject::VertexBufferObject() :
     _size(0)
 {
+    assert(is_supported() && "This version of OpenGL doesn't support VBOs!");
+
     // Reset the current error code
     glGetError();
 
