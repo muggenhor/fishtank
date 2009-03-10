@@ -116,7 +116,7 @@ class AbstractArray<CoordType, CoordinateCount, true> : public AbstractArrayBase
             {
                 if (!_vbo_updated)
                 {
-                    _vbo->bufferData(_data.size() * sizeof(value_type), &_data[0]);
+                    _vbo->bufferData(this->size() * sizeof(value_type), &(*this)[0]);
                 }
 
                 _vbo->bind();
