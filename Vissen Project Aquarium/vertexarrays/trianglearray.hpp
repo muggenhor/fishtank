@@ -27,6 +27,7 @@
 #include "gl_type_constants.hpp"
 #include "vertexarray.hpp"
 #include "texcoordarray.hpp"
+#include <cassert>
 
 template <typename IndexIntegerType, typename VertexCoordType, typename TexCoordType, bool supportVertexVBOs = true, bool supportTexVBOs = true, std::size_t VertexCoordinateCount = 3, std::size_t TexCoordCount = 2>
 class TriangleArray
@@ -74,9 +75,25 @@ class TriangleArray
             return _VertexArray.HasVBO();
         }
 
+        void UseVertexVBO(bool const vbo = true)
+        {
+            if (vbo)
+                _VertexArray.UseVBO();
+            else
+                _VertexArray.UseVA();
+        }
+
         bool HasTexVBO() const
         {
             return _TexCoordArray.HasVBO();
+        }
+
+        void UseTexVBO(bool const vbo = false)
+        {
+            if (vbo)
+                _TexCoordArray.UseVBO();
+            else
+                _TexCoordArray.UseVA();
         }
 
         std::size_t uniqueVertices() const
@@ -120,8 +137,8 @@ class TriangleArray
             }
 
             // If we found no instance of this vertex then we'll obviously need to add it
-            _VertexArray.push_back(vertex);
-            _TexCoordArray.push_back(texcoord);
+            index = _VertexArray.push_back(vertex);
+            assert(index == _TexCoordArray.push_back(texcoord));
             _indices.push_back(index);
         }
 
