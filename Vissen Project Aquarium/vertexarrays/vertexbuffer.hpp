@@ -21,9 +21,7 @@
 #define __INCLUDED_VERTEXBUFFER_HPP__
 
 #include <GL/gl.h>
-#include "abstractarray.hpp"
 #include <stdexcept>
-#include <string>
 
 class GLRuntimeError : public std::runtime_error
 {
