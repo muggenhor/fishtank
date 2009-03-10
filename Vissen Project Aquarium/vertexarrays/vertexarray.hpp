@@ -29,7 +29,7 @@ template <typename CoordType, std::size_t CoordinateCount, bool supportVBO = tru
 class VertexArray : public AbstractArray<CoordType, CoordinateCount, supportVBO>
 {
     public:
-        typedef typename AbstractArray<CoordType, CoordinateCount>::value_type value_type;
+        typedef typename AbstractArray<CoordType, CoordinateCount, supportVBO>::value_type value_type;
 
     protected:
         virtual void glPassPointer(value_type const * const data) const
