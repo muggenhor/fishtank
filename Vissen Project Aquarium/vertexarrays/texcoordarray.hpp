@@ -25,8 +25,8 @@
 #include <GL/gl.h>
 #include "gl_type_constants.hpp"
 
-template <typename CoordType, std::size_t CoordinateCount>
-class TexCoordArray : public AbstractArray<CoordType, CoordinateCount>
+template <typename CoordType, std::size_t CoordinateCount, bool supportVBO = true>
+class TexCoordArray : public AbstractArray<CoordType, CoordinateCount, supportVBO>
 {
     public:
         typedef typename AbstractArray<CoordType, CoordinateCount>::value_type value_type;
