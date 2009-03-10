@@ -21,6 +21,21 @@
 #define __INCLUDED_VERTEXBUFFER_HPP__
 
 #include <GL/gl.h>
+#include "abstractarray.hpp"
+#include <stdexcept>
+#include <string>
+
+class GLRuntimeError : public std::runtime_error
+{
+    public:
+        explicit GLRuntimeError(const std::string& what);
+};
+
+class GLUnsupported : public GLRuntimeError
+{
+    public:
+        explicit GLUnsupported(const std::string& what);
+};
 
 class VertexBufferObject
 {
@@ -33,6 +48,8 @@ class VertexBufferObject
         };
 
     public:
+        static bool is_supported();
+
         VertexBufferObject();
         ~VertexBufferObject();
 

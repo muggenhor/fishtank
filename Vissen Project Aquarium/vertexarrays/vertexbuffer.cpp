@@ -21,15 +21,30 @@
 #include "vertexbuffer.hpp"
 #include <cassert>
 
+GLRuntimeError::GLRuntimeError(const std::string& what) :
+    std::runtime_error(what)
+{
+}
+
+GLUnsupported::GLUnsupported(const std::string& what) :
+    GLRuntimeError(what)
+{
+}
+
+bool VertexBufferObject::is_supported()
+{
+    return GLEE_VERSION_1_5
+        || GLEE_ARB_vertex_buffer_object;
+}
+
 VertexBufferObject::VertexBufferObject()
 {
     if (GLEE_VERSION_1_5)
         glGenBuffers(1, &_vbo);
     else if (GLEE_ARB_vertex_buffer_object)
         glGenBuffersARB(1, &_vbo);
-    /*
     else
-        throw something; */
+        throw GLUnsupported("Neither OpenGL 1.5 nor the ARB_vertex_buffer_object extension are supported.");
 }
 
 VertexBufferObject::~VertexBufferObject()
