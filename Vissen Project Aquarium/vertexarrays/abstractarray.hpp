@@ -33,7 +33,9 @@ class AbstractArray<CoordType, CoordinateCount, false>
 {
     public:
         typedef Eigen::Vector<CoordType, CoordinateCount> value_type;
+        typedef Eigen::Vector<CoordType, CoordinateCount + 1> trans_value_type;
         typedef Eigen::Matrix<CoordType, CoordinateCount> matrix_type;
+        typedef Eigen::Matrix<CoordType, CoordinateCount + 1> trans_matrix_type;
 
         /** Virtual destructor to make sure that all subclasses have a virtual
          *  destructor as well.
@@ -103,6 +105,36 @@ class AbstractArray<CoordType, CoordinateCount, false>
             }
         }
 
+        void leftmultiply(const trans_matrix_type& m)
+        {
+            trans_value_type r;
+
+            // Loop over all vertices and left-multiply them by the matrix we're given
+            for (typename std::vector<value_type>::iterator
+                 i  = _data.begin();
+                 i != _data.end();
+                 ++i)
+            {
+                trans_value_type vTmp;
+
+                for (unsigned int j = 0; j < CoordinateCount; ++j)
+                {
+                    vTmp[j] = (*i)[j];
+                }
+
+                vTmp[CoordinateCount] = static_cast<CoordType>(1);
+
+                // Compute the product vector of (vector *i) * (matrix m) and store it in (vector r).
+                m.leftmultiply(vTmp, &r);
+
+                // Store the result back in our original (vector *i)
+                for (unsigned int j = 0; j < CoordinateCount; ++j)
+                {
+                    (*i)[j] = r[j];
+                }
+            }
+        }
+
         void multiply(const matrix_type& m)
         {
             value_type r;
@@ -121,6 +153,36 @@ class AbstractArray<CoordType, CoordinateCount, false>
             }
         }
 
+        void multiply(const trans_matrix_type& m)
+        {
+            trans_value_type r;
+
+            // Loop over all vertices and multiply them by the matrix we're given
+            for (typename std::vector<value_type>::iterator
+                 i  = _data.begin();
+                 i != _data.end();
+                 ++i)
+            {
+                trans_value_type vTmp;
+
+                for (unsigned int j = 0; j < CoordinateCount; ++j)
+                {
+                    vTmp[j] = (*i)[j];
+                }
+
+                vTmp[CoordinateCount] = static_cast<CoordType>(1);
+
+                // Compute the product vector of (matrix m) * (vector *i) and store it in (vector r).
+                m.multiply(vTmp, &r);
+
+                // Store the result back in our original (vector *i)
+                for (unsigned int j = 0; j < CoordinateCount; ++j)
+                {
+                    (*i)[j] = r[j];
+                }
+            }
+        }
+
     protected:
         virtual void glPassPointer(value_type const * data) const = 0;
 
@@ -135,7 +197,9 @@ class AbstractArray<CoordType, CoordinateCount, true>
 {
     public:
         typedef Eigen::Vector<CoordType, CoordinateCount> value_type;
+        typedef Eigen::Vector<CoordType, CoordinateCount + 1> trans_value_type;
         typedef Eigen::Matrix<CoordType, CoordinateCount> matrix_type;
+        typedef Eigen::Matrix<CoordType, CoordinateCount + 1> trans_matrix_type;
 
         AbstractArray() :
             _vbo(VertexBufferObject::is_supported() ? new VertexBufferObject : 0),
@@ -266,6 +330,38 @@ class AbstractArray<CoordType, CoordinateCount, true>
             _vbo_updated = false;
         }
 
+        void leftmultiply(const trans_matrix_type& m)
+        {
+            trans_value_type r;
+
+            // Loop over all vertices and left-multiply them by the matrix we're given
+            for (typename std::vector<value_type>::iterator
+                 i  = _data.begin();
+                 i != _data.end();
+                 ++i)
+            {
+                trans_value_type vTmp;
+
+                for (unsigned int j = 0; j < CoordinateCount; ++j)
+                {
+                    vTmp[j] = (*i)[j];
+                }
+
+                vTmp[CoordinateCount] = static_cast<CoordType>(1);
+
+                // Compute the product vector of (vector *i) * (matrix m) and store it in (vector r).
+                m.leftmultiply(vTmp, &r);
+
+                // Store the result back in our original (vector *i)
+                for (unsigned int j = 0; j < CoordinateCount; ++j)
+                {
+                    (*i)[j] = r[j];
+                }
+            }
+
+            _vbo_updated = false;
+        }
+
         void multiply(const matrix_type& m)
         {
             value_type r;
@@ -281,6 +377,38 @@ class AbstractArray<CoordType, CoordinateCount, true>
 
                 // Store the result back in our original (vector *i)
                 *i = r;
+            }
+
+            _vbo_updated = false;
+        }
+
+        void multiply(const trans_matrix_type& m)
+        {
+            trans_value_type r;
+
+            // Loop over all vertices and multiply them by the matrix we're given
+            for (typename std::vector<value_type>::iterator
+                 i  = _data.begin();
+                 i != _data.end();
+                 ++i)
+            {
+                trans_value_type vTmp;
+
+                for (unsigned int j = 0; j < CoordinateCount; ++j)
+                {
+                    vTmp[j] = (*i)[j];
+                }
+
+                vTmp[CoordinateCount] = static_cast<CoordType>(1);
+
+                // Compute the product vector of (matrix m) * (vector *i) and store it in (vector r).
+                m.multiply(vTmp, &r);
+
+                // Store the result back in our original (vector *i)
+                for (unsigned int j = 0; j < CoordinateCount; ++j)
+                {
+                    (*i)[j] = r[j];
+                }
             }
 
             _vbo_updated = false;

@@ -36,6 +36,8 @@ class TriangleArray
         typedef typename TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs>::value_type                     texcoord_type;
         typedef typename VertexArray<VertexCoordType, VertexCoordinateCount, supportVertexVBOs>::matrix_type        vertex_matrix_type;
         typedef typename TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs>::matrix_type                    texcoord_matrix_type;
+        typedef typename VertexArray<VertexCoordType, VertexCoordinateCount, supportVertexVBOs>::trans_matrix_type  vertex_trans_matrix_type;
+        typedef typename TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs>::trans_matrix_type              texcoord_trans_matrix_type;
 
         void draw() const
         {
@@ -82,7 +84,17 @@ class TriangleArray
             _VertexArray.leftmultiply(m);
         }
 
+        void ModelViewLeftMult(vertex_trans_matrix_type const& m)
+        {
+            _VertexArray.leftmultiply(m);
+        }
+
         void ModelViewMult(vertex_matrix_type const& m)
+        {
+            _VertexArray.multiply(m);
+        }
+
+        void ModelViewMult(vertex_trans_matrix_type const& m)
         {
             _VertexArray.multiply(m);
         }
@@ -92,7 +104,17 @@ class TriangleArray
             _TexCoordArray.leftmultiply(m);
         }
 
+        void TextureLeftMult(texcoord_trans_matrix_type const& m)
+        {
+            _TexCoordArray.leftmultiply(m);
+        }
+
         void TextureMult(texcoord_matrix_type const& m)
+        {
+            _TexCoordArray.multiply(m);
+        }
+
+        void TextureMult(texcoord_trans_matrix_type const& m)
         {
             _TexCoordArray.multiply(m);
         }

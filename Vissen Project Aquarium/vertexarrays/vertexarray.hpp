@@ -31,6 +31,7 @@ class VertexArray : public AbstractArray<CoordType, CoordinateCount, supportVBO>
     public:
         typedef typename AbstractArray<CoordType, CoordinateCount, supportVBO>::value_type value_type;
         typedef typename AbstractArray<CoordType, CoordinateCount, supportVBO>::matrix_type matrix_type;
+        typedef typename AbstractArray<CoordType, CoordinateCount, supportVBO>::trans_matrix_type trans_matrix_type;
 
     protected:
         virtual void glPassPointer(value_type const * const data) const
