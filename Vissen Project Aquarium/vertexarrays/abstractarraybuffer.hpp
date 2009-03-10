@@ -38,6 +38,14 @@ class AbstractArrayBuffer
         {
         }
 
+        bool HasVBO() const
+        {
+            return true;
+        }
+
+        void UseVBO() {}
+        void UseVA()  {}
+
         /** Virtual destructor to make sure that all subclasses have a virtual
          *  destructor as well.
          */
