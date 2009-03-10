@@ -190,7 +190,7 @@ class AbstractArrayBuffer
         {
             // Make sure that we have all our data in client memory.
             if (!_data_updated)
-                const_cast<this_type*>(this)->updateClientMemory();
+                updateClientMemory();
 
             return _data[index];
         }
@@ -199,7 +199,7 @@ class AbstractArrayBuffer
         {
             // Make sure that we have all our data in client memory.
             if (!_data_updated)
-                const_cast<this_type*>(this)->updateClientMemory();
+                updateClientMemory();
 
             return _data.at(index);
         }
@@ -319,7 +319,7 @@ class AbstractArrayBuffer
         virtual void glPassPointer(value_type const * data) const = 0;
 
     private:
-        void updateClientMemory()
+        void updateClientMemory() const
         {
             assert(_data_updated || _vbo_updated);
 
@@ -362,12 +362,12 @@ class AbstractArrayBuffer
     private:
         /** Holds all data.
          */
-        std::vector<value_type> _data;
-        bool                    _data_updated;
-        GLuint                  _vbo;
-        bool                    _vbo_created;
-        bool                    _vbo_updated;
-        std::size_t             _vbo_size;
+        mutable std::vector<value_type> _data;
+        mutable bool                    _data_updated;
+        GLuint                          _vbo;
+        bool                            _vbo_created;
+        bool                            _vbo_updated;
+        std::size_t                     _vbo_size;
 };
 
 #endif // __INCLUDED_ABSTRACTARRAYBUFFER_HPP__
