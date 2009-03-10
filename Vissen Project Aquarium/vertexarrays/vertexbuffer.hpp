@@ -102,6 +102,7 @@ class VertexBufferObject
         static void unbind();
 
         void bufferData(ptrdiff_t size, void const * const data, buffer_usage method = STATIC_DRAW);
+        void bufferSubData(ptrdiff_t offset, ptrdiff_t size, void const * const data);
 
         std::size_t size() const;
 
