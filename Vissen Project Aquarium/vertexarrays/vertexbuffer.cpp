@@ -162,7 +162,7 @@ void VertexBufferObject::unbind()
          * unbind a VBO is not a problem */;
 }
 
-void VertexBufferObject::bufferData(ptrdiff_t size, void const * const data, buffer_usage method)
+void VertexBufferObject::bufferData(ptrdiff_t const size, void const * const data, buffer_usage const method)
 {
     // First bind the buffer
     bind();
@@ -231,8 +231,8 @@ void VertexBufferObject::bufferData(ptrdiff_t size, void const * const data, buf
             // @NOTE This error can occur also when the reserved buffer object
             //       `0' is bound to `target`, which would mean something went
             //       wrong during bind().
-            assert(!"Construction of VertexBufferObject must not occur between a glBegin and glEnd call!");
-            throw GLDrawSection("Construction of VertexBufferObject occurred between a glBegin and glEnd call, this should _not_ be done!");
+            assert(!"Calling of VertexBufferObject::bufferData must not occur between a glBegin and glEnd call!");
+            throw GLDrawSection("Call to VertexBufferObject::bufferData occurred between a glBegin and glEnd call, this should _not_ be done!");
             break;
 
         case GL_OUT_OF_MEMORY:
@@ -249,7 +249,7 @@ void VertexBufferObject::bufferData(ptrdiff_t size, void const * const data, buf
     unbind();
 }
 
-void VertexBufferObject::bufferSubData(ptrdiff_t offset, ptrdiff_t size, void const * const data)
+void VertexBufferObject::bufferSubData(ptrdiff_t const offset, ptrdiff_t const size, void const * const data)
 {
     // First bind the buffer
     bind();
@@ -316,15 +316,85 @@ void VertexBufferObject::bufferSubData(ptrdiff_t offset, ptrdiff_t size, void co
             // @NOTE This error can occur also when the reserved buffer object
             //       `0' is bound to `target`, which would mean something went
             //       wrong during bind().
-            assert(!"Construction of VertexBufferObject must not occur between a glBegin and glEnd call!");
-            throw GLDrawSection("Construction of VertexBufferObject occurred between a glBegin and glEnd call, this should _not_ be done!");
+            assert(!"Calling of VertexBufferObject::bufferSubData must not occur between a glBegin and glEnd call!");
+            throw GLDrawSection("Call to VertexBufferObject::bufferSubData occurred between a glBegin and glEnd call, this should _not_ be done!");
+            break;
+    }
+
+    // Unbind the buffer again
+    unbind();
+}
+
+void VertexBufferObject::getSubData(ptrdiff_t const offset, ptrdiff_t const size, void * const data) const
+{
+    // First bind the buffer
+    bind();
+
+    // Reset the current error code
+    glGetError();
+
+    // Retrieve the data from the buffer
+    if (GLEE_VERSION_1_5)
+        glGetBufferSubData(GL_ARRAY_BUFFER, offset, size, data);
+    else if (GLEE_ARB_vertex_buffer_object)
+        glGetBufferSubDataARB(GL_ARRAY_BUFFER, offset, size, data);
+    else
+        /* We simply shouldn't ever get here. As we shouldn't have been
+         * able to create a VBO in the first place, when there are no
+         * VBO functions available. */
+        assert(!"VBO created without VBO functions");
+
+    // Check to see whether copying of data from the buffer was succesful
+    const GLenum error = glGetError();
+    switch (error)
+    {
+        case GL_NO_ERROR:
+            // No error occurred
             break;
 
-        case GL_OUT_OF_MEMORY:
-            // When this error occurs it'll mean that the OpenGL implementation
-            // couldn't allocate memory on the video device, nor in main
-            // memory. Thus throw a bad_alloc.
-            throw std::bad_alloc();
+        case GL_INVALID_ENUM:
+            if (GLEE_VERSION_2_1)
+                // Targets GL_PIXEL_PACK_BUFFER and GL_PIXEL_UNPACK_BUFFER
+                // are available if the GL version is 2.1 or greater.
+                assert(!"`target' for glGetBufferSubData is none of GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_PIXEL_PACK_BUFFER or GL_PIXEL_UNPACK_BUFFER!");
+            else
+                assert(!"`target' for glGetBufferSubData is none of GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER!");
+            break;
+
+        case GL_INVALID_VALUE:
+            // Should only happen if the offset or size parameter is negative,
+            // or if together they define a region of memory that extends
+            // beyond the buffer object's allocated data store. This would be a
+            // programming error by the client programmer, so assert() and
+            // throw as well.
+            if (offset < 0)
+            {
+                assert(!"Negative buffer offset provided for glGetBufferSubData");
+                throw GLInvalidValue("Negative `offset' parameter passed to function VertexBufferObject::getSubData");
+            }
+            else if (size < 0)
+            {
+                assert(!"Negative data size provided for glGetBufferSubData");
+                throw GLInvalidValue("Negative `size' parameter passed to function VertexBufferObject::getSubData");
+            }
+            else
+            {
+                assert(!"offset and size define a region of memory that extends beyond the buffer object's data store!");
+                throw GLInvalidValue("`offset` and `size` parameters passed to function VertexBufferObject::bufferSubData define a region that extends beyond the VertexBufferObject's buffer size");
+            }
+            break;
+
+        case GL_INVALID_OPERATION:
+            // This error is generated if glGenBuffers is executed
+            // between the execution of glBegin and the corresponding
+            // execution of glEnd.
+            // So this would be a programming error by the client
+            // programmer, so assert() and throw.
+            // @NOTE This error can occur also when the reserved buffer object
+            //       `0' is bound to `target`, which would mean something went
+            //       wrong during bind().
+            assert(!"Calling of VertexBufferObject::getSubData must not occur between a glBegin and glEnd call!");
+            throw GLDrawSection("Call to VertexBufferObject::getSubData occurred between a glBegin and glEnd call, this should _not_ be done!");
             break;
     }
 
