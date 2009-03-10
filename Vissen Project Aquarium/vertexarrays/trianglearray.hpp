@@ -4,10 +4,17 @@
 #include <vector>
 #include <boost/static_assert.hpp>
 #include <eigen/vector.h>
+#include <windows.h>
+#include <winnt.h>
 #include <GL/gl.h>
+#include <GL/glext.h>
+#include <GL/wglext.h>
 #include "gl_type_constants.hpp"
 #include "vertexarray.hpp"
 #include "texcoordarray.hpp"
+
+extern bool extglDrawRangeElementsChecked;
+extern PFNGLDRAWRANGEELEMENTSEXTPROC glDrawRangeElementsEXT;
 
 template <typename IndexIntegerType, typename VertexCoordType, typename TexCoordType, std::size_t VertexCoordinateCount = 3, std::size_t TexCoordCount = 2>
 class TriangleArray
@@ -37,8 +44,21 @@ class TriangleArray
                 assert(*i < _VertexArray.size());
 #endif
 
+            // Check for the glDrawRangeElements extension (speeds up fetching of Vertex Array data)
+            if (!extglDrawRangeElementsChecked)
+            {
+                extglDrawRangeElementsChecked = true;
+                if (strstr((const char*)glGetString(GL_EXTENSIONS), "GL_EXT_draw_range_elements") != NULL)
+                {
+                    glDrawRangeElementsEXT = (PFNGLDRAWRANGEELEMENTSEXTPROC)wglGetProcAddress("glDrawRangeElementsEXT");
+                }
+            }
+
             // Draw all contained triangles based on the array of indices
-            glDrawElements(GL_TRIANGLES, _indices.size(), OpenGLTypeConstant<IndexIntegerType>::constant, &_indices[0]);
+            if (glDrawRangeElementsEXT)
+                glDrawRangeElementsEXT(GL_TRIANGLES, 0, _VertexArray.size() - 1, _indices.size(), OpenGLTypeConstant<IndexIntegerType>::constant, &_indices[0]);
+            else
+                glDrawElements(GL_TRIANGLES, _indices.size(), OpenGLTypeConstant<IndexIntegerType>::constant, &_indices[0]);
 
             // Disable the GL_VERTEX_ARRAY client state to prevent strange behaviour
             glDisableClientState(GL_VERTEX_ARRAY);
