@@ -103,8 +103,13 @@ class VertexBufferObject
 
         void bufferData(ptrdiff_t size, void const * const data, buffer_usage method = STATIC_DRAW);
 
+        std::size_t size() const;
+
+        void clear();
+
     private:
         GLuint  _vbo;
+        size_t  _size;
 };
 
 #endif // __INCLUDED_VERTEXBUFFER_HPP__

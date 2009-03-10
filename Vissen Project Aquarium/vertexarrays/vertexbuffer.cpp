@@ -57,7 +57,8 @@ bool VertexBufferObject::is_supported()
         || GLEE_ARB_vertex_buffer_object;
 }
 
-VertexBufferObject::VertexBufferObject()
+VertexBufferObject::VertexBufferObject() :
+    _size(0)
 {
     // Reset the current error code
     glGetError();
@@ -180,7 +181,6 @@ void VertexBufferObject::bufferData(ptrdiff_t size, void const * const data, buf
          * VBO functions available. */
         assert(!"VBO created without VBO functions");
 
-
     // Check to see whether buffer generation was succesful
     const GLenum error = glGetError();
     switch (error)
@@ -205,7 +205,12 @@ void VertexBufferObject::bufferData(ptrdiff_t size, void const * const data, buf
             }
             else
             {
-                assert(!"`target' for glBufferData is none of GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_PIXEL_PACK_BUFFER or GL_PIXEL_UNPACK_BUFFER!");
+                if (GLEE_VERSION_2_1)
+                    // Targets GL_PIXEL_PACK_BUFFER and GL_PIXEL_UNPACK_BUFFER
+                    // are available if the GL version is 2.1 or greater.
+                    assert(!"`target' for glBufferData is none of GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_PIXEL_PACK_BUFFER or GL_PIXEL_UNPACK_BUFFER!");
+                else
+                    assert(!"`target' for glBufferData is none of GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER!");
             }
             break;
 
@@ -238,6 +243,18 @@ void VertexBufferObject::bufferData(ptrdiff_t size, void const * const data, buf
             break;
     }
 
+    _size = size;
+
     // Unbind the buffer again
     unbind();
+}
+
+std::size_t VertexBufferObject::size() const
+{
+    return _size;
+}
+
+void VertexBufferObject::clear()
+{
+    bufferData(0, 0);
 }
