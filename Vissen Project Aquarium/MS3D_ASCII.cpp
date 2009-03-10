@@ -520,7 +520,7 @@ bool Model::loadFromMs3dAsciiFile(const char* filename, const Eigen::Matrix4f& t
 		}
 	}
 
-#ifdef DEBUG_MODELS
+#ifdef DEBUG
 	size_t vertices = 0, indices = 0;
 	cerr << "Finished loading model " << filename << '\n';
 	foreach (const Shape& shape, shapes)
