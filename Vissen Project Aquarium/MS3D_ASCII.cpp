@@ -28,8 +28,8 @@ bool Shape::loadFromFile( const char *filename )
 	if (fp == NULL)
 		return false;
 
-	size_t num_vertices;
-	fscanf(fp, "%zu\n", &num_vertices );
+	unsigned int num_vertices;
+	fscanf(fp, "%u\n", &num_vertices );
 
 	vertices.resize(num_vertices);
 	foreach (Vec& vertex, vertices)
@@ -42,8 +42,8 @@ bool Shape::loadFromFile( const char *filename )
 					 &vertex.v);
 	}
 
-	size_t num_triangles;
-	fscanf(fp, "%zu\n", &num_triangles );
+	unsigned int num_triangles;
+	fscanf(fp, "%u\n", &num_triangles );
 
 	triangles.resize(num_triangles);
 	foreach (Tri& triangle, triangles)
@@ -63,7 +63,7 @@ bool Shape::saveToFile(const char* filename)
 	if (fp == NULL)
 		return false;
 
-	fprintf(fp, "%zu\n", vertices.size());
+	fprintf(fp, "%u\n", static_cast<unsigned int>(vertices.size()));
 
 	foreach (const Vec& vertex, vertices)
 	{
@@ -75,7 +75,7 @@ bool Shape::saveToFile(const char* filename)
 						vertex.v);
 	}
 
-	fprintf(fp, "%zu\n", triangles.size());
+	fprintf(fp, "%u\n", static_cast<unsigned int>(triangles.size()));
 
 	foreach (const Tri& triangle, triangles)
 	{
@@ -167,8 +167,8 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 		return false;
 	}
 
-	size_t num_vertices;
-	if (sscanf(szLine, "%zu", &num_vertices) != 1)
+	unsigned int num_vertices;
+	if (sscanf(szLine, "%u", &num_vertices) != 1)
 	{
 		return false;
 	}
@@ -221,8 +221,8 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 		return false;
 	}
 
-	size_t num_normals;
-	if (sscanf(szLine, "%zu", &num_normals) != 1)
+	unsigned int num_normals;
+	if (sscanf(szLine, "%u", &num_normals) != 1)
 	{
 		return false;
 	}
@@ -259,8 +259,8 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 		return false;
 	}
 
-	size_t num_triangles;
-	if (sscanf(szLine, "%zu", &num_triangles) != 1)
+	unsigned int num_triangles;
+	if (sscanf(szLine, "%u", &num_triangles) != 1)
 	{
 		return false;
 	}
@@ -463,8 +463,8 @@ bool Model::loadFromMs3dAsciiFile(const char* filename, const Eigen::Matrix4f& t
 		if (!strncmp (szLine, "//", 2))
 			continue;
 
-		size_t num_shapes;
-		if (sscanf(szLine, "Meshes: %zu", &num_shapes) == 1)
+		unsigned int num_shapes;
+		if (sscanf(szLine, "Meshes: %u", &num_shapes) == 1)
 		{
 			char	szName[MS_MAX_NAME];
 
@@ -505,8 +505,8 @@ bool Model::loadFromMs3dAsciiFile(const char* filename, const Eigen::Matrix4f& t
 
 
 		// materials
-		size_t num_materials;
-		if (sscanf(szLine, "Materials: %zu", &num_materials) == 1)
+		unsigned int num_materials;
+		if (sscanf(szLine, "Materials: %u", &num_materials) == 1)
 		{
 			materials.resize(num_materials);
 
