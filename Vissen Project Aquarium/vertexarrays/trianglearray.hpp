@@ -42,7 +42,7 @@ class TriangleArray
         void draw() const
         {
             // Bail out if there's nothing to draw
-            if (_indices.empty())
+            if (empty())
                 return;
 
             // Pass all of our triangle data
@@ -71,6 +71,11 @@ class TriangleArray
             // Disable the GL_VERTEX_ARRAY client state to prevent strange behaviour
             glDisableClientState(GL_VERTEX_ARRAY);
             glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        }
+
+        bool empty() const
+        {
+            return _indices.empty();
         }
 
         void clear()
@@ -148,6 +153,11 @@ class TriangleArray
         std::size_t uniqueVertices() const
         {
             return _VertexArray.size();
+        }
+
+        std::size_t drawnVertices() const
+        {
+            return _indices.size();
         }
 
         void AddTriangle(const vertex_type* v, const texcoord_type* t)
