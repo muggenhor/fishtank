@@ -79,7 +79,7 @@ class TriangleArray
             // Try to find an instance of the given vertex
             for (index = 0; index < _VertexArray.size(); ++index)
             {
-                if (_VertexArray[index]  == vertex
+                if (_VertexArray[index]   == vertex
                  && _TexCoordArray[index] == texcoord)
                 {
                     // If we found a vertex that's the same then add the index
