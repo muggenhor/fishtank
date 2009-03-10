@@ -20,186 +20,58 @@
 #ifndef __INCLUDED_ABSTRACTARRAY_HPP__
 #define __INCLUDED_ABSTRACTARRAY_HPP__
 
-#include <vector>
-#include <eigen/vector.h>
-#include <eigen/matrix.h>
+#include "abstractarraybase.hpp"
 #include "vertexbuffer.hpp"
 
 template <typename CoordType, std::size_t CoordinateCount, bool supportVBO = true>
 class AbstractArray;
 
 template <typename CoordType, std::size_t CoordinateCount>
-class AbstractArray<CoordType, CoordinateCount, false>
+class AbstractArray<CoordType, CoordinateCount, false> : public AbstractArrayBase<CoordType, CoordinateCount, AbstractArray<CoordType, CoordinateCount, false> >
 {
     public:
-        typedef Eigen::Vector<CoordType, CoordinateCount> value_type;
-        typedef Eigen::Vector<CoordType, CoordinateCount + 1> trans_value_type;
-        typedef Eigen::Matrix<CoordType, CoordinateCount> matrix_type;
-        typedef Eigen::Matrix<CoordType, CoordinateCount + 1> trans_matrix_type;
-
-        /** Virtual destructor to make sure that all subclasses have a virtual
-         *  destructor as well.
-         */
-        virtual ~AbstractArray() {}
-
-        bool HasVBO() const
-        {
-            return false;
-        }
-
-        /** Passes all of this AbstractArray's data to the OpenGL API.
-         */
-        void draw() const
-        {
-            // This is required to make sure that OpenGL can actually work with our data
-            BOOST_STATIC_ASSERT(sizeof(value_type) == sizeof(CoordType[CoordinateCount]));
-
-            glPassPointer(&_data[0]);
-        }
-
-        /** @return the amount of elements in this AbstractArray
-         */
-        std::size_t size() const
-        {
-            return _data.size();
-        }
-
-        /** @return the element at the given index
-         */
-        const value_type& operator[](std::size_t index) const
-        {
-            return _data[index];
-        }
-
-        /** Appends the given element to the end of this AbstractArray.
-         *  @return the index given to this new element.
-         */
-        std::size_t push_back(const value_type& element)
-        {
-            _data.push_back(element);
-            return _data.size() - 1;
-        }
-
-        /** Removes all elements from this AbstractArray
-         */
-        void clear()
-        {
-            _data.clear();
-        }
-
-        void leftmultiply(const matrix_type& m)
-        {
-            value_type r;
-
-            // Loop over all vertices and left-multiply them by the matrix we're given
-            for (typename std::vector<value_type>::iterator
-                 i  = _data.begin();
-                 i != _data.end();
-                 ++i)
-            {
-                // Compute the product vector of (vector *i) * (matrix m) and store it in (vector r).
-                m.leftmultiply(*i, &r);
-
-                // Store the result back in our original (vector *i)
-                *i = r;
-            }
-        }
-
-        void leftmultiply(const trans_matrix_type& m)
-        {
-            trans_value_type r;
-
-            // Loop over all vertices and left-multiply them by the matrix we're given
-            for (typename std::vector<value_type>::iterator
-                 i  = _data.begin();
-                 i != _data.end();
-                 ++i)
-            {
-                trans_value_type vTmp;
-
-                for (unsigned int j = 0; j < CoordinateCount; ++j)
-                {
-                    vTmp[j] = (*i)[j];
-                }
-
-                vTmp[CoordinateCount] = static_cast<CoordType>(1);
-
-                // Compute the product vector of (vector *i) * (matrix m) and store it in (vector r).
-                m.leftmultiply(vTmp, &r);
-
-                // Store the result back in our original (vector *i)
-                for (unsigned int j = 0; j < CoordinateCount; ++j)
-                {
-                    (*i)[j] = r[j];
-                }
-            }
-        }
-
-        void multiply(const matrix_type& m)
-        {
-            value_type r;
-
-            // Loop over all vertices and multiply them by the matrix we're given
-            for (typename std::vector<value_type>::iterator
-                 i  = _data.begin();
-                 i != _data.end();
-                 ++i)
-            {
-                // Compute the product vector of (matrix m) * (vector *i) and store it in (vector r).
-                m.multiply(*i, &r);
-
-                // Store the result back in our original (vector *i)
-                *i = r;
-            }
-        }
-
-        void multiply(const trans_matrix_type& m)
-        {
-            trans_value_type r;
-
-            // Loop over all vertices and multiply them by the matrix we're given
-            for (typename std::vector<value_type>::iterator
-                 i  = _data.begin();
-                 i != _data.end();
-                 ++i)
-            {
-                trans_value_type vTmp;
-
-                for (unsigned int j = 0; j < CoordinateCount; ++j)
-                {
-                    vTmp[j] = (*i)[j];
-                }
-
-                vTmp[CoordinateCount] = static_cast<CoordType>(1);
-
-                // Compute the product vector of (matrix m) * (vector *i) and store it in (vector r).
-                m.multiply(vTmp, &r);
-
-                // Store the result back in our original (vector *i)
-                for (unsigned int j = 0; j < CoordinateCount; ++j)
-                {
-                    (*i)[j] = r[j];
-                }
-            }
-        }
+        typedef AbstractArrayBase<CoordType, CoordinateCount,
+                AbstractArray<CoordType, CoordinateCount, false> >  base_type;
+        typedef typename base_type::value_type                      value_type;
+        typedef typename base_type::trans_value_type                trans_value_type;
+        typedef typename base_type::matrix_type                     matrix_type;
+        typedef typename base_type::trans_matrix_type               trans_matrix_type;
 
     protected:
         virtual void glPassPointer(value_type const * data) const = 0;
 
     private:
-        /** Holds all data.
+        friend class AbstractArrayBase<CoordType, CoordinateCount,
+               AbstractArray<CoordType, CoordinateCount, false> >;
+
+        /** Passes all of this AbstractArray's data to the OpenGL API.
          */
-        std::vector<value_type> _data;
+        void _draw() const
+        {
+            // This is required to make sure that OpenGL can actually work with our data
+            BOOST_STATIC_ASSERT(sizeof(value_type) == sizeof(CoordType[CoordinateCount]));
+
+            glPassPointer(&(*this)[0]);
+        }
+
+        void DataChanged() {}
+
+        bool _HasVBO() const
+        {
+            return false;
+        }
 };
 
 template <typename CoordType, std::size_t CoordinateCount>
-class AbstractArray<CoordType, CoordinateCount, true>
+class AbstractArray<CoordType, CoordinateCount, true> : public AbstractArrayBase<CoordType, CoordinateCount, AbstractArray<CoordType, CoordinateCount, true> >
 {
     public:
-        typedef Eigen::Vector<CoordType, CoordinateCount> value_type;
-        typedef Eigen::Vector<CoordType, CoordinateCount + 1> trans_value_type;
-        typedef Eigen::Matrix<CoordType, CoordinateCount> matrix_type;
-        typedef Eigen::Matrix<CoordType, CoordinateCount + 1> trans_matrix_type;
+        typedef AbstractArrayBase<CoordType, CoordinateCount,
+                AbstractArray<CoordType, CoordinateCount, true> >   base_type;
+        typedef typename base_type::value_type                      value_type;
+        typedef typename base_type::trans_value_type                trans_value_type;
+        typedef typename base_type::matrix_type                     matrix_type;
+        typedef typename base_type::trans_matrix_type               trans_matrix_type;
 
         AbstractArray() :
             _vbo(VertexBufferObject::is_supported() ? new VertexBufferObject : 0),
@@ -210,16 +82,6 @@ class AbstractArray<CoordType, CoordinateCount, true>
             _vbo(use_vbo ? new VertexBufferObject : 0),
             _vbo_updated(false)
         {}
-
-        /** Virtual destructor to make sure that all subclasses have a virtual
-         *  destructor as well.
-         */
-        virtual ~AbstractArray() {}
-
-        bool HasVBO() const
-        {
-            return _vbo != 0;
-        }
 
         void UseVBO()
         {
@@ -236,9 +98,16 @@ class AbstractArray<CoordType, CoordinateCount, true>
             _vbo = 0;
         }
 
+    protected:
+        virtual void glPassPointer(value_type const * data) const = 0;
+
+    private:
+        friend class AbstractArrayBase<CoordType, CoordinateCount,
+               AbstractArray<CoordType, CoordinateCount, true> >;
+
         /** Passes all of this AbstractArray's data to the OpenGL API.
          */
-        void draw() const
+        void _draw() const
         {
             if (_vbo)
             {
@@ -246,19 +115,19 @@ class AbstractArray<CoordType, CoordinateCount, true>
                 {
                     if (sizeof(value_type) == sizeof(CoordType[CoordinateCount]))
                     {
-                        _vbo->bufferData(_data.size() * sizeof(value_type), &_data[0]);
+                        _vbo->bufferData(base_type::size() * sizeof(value_type), &(*this)[0]);
                     }
                     else
                     {
                         // First allocate the buffer
-                        _vbo->bufferData(_data.size() * sizeof(CoordType[CoordinateCount]), 0);
+                        _vbo->bufferData(base_type::size() * sizeof(CoordType[CoordinateCount]), 0);
 
                         // Now fill it
-                        for (unsigned int vec = 0; vec < _data.size(); ++vec)
+                        for (unsigned int vec = 0; vec < base_type::size(); ++vec)
                         {
                             for (unsigned int coord = 0; coord < CoordinateCount; ++coord)
                             {
-                                _vbo->bufferSubData(sizeof(CoordType[CoordinateCount]) * vec + sizeof(CoordType) * coord, sizeof(CoordType), &_data[vec][coord]);
+                                _vbo->bufferSubData(sizeof(CoordType[CoordinateCount]) * vec + sizeof(CoordType) * coord, sizeof(CoordType), &(*this)[vec][coord]);
                             }
                         }
                     }
@@ -273,154 +142,20 @@ class AbstractArray<CoordType, CoordinateCount, true>
                 // This is required to make sure that OpenGL can actually work with our data
                 assert(sizeof(value_type) == sizeof(CoordType[CoordinateCount]));
 
-                glPassPointer(&_data[0]);
+                glPassPointer(&(*this)[0]);
             }
         }
 
-        /** @return the amount of elements in this AbstractArray
-         */
-        std::size_t size() const
-        {
-            return _data.size();
-        }
-
-        /** @return the element at the given index
-         */
-        const value_type& operator[](std::size_t index) const
-        {
-            return _data[index];
-        }
-
-        /** Appends the given element to the end of this AbstractArray.
-         *  @return the index given to this new element.
-         */
-        std::size_t push_back(const value_type& element)
+        void DataChanged()
         {
             _vbo_updated = false;
-            _data.push_back(element);
-            return _data.size() - 1;
         }
 
-        /** Removes all elements from this AbstractArray
-         */
-        void clear()
+        bool _HasVBO() const
         {
-            _data.clear();
-            if (_vbo)
-                _vbo->clear();
+            return _vbo != 0;
         }
 
-        void leftmultiply(const matrix_type& m)
-        {
-            value_type r;
-
-            // Loop over all vertices and left-multiply them by the matrix we're given
-            for (typename std::vector<value_type>::iterator
-                 i  = _data.begin();
-                 i != _data.end();
-                 ++i)
-            {
-                // Compute the product vector of (vector *i) * (matrix m) and store it in (vector r).
-                m.leftmultiply(*i, &r);
-
-                // Store the result back in our original (vector *i)
-                *i = r;
-            }
-
-            _vbo_updated = false;
-        }
-
-        void leftmultiply(const trans_matrix_type& m)
-        {
-            trans_value_type r;
-
-            // Loop over all vertices and left-multiply them by the matrix we're given
-            for (typename std::vector<value_type>::iterator
-                 i  = _data.begin();
-                 i != _data.end();
-                 ++i)
-            {
-                trans_value_type vTmp;
-
-                for (unsigned int j = 0; j < CoordinateCount; ++j)
-                {
-                    vTmp[j] = (*i)[j];
-                }
-
-                vTmp[CoordinateCount] = static_cast<CoordType>(1);
-
-                // Compute the product vector of (vector *i) * (matrix m) and store it in (vector r).
-                m.leftmultiply(vTmp, &r);
-
-                // Store the result back in our original (vector *i)
-                for (unsigned int j = 0; j < CoordinateCount; ++j)
-                {
-                    (*i)[j] = r[j];
-                }
-            }
-
-            _vbo_updated = false;
-        }
-
-        void multiply(const matrix_type& m)
-        {
-            value_type r;
-
-            // Loop over all vertices and multiply them by the matrix we're given
-            for (typename std::vector<value_type>::iterator
-                 i  = _data.begin();
-                 i != _data.end();
-                 ++i)
-            {
-                // Compute the product vector of (matrix m) * (vector *i) and store it in (vector r).
-                m.multiply(*i, &r);
-
-                // Store the result back in our original (vector *i)
-                *i = r;
-            }
-
-            _vbo_updated = false;
-        }
-
-        void multiply(const trans_matrix_type& m)
-        {
-            trans_value_type r;
-
-            // Loop over all vertices and multiply them by the matrix we're given
-            for (typename std::vector<value_type>::iterator
-                 i  = _data.begin();
-                 i != _data.end();
-                 ++i)
-            {
-                trans_value_type vTmp;
-
-                for (unsigned int j = 0; j < CoordinateCount; ++j)
-                {
-                    vTmp[j] = (*i)[j];
-                }
-
-                vTmp[CoordinateCount] = static_cast<CoordType>(1);
-
-                // Compute the product vector of (matrix m) * (vector *i) and store it in (vector r).
-                m.multiply(vTmp, &r);
-
-                // Store the result back in our original (vector *i)
-                for (unsigned int j = 0; j < CoordinateCount; ++j)
-                {
-                    (*i)[j] = r[j];
-                }
-            }
-
-            _vbo_updated = false;
-        }
-
-    protected:
-        virtual void glPassPointer(value_type const * data) const = 0;
-
-    private:
-        /** Holds all data.
-         */
-        std::vector<value_type> _data;
         VertexBufferObject*     _vbo;
         mutable bool            _vbo_updated;
 };
