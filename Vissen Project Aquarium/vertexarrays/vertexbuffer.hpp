@@ -47,6 +47,17 @@ class GLDrawSection : public GLLogicError
         explicit GLDrawSection(const std::string& what);
 };
 
+class GLInvalidValue : public GLLogicError
+{
+    public:
+        explicit GLInvalidValue(const std::string& what);
+};
+
+class GLInvalidEnum : public GLLogicError
+{
+    public:
+        explicit GLInvalidEnum(const std::string& what);
+};
 class VertexBufferObject
 {
     public:
@@ -90,7 +101,7 @@ class VertexBufferObject
         void bind() const;
         static void unbind();
 
-        void bufferData(size_t size, void const * const data, buffer_usage method = STATIC_DRAW);
+        void bufferData(ptrdiff_t size, void const * const data, buffer_usage method = STATIC_DRAW);
 
     private:
         GLuint  _vbo;
