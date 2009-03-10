@@ -131,11 +131,16 @@ class AbstractArray<CoordType, CoordinateCount, true>
          */
         void draw() const
         {
-            if (_changed
-             && _vbo)
+            if (_vbo)
             {
-                _vbo->bufferData(_data.size() * sizeof(value_type), &_data[0]);
+                if (_changed)
+                {
+                    _vbo->bufferData(_data.size() * sizeof(value_type), &_data[0]);
+                }
+
+                _vbo->bind();
                 glPassPointer(0);
+                _vbo->unbind();
             }
             else
             {
