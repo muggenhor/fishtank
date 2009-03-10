@@ -35,6 +35,18 @@ class GLUnsupported : public GLRuntimeError
         explicit GLUnsupported(const std::string& what);
 };
 
+class GLLogicError : public std::logic_error
+{
+    public:
+        explicit GLLogicError(const std::string& what);
+};
+
+class GLDrawSection : public GLLogicError
+{
+    public:
+        explicit GLDrawSection(const std::string& what);
+};
+
 class VertexBufferObject
 {
     public:

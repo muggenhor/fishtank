@@ -31,6 +31,16 @@ GLUnsupported::GLUnsupported(const std::string& what) :
 {
 }
 
+GLLogicError::GLLogicError(const std::string& what) :
+    std::logic_error(what)
+{
+}
+
+GLDrawSection::GLDrawSection(const std::string& what) :
+    GLLogicError(what)
+{
+}
+
 bool VertexBufferObject::is_supported()
 {
     return GLEE_VERSION_1_5
@@ -39,16 +49,47 @@ bool VertexBufferObject::is_supported()
 
 VertexBufferObject::VertexBufferObject()
 {
+    // Reset the current error code
+    glGetError();
+
     if (GLEE_VERSION_1_5)
         glGenBuffers(1, &_vbo);
     else if (GLEE_ARB_vertex_buffer_object)
         glGenBuffersARB(1, &_vbo);
     else
         throw GLUnsupported("Neither OpenGL 1.5 nor the ARB_vertex_buffer_object extension are supported.");
+
+    // Check to see whether buffer generation was succesful
+    const GLenum error = glGetError();
+    switch (error)
+    {
+        case GL_NO_ERROR:
+            // No error occurred
+            break;
+
+        case GL_INVALID_VALUE:
+            // Should only happen if the first parameter to glGenBuffers
+            // is negative.
+            assert(!"Negative buffer count provided for glGenBuffers!?");
+            break;
+
+        case GL_INVALID_OPERATION:
+            // This error is generated if glGenBuffers is executed
+            // between the execution of glBegin and the corresponding
+            // execution of glEnd.
+            // So this would be a programming error by the client
+            // programmer, so assert() and throw.
+            assert(!"Construction of VertexBufferObject must not occur between a glBegin and glEnd call!");
+            throw GLDrawSection("Construction of VertexBufferObject occurred between a glBegin and glEnd call, this should _not_ be done!");
+            break;
+    }
 }
 
 VertexBufferObject::~VertexBufferObject()
 {
+    // Reset the current error code
+    glGetError();
+
     if (GLEE_VERSION_1_5)
         glDeleteBuffers(1, &_vbo);
     else if (GLEE_ARB_vertex_buffer_object)
@@ -58,6 +99,31 @@ VertexBufferObject::~VertexBufferObject()
          * able to create a VBO in the first place, when there are no
          * VBO functions available. */
         assert(!"VBO created without VBO functions");
+
+    // Check to see whether texture destruction was successful
+    GLenum error = glGetError();
+    switch (error)
+    {
+        case GL_NO_ERROR:
+            // No error occurred
+            break;
+
+        case GL_INVALID_VALUE:
+            // Should only happen if the first parameter to
+            // glDeleteBuffers is negative.
+            assert(!"Negative texture count provided for glDeleteBuffers!?");
+            break;
+
+        case GL_INVALID_OPERATION:
+            // This error is generated if glDeleteBuffers is executed
+            // between the execution of glBegin and the corresponding
+            // execution of glEnd.
+            // So this would be a programming error by the client
+            // programmer, so assert() and throw.
+            assert(!"Destruction of VertexBufferObject must not occur between a glBegin and glEnd call! (So make sure to call glEnd _before_ leaving the scope of this VertexBufferObject).");
+            throw GLDrawSection("Destruction of VertexBufferObject occurred between a glBegin and glEnd call, this should _not_ be done!");
+            break;
+    }
 }
 
 void VertexBufferObject::bind() const
