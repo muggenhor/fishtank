@@ -137,14 +137,28 @@ class AbstractArray<CoordType, CoordinateCount, true>
          */
         void draw() const
         {
-            // This is required to make sure that OpenGL can actually work with our data
-            BOOST_STATIC_ASSERT(sizeof(value_type) == sizeof(CoordType[CoordinateCount]));
-
             if (_vbo)
             {
                 if (!_vbo_updated)
                 {
-                    _vbo->bufferData(_data.size() * sizeof(value_type), &_data[0]);
+                    if (sizeof(value_type) == sizeof(CoordType[CoordinateCount]))
+                    {
+                        _vbo->bufferData(_data.size() * sizeof(value_type), &_data[0]);
+                    }
+                    else
+                    {
+                        // First allocate the buffer
+                        _vbo->bufferData(_data.size() * sizeof(CoordType[CoordinateCount]), 0);
+
+                        // Now fill it
+                        for (unsigned int vec = 0; vec < _data.size(); ++vec)
+                        {
+                            for (unsigned int coord = 0; coord < CoordinateCount; ++coord)
+                            {
+                                _vbo->bufferSubData(sizeof(CoordType[CoordinateCount]) * vec + sizeof(CoordType) * coord, sizeof(CoordType), &_data[vec][coord]);
+                            }
+                        }
+                    }
                 }
 
                 _vbo->bind();
@@ -153,6 +167,9 @@ class AbstractArray<CoordType, CoordinateCount, true>
             }
             else
             {
+                // This is required to make sure that OpenGL can actually work with our data
+                assert(sizeof(value_type) == sizeof(CoordType[CoordinateCount]));
+
                 glPassPointer(&_data[0]);
             }
         }
