@@ -17,7 +17,10 @@ class AbstractArray
 
         /** Passes all of this AbstractArray's data to the OpenGL API.
          */
-        virtual void draw() const = 0;
+        void draw() const
+        {
+            glPassPointer(&_data[0]);
+        }
 
         /** @return the amount of elements in this AbstractArray
          */
@@ -43,12 +46,7 @@ class AbstractArray
         }
 
     protected:
-        /** @return a pointer to the data array
-         */
-        const value_type* get_data() const
-        {
-            return &_data[0];
-        }
+        virtual void glPassPointer(value_type const * data) const = 0;
 
     private:
         /** Holds all data.

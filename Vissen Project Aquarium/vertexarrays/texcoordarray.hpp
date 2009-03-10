@@ -10,10 +10,10 @@ template <typename CoordType, std::size_t CoordinateCount>
 class TexCoordArray : public AbstractArray<CoordType, CoordinateCount>
 {
     public:
-        typedef AbstractArray<CoordType, CoordinateCount>   parent_type;
-        typedef typename parent_type::value_type            value_type;
+        typedef typename AbstractArray<CoordType, CoordinateCount>::value_type value_type;
 
-        virtual void draw() const
+    protected:
+        virtual void glPassPointer(value_type const * const data) const
         {
             // Textures can only have 1, 2, 3 or 4 dimensions to specify coordinates in
             BOOST_STATIC_ASSERT(CoordinateCount == 1 || CoordinateCount == 2 || CoordinateCount == 3 || CoordinateCount == 4);
@@ -22,7 +22,7 @@ class TexCoordArray : public AbstractArray<CoordType, CoordinateCount>
             BOOST_STATIC_ASSERT(sizeof(value_type) == (sizeof(CoordType[CoordinateCount])));
 
             // Pass all of our texture coordinates as a Texture Coordinates Array
-            glTexCoordPointer(CoordinateCount, OpenGLTypeConstant<CoordType>::constant, 0, parent_type::get_data());
+            glTexCoordPointer(CoordinateCount, OpenGLTypeConstant<CoordType>::constant, 0, data);
         }
 };
 
