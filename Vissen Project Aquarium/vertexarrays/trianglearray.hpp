@@ -69,6 +69,12 @@ class TriangleArray
             glDisableClientState(GL_TEXTURE_COORD_ARRAY);
         }
 
+        void clear()
+        {
+            _VertexArray.clear();
+            _TexCoordArray.clear();
+        }
+
         bool HasVertexVBO() const
         {
             return _VertexArray.HasVBO();
