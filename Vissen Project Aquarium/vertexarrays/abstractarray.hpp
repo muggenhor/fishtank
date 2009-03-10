@@ -100,12 +100,12 @@ class AbstractArray<CoordType, CoordinateCount, true>
 
         AbstractArray() :
             _vbo(VertexBufferObject::is_supported() ? new VertexBufferObject : 0),
-            _changed(true)
+            _vbo_updated(false)
         {}
 
         AbstractArray(bool use_vbo) :
             _vbo(use_vbo ? new VertexBufferObject : 0),
-            _changed(true)
+            _vbo_updated(false)
         {}
 
         /** Virtual destructor to make sure that all subclasses have a virtual
@@ -121,7 +121,10 @@ class AbstractArray<CoordType, CoordinateCount, true>
         void UseVBO()
         {
             if (!_vbo)
+            {
+                _vbo_updated = false;
                 _vbo = new VertexBufferObject;
+            }
         }
 
         void UseVA()
@@ -139,7 +142,7 @@ class AbstractArray<CoordType, CoordinateCount, true>
 
             if (_vbo)
             {
-                if (_changed)
+                if (!_vbo_updated)
                 {
                     _vbo->bufferData(_data.size() * sizeof(value_type), &_data[0]);
                 }
@@ -173,7 +176,7 @@ class AbstractArray<CoordType, CoordinateCount, true>
          */
         std::size_t push_back(const value_type& element)
         {
-            _changed = true;
+            _vbo_updated = false;
             _data.push_back(element);
             return _data.size() - 1;
         }
@@ -195,7 +198,7 @@ class AbstractArray<CoordType, CoordinateCount, true>
          */
         std::vector<value_type> _data;
         VertexBufferObject*     _vbo;
-        mutable bool            _changed;
+        mutable bool            _vbo_updated;
 };
 
 #endif // __INCLUDED_ABSTRACTARRAY_HPP__
