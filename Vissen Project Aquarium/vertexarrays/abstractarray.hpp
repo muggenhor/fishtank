@@ -68,6 +68,13 @@ class AbstractArray<CoordType, CoordinateCount, false>
             return _data.size() - 1;
         }
 
+        /** Removes all elements from this AbstractArray
+         */
+        void clear()
+        {
+            _data.clear();
+        }
+
     protected:
         virtual void glPassPointer(value_type const * data) const = 0;
 
@@ -148,6 +155,15 @@ class AbstractArray<CoordType, CoordinateCount, true>
             _changed = true;
             _data.push_back(element);
             return _data.size() - 1;
+        }
+
+        /** Removes all elements from this AbstractArray
+         */
+        void clear()
+        {
+            _data.clear();
+            if (_vbo)
+                _vbo->clear();
         }
 
     protected:
