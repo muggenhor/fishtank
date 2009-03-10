@@ -24,16 +24,18 @@
 #include <boost/static_assert.hpp>
 #include "../GL/GLee.h"
 #include "gl_type_constants.hpp"
+#include "normalarray.hpp"
 #include "vertexarray.hpp"
 #include "texcoordarray.hpp"
 #include <cassert>
 
-template <typename IndexIntegerType, typename VertexCoordType, typename TexCoordType, bool supportVertexVBOs = true, bool supportTexVBOs = true, std::size_t VertexCoordinateCount = 3, std::size_t TexCoordCount = 2>
+template <typename IndexIntegerType, typename VertexCoordType, typename TexCoordType, typename NormalCoordType, bool supportVertexVBOs = true, bool supportTexVBOs = true, bool supportNormalVBOs = true, std::size_t VertexCoordinateCount = 3, std::size_t TexCoordCount = 2>
 class TriangleArray
 {
     public:
         typedef typename VertexArray<VertexCoordType, VertexCoordinateCount, supportVertexVBOs>::value_type         vertex_type;
         typedef typename TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs>::value_type                     texcoord_type;
+        typedef typename NormalArray<NormalCoordType, supportNormalVBOs>::value_type                                normal_type;
         typedef typename VertexArray<VertexCoordType, VertexCoordinateCount, supportVertexVBOs>::matrix_type        vertex_matrix_type;
         typedef typename TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs>::matrix_type                    texcoord_matrix_type;
         typedef typename VertexArray<VertexCoordType, VertexCoordinateCount, supportVertexVBOs>::trans_matrix_type  vertex_trans_matrix_type;
@@ -87,21 +89,37 @@ class TriangleArray
         void ModelViewLeftMult(vertex_matrix_type const& m)
         {
             _VertexArray.leftmultiply(m);
+
+            vertex_matrix_type normalMatrix(m.inverse());
+            normalMatrix.replaceWithAdjoint();
+            _NormalArray.leftmultiply(normalMatrix);
         }
 
         void ModelViewLeftMult(vertex_trans_matrix_type const& m)
         {
             _VertexArray.leftmultiply(m);
+
+            vertex_trans_matrix_type normalMatrix(m.inverse());
+            normalMatrix.replaceWithAdjoint();
+            _NormalArray.leftmultiply(normalMatrix);
         }
 
         void ModelViewMult(vertex_matrix_type const& m)
         {
             _VertexArray.multiply(m);
+
+            vertex_matrix_type normalMatrix(m.inverse());
+            normalMatrix.replaceWithAdjoint();
+            _NormalArray.multiply(normalMatrix);
         }
 
         void ModelViewMult(vertex_trans_matrix_type const& m)
         {
             _VertexArray.multiply(m);
+
+            vertex_trans_matrix_type normalMatrix(m.inverse());
+            normalMatrix.replaceWithAdjoint();
+            _NormalArray.multiply(normalMatrix);
         }
 
         void TextureLeftMult(texcoord_matrix_type const& m)
@@ -160,24 +178,24 @@ class TriangleArray
             return _indices.size();
         }
 
-        void AddTriangle(const vertex_type* v, const texcoord_type* t)
+        void AddTriangle(const vertex_type* v, const texcoord_type* t, const normal_type* n)
         {
             for (unsigned int i = 0; i < 3; ++i)
-                AddPoint(v[i], t[i]);
+                AddPoint(v[i], t[i], n[i]);
         }
 
-        void AddTriangle(const vertex_type* v)
+        void AddTriangle(const vertex_type* v, const normal_type* n)
         {
             static texcoord_type t;
             for (unsigned int i = 0; i < static_cast<unsigned int>(t.size()); ++i)
                 t[i] = 0;
 
             for (unsigned int i = 0; i < 3; ++i)
-                AddPoint(v[i], t);
+                AddPoint(v[i], t, n[i]);
         }
 
     private:
-        void AddPoint(const vertex_type& vertex, const texcoord_type& texcoord)
+        void AddPoint(const vertex_type& vertex, const texcoord_type& texcoord, const normal_type& normal)
         {
             unsigned int index = 0;
 
@@ -185,7 +203,8 @@ class TriangleArray
             for (index = 0; index < _VertexArray.size(); ++index)
             {
                 if (_VertexArray[index]   == vertex
-                 && _TexCoordArray[index] == texcoord)
+                 && _TexCoordArray[index] == texcoord
+                 && _NormalArray[index]   == normal)
                 {
                     // If we found a vertex that's the same then add the index
                     // to the index table and bail out
@@ -197,13 +216,18 @@ class TriangleArray
 
             // If we found no instance of this vertex then we'll obviously need to add it
             index = _VertexArray.push_back(vertex);
-            assert(index == _TexCoordArray.push_back(texcoord));
+            _TexCoordArray.push_back(texcoord);
+            _NormalArray.push_back(normal);
+            assert(index == _VertexArray.size()   - 1
+                   index == _TexCoordArray.size() - 1
+                   index == _NormalArray.size()   - 1);
             _indices.push_back(index);
         }
 
     private:
-        VertexArray<VertexCoordType, VertexCoordinateCount> _VertexArray;
-        TexCoordArray<TexCoordType, TexCoordCount> _TexCoordArray;
+        VertexArray<VertexCoordType, VertexCoordinateCount, supportVertexVBOs> _VertexArray;
+        NormalArray<NormalCoordType, supportNormalVBOs> _NormalArray;
+        TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs> _TexCoordArray;
         std::vector<IndexIntegerType> _indices;
 };
 
