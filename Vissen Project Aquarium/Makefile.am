@@ -6,6 +6,10 @@ EXTRA_DIST= \
 
 SUBDIRS = GL
 
+AM_CFLAGS=$(FT_CFLAGS)
+AM_CXXFLAGS=$(FT_CXXFLAGS)
+AM_CPPFLAGS=$(FT_CPPFLAGS)
+
 bin_PROGRAMS = fishtank
 
 fishtank_SOURCES = \
@@ -39,4 +43,4 @@ noinst_HEADERS = \
 	wiggle.hpp
 
 fishtank_LDADD = $(builddir)/GL/libGLee.a $(GLFW_LIBS) $(OPENGL_LIBS) $(JPEG_LIBS) $(WIN32_LIBS)
-fishtank_CPPFLAGS = $(GLFW_CFLAGS) $(BOOST_CPPFLAGS)
+fishtank_CPPFLAGS = $(GLFW_CFLAGS) $(BOOST_CPPFLAGS) $(AM_CPPFLAGS)
