@@ -22,6 +22,7 @@
 
 #include <vector>
 #include <eigen/vector.h>
+#include <eigen/matrix.h>
 #include "vertexbuffer.hpp"
 
 template <typename CoordType, std::size_t CoordinateCount, bool supportVBO = true>
@@ -32,6 +33,7 @@ class AbstractArray<CoordType, CoordinateCount, false>
 {
     public:
         typedef Eigen::Vector<CoordType, CoordinateCount> value_type;
+        typedef Eigen::Matrix<CoordType, CoordinateCount> matrix_type;
 
         /** Virtual destructor to make sure that all subclasses have a virtual
          *  destructor as well.
@@ -83,6 +85,42 @@ class AbstractArray<CoordType, CoordinateCount, false>
             _data.clear();
         }
 
+        void leftmultiply(const matrix_type& m)
+        {
+            value_type r;
+
+            // Loop over all vertices and left-multiply them by the matrix we're given
+            for (typename std::vector<value_type>::iterator
+                 i  = _data.begin();
+                 i != _data.end();
+                 ++i)
+            {
+                // Compute the product vector of (vector *i) * (matrix m) and store it in (vector r).
+                m.leftmultiply(*i, &r);
+
+                // Store the result back in our original (vector *i)
+                *i = r;
+            }
+        }
+
+        void multiply(const matrix_type& m)
+        {
+            value_type r;
+
+            // Loop over all vertices and multiply them by the matrix we're given
+            for (typename std::vector<value_type>::iterator
+                 i  = _data.begin();
+                 i != _data.end();
+                 ++i)
+            {
+                // Compute the product vector of (matrix m) * (vector *i) and store it in (vector r).
+                m.multiply(*i, &r);
+
+                // Store the result back in our original (vector *i)
+                *i = r;
+            }
+        }
+
     protected:
         virtual void glPassPointer(value_type const * data) const = 0;
 
@@ -97,6 +135,7 @@ class AbstractArray<CoordType, CoordinateCount, true>
 {
     public:
         typedef Eigen::Vector<CoordType, CoordinateCount> value_type;
+        typedef Eigen::Matrix<CoordType, CoordinateCount> matrix_type;
 
         AbstractArray() :
             _vbo(VertexBufferObject::is_supported() ? new VertexBufferObject : 0),
@@ -205,6 +244,46 @@ class AbstractArray<CoordType, CoordinateCount, true>
             _data.clear();
             if (_vbo)
                 _vbo->clear();
+        }
+
+        void leftmultiply(const matrix_type& m)
+        {
+            value_type r;
+
+            // Loop over all vertices and left-multiply them by the matrix we're given
+            for (typename std::vector<value_type>::iterator
+                 i  = _data.begin();
+                 i != _data.end();
+                 ++i)
+            {
+                // Compute the product vector of (vector *i) * (matrix m) and store it in (vector r).
+                m.leftmultiply(*i, &r);
+
+                // Store the result back in our original (vector *i)
+                *i = r;
+            }
+
+            _vbo_updated = false;
+        }
+
+        void multiply(const matrix_type& m)
+        {
+            value_type r;
+
+            // Loop over all vertices and multiply them by the matrix we're given
+            for (typename std::vector<value_type>::iterator
+                 i  = _data.begin();
+                 i != _data.end();
+                 ++i)
+            {
+                // Compute the product vector of (matrix m) * (vector *i) and store it in (vector r).
+                m.multiply(*i, &r);
+
+                // Store the result back in our original (vector *i)
+                *i = r;
+            }
+
+            _vbo_updated = false;
         }
 
     protected:

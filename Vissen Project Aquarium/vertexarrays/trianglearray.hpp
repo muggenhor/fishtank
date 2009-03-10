@@ -32,8 +32,10 @@ template <typename IndexIntegerType, typename VertexCoordType, typename TexCoord
 class TriangleArray
 {
     public:
-        typedef typename VertexArray<VertexCoordType, VertexCoordinateCount, supportVertexVBOs>::value_type vertex_type;
-        typedef typename TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs>::value_type texcoord_type;
+        typedef typename VertexArray<VertexCoordType, VertexCoordinateCount, supportVertexVBOs>::value_type         vertex_type;
+        typedef typename TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs>::value_type                     texcoord_type;
+        typedef typename VertexArray<VertexCoordType, VertexCoordinateCount, supportVertexVBOs>::matrix_type        vertex_matrix_type;
+        typedef typename TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs>::matrix_type                    texcoord_matrix_type;
 
         void draw() const
         {
@@ -73,6 +75,26 @@ class TriangleArray
         {
             _VertexArray.clear();
             _TexCoordArray.clear();
+        }
+
+        void ModelViewLeftMult(vertex_matrix_type const& m)
+        {
+            _VertexArray.leftmultiply(m);
+        }
+
+        void ModelViewMult(vertex_matrix_type const& m)
+        {
+            _VertexArray.multiply(m);
+        }
+
+        void TextureLeftMult(texcoord_matrix_type const& m)
+        {
+            _TexCoordArray.leftmultiply(m);
+        }
+
+        void TextureMult(texcoord_matrix_type const& m)
+        {
+            _TexCoordArray.multiply(m);
         }
 
         bool HasVertexVBO() const
