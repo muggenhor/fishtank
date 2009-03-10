@@ -24,7 +24,7 @@
 #include <GL/gl.h>
 #include "gl_type_constants.hpp"
 
-template <typename CoordType, supportVBO = true>
+template <typename CoordType, bool supportVBO = true>
 class NormalArray : public AbstractArray<CoordType, 3, supportVBO>
 {
     public:

@@ -219,8 +219,8 @@ class TriangleArray
             _TexCoordArray.push_back(texcoord);
             _NormalArray.push_back(normal);
             assert(index == _VertexArray.size()   - 1
-                   index == _TexCoordArray.size() - 1
-                   index == _NormalArray.size()   - 1);
+                && index == _TexCoordArray.size() - 1
+                && index == _NormalArray.size()   - 1);
             _indices.push_back(index);
         }
 
