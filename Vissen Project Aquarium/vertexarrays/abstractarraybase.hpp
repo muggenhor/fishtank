@@ -57,6 +57,24 @@ class AbstractArrayBase
             return _data.size();
         }
 
+        /** @return true if this AbstractArrayBase contains no vertices, false
+         *          otherwise.
+         */
+        bool empty() const
+        {
+            return _data.empty();
+        }
+
+        /** @return a reference to the element at the given index
+         */
+        value_type& operator[](std::size_t index)
+        {
+            // Mark the data as changed
+            static_cast<Derived*>(this)->DataChanged();
+
+            return _data[index];
+        }
+
         /** @return the element at the given index
          */
         const value_type& operator[](std::size_t index) const

@@ -148,7 +148,16 @@ class AbstractArray<CoordType, CoordinateCount, true> : public AbstractArrayBase
 
         void DataChanged()
         {
-            _vbo_updated = false;
+            if (base_type::empty())
+            {
+                if (_vbo)
+                    _vbo->clear();
+                _vbo_updated = true;
+            }
+            else
+            {
+                _vbo_updated = false;
+            }
         }
 
         bool _HasVBO() const
