@@ -111,5 +111,6 @@ AC_SUBST([FT_CPPFLAGS])
 
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES([Makefile
-                 GL/Makefile])
+                 GL/Makefile
+                 vertexarrays/Makefile])
 AC_OUTPUT

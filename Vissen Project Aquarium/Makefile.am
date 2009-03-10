@@ -4,7 +4,9 @@ EXTRA_DIST= \
 	autogen.sh \
 	configure.ac
 
-SUBDIRS = GL
+SUBDIRS = \
+	GL \
+	vertexarrays
 
 AM_CFLAGS=$(FT_CFLAGS)
 AM_CXXFLAGS=$(FT_CXXFLAGS)

@@ -17,7 +17,7 @@
  *
  */
 
-#include <GLee.h>
+#include "../GL/GLee.h"
 #include "vertexbuffer.hpp"
 #include <cassert>
 

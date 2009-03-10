@@ -22,7 +22,7 @@
 
 #include <vector>
 #include <boost/static_assert.hpp>
-#include <GLee.h>
+#include "../GL/GLee.h"
 #include "gl_type_constants.hpp"
 #include "vertexarray.hpp"
 #include "texcoordarray.hpp"
