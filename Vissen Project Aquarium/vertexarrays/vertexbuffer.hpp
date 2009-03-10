@@ -38,11 +38,35 @@ class GLUnsupported : public GLRuntimeError
 class VertexBufferObject
 {
     public:
-        enum draw_method
+        /** Used to indicate how often this VBO will be updated. This is a
+         *  performance hint.
+         */
+        enum buffer_usage
         {
-            STATIC_DRAW,
-            DYNAMIC_DRAW,
-            STREAM_DRAW,
+            /** The data stored in the buffer object is unlikely to change and
+             *  will be used possibly many times as a source for drawing. This
+             *  hint tells the implementation to put the data somewhere it's
+             *  quick to draw from, but probably not quick to update.
+             */
+            STATIC_DRAW    = GL_STATIC_DRAW,
+
+            /** The data stored in the buffer object is likely to change
+             *  frequently but is likely to be used as a source for drawing
+             *  several times between changes. This hint tells the
+             *  implementation to put the data somewhere it won't be too painful
+             *  to update once in a while.
+             */
+            DYNAMIC_DRAW   = GL_DYNAMIC_DRAW,
+
+            /** The data stored in the buffer object is likely to change
+             *  frequently and will be used only once (or at least very few
+             *  times) in between changes. This hint tells the implementation
+             *  that you have time-sensitive data such as animated geometry that
+             *  will be used once and then replaced. It is crucial that data be
+             *  placed somewhere quick to update, even at the expense of faster
+             *  rendering.
+             */
+            STREAMING_DRAW = GL_STREAM_DRAW,
         };
 
     public:
@@ -54,7 +78,7 @@ class VertexBufferObject
         void bind() const;
         static void unbind();
 
-        void bufferData(size_t size, void const * const data, draw_method method = STATIC_DRAW);
+        void bufferData(size_t size, void const * const data, buffer_usage method = STATIC_DRAW);
 
     private:
         GLuint  _vbo;

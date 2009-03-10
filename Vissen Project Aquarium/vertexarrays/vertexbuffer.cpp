@@ -85,7 +85,7 @@ void VertexBufferObject::unbind()
          * unbind a VBO is not a problem */;
 }
 
-void VertexBufferObject::bufferData(size_t size, void const * const data, draw_method method)
+void VertexBufferObject::bufferData(size_t size, void const * const data, buffer_usage method)
 {
     // First bind the buffer
     bind();
