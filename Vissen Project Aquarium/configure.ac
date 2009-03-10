@@ -53,15 +53,19 @@ if test "x$enable_debug" = "xyes" ; then
 	FT_CPPFLAGS="${FT_CPPFLAGS} -DDEBUG"
 elif test "x$enable_debug" = "xrelaxed" ; then
 	WARN_AND_DEBUG_FLAGS="-O0 -g3 -Wall -Wextra -Wmissing-field-initializers -Wcast-align -Wwrite-strings -Wmissing-declarations -Wpointer-arith"
+	FT_CFLAGS="${FT_CFLAGS} -Wstrict-prototypes"
 	FT_CPPFLAGS="${FT_CPPFLAGS} -DDEBUG"
 elif test "x$enable_debug" = "xdebugprofile" ; then
 	WARN_AND_DEBUG_FLAGS="-O0 -pg -g3 -Wall -Wextra -Wmissing-field-initializers -Wcast-align -Wwrite-strings -Wmissing-declarations -Wpointer-arith"
+	FT_CFLAGS="${FT_CFLAGS} -Wstrict-prototypes"
 	FT_CPPFLAGS="${FT_CPPFLAGS} -DDEBUG"
 elif test "x$enable_debug" = "xprofile" ; then
 	WARN_AND_DEBUG_FLAGS="-Os -pg -g3 -Wall -Wextra -Wmissing-field-initializers -Wcast-align -Wwrite-strings -Wmissing-declarations -Wpointer-arith"
+	FT_CFLAGS="${FT_CFLAGS} -Wstrict-prototypes"
 	FT_CPPFLAGS="${FT_CPPFLAGS} -DNDEBUG"
 else
 	WARN_AND_DEBUG_FLAGS="-g3 -Wall -Wextra -Wmissing-field-initializers -Wcast-align -Wwrite-strings -Wmissing-declarations -Wpointer-arith"
+	FT_CFLAGS="${FT_CFLAGS} -Wstrict-prototypes"
 	FT_CPPFLAGS="${FT_CPPFLAGS} -DNDEBUG"
 fi
 
