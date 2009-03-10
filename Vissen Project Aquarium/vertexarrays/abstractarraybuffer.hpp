@@ -55,6 +55,9 @@ class AbstractArrayBuffer
          */
         void draw() const
         {
+            // This is required to make sure that OpenGL can actually work with our data
+            BOOST_STATIC_ASSERT(sizeof(value_type) == sizeof(CoordType[CoordinateCount]));
+
             if (_vbo_updated)
             {
                 _vbo.bind();

@@ -37,9 +37,6 @@ class VertexArray : public AbstractArray<CoordType, CoordinateCount, supportVBO>
             // Vertices can only have coordinates in 2, 3 or 4 dimensions
             BOOST_STATIC_ASSERT(CoordinateCount == 2 || CoordinateCount == 3 || CoordinateCount == 4);
 
-            // This is required to make sure that OpenGL can actually work with our data
-            BOOST_STATIC_ASSERT(sizeof(value_type) == sizeof(CoordType[CoordinateCount]));
-
             // Pass all of our vertices as a Vertex Array
             glVertexPointer(CoordinateCount, OpenGLTypeConstant<CoordType>::constant, 0, data);
         }
