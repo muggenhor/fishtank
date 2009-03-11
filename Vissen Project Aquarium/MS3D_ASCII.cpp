@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <boost/array.hpp>
 #include <boost/foreach.hpp>
 #include <Eigen/Geometry>
 #include <Eigen/LU>
@@ -91,35 +92,17 @@ bool Shape::saveToFile(const char* filename)
 
 void Shape::render() const
 {
-	if (indices.empty())
-		return;
-
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	glVertexPointer(3, GL_FLOAT, 0, vertices[0].data());
-	glNormalPointer(GL_FLOAT, 0, normals[0].data());
-	glTexCoordPointer(2, GL_FLOAT, 0, texcoords[0].data());
-
-	if (GLEE_VERSION_2_1)
-		glDrawRangeElements(GL_TRIANGLES, 0, vertices.size() - 1, indices.size(), GL_UNSIGNED_INT, &indices[0]);
-	else
-		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, &indices[0]);
-
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	triangles.draw();
 }
 
 size_t Shape::vertex_count() const
 {
-	return vertices.size();
+	return triangles.uniqueVertices();
 }
 
 size_t Shape::index_count() const
 {
-	return indices.size();
+	return triangles.drawnVertices();
 }
 
 bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transform)
@@ -247,10 +230,7 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 		return false;
 	}
 
-	vertices.clear();
-	texcoords.clear();
-	normals.clear();
-	indices.clear();
+	triangles.clear();
 
 	for (size_t j = 0; j < num_triangles; ++j)
 	{
@@ -281,43 +261,29 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 		assert(triangle.n[2] < parsingNormals.size());
 
 		// Add all three triangle's corners
-		for (unsigned int i = 0; i < 3; ++i)
-			AddPoint(parsingVertices[triangle.v[i]],
-			         parsingTexcoords[triangle.v[i]],
-			         parsingNormals[triangle.n[i]]);
+		boost::array<Eigen::Vector3f, 3> vertices =
+		{{
+			parsingVertices[triangle.v[0]],
+			parsingVertices[triangle.v[1]],
+			parsingVertices[triangle.v[2]],
+		}};
+		boost::array<Eigen::Vector2f, 3> texcoords =
+		{{
+			parsingTexcoords[triangle.v[0]],
+			parsingTexcoords[triangle.v[1]],
+			parsingTexcoords[triangle.v[2]],
+		}};
+		boost::array<Eigen::Vector3f, 3> normals =
+		{{
+			parsingNormals[triangle.n[0]],
+			parsingNormals[triangle.n[1]],
+			parsingNormals[triangle.n[2]],
+		}};
+
+		triangles.AddTriangle(vertices.data(), texcoords.data(), normals.data());
 	}
 
 	return true;
-}
-
-void Shape::AddPoint(const Eigen::Vector3f& vertex, const Eigen::Vector2f& texcoord, const Eigen::Vector3f& normal)
-{
-	unsigned int index = 0;
-
-	// Try to find an instance for the given vertex
-	for (; index < vertices.size(); ++index)
-	{
-		if (vertices[index]  == vertex
-		 && texcoords[index] == texcoord
-		 && normals[index]   == normal)
-		{
-			/* If we found a vertex that's the same then add the
-			 * index to the index table and bail out.
-			 */
-			indices.push_back(index);
-			return;
-		}
-	}
-
-	vertices.push_back(vertex);
-	texcoords.push_back(texcoord);
-	normals.push_back(normal);
-
-	assert(vertices.size()  - 1 == index);
-	assert(texcoords.size() - 1 == index);
-	assert(normals.size()   - 1 == index);
-
-	indices.push_back(index);
 }
 
 void Material::activate() const

@@ -11,6 +11,7 @@
 #include <Eigen/Core>
 
 #include "JPEG.h"
+#include "vertexarrays/trianglearray.hpp"
 
 #define MS_MAX_NAME 128
 #define MS_MAX_PATH 256
@@ -62,13 +63,7 @@ class Shape
 		Eigen::Vector3f bb_l, bb_h;
 
 	private:
-		void AddPoint(const Eigen::Vector3f& vertex, const Eigen::Vector2f& texcoord, const Eigen::Vector3f& normal);
-
-	private:
-		std::vector<Eigen::Vector3f>    vertices;
-		std::vector<Eigen::Vector2f>    texcoords;
-		std::vector<Eigen::Vector3f>    normals;
-		std::vector<unsigned int>       indices;
+		TriangleArray<unsigned int, float, float, float> triangles;
 };
 
 
