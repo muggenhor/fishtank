@@ -50,12 +50,15 @@ class TriangleArray
             // Pass all of our triangle data
             glEnableClientState(GL_VERTEX_ARRAY);
             glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+            glEnableClientState(GL_NORMAL_ARRAY);
 
-            assert(_VertexArray.size() == _TexCoordArray.size());
+            assert(_VertexArray.size() == _TexCoordArray.size()
+                && _VertexArray.size() == _NormalArray.size());
 
             // Pass the VertexArray
             _VertexArray.draw();
             _TexCoordArray.draw();
+            _NormalArray.draw();
 
 #ifndef NDEBUG
             for (typename std::vector<IndexIntegerType>::const_iterator i = _indices.begin(); i != _indices.end(); ++i)
@@ -71,6 +74,7 @@ class TriangleArray
                 glDrawElements(GL_TRIANGLES, _indices.size(), OpenGLTypeConstant<IndexIntegerType>::constant, &_indices[0]);
 
             // Disable the GL_VERTEX_ARRAY client state to prevent strange behaviour
+            glDisableClientState(GL_NORMAL_ARRAY);
             glDisableClientState(GL_VERTEX_ARRAY);
             glDisableClientState(GL_TEXTURE_COORD_ARRAY);
         }
@@ -166,6 +170,19 @@ class TriangleArray
                 _TexCoordArray.UseVBO();
             else
                 _TexCoordArray.UseVA();
+        }
+
+        void HasNormalVBO() const
+        {
+            return _NormalArray.HasVBO();
+        }
+
+        void UseNormalVBO(bool const vbo = true)
+        {
+            if (vbo)
+                _NormalArray.UseVBO();
+            else
+                _NormalArray.UseVA();
         }
 
         std::size_t uniqueVertices() const
