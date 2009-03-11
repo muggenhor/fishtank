@@ -21,6 +21,7 @@
 #define __INCLUDED_NORMALARRAY_HPP__
 
 #include "abstractarray.hpp"
+#include <boost/serialization/base_object.hpp>
 #include <GL/gl.h>
 #include "gl_type_constants.hpp"
 
@@ -36,6 +37,15 @@ class NormalArray : public AbstractArray<CoordType, 3, supportVBO>
         {
             // Pass all of our texture coordinates as a Texture Coordinates Array
             glNormalPointer(OpenGLTypeConstant<CoordType>::constant, 0, data);
+        }
+
+    private:
+        friend class boost::serialization::access;
+
+        template <class Archive>
+        void serialize(Archive & ar, const unsigned int /* version */)
+        {
+            ar & boost::serialization::base_object< AbstractArray<CoordType, 3, supportVBO> >(*this);
         }
 };
 

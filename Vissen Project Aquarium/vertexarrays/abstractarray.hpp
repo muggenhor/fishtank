@@ -21,6 +21,7 @@
 #define __INCLUDED_ABSTRACTARRAY_HPP__
 
 #include "abstractarraybase.hpp"
+#include <boost/serialization/base_object.hpp>
 #include "vertexbuffer.hpp"
 
 template <typename CoordType, std::size_t CoordinateCount, bool supportVBO = true>
@@ -57,6 +58,14 @@ class AbstractArray<CoordType, CoordinateCount, false> : public AbstractArrayBas
         bool _HasVBO() const
         {
             return false;
+        }
+
+        friend class boost::serialization::access;
+
+        template <class Archive>
+        void serialize(Archive & ar, const unsigned int /* version */)
+        {
+            ar & boost::serialization::base_object< AbstractArrayBase<CoordType, CoordinateCount, AbstractArray<CoordType, CoordinateCount, false> > >(*this);
         }
 };
 
@@ -142,6 +151,14 @@ class AbstractArray<CoordType, CoordinateCount, true> : public AbstractArrayBase
         bool _HasVBO() const
         {
             return _vbo != 0;
+        }
+
+        friend class boost::serialization::access;
+
+        template <class Archive>
+        void serialize(Archive & ar, const unsigned int /* version */)
+        {
+            ar & boost::serialization::base_object< AbstractArrayBase<CoordType, CoordinateCount, AbstractArray<CoordType, CoordinateCount, true> > >(*this);
         }
 
         VertexBufferObject*     _vbo;

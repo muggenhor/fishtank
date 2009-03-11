@@ -21,6 +21,7 @@
 #define __INCLUDED_TEXCOORDARRAY_HPP__
 
 #include "abstractarray.hpp"
+#include <boost/serialization/base_object.hpp>
 #include <boost/static_assert.hpp>
 #include <GL/gl.h>
 #include "gl_type_constants.hpp"
@@ -40,6 +41,15 @@ class TexCoordArray : public AbstractArray<CoordType, CoordinateCount, supportVB
 
             // Pass all of our texture coordinates as a Texture Coordinates Array
             glTexCoordPointer(CoordinateCount, OpenGLTypeConstant<CoordType>::constant, 0, data);
+        }
+
+    private:
+        friend class boost::serialization::access;
+
+        template <class Archive>
+        void serialize(Archive & ar, const unsigned int /* version */)
+        {
+            ar & boost::serialization::base_object< AbstractArray<CoordType, CoordinateCount, supportVBO> >(*this);
         }
 };
 

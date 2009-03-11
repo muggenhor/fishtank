@@ -63,6 +63,15 @@ class Shape
 		Eigen::Vector3f bb_l, bb_h;
 
 	private:
+		friend class boost::serialization::access;
+
+		template <class Archive>
+		void serialize(Archive & ar, const unsigned int /* version */)
+		{
+			ar & triangles;
+		}
+
+	private:
 		TriangleArray<unsigned int, float, float, float> triangles;
 };
 
@@ -76,6 +85,25 @@ class Material
 		bool loadFromMs3dAsciiSegment(FILE* file, std::string path_);
 		void activate() const;
 		void reloadTexture( void );
+
+	private:
+		friend class boost::serialization::access;
+
+		template <class Archive>
+		void serialize(Archive & ar, const unsigned int /* version */)
+		{
+			ar & Name;
+			ar & Ambient;
+			ar & Diffuse;
+			ar & Specular;
+			ar & Emissive;
+			ar & Shininess;
+			ar & Transparency;
+			ar & DiffuseTexture;
+			ar & AlphaTexture;
+			ar & texture;
+			ar & path;
+		}
 
 	private:
 		char  Name[MS_MAX_NAME];
@@ -108,6 +136,17 @@ class Model
 		Eigen::Vector3f bb_h;
 
 		std::string path;
+
+	private:
+		friend class boost::serialization::access;
+
+		template <class Archive>
+		void serialize(Archive & ar, const unsigned int /* version */)
+		{
+			ar & shapes;
+			ar & material_indices;
+			ar & materials;
+		}
 
 	private:
 		std::vector<Shape>      shapes;

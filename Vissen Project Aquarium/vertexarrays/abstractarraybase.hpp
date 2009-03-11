@@ -20,6 +20,8 @@
 #ifndef __INCLUDED_ABSTRACTARRAYBASE_HPP__
 #define __INCLUDED_ABSTRACTARRAYBASE_HPP__
 
+#include <boost/serialization/split_member.hpp>
+#include <boost/serialization/vector.hpp>
 #include <vector>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -143,9 +145,105 @@ class AbstractArrayBase
         {}
 
     private:
+        friend class boost::serialization::access;
+
+        template <class Archive>
+        void save(Archive & ar, const unsigned int /* version */) const
+        {
+            ar & _data;
+        }
+
+        template <class Archive>
+        void load(Archive & ar, const unsigned int /* version */)
+        {
+            ar & _data;
+
+            // Mark the data as changed
+            static_cast<Derived*>(this)->DataChanged();
+        }
+
+        BOOST_SERIALIZATION_SPLIT_MEMBER()
+
+    private:
         /** Holds all data.
          */
         std::vector<value_type> _data;
 };
+
+namespace boost { namespace serialization {
+
+template<class Archive, typename _Scalar, int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
+void serialize(Archive & ar, Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols> & m, const unsigned int /* version */)
+{
+	for (int col = 0; col < m.cols(); ++col)
+	{
+		for (int row = 0; row < m.rows(); ++row)
+		{
+			ar & m(row, col);
+		}
+	}
+}
+
+template<class Archive, typename _Scalar, int _Rows, int _Options, int _MaxRows, int _MaxCols>
+void serialize(Archive & ar, Eigen::Matrix<_Scalar, _Rows, Eigen::Dynamic, _Options, _MaxRows, _MaxCols> & m, const unsigned int /* version */)
+{
+	int cols = m.cols();
+
+	ar & cols;
+
+	if (m.cols() != cols)
+		m.resize(m.rows(), cols);
+
+	for (int col = 0; col < m.cols(); ++col)
+	{
+		for (int row = 0; row < m.rows(); ++row)
+		{
+			ar & m(row, col);
+		}
+	}
+}
+
+template<class Archive, typename _Scalar, int _Cols, int _Options, int _MaxRows, int _MaxCols>
+void serialize(Archive & ar, Eigen::Matrix<_Scalar, Eigen::Dynamic, _Cols, _Options, _MaxRows, _MaxCols> & m, const unsigned int /* version */)
+{
+	int rows = m.rows();
+
+	ar & rows;
+
+	if (m.rows() != rows)
+		m.resize(rows, m.cols());
+
+	for (int col = 0; col < m.cols(); ++col)
+	{
+		for (int row = 0; row < m.rows(); ++row)
+		{
+			ar & m(row, col);
+		}
+	}
+}
+
+template<class Archive, typename _Scalar, int _Options, int _MaxRows, int _MaxCols>
+void serialize(Archive & ar, Eigen::Matrix<_Scalar, Eigen::Dynamic, Eigen::Dynamic, _Options, _MaxRows, _MaxCols> & m, const unsigned int /* version */)
+{
+	int rows = m.rows();
+	int cols = m.cols();
+
+	ar & rows;
+	ar & cols;
+
+	if (m.rows() != rows
+	 || m.cols() != cols)
+		m.resize(rows, cols);
+
+	for (int col = 0; col < m.cols(); ++col)
+	{
+		for (int row = 0; row < m.rows(); ++row)
+		{
+			ar & m(row, col);
+		}
+	}
+}
+
+}}
 
 #endif // __INCLUDED_ABSTRACTARRAYBASE_HPP__

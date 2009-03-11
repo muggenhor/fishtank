@@ -21,6 +21,7 @@
 #define __INCLUDED_TRIANGLEARRAY_HPP__
 
 #include <vector>
+#include <boost/serialization/vector.hpp>
 #include <boost/static_assert.hpp>
 #include "../GL/GLee.h"
 #include "gl_type_constants.hpp"
@@ -205,6 +206,17 @@ class TriangleArray
                 && index == _TexCoordArray.size() - 1
                 && index == _NormalArray.size()   - 1);
             _indices.push_back(index);
+        }
+
+        friend class boost::serialization::access;
+
+        template <class Archive>
+        void serialize(Archive & ar, const unsigned int /* version */)
+        {
+            ar & _VertexArray;
+            ar & _TexCoordArray;
+            ar & _NormalArray;
+            ar & _indices;
         }
 
     private:

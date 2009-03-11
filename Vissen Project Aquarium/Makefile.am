@@ -47,6 +47,7 @@ noinst_HEADERS = \
 fishtank_LDADD = \
 	$(builddir)/GL/libGLee.a \
 	$(builddir)/vertexarrays/libvertexarrays.a \
+	$(BOOST_SERIALIZATION_LIBS) \
 	$(GLFW_LIBS) \
 	$(OPENGL_LIBS) \
 	$(JPEG_LIBS) \

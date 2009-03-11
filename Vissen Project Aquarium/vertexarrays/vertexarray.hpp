@@ -21,6 +21,7 @@
 #define __INCLUDED_VERTEXARRAY_HPP__
 
 #include "abstractarray.hpp"
+#include <boost/serialization/base_object.hpp>
 #include <boost/static_assert.hpp>
 #include <GL/gl.h>
 #include "gl_type_constants.hpp"
@@ -40,6 +41,15 @@ class VertexArray : public AbstractArray<CoordType, CoordinateCount, supportVBO>
 
             // Pass all of our vertices as a Vertex Array
             glVertexPointer(CoordinateCount, OpenGLTypeConstant<CoordType>::constant, 0, data);
+        }
+
+    private:
+        friend class boost::serialization::access;
+
+        template <class Archive>
+        void serialize(Archive & ar, const unsigned int /* version */)
+        {
+            ar & boost::serialization::base_object< AbstractArray<CoordType, CoordinateCount, supportVBO> >(*this);
         }
 };
 
