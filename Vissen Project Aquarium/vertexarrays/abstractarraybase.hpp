@@ -21,17 +21,15 @@
 #define __INCLUDED_ABSTRACTARRAYBASE_HPP__
 
 #include <vector>
-#include <eigen/vector.h>
-#include <eigen/matrix.h>
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 
 template <typename CoordType, std::size_t CoordinateCount, typename Derived>
 class AbstractArrayBase
 {
     public:
-        typedef Eigen::Vector<CoordType, CoordinateCount>       value_type;
-        typedef Eigen::Vector<CoordType, CoordinateCount + 1>   trans_value_type;
-        typedef Eigen::Matrix<CoordType, CoordinateCount>       matrix_type;
-        typedef Eigen::Matrix<CoordType, CoordinateCount + 1>   trans_matrix_type;
+        typedef Eigen::Matrix<CoordType, CoordinateCount, 1>    value_type;
+        typedef Eigen::Transform<CoordType, CoordinateCount>    transform_type;
 
         /** Virtual destructor to make sure that all subclasses have a virtual
          *  destructor as well.
@@ -105,108 +103,30 @@ class AbstractArrayBase
             static_cast<Derived*>(this)->DataChanged();
         }
 
-        void leftmultiply(const matrix_type& m)
+        void leftmultiply(const transform_type& m)
         {
-            value_type r;
-
             // Loop over all vertices and left-multiply them by the matrix we're given
             for (typename std::vector<value_type>::iterator
                  i  = _data.begin();
                  i != _data.end();
                  ++i)
             {
-                // Compute the product vector of (vector *i) * (matrix m) and store it in (vector r).
-                m.leftmultiply(*i, &r);
-
-                // Store the result back in our original (vector *i)
-                *i = r;
+                *i = *i * m;
             }
 
             // Mark the data as changed
             static_cast<Derived*>(this)->DataChanged();
         }
 
-        void leftmultiply(const trans_matrix_type& m)
+        void multiply(const transform_type& m)
         {
-            trans_value_type r;
-
-            // Loop over all vertices and left-multiply them by the matrix we're given
-            for (typename std::vector<value_type>::iterator
-                 i  = _data.begin();
-                 i != _data.end();
-                 ++i)
-            {
-                trans_value_type vTmp;
-
-                for (unsigned int j = 0; j < CoordinateCount; ++j)
-                {
-                    vTmp[j] = (*i)[j];
-                }
-
-                vTmp[CoordinateCount] = static_cast<CoordType>(1);
-
-                // Compute the product vector of (vector *i) * (matrix m) and store it in (vector r).
-                m.leftmultiply(vTmp, &r);
-
-                // Store the result back in our original (vector *i)
-                for (unsigned int j = 0; j < CoordinateCount; ++j)
-                {
-                    (*i)[j] = r[j];
-                }
-            }
-
-            // Mark the data as changed
-            static_cast<Derived*>(this)->DataChanged();
-        }
-
-        void multiply(const matrix_type& m)
-        {
-            value_type r;
-
             // Loop over all vertices and multiply them by the matrix we're given
             for (typename std::vector<value_type>::iterator
                  i  = _data.begin();
                  i != _data.end();
                  ++i)
             {
-                // Compute the product vector of (matrix m) * (vector *i) and store it in (vector r).
-                m.multiply(*i, &r);
-
-                // Store the result back in our original (vector *i)
-                *i = r;
-            }
-
-            // Mark the data as changed
-            static_cast<Derived*>(this)->DataChanged();
-        }
-
-        void multiply(const trans_matrix_type& m)
-        {
-            trans_value_type r;
-
-            // Loop over all vertices and multiply them by the matrix we're given
-            for (typename std::vector<value_type>::iterator
-                 i  = _data.begin();
-                 i != _data.end();
-                 ++i)
-            {
-                trans_value_type vTmp;
-
-                for (unsigned int j = 0; j < CoordinateCount; ++j)
-                {
-                    vTmp[j] = (*i)[j];
-                }
-
-                vTmp[CoordinateCount] = static_cast<CoordType>(1);
-
-                // Compute the product vector of (matrix m) * (vector *i) and store it in (vector r).
-                m.multiply(vTmp, &r);
-
-                // Store the result back in our original (vector *i)
-                for (unsigned int j = 0; j < CoordinateCount; ++j)
-                {
-                    (*i)[j] = r[j];
-                }
+                *i = m * *i;
             }
 
             // Mark the data as changed

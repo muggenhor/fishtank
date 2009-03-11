@@ -29,8 +29,7 @@ class NormalArray : public AbstractArray<CoordType, 3, supportVBO>
 {
     public:
         typedef typename AbstractArray<CoordType, 3, supportVBO>::value_type value_type;
-        typedef typename AbstractArray<CoordType, 3, supportVBO>::matrix_type matrix_type;
-        typedef typename AbstractArray<CoordType, 3, supportVBO>::trans_matrix_type trans_matrix_type;
+        typedef typename AbstractArray<CoordType, 3, supportVBO>::transform_type transform_type;
 
     protected:
         virtual void glPassPointer(value_type const * const data) const

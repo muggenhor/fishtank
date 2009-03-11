@@ -36,10 +36,8 @@ class TriangleArray
         typedef typename VertexArray<VertexCoordType, VertexCoordinateCount, supportVertexVBOs>::value_type         vertex_type;
         typedef typename TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs>::value_type                     texcoord_type;
         typedef typename NormalArray<NormalCoordType, supportNormalVBOs>::value_type                                normal_type;
-        typedef typename VertexArray<VertexCoordType, VertexCoordinateCount, supportVertexVBOs>::matrix_type        vertex_matrix_type;
-        typedef typename TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs>::matrix_type                    texcoord_matrix_type;
-        typedef typename VertexArray<VertexCoordType, VertexCoordinateCount, supportVertexVBOs>::trans_matrix_type  vertex_trans_matrix_type;
-        typedef typename TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs>::trans_matrix_type              texcoord_trans_matrix_type;
+        typedef typename VertexArray<VertexCoordType, VertexCoordinateCount, supportVertexVBOs>::transform_type     vertex_transform_type;
+        typedef typename TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs>::transform_type                 texcoord_transform_type;
 
         void draw() const
         {
@@ -90,58 +88,26 @@ class TriangleArray
             _TexCoordArray.clear();
         }
 
-        void ModelViewLeftMult(vertex_matrix_type const& m)
+        void ModelViewLeftMult(vertex_transform_type const& m)
         {
             _VertexArray.leftmultiply(m);
-
-            vertex_matrix_type normalMatrix(m.inverse());
-            normalMatrix.replaceWithAdjoint();
-            _NormalArray.leftmultiply(normalMatrix);
+            // TODO: Transpose the inversed matrix
+            _NormalArray.leftmultiply(m.inverse());
         }
 
-        void ModelViewLeftMult(vertex_trans_matrix_type const& m)
-        {
-            _VertexArray.leftmultiply(m);
-
-            vertex_trans_matrix_type normalMatrix(m.inverse());
-            normalMatrix.replaceWithAdjoint();
-            _NormalArray.leftmultiply(normalMatrix);
-        }
-
-        void ModelViewMult(vertex_matrix_type const& m)
+        void ModelViewMult(vertex_transform_type const& m)
         {
             _VertexArray.multiply(m);
-
-            vertex_matrix_type normalMatrix(m.inverse());
-            normalMatrix.replaceWithAdjoint();
-            _NormalArray.multiply(normalMatrix);
+            // TODO: Transpose the inversed matrix
+            _NormalArray.multiply(m.inverse());
         }
 
-        void ModelViewMult(vertex_trans_matrix_type const& m)
-        {
-            _VertexArray.multiply(m);
-
-            vertex_trans_matrix_type normalMatrix(m.inverse());
-            normalMatrix.replaceWithAdjoint();
-            _NormalArray.multiply(normalMatrix);
-        }
-
-        void TextureLeftMult(texcoord_matrix_type const& m)
+        void TextureLeftMult(texcoord_transform_type const& m)
         {
             _TexCoordArray.leftmultiply(m);
         }
 
-        void TextureLeftMult(texcoord_trans_matrix_type const& m)
-        {
-            _TexCoordArray.leftmultiply(m);
-        }
-
-        void TextureMult(texcoord_matrix_type const& m)
-        {
-            _TexCoordArray.multiply(m);
-        }
-
-        void TextureMult(texcoord_trans_matrix_type const& m)
+        void TextureMult(texcoord_transform_type const& m)
         {
             _TexCoordArray.multiply(m);
         }

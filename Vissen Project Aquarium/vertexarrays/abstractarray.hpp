@@ -33,9 +33,7 @@ class AbstractArray<CoordType, CoordinateCount, false> : public AbstractArrayBas
         typedef AbstractArrayBase<CoordType, CoordinateCount,
                 AbstractArray<CoordType, CoordinateCount, false> >  base_type;
         typedef typename base_type::value_type                      value_type;
-        typedef typename base_type::trans_value_type                trans_value_type;
-        typedef typename base_type::matrix_type                     matrix_type;
-        typedef typename base_type::trans_matrix_type               trans_matrix_type;
+        typedef typename base_type::transform_type                  transform_type;
 
     protected:
         virtual void glPassPointer(value_type const * data) const = 0;
@@ -69,9 +67,7 @@ class AbstractArray<CoordType, CoordinateCount, true> : public AbstractArrayBase
         typedef AbstractArrayBase<CoordType, CoordinateCount,
                 AbstractArray<CoordType, CoordinateCount, true> >   base_type;
         typedef typename base_type::value_type                      value_type;
-        typedef typename base_type::trans_value_type                trans_value_type;
-        typedef typename base_type::matrix_type                     matrix_type;
-        typedef typename base_type::trans_matrix_type               trans_matrix_type;
+        typedef typename base_type::transform_type                  transform_type;
 
         AbstractArray() :
             _vbo(VertexBufferObject::is_supported() ? new VertexBufferObject : 0),
