@@ -83,7 +83,6 @@ version_check ()
 
 version_check 1 "autoconf" "autoconf" 2 56 || DIE=1
 version_check 1 "automake" "automake" 1 10 || DIE=1
-version_check 1 "libtoolize" "libtool" 1 5 || DIE=1
 if [ "$DIE" -eq 1 ]; then
   exit 1
 fi
@@ -104,12 +103,6 @@ echo "+ running autoconf ..."
 autoconf || {
   echo
   echo "autoconf failed"
-  exit 1
-}
-echo "+ running libtoolize ..."
-libtoolize --automake || {
-  echo
-  echo "libtoolize failed"
   exit 1
 }
 echo "+ running automake ..."
