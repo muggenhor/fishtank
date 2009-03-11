@@ -76,7 +76,7 @@ class Vis
 		void setTemporaryGoal(const Eigen::Vector3f& temp_goal);/// use that to set temporary goal when avoiding collision or something.
 
 	private:
-		mutable WiggleTransformation _wiggle;
+		static boost::shared_ptr<WiggleTransformation> _wiggle;
 };
 
 //teken het aquarium, gebruikmakende van witte lijnen

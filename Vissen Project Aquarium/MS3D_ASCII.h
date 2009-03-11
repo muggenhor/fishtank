@@ -1,7 +1,6 @@
 #ifndef _MS3D_ASCII_H
 #define _MS3D_ASCII_H
 
-#include <boost/function.hpp>
 #include "GL/GLee.h"
 #include <GL/glfw.h>
 
@@ -49,18 +48,13 @@ class FileWrap
 class Shape
 {
 	public:
-		typedef boost::function<boost::function<void ()> (const std::vector<Eigen::Vector3f>& vertices,
-		                                                  const std::vector<Eigen::Vector2f>& texcoords,
-		                                                  const std::vector<Eigen::Vector3f>& normals,
-		                                                  const std::vector<unsigned int>& indices)> transform_function;
-
 		Shape();
 
 		//bool loadFromFile( const char *filename );
 		bool loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transform = Eigen::Matrix4f::Identity());/// identity transform by default.
 
 		//bool saveToFile( const char *filename );
-		void render(const transform_function& function = transform_function()) const;
+		void render() const;
 
 		size_t vertex_count() const;
 		size_t index_count() const;
@@ -113,7 +107,7 @@ class Model
 
 		bool loadFromMs3dAsciiFile(const char* filename, const Eigen::Matrix4f& transform = Eigen::Matrix4f::Identity());
 		void reloadTextures();
-		void render(const Shape::transform_function& function = Shape::transform_function()) const;
+		void render() const;
 
 		Eigen::Vector3f bb_l;/// bounding box for the model, low and high
 		Eigen::Vector3f bb_h;

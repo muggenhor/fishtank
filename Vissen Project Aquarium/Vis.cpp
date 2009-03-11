@@ -4,10 +4,14 @@
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
+#include "glexcept.hpp"
+#include <iostream>
 #include "math-helpers.hpp"
 #include <string>
 
 using namespace std;
+
+boost::shared_ptr<WiggleTransformation> Vis::_wiggle;
 
 void TestDrawAquarium()
 {
@@ -94,6 +98,23 @@ Vis::Vis(boost::shared_ptr<Model> model, const std::string& propertiesFile, int 
 	scale(200),
 	maxFloorHeight(maxFloorHeight)
 {
+	try
+	{
+		// Create the shader if it hasn't been created yet
+		if (!_wiggle)
+			_wiggle.reset(new WiggleTransformation);
+	}
+	catch (const OpenGL::missing_capabilities& e)
+	{
+		std::cerr << "Failed to create WiggleShaderProgram due to missing OpenGL capabilities: " << e.what() << "\n";
+	}
+	catch (const OpenGL::shader_source_error& e)
+	{
+		std::cerr << "Failed to compile, link or validate the WiggleShaderProgram: " << e.what() << "\n"
+		          << "Info log contains:\n"
+		          << e.infoLog() << "\n";
+	}
+
 	pos = RandomPos();
 	finalGoalPos = Eigen::Vector3f(0., 0., 0.);
 	velocity=Eigen::Vector3f(0., 0., 0.);
@@ -232,12 +253,20 @@ void Vis::Draw() const
 		glScalef(scale,scale,scale);
 		glEnable(GL_NORMALIZE);
 
-		_wiggle.update(Eigen::Vector3f(wiggle_freq * scale, 0, 0),
-		               Eigen::Vector3f(0, 0, wiggle_amplitude / scale),
-		               wiggle_phase,
-		               bending * scale);
+		if (_wiggle)
+		{
+			OpenGL::use_scoped_program use_shader(*_wiggle);
+			_wiggle->update(Eigen::Vector3f(wiggle_freq * scale, 0, 0),
+				       Eigen::Vector3f(0, 0, wiggle_amplitude / scale),
+				       wiggle_phase,
+				       bending * scale);
 
-		model->render(_wiggle);
+			model->render();
+		}
+		else
+		{
+			model->render();
+		}
 
 		glPopMatrix();
 	}

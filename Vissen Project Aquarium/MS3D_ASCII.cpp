@@ -89,7 +89,7 @@ bool Shape::saveToFile(const char* filename)
 }
 #endif
 
-void Shape::render(const transform_function& function) const
+void Shape::render() const
 {
 	if (indices.empty())
 		return;
@@ -102,28 +102,10 @@ void Shape::render(const transform_function& function) const
 	glNormalPointer(GL_FLOAT, 0, normals[0].data());
 	glTexCoordPointer(2, GL_FLOAT, 0, texcoords[0].data());
 
-	boost::function<void ()> finish_function;
-	try
-	{
-		if (function)
-		{
-			finish_function = function(vertices, texcoords, normals, indices);
-		}
-
-		if (GLEE_VERSION_2_1)
-			glDrawRangeElements(GL_TRIANGLES, 0, vertices.size() - 1, indices.size(), GL_UNSIGNED_INT, &indices[0]);
-		else
-			glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, &indices[0]);
-	}
-	catch (...)
-	{
-		if (finish_function)
-			finish_function();
-		throw;
-	}
-
-	if (finish_function)
-		finish_function();
+	if (GLEE_VERSION_2_1)
+		glDrawRangeElements(GL_TRIANGLES, 0, vertices.size() - 1, indices.size(), GL_UNSIGNED_INT, &indices[0]);
+	else
+		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, &indices[0]);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
@@ -544,7 +526,7 @@ void Model::reloadTextures()
 		material.reloadTexture();
 }
 
-void Model::render(const Shape::transform_function& function) const
+void Model::render() const
 {
 	for (size_t k = 0; k < shapes.size(); ++k)	// for each shape
 	{
@@ -560,6 +542,6 @@ void Model::render(const Shape::transform_function& function) const
 			glDisable( GL_TEXTURE_2D );
 		}
 
-		shape.render(function);
+		shape.render();
 	}
 }
