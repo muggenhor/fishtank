@@ -161,7 +161,8 @@ void VertexBufferObject::unbind()
     else
         /* If the VBO functions are unavailable, then we cannot
          * possibly have bound a VBO object. So not being able to
-         * unbind a VBO is not a problem */;
+         * unbind a VBO is not a problem */
+        (void)0;
 }
 
 void VertexBufferObject::bufferData(ptrdiff_t const size, void const * const data, buffer_usage const method)
