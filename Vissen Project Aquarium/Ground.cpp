@@ -63,7 +63,7 @@ Eigen::Vector3d Ground::PosAt(int x, int y)
 	return Eigen::Vector3d(x * aquariumSize.x() / float(widthAmount - 1) - 0.5 * aquariumSize.x(), h, y * aquariumSize.z() / float(lengthAmount - 1) - 0.5 * aquariumSize.z());
 }
 
-Eigen::Vector3d Ground::NormalAt(int x, int y)
+const Eigen::Vector3d& Ground::NormalAt(int x, int y) const
 {
 	x = clip(x, 0, widthAmount - 1);
 	y = clip(y, 0, lengthAmount - 1);
@@ -112,23 +112,18 @@ void Ground::Draw()
 		//glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_MODULATE);
 	}
 
-	for(int j=1; j<lengthAmount; ++j)
+	for (int y = 1; y < lengthAmount; ++y)
 	{
 		glBegin(GL_TRIANGLE_STRIP);
-		for(int i=0; i<widthAmount; ++i)
+		for (int x = 0; x < widthAmount; ++x)
 		{
-			//Vec2d p=pos(i,j);
-			Eigen::Vector3d p = PosAt(i,j);
-			Eigen::Vector3d n = NormalAt(i,j);
+			glTexCoord2i(x, y);
+			glNormal3dv(NormalAt(x, y).data());
+			glVertex3dv(PosAt(x, y).data());
 
-			glTexCoord2i(i, j);
-			glNormal3dv(n.data());
-			glVertex3dv(p.data());
-			p = PosAt(i, j - 1);
-			n = NormalAt(i, j - 1);
-			glTexCoord2i(i, j - 1);
-			glNormal3dv(n.data());
-			glVertex3dv(p.data());
+			glTexCoord2i(x, y - 1);
+			glNormal3dv(NormalAt(x, y - 1).data());
+			glVertex3dv(PosAt(x, y - 1).data());
 		}
 		glEnd();
 	}

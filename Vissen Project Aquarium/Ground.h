@@ -15,8 +15,7 @@ class Ground
 		//verkrijg de hoogte op een bepaalde positie
 		double HeightAt(int x, int y);
 		Eigen::Vector3d PosAt(int x, int y);
-		// - afblijven -
-		Eigen::Vector3d NormalAt(int x, int y);
+		const Eigen::Vector3d& NormalAt(int x, int y) const;
 
 		//teken de vloer
 		void Draw();
