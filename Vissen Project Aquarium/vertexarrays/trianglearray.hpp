@@ -40,9 +40,15 @@ class TriangleArray
         typedef typename VertexArray<VertexCoordType, VertexCoordinateCount, supportVertexVBOs>::transform_type     vertex_transform_type;
         typedef typename TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs>::transform_type                 texcoord_transform_type;
 
-        TriangleArray() :
+        TriangleArray(const bool use_indices = true) :
+            _indices(use_indices ? new std::vector<IndexIntegerType> : 0),
             _indices_modified(false)
         {
+        }
+
+        ~TriangleArray()
+        {
+            delete _indices;
         }
 
         void draw() const
@@ -64,22 +70,29 @@ class TriangleArray
             _TexCoordArray.draw();
             _NormalArray.draw();
 
-#ifndef NDEBUG
-            if (_indices_modified)
+            if (_indices)
             {
-                for (typename std::vector<IndexIntegerType>::const_iterator i = _indices.begin(); i != _indices.end(); ++i)
-                    assert(*i < _VertexArray.size());
-                _indices_modified = false;
-            }
+#ifndef NDEBUG
+                if (_indices_modified)
+                {
+                    for (typename std::vector<IndexIntegerType>::const_iterator i = _indices->begin(); i != _indices->end(); ++i)
+                        assert(*i < _VertexArray.size());
+                    _indices_modified = false;
+                }
 #endif
 
-            // Draw all contained triangles based on the array of indices
-            if (GLEE_VERSION_1_2)
-                glDrawRangeElements(GL_TRIANGLES, 0, _VertexArray.size() - 1, _indices.size(), OpenGLTypeConstant<IndexIntegerType>::constant, &_indices[0]);
-            else if (GLEE_EXT_draw_range_elements)
-                glDrawRangeElementsEXT(GL_TRIANGLES, 0, _VertexArray.size() - 1, _indices.size(), OpenGLTypeConstant<IndexIntegerType>::constant, &_indices[0]);
+                // Draw all contained triangles based on the array of indices
+                if (GLEE_VERSION_1_2)
+                    glDrawRangeElements(GL_TRIANGLES, 0, _VertexArray.size() - 1, _indices->size(), OpenGLTypeConstant<IndexIntegerType>::constant, &(*_indices)[0]);
+                else if (GLEE_EXT_draw_range_elements)
+                    glDrawRangeElementsEXT(GL_TRIANGLES, 0, _VertexArray.size() - 1, _indices->size(), OpenGLTypeConstant<IndexIntegerType>::constant, &(*_indices)[0]);
+                else
+                    glDrawElements(GL_TRIANGLES, _indices->size(), OpenGLTypeConstant<IndexIntegerType>::constant, &(*_indices)[0]);
+            }
             else
-                glDrawElements(GL_TRIANGLES, _indices.size(), OpenGLTypeConstant<IndexIntegerType>::constant, &_indices[0]);
+            {
+                glDrawArrays(GL_TRIANGLES, 0, _VertexArray.size());
+            }
 
             // Disable the GL_VERTEX_ARRAY client state to prevent strange behaviour
             glDisableClientState(GL_NORMAL_ARRAY);
@@ -89,7 +102,7 @@ class TriangleArray
 
         bool empty() const
         {
-            return _indices.empty();
+            return _VertexArray.empty();
         }
 
         void clear()
@@ -97,9 +110,10 @@ class TriangleArray
             _VertexArray.clear();
             _TexCoordArray.clear();
             _NormalArray.clear();
-            _indices.clear();
+            if (_indices)
+                _indices->clear();
 
-            _indices_modified = false;
+            _indices_modified = true;
         }
 
         void ModelViewLeftMult(vertex_transform_type const& m)
@@ -172,7 +186,7 @@ class TriangleArray
 
         std::size_t drawnVertices() const
         {
-            return _indices.size();
+            return _indices ? _indices->size() : _VertexArray.size();
         }
 
         void AddTriangle(const vertex_type* v, const texcoord_type* t, const normal_type* n)
@@ -197,18 +211,21 @@ class TriangleArray
             _indices_modified = true;
             unsigned int index = 0;
 
-            // Try to find an instance of the given vertex
-            for (index = 0; index < _VertexArray.size(); ++index)
+            if (_indices)
             {
-                if (_VertexArray[index]   == vertex
-                 && _TexCoordArray[index] == texcoord
-                 && _NormalArray[index]   == normal)
+                // Try to find an instance of the given vertex
+                for (index = 0; index < _VertexArray.size(); ++index)
                 {
-                    // If we found a vertex that's the same then add the index
-                    // to the index table and bail out
-                    _indices.push_back(index);
+                    if (_VertexArray[index]   == vertex
+                     && _TexCoordArray[index] == texcoord
+                     && _NormalArray[index]   == normal)
+                    {
+                        // If we found a vertex that's the same then add the index
+                        // to the index table and bail out
+                        _indices->push_back(index);
 
-                    return;
+                        return;
+                    }
                 }
             }
 
@@ -219,7 +236,8 @@ class TriangleArray
             assert(index == _VertexArray.size()   - 1
                 && index == _TexCoordArray.size() - 1
                 && index == _NormalArray.size()   - 1);
-            _indices.push_back(index);
+            if (_indices)
+                _indices->push_back(index);
         }
 
         friend class boost::serialization::access;
@@ -238,7 +256,7 @@ class TriangleArray
         VertexArray<VertexCoordType, VertexCoordinateCount, supportVertexVBOs> _VertexArray;
         NormalArray<NormalCoordType, supportNormalVBOs> _NormalArray;
         TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs> _TexCoordArray;
-        std::vector<IndexIntegerType> _indices;
+        std::vector<IndexIntegerType>* const _indices;
 #ifndef NDEBUG
         mutable bool _indices_modified;
 #endif
