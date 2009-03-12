@@ -41,8 +41,10 @@ class TriangleArray
         typedef typename TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs>::transform_type                 texcoord_transform_type;
 
         TriangleArray(const bool use_indices = true) :
-            _indices(use_indices ? new std::vector<IndexIntegerType> : 0),
-            _indices_modified(false)
+#ifndef NDEBUG
+            _indices_modified(false),
+#endif
+            _indices(use_indices ? new std::vector<IndexIntegerType> : 0)
         {
         }
 
@@ -256,10 +258,10 @@ class TriangleArray
         VertexArray<VertexCoordType, VertexCoordinateCount, supportVertexVBOs> _VertexArray;
         NormalArray<NormalCoordType, supportNormalVBOs> _NormalArray;
         TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs> _TexCoordArray;
-        std::vector<IndexIntegerType>* const _indices;
 #ifndef NDEBUG
         mutable bool _indices_modified;
 #endif
+        std::vector<IndexIntegerType>* const _indices;
 };
 
 #endif // __INCLUDED_IMD_HPP__
