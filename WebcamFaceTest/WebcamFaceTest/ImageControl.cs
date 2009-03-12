@@ -674,7 +674,7 @@ namespace VideoStreamMerger
       //          timerGezichtherk.Enabled = true;
 
                 //TIJDELIJK
-     //          sockFace.Start();
+               sockFace.Start();
 
                 //verbinding maken, indien mislukt false retourneren
                 if (!socket.Start())
@@ -720,32 +720,32 @@ namespace VideoStreamMerger
         {
             if (imageLinks == null) //indien stream is samengevoegd, nieuwe frame accepteren
                 imageLinks = frame;
-            if (gezichtHerk.Webcam == 0 && gezichtZoeken)
+  /*          if (gezichtHerk.Webcam == 0 && gezichtZoeken)
             {
                 gezichtHerk.newFrame(frame);
                 gezichtZoeken = false;
-            }
+            }*/
         }
         void videoM_frame(Bitmap frame)
         {
             if (imageRechts == null)
                 imageRechts = frame;
             //voor gezichtsherkenning
-            if (gezichtHerk.Webcam == 1 && gezichtZoeken)
-            {
+  //          if (gezichtHerk.Webcam == 1 && gezichtZoeken)
+  //          {
                 gezichtHerk.newFrame(frame);
-                gezichtZoeken = false;
-            }
+   //             gezichtZoeken = false;
+   //         }
         }
         void videoR_frame(Bitmap frame)
         {
             if (imageMidden == null)
                 imageMidden = frame;
-            if (gezichtHerk.Webcam == 2 && gezichtZoeken)
+    /*        if (gezichtHerk.Webcam == 2 && gezichtZoeken)
             {
                 gezichtHerk.newFrame(frame);
                 gezichtZoeken = false;
-            }
+            }*/
         }
 
         private void MotionDetectionInitialiseren()
