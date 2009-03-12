@@ -367,7 +367,7 @@ void Material::reloadTexture( void )
 	if ( strlen(DiffuseTexture) > 0 )
 	{
 		std::string tmp(path+DiffuseTexture);
-		texture = Texture(Image::LoadJPG(tmp.c_str()));
+		texture = Texture(Image::LoadJPG(tmp.c_str(), true));
 	}
 	else
 	{

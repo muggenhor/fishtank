@@ -14,7 +14,7 @@ Ground::Ground(const string &filename, int maxHeight, const std::string &texture
 
 	if (!texturename.empty())
 	{/// if got texture name
-		texture = Texture(Image::LoadJPG(texturename.c_str()));
+		texture = Texture(Image::LoadJPG(texturename.c_str(), true));
 	}
 }
 
