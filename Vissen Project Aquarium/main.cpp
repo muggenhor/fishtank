@@ -3,6 +3,7 @@
 #include <GL/glfw.h>
 #include <GL/gl.h>
 #include <Eigen/Core>
+#include "framerate.hpp"
 #include "Vis.h"
 #include "AquariumController.h"
 #include "MS3D_ASCII.h"
@@ -412,6 +413,8 @@ int main()
 		//glFogf(GL_FOG_END, eye_distance+aquariumSize.z()+aquariumSize.x());
 		glEnable(GL_FOG);
 
+		FrameRateManager fps(30);
+
 		while(glfwGetWindowParam( GLFW_OPENED ))
 		{
 			//update
@@ -482,12 +485,7 @@ int main()
 			//TestDrawAquarium();
 
 			glfwSwapBuffers();
-			/// @TODO Make the time to sleep dynamic to maintain a steady framerate
-#ifdef WIN32
-			Sleep(1);
-#else
-			usleep(1000);
-#endif
+			fps.frameRateDelay();
 		}
 
 		return 0;

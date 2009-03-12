@@ -18,6 +18,7 @@ fishtank_SOURCES = \
 	AquariumController.cpp \
 	Bubble.cpp \
 	Environment.cpp \
+	framerate.cpp \
 	glexcept.cpp \
 	Ground.cpp \
 	imagereceiver.cpp \
@@ -33,6 +34,7 @@ noinst_HEADERS = \
 	AquariumController.h \
 	Bubble.h \
 	Environment.h \
+	framerate.hpp \
 	glexcept.hpp \
 	Ground.h \
 	imagereceiver.h \

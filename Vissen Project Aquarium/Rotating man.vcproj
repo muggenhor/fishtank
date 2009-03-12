@@ -189,6 +189,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\framerate.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\GL\GLee.c"
 				>
 			</File>
@@ -248,6 +252,10 @@
 			</File>
 			<File
 				RelativePath=".\Environment.h"
+				>
+			</File>
+			<File
+				RelativePath=".\framerate.hpp"
 				>
 			</File>
 			<File
