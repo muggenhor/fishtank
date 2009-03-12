@@ -48,7 +48,7 @@ void Ground::GenerateGroundFromImage(const string &filename)
 	}
 }
 
-double Ground::HeightAt(int x, int y)
+int Ground::HeightAt(int x, int y) const
 {
 	x = clip(x, 0, widthAmount - 1);
 	y = clip(y, 0, lengthAmount - 1);
@@ -56,14 +56,15 @@ double Ground::HeightAt(int x, int y)
 	return ground[x + y * widthAmount];
 }
 
-Eigen::Vector3d Ground::PosAt(int x, int y)
+Eigen::Vector3f Ground::PosAt(int x, int y)
 {
-	const double h = HeightAt(x, y);
+	const float relativeX = x * aquariumSize.x() / float(widthAmount - 1) - 0.5 * aquariumSize.x();
+	const float relativeY = y * aquariumSize.z() / float(lengthAmount - 1) - 0.5 * aquariumSize.z();
 
-	return Eigen::Vector3d(x * aquariumSize.x() / float(widthAmount - 1) - 0.5 * aquariumSize.x(), h, y * aquariumSize.z() / float(lengthAmount - 1) - 0.5 * aquariumSize.z());
+	return Eigen::Vector3f(relativeX, HeightAt(x, y), relativeY);
 }
 
-const Eigen::Vector3d& Ground::NormalAt(int x, int y) const
+const Eigen::Vector3f& Ground::NormalAt(int x, int y) const
 {
 	x = clip(x, 0, widthAmount - 1);
 	y = clip(y, 0, lengthAmount - 1);
@@ -118,12 +119,12 @@ void Ground::Draw()
 		for (int x = 0; x < widthAmount; ++x)
 		{
 			glTexCoord2i(x, y);
-			glNormal3dv(NormalAt(x, y).data());
-			glVertex3dv(PosAt(x, y).data());
+			glNormal3fv(NormalAt(x, y).data());
+			glVertex3fv(PosAt(x, y).data());
 
 			glTexCoord2i(x, y - 1);
-			glNormal3dv(NormalAt(x, y - 1).data());
-			glVertex3dv(PosAt(x, y - 1).data());
+			glNormal3fv(NormalAt(x, y - 1).data());
+			glVertex3fv(PosAt(x, y - 1).data());
 		}
 		glEnd();
 	}
