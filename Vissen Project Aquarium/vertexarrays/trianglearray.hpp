@@ -40,6 +40,11 @@ class TriangleArray
         typedef typename VertexArray<VertexCoordType, VertexCoordinateCount, supportVertexVBOs>::transform_type     vertex_transform_type;
         typedef typename TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs>::transform_type                 texcoord_transform_type;
 
+        TriangleArray() :
+            _indices_modified(false)
+        {
+        }
+
         void draw() const
         {
             // Bail out if there's nothing to draw
@@ -60,8 +65,12 @@ class TriangleArray
             _NormalArray.draw();
 
 #ifndef NDEBUG
-            for (typename std::vector<IndexIntegerType>::const_iterator i = _indices.begin(); i != _indices.end(); ++i)
-                assert(*i < _VertexArray.size());
+            if (_indices_modified)
+            {
+                for (typename std::vector<IndexIntegerType>::const_iterator i = _indices.begin(); i != _indices.end(); ++i)
+                    assert(*i < _VertexArray.size());
+                _indices_modified = false;
+            }
 #endif
 
             // Draw all contained triangles based on the array of indices
@@ -89,6 +98,8 @@ class TriangleArray
             _TexCoordArray.clear();
             _NormalArray.clear();
             _indices.clear();
+
+            _indices_modified = false;
         }
 
         void ModelViewLeftMult(vertex_transform_type const& m)
@@ -183,6 +194,7 @@ class TriangleArray
     private:
         void AddPoint(const vertex_type& vertex, const texcoord_type& texcoord, const normal_type& normal)
         {
+            _indices_modified = true;
             unsigned int index = 0;
 
             // Try to find an instance of the given vertex
@@ -219,6 +231,7 @@ class TriangleArray
             ar & _TexCoordArray;
             ar & _NormalArray;
             ar & _indices;
+            _indices_modified = true;
         }
 
     private:
@@ -226,6 +239,9 @@ class TriangleArray
         NormalArray<NormalCoordType, supportNormalVBOs> _NormalArray;
         TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs> _TexCoordArray;
         std::vector<IndexIntegerType> _indices;
+#ifndef NDEBUG
+        mutable bool _indices_modified;
+#endif
 };
 
 #endif // __INCLUDED_IMD_HPP__
