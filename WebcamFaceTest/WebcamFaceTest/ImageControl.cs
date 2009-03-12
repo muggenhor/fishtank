@@ -413,9 +413,7 @@ namespace VideoStreamMerger
                 if (verschil >= percentage)
                 {
                     eindLinks = imageLinks.Width - zoeknr;
-                    //eindLinks = imageLinks.Width - (zoeknr / 2);
                     begMidden = zoeknr / 2;
-           //         return true;
                 }
                 //zoeknr nu alleen verhogen als links ne rechts geprobeert is
                 if (!links)
@@ -469,7 +467,6 @@ namespace VideoStreamMerger
                  if (midden) //middenstukje verwijderen
                  {
                         //een kolom pixels van de linkerbitmap pakken
-                       // x = imageLinks.Width - (kolom + zoeknr); y = 0;
                         x = zoeknr+kolom; y = 0;
 
                         //data van de linker frame laden
@@ -656,7 +653,6 @@ namespace VideoStreamMerger
                 }
 
                 //klaar dus alles weer terugzetten naar default en de data voor videostream retourneren
-        //        Bitmap.FromStream(new MemoryStream(dataImage)).Save("c://achtergrondStream.bmp");
                 imageLinks = imageRechts = imageMidden = null;
                 return dataImage;
             }
@@ -670,9 +666,6 @@ namespace VideoStreamMerger
         {
      //       try
             {
-    //            gezichtHer = new face();
-      //          timerGezichtherk.Enabled = true;
-
                 //TIJDELIJK
                sockFace.Start();
 
@@ -720,32 +713,17 @@ namespace VideoStreamMerger
         {
             if (imageLinks == null) //indien stream is samengevoegd, nieuwe frame accepteren
                 imageLinks = frame;
-  /*          if (gezichtHerk.Webcam == 0 && gezichtZoeken)
-            {
-                gezichtHerk.newFrame(frame);
-                gezichtZoeken = false;
-            }*/
         }
         void videoM_frame(Bitmap frame)
         {
             if (imageRechts == null)
                 imageRechts = frame;
-            //voor gezichtsherkenning
-  //          if (gezichtHerk.Webcam == 1 && gezichtZoeken)
-  //          {
-                gezichtHerk.newFrame(frame);
-   //             gezichtZoeken = false;
-   //         }
+            gezichtHerk.newFrame(frame);
         }
         void videoR_frame(Bitmap frame)
         {
             if (imageMidden == null)
                 imageMidden = frame;
-    /*        if (gezichtHerk.Webcam == 2 && gezichtZoeken)
-            {
-                gezichtHerk.newFrame(frame);
-                gezichtZoeken = false;
-            }*/
         }
 
         private void MotionDetectionInitialiseren()
@@ -826,55 +804,12 @@ namespace VideoStreamMerger
                 //variabelen invullen voor het samenvoegen van de streams
                 eindLinks *= 3;
                 begRechts *= 3;
-                //         width += links;
                 Mlinks *= 3;
                 width *= 3;
                 width -= 2;
-                //      width -= links;
                 totaal = width * height + 54;
                 imgLen = imageLinks.Width * 3;
 
-            /*    //totale lengte van samengevoegde image (hoogte is al gedaan)
-                width = eindLinks + imageRechts.Width - begRechts;
-
-                image = new Bitmap(width, height, PixelFormat.Format24bppRgb);
-                int xR = begRechts, xL = 0;
-                //voor elke x coordinaat
-                for (int y = 0; y < height; y++)
-                {
-                    //voor elke y coordinaat
-                    for (int x = 0; x < width; x++)
-                    {
-                        //linkerimage
-                        if (x < eindLinks)
-                        {
-                            image.SetPixel(x, y, imageLinks.GetPixel(xL++, y));
-                        }
-                        //rechterimage
-                        else
-                        {
-                            image.SetPixel(x, y, imageRechts.GetPixel(xR++, y));
-                        }
-                    }
-                    xL = 0;
-                    xR = begRechts;
-                }
-
-                //de afbeelding in het geheugen zetten zodat het aangepast kan worden
-                MemoryStream mstemp = new MemoryStream();
-                image.Save(mstemp, ImageFormat.Bmp);
-                mstemp.Flush();
-                dataImage = mstemp.ToArray();
-                mstemp.Close();
-
-                //variabelen invullen voor het samenvoegen van de streams
-                eindLinks *= 3;
-                begRechts *= 3;
-                width *= 3;
-                width -= 2;
-                totaal = width * height + 54;
-                imgLen = imageLinks.Width * 3;
-                */
                 //alles terugzetten naar default en true retourneren
                 Bitmap.FromStream(new MemoryStream(dataImage)).Save("c://achtergrond.bmp");
                 imageLinks = imageRechts = null;
@@ -930,38 +865,7 @@ namespace VideoStreamMerger
                     }
                 }
 
-     /*           int x = 0, xL = 54, xR = 54 + begRechts, y = 0;
-
-                for (int i = 53; i < totaal; i++, x++)
-                {
-                    //nieuwe regel
-                    if (x >= width) //eerst alleen >
-                    {
-                        x = 0;
-                        xL = 54;
-                        xR = 54 + begRechts;
-                        y++;
-
-                        dataImage[i++] = 0;
-                        dataImage[i++] = 0;
-                    }
-                    else
-                    {
-                        //linkerImage
-                        if (x <= eindLinks)
-                        {
-                            dataImage[i] = dataLinks[xL++ + (y * imgLen)];
-                        }
-                        //rechterImage
-                        else
-                        {
-                            dataImage[i] = dataRechts[xR++ + (y * imgLen)];
-                        }
-                    }
-                }*/
-
                 //klaar dus alles weer terugzetten naar default en de data voor videostream retourneren
-              //          Bitmap.FromStream(new MemoryStream(dataImage)).Save("c://achtergrondStream.bmp");
                 imageLinks = imageRechts = null;
                 dataImagebackup = dataImage; //soms blijft die ergens hangen, hierdoor word de oude videostream doorgestuurd
                 return dataImage;
