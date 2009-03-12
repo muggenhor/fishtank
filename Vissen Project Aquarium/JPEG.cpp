@@ -77,11 +77,6 @@ Image Image::LoadJPG(const char* const filename, bool flipY)
 	}
 }
 
-Texture::Texture() :
-	_img(NULL)
-{
-}
-
 Texture::Texture(const Image& img) :
 	_img(new Image(img))
 {

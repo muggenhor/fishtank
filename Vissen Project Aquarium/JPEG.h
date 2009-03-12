@@ -8,8 +8,6 @@
 #include <boost/serialization/vector.hpp>
 #include <vector>
 
-class Texture;
-
 class Image
 {
 	public:
@@ -39,7 +37,7 @@ class Image
 class Texture
 {
 	public:
-		Texture();
+		Texture() {}
 		Texture(const Image& img);
 		~Texture();
 
@@ -69,8 +67,7 @@ class Texture
 			*this = Texture(*img);
 		}
 
-                BOOST_SERIALIZATION_SPLIT_MEMBER()
-
+		BOOST_SERIALIZATION_SPLIT_MEMBER()
 
 	private:
 		boost::scoped_ptr<Image>        _img;
