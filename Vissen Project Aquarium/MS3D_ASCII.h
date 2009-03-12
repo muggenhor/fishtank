@@ -50,6 +50,7 @@ class Shape
 {
 	public:
 		Shape();
+		~Shape();
 
 		//bool loadFromFile( const char *filename );
 		bool loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transform = Eigen::Matrix4f::Identity());/// identity transform by default.
@@ -72,7 +73,13 @@ class Shape
 		}
 
 	private:
-		TriangleArray<unsigned int, float, float, float> triangles;
+		TriangleArray<unsigned int, float, float, float>* triangles;
+
+		/**
+		 * Don't optimize (by trimming duplicate vertices) models that
+		 * exceed this amount of triangles.
+		 */
+		static const unsigned int max_optimizing_triangles;
 };
 
 

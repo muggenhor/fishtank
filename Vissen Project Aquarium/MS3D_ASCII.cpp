@@ -13,13 +13,21 @@
 using namespace std;
 using namespace Eigen;
 
+const unsigned int Shape::max_optimizing_triangles = 3500;
+
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //										The Shape Class
 /////////////////////////////////////////////////////////////////////////////////////////////////
 Shape::Shape() :
 	bb_l(1E20, 1E20, 1E20),
-	bb_h(-bb_l)
+	bb_h(-bb_l),
+	triangles(0)
 {
+}
+
+Shape::~Shape()
+{
+	delete triangles;
 }
 
 #if 0
@@ -92,17 +100,18 @@ bool Shape::saveToFile(const char* filename)
 
 void Shape::render() const
 {
-	triangles.draw();
+	if (triangles)
+		triangles->draw();
 }
 
 size_t Shape::vertex_count() const
 {
-	return triangles.uniqueVertices();
+	return triangles ? triangles->uniqueVertices() : 0;
 }
 
 size_t Shape::index_count() const
 {
-	return triangles.drawnVertices();
+	return triangles ? triangles->drawnVertices() : 0;
 }
 
 bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transform)
@@ -230,7 +239,15 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 		return false;
 	}
 
-	triangles.clear();
+	delete triangles;
+
+	const bool optimize_triangles = (num_triangles <= max_optimizing_triangles);
+	triangles = new TriangleArray<unsigned int, float, float, float>(optimize_triangles);
+
+	if (!optimize_triangles)
+	{
+		std::cerr << "warning: will not optimize this model for faster rendering because it exceeds the maximum amount of optimisable triangles (" << max_optimizing_triangles << ").\n";
+	}
 
 	for (size_t j = 0; j < num_triangles; ++j)
 	{
@@ -280,7 +297,7 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 			parsingNormals[triangle.n[2]],
 		}};
 
-		triangles.AddTriangle(vertices.data(), texcoords.data(), normals.data());
+		triangles->AddTriangle(vertices.data(), texcoords.data(), normals.data());
 	}
 
 	return true;
