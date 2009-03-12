@@ -87,6 +87,8 @@ class TriangleArray
         {
             _VertexArray.clear();
             _TexCoordArray.clear();
+            _NormalArray.clear();
+            _indices.clear();
         }
 
         void ModelViewLeftMult(vertex_transform_type const& m)
