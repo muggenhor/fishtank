@@ -18,9 +18,9 @@ extern "C"
 Image::Image(const unsigned int rowSpan_, const unsigned int width_, const unsigned int height_) :
 	rowSpan(rowSpan_),
 	width(width_),
-	height(height_)
+	height(height_),
+	data(rowSpan * height)
 {
-	data.resize(rowSpan * height);
 }
 
 Image Image::LoadJPG(const char* const filename, bool flipY)
