@@ -6864,7 +6864,7 @@ Materials: 1
 0.000000 0.000000 0.000000 1.000000
 12.800000
 1.000000
-"ANGELTEX.JPG"
+"AngelTex.jpg"
 ""
 
 Bones: 0
