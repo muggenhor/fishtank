@@ -39,6 +39,7 @@ noinst_HEADERS = \
 	Ground.h \
 	imagereceiver.h \
 	JPEG.h \
+	main.hpp \
 	math-helpers.hpp \
 	MS3D_ASCII.h \
 	Object.h \
@@ -49,6 +50,7 @@ noinst_HEADERS = \
 fishtank_LDADD = \
 	$(builddir)/GL/libGLee.la \
 	$(builddir)/vertexarrays/libvertexarrays.la \
+	$(BOOST_PROGRAM_OPTIONS_LIBS) \
 	$(GLFW_LIBS) \
 	$(OPENGL_LIBS) \
 	$(JPEG_LIBS) \

@@ -5,6 +5,7 @@
 #include <Eigen/LU>
 #include "JPEG.h"
 #include "math-helpers.hpp"
+#include "main.hpp"
 #include "MS3D_ASCII.h"
 #include <string>
 
@@ -247,6 +248,7 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 
 	const bool optimize_triangles = (num_triangles <= max_optimizing_triangles);
 	triangles = new TriangleArray<unsigned int, float, float, float>(optimize_triangles);
+	triangles->UseVBOs(use_vbos);
 
 	if (!optimize_triangles)
 	{

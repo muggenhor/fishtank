@@ -1,9 +1,11 @@
+#include <boost/program_options.hpp>
 #include <boost/shared_ptr.hpp>
 #include "GL/GLee.h"
 #include <GL/glfw.h>
 #include <GL/gl.h>
 #include <Eigen/Core>
 #include "framerate.hpp"
+#include "main.hpp"
 #include "Vis.h"
 #include "AquariumController.h"
 #include "MS3D_ASCII.h"
@@ -22,7 +24,13 @@
 #include "imagereceiver.h"
 #include "glexcept.hpp"
 
+// Allow for easy adding of translations
+#define _(string) (string)
+
 using namespace std;
+namespace po = boost::program_options;
+
+bool use_vbos = true;
 
 //scherm resolutie
 static int win_width=0, win_height=0;
@@ -33,6 +41,59 @@ static int win_move_x = 5, win_move_y = 30;
 static float eye_distance=300;
 
 static map<string, boost::shared_ptr<Model> > models;
+
+static void ParseOptions(int argc, char** argv, std::istream& config_file)
+{
+	// Group of generic options that are only allowed on the command line
+	po::options_description generic("Generic options");
+	generic.add_options()
+	    ("version", _("Show version information and exit"))
+	    ("help,h", _("Show this help message and exit"))
+	;
+
+	/* Group of options that will be allowed both on the command line and
+	 * in the config file.
+	 */
+	po::options_description config("Configuration");
+	config.add_options()
+	    ("vbo", po::value<bool>(&use_vbos)->default_value(use_vbos),
+	      _("Enable or disable the use of VBOs for rendering."))
+	;
+
+	/* Hidden options, will be allowed both on the command line and in the
+	 * config file, but will not be shown to the user.
+	 */
+	po::options_description hidden("Hidden options");
+	hidden.add_options()
+	;
+
+	po::options_description cmdline_options;
+	cmdline_options.add(generic).add(config).add(hidden);
+
+	po::options_description config_file_options;
+	config_file_options.add(config).add(hidden);
+
+	po::options_description visible("Allowed options");
+	visible.add(generic).add(config);
+
+	po::variables_map vm;
+	po::store(po::parse_command_line(argc, argv, cmdline_options), vm);
+	po::store(po::parse_config_file(config_file, cmdline_options), vm);
+	po::notify(vm);
+
+	if (vm.count("help"))
+	{
+		cerr << visible;
+		throw exit_exception(EXIT_FAILURE);
+	}
+
+	if (vm.count("version"))
+	{
+		cerr << "Fishtank - Version <UNSPECIFIED>\n"
+		        "Created by Jasper Lammers and Dmytry Lavrov\n";
+		throw exit_exception(EXIT_FAILURE);
+	}
+}
 
 //laad de settings uit het opgegeven bestand
 static void LoadSettings(std::istream& input_file)
@@ -350,7 +411,7 @@ static void DrawBackground(bool cam1)
 	glColor3f(1,1,1);
 }
 
-int main()
+int main(int argc, char** argv)
 {
 #if defined(__GNUC__)
 	// Report uncaught exceptions in a nicer way than terminating alone.
@@ -361,7 +422,9 @@ int main()
 	{
 		srand(time(NULL));/// make random numbers sequence depend to program start time.
 
-		cout << "Created by Jasper Lammers and Dmytry Lavrov" << endl;
+		ifstream config("Settings/aquaConfig.cfg");
+		ParseOptions(argc, argv, config);
+		config.close();
 
 		glfwInit();
 
@@ -375,13 +438,14 @@ int main()
 		glfwSetWindowTitle("");
 
 
+		// @TODO Should eventually replace this entirely by ParseOptions
 		ifstream input_file("Settings/aquaConfig.txt");
-
 		LoadSettings(input_file);
 
 		AquariumController aquariumController;
 
 		LoadModels(input_file, aquariumController);
+		input_file.close();
 
 
 		glfwSetWindowSize(win_width * 3, win_height);
@@ -487,6 +551,10 @@ int main()
 		}
 
 		return 0;
+	}
+	catch (const exit_exception& e)
+	{
+		return e.code();
 	}
 	catch (const OpenGL::shader_source_error& e)
 	{

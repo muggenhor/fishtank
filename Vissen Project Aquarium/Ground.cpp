@@ -7,6 +7,7 @@
 #include "AquariumController.h"
 #include "JPEG.h"
 #include "math-helpers.hpp"
+#include "main.hpp"
 
 #define foreach BOOST_FOREACH
 
@@ -15,6 +16,7 @@ Ground::Ground(const char* const filename, int maxHeight, const char* const text
 	heightmap(Image::LoadJPG(filename)),
 	texture(texturename ? Texture(Image::LoadJPG(texturename, true)) : Texture())
 {
+	triangles.UseVBOs(use_vbos);
 	updateRenderData();
 
 #ifdef DEBUG
