@@ -107,7 +107,7 @@ static void LoadModels(std::istream& input_file, AquariumController& aquariumCon
 
 	getline(input_file, s);
 	aquariumController.ground.maxHeight = atoi(s.c_str());
-	aquariumController.ground.GenerateGroundFromImage(aquariumController.ground.file);
+	aquariumController.ground.updateRenderData();
 
 	getline(input_file, s);
 	int n=atoi(s.c_str());
@@ -159,8 +159,8 @@ static void LoadModels(std::istream& input_file, AquariumController& aquariumCon
 		int x = -(aquariumSize.x() / 2) + atoi(s.c_str());
 		getline(input_file, s);
 		int z = -(aquariumSize.z() / 2) + atoi(s.c_str());
-		int groundposx = (x + (aquariumSize.x() / 2)) / aquariumSize.x() * (aquariumController.ground.widthAmount);
-		int groundposy = (z + (aquariumSize.z() / 2)) / aquariumSize.z() * (aquariumController.ground.lengthAmount);
+		int groundposx = (x + (aquariumSize.x() / 2)) / aquariumSize.x() * (aquariumController.ground.width());
+		int groundposy = (z + (aquariumSize.z() / 2)) / aquariumSize.z() * (aquariumController.ground.depth());
 		aquariumController.AddObject(models[model_name], propertieFile, Eigen::Vector3d(x, aquariumController.ground.HeightAt(groundposx, groundposy), z));
 	}
 
@@ -172,8 +172,8 @@ static void LoadModels(std::istream& input_file, AquariumController& aquariumCon
 		int x = -(aquariumSize.x() / 2) + atoi(s.c_str());
 		getline(input_file, s);
 		int z = -(aquariumSize.z() / 2) + atoi(s.c_str());
-		int groundposx = (x + (aquariumSize.x() / 2)) / aquariumSize.x() * (aquariumController.ground.widthAmount);
-		int groundposy = (z + (aquariumSize.z() / 2)) / aquariumSize.z() * (aquariumController.ground.lengthAmount);
+		int groundposx = (x + (aquariumSize.x() / 2)) / aquariumSize.x() * (aquariumController.ground.width());
+		int groundposy = (z + (aquariumSize.z() / 2)) / aquariumSize.z() * (aquariumController.ground.depth());
 		aquariumController.AddBubbleSpot(Eigen::Vector3d(x, aquariumController.ground.HeightAt(groundposx, groundposy), z));
 	}
 }

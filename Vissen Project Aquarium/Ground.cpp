@@ -1,7 +1,7 @@
 #include <boost/array.hpp>
 #include <boost/circular_buffer.hpp>
 #include <boost/foreach.hpp>
-#include <Eigen/Geometry>
+#include <Eigen/Core>
 #include "Ground.h"
 #include "AquariumController.h"
 #include "JPEG.h"
@@ -9,54 +9,20 @@
 
 #define foreach BOOST_FOREACH
 
-using namespace std;
-
-Ground::Ground(const string &filename, int maxHeight, const std::string &texturename) :
+Ground::Ground(const char* const filename, int maxHeight, const char* const texturename) :
 	maxHeight(maxHeight),
-	file(filename)
+	heightmap(Image::LoadJPG(filename)),
+	texture(texturename ? Texture(Image::LoadJPG(texturename, true)) : Texture())
 {
-	//GenerateGroundFromImage(filename);
-
-	if (!texturename.empty())
-	{/// if got texture name
-		texture = Texture(Image::LoadJPG(texturename.c_str(), true));
-	}
-}
-
-void Ground::GenerateGroundFromImage(const string &filename)
-{
-	Image image = Image::LoadJPG(filename.c_str());
-#if 0
-	if (error_loading_image)
-	{
-		widthAmount = 2;
-		lengthAmount = 2;
-		ground.resize(widthAmount * lengthAmount, -aquariumSize.y() / 2);
-		return;
-	}
-#endif
-
-	widthAmount = image.width;
-	lengthAmount = image.height;
-	ground.resize(widthAmount * lengthAmount);
-
-	for (int y = 0; y < lengthAmount; y++)
-	{
- 		for (int x = 0; x < widthAmount; x++)
- 		{
-			ground[x + y * widthAmount] = -aquariumSize.y() / 2 + ((unsigned char)(image.data[x * 3 + y * image.rowSpan])) / 255.0 * maxHeight;
- 		}
-	}
-
 	updateRenderData();
 }
 
-int Ground::HeightAt(int x, int y) const
+int Ground::HeightAt(unsigned int x, unsigned int y) const
 {
-	x = clip(x, 0, widthAmount - 1);
-	y = clip(y, 0, lengthAmount - 1);
+	x = clip(x, 0U, width() - 1);
+	y = clip(y, 0U, depth() - 1);
 
-	return ground[x + y * widthAmount];
+	return heightmap.data[x * 3 + y * heightmap.rowSpan] / 255.f * maxHeight - aquariumSize.y() * 0.5f;
 }
 
 void Ground::Draw()
@@ -94,7 +60,7 @@ void Ground::Draw()
 		texture.bind();
 		glMatrixMode(GL_TEXTURE);
 		glLoadIdentity();
-		glScalef(1.0/widthAmount,1.0/lengthAmount,1.0);
+		glScalef(1.f / static_cast<float>(width()), 1.f / static_cast<float>(depth()), 1.f);
 		glMatrixMode(GL_MODELVIEW);
 		glColor3f(1,1,1);
 		//glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_MODULATE);
@@ -119,8 +85,8 @@ void Ground::Draw()
 
 static Eigen::Vector3f PosAt(const Ground& ground, int x, int y)
 {
-	const float relativeX = x * aquariumSize.x() / float(ground.widthAmount - 1) - 0.5 * aquariumSize.x();
-	const float relativeY = y * aquariumSize.z() / float(ground.lengthAmount - 1) - 0.5 * aquariumSize.z();
+	const float relativeX = x * aquariumSize.x() / float(ground.width() - 1) - 0.5 * aquariumSize.x();
+	const float relativeY = y * aquariumSize.z() / float(ground.depth() - 1) - 0.5 * aquariumSize.z();
 
 	return Eigen::Vector3f(relativeX, ground.HeightAt(x, y), relativeY);
 }
@@ -166,13 +132,13 @@ void Ground::updateRenderData()
 {
 	triangles.clear();
 
-	for (int y = 1; y < lengthAmount; ++y)
+	for (int y = 1; y < static_cast<int>(depth()); ++y)
 	{
 		// Triangles have 3 vertices
 		boost::circular_buffer<Eigen::Vector2i> vertices(3);
 		bool flip_vertices = false;
 
-		for (int x = 0; x < widthAmount; ++x)
+		for (int x = 0; x < static_cast<int>(width()); ++x)
 		{
 			AddTriangleStripPoint(*this, vertices, flip_vertices, triangles, Eigen::Vector2i(x, y));
 			AddTriangleStripPoint(*this, vertices, flip_vertices, triangles, Eigen::Vector2i(x, y - 1));
