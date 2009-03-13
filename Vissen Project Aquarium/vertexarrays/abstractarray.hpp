@@ -110,7 +110,11 @@ class AbstractArray<CoordType, CoordinateCount, true, Derived> : public Abstract
             {
                 if (!_vbo_updated)
                 {
-                    _vbo->bufferData(this->size() * sizeof(value_type), &(*this)[0]);
+                    if (base_type::empty())
+                        _vbo->clear();
+                    else
+                        _vbo->bufferData(this->size() * sizeof(value_type), &(*this)[0]);
+                    _vbo_updated = true;
                 }
 
                 _vbo->bind();
@@ -125,16 +129,7 @@ class AbstractArray<CoordType, CoordinateCount, true, Derived> : public Abstract
 
         void DataChanged()
         {
-            if (base_type::empty())
-            {
-                if (_vbo)
-                    _vbo->clear();
-                _vbo_updated = true;
-            }
-            else
-            {
-                _vbo_updated = false;
-            }
+            _vbo_updated = false;
         }
 
         bool _HasVBO() const
