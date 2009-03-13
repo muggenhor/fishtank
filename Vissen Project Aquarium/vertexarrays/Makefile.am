@@ -2,8 +2,8 @@ AM_CFLAGS=$(FT_CFLAGS)
 AM_CXXFLAGS=$(FT_CXXFLAGS)
 AM_CPPFLAGS=$(FT_CPPFLAGS)
 
-noinst_LIBRARIES = libvertexarrays.a
-libvertexarrays_a_SOURCES = \
+noinst_LTLIBRARIES = libvertexarrays.la
+libvertexarrays_la_SOURCES = \
 	vertexbuffer.cpp
 noinst_HEADERS = \
 	abstractarray.hpp \
@@ -13,4 +13,4 @@ noinst_HEADERS = \
 	vertexarray.hpp \
 	vertexbuffer.hpp
 
-libvertexarrays_a_CPPFLAGS = $(BOOST_CPPFLAGS) $(AM_CPPFLAGS)
+libvertexarrays_la_CPPFLAGS = $(BOOST_CPPFLAGS) $(AM_CPPFLAGS)

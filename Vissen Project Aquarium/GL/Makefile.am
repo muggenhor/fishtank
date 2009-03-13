@@ -3,9 +3,9 @@ AM_CFLAGS=$(FT_CFLAGS) -Wno-missing-declarations
 AM_CXXFLAGS=$(FT_CXXFLAGS)
 AM_CPPFLAGS=$(FT_CPPFLAGS)
 
-noinst_LIBRARIES = libGLee.a
+noinst_LTLIBRARIES = libGLee.la
 
-libGLee_a_SOURCES = \
+libGLee_la_SOURCES = \
 	GLee.c
 
 noinst_HEADERS = \

@@ -47,8 +47,8 @@ noinst_HEADERS = \
 	wiggle.hpp
 
 fishtank_LDADD = \
-	$(builddir)/GL/libGLee.a \
-	$(builddir)/vertexarrays/libvertexarrays.a \
+	$(builddir)/GL/libGLee.la \
+	$(builddir)/vertexarrays/libvertexarrays.la \
 	$(GLFW_LIBS) \
 	$(OPENGL_LIBS) \
 	$(JPEG_LIBS) \
