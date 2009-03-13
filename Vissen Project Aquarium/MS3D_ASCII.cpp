@@ -240,6 +240,10 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 	}
 
 	delete triangles;
+	/* Make sure triangles doesn't point to invalid memory if an exception
+	 * gets thrown.
+	 */
+	triangles = 0;
 
 	const bool optimize_triangles = (num_triangles <= max_optimizing_triangles);
 	triangles = new TriangleArray<unsigned int, float, float, float>(optimize_triangles);
