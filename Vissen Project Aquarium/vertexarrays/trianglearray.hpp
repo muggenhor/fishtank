@@ -183,6 +183,13 @@ class TriangleArray
                 _NormalArray.UseVA();
         }
 
+        void UseVBOs(bool const vbo = true)
+        {
+            UseVertexVBO(vbo);
+            UseTexVBO(vbo);
+            UseNormalVBO(vbo);
+        }
+
         std::size_t uniqueVertices() const
         {
             return _VertexArray.size();
