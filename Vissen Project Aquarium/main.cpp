@@ -486,6 +486,10 @@ int main()
 
 			glfwSwapBuffers();
 			fps.frameRateDelay();
+#ifdef DEBUG
+			if (fps.frameCount() % fps.targetRate() == 0)
+				std::cerr << "Rendered frames: " << fps.frameCount() <<  "; in seconds: " << fps.countTime() << " with average framerate: " << fps.avgFrameRate() << "\n";
+#endif
 		}
 
 		return 0;
