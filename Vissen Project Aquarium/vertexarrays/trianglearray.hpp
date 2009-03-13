@@ -115,7 +115,9 @@ class TriangleArray
             if (_indices)
                 _indices->clear();
 
+#ifndef NDEBUG
             _indices_modified = true;
+#endif
         }
 
         void ModelViewLeftMult(vertex_transform_type const& m)
@@ -209,7 +211,9 @@ class TriangleArray
 
         void AddPoint(const vertex_type& vertex, const texcoord_type& texcoord, const normal_type& normal)
         {
+#ifndef NDEBUG
             _indices_modified = true;
+#endif
             unsigned int index = 0;
 
             if (_indices)
@@ -251,7 +255,9 @@ class TriangleArray
             ar & _TexCoordArray;
             ar & _NormalArray;
             ar & _indices;
+#ifndef NDEBUG
             _indices_modified = true;
+#endif
         }
 
     private:
