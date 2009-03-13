@@ -75,13 +75,8 @@ class AbstractArray<CoordType, CoordinateCount, true, Derived> : public Abstract
         typedef typename base_type::value_type                              value_type;
         typedef typename base_type::transform_type                          transform_type;
 
-        AbstractArray() :
-            _vbo(VertexBufferObject::is_supported() ? new VertexBufferObject : 0),
-            _vbo_updated(false)
-        {}
-
-        AbstractArray(bool use_vbo) :
-            _vbo(use_vbo ? new VertexBufferObject : 0),
+        AbstractArray(bool use_vbo = true) :
+            _vbo(use_vbo && VertexBufferObject::is_supported() ? new VertexBufferObject : 0),
             _vbo_updated(false)
         {}
 
