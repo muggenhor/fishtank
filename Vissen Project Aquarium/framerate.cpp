@@ -61,6 +61,12 @@ float FrameRateManager::avgFrameRate() const
     return static_cast<float>(_totalFrameCount) / countTime();
 }
 
+float FrameRateManager::recentAvgFrameRate() const
+{
+    // Compute the amount of frames per seconds (i.e. framerate expressed in Hz)
+    return static_cast<float>(_avgFrameCount) / static_cast<float>(::GetTickCount() - _lastFrameTicks) * 1000.f;
+}
+
 int FrameRateManager::computeFrameRateDelay()
 {
     // First move to the next frame

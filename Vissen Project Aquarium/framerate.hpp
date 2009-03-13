@@ -14,6 +14,7 @@ class FrameRateManager
         unsigned int frameCount() const;
         float countTime() const;
         float avgFrameRate() const;
+        float recentAvgFrameRate() const;
 
         void frameRateDelay();
 
