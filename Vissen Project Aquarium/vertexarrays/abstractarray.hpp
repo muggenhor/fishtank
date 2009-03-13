@@ -80,6 +80,11 @@ class AbstractArray<CoordType, CoordinateCount, true, Derived> : public Abstract
             _vbo_updated(false)
         {}
 
+        ~AbstractArray()
+        {
+            delete _vbo;
+        }
+
         void UseVBO()
         {
             if (!_vbo)
