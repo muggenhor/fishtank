@@ -22,12 +22,6 @@
 #include "imagereceiver.h"
 #include "glexcept.hpp"
 
-#ifdef WIN32
-# include <windows.h>
-#else
-# include <unistd.h>
-#endif
-
 using namespace std;
 
 //scherm resolutie
