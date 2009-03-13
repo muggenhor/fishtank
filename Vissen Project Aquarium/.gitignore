@@ -21,6 +21,8 @@
 /fishtank
 /fishtank.exe
 /install-sh
+/libtool
+/ltmain.sh
 /missing
 /msvcr90.dll
 /stamp-h1
