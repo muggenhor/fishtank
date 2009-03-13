@@ -33,11 +33,6 @@ class AbstractArrayBase
         typedef Eigen::Matrix<CoordType, CoordinateCount, 1>    value_type;
         typedef Eigen::Transform<CoordType, CoordinateCount>    transform_type;
 
-        /** Virtual destructor to make sure that all subclasses have a virtual
-         *  destructor as well.
-         */
-        virtual ~AbstractArrayBase() {}
-
         bool HasVBO() const
         {
             return static_cast<const Derived *>(this)->_HasVBO();

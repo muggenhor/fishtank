@@ -27,14 +27,17 @@
 #include "gl_type_constants.hpp"
 
 template <typename CoordType, std::size_t CoordinateCount, bool supportVBO = true>
-class VertexArray : public AbstractArray<CoordType, CoordinateCount, supportVBO>
+class VertexArray : public AbstractArray<CoordType, CoordinateCount, supportVBO, VertexArray<CoordType, CoordinateCount, supportVBO> >
 {
     public:
-        typedef typename AbstractArray<CoordType, CoordinateCount, supportVBO>::value_type value_type;
-        typedef typename AbstractArray<CoordType, CoordinateCount, supportVBO>::transform_type transform_type;
+        typedef typename AbstractArray<CoordType, CoordinateCount, supportVBO, VertexArray<CoordType, CoordinateCount, supportVBO> >::value_type value_type;
+        typedef typename AbstractArray<CoordType, CoordinateCount, supportVBO, VertexArray<CoordType, CoordinateCount, supportVBO> >::transform_type transform_type;
 
-    protected:
-        virtual void glPassPointer(value_type const * const data) const
+    private:
+        friend class AbstractArray<CoordType, CoordinateCount, supportVBO,
+               VertexArray<CoordType, CoordinateCount, supportVBO> >;
+
+        void glPassPointer(value_type const * const data) const
         {
             // Vertices can only have coordinates in 2, 3 or 4 dimensions
             BOOST_STATIC_ASSERT(CoordinateCount == 2 || CoordinateCount == 3 || CoordinateCount == 4);
@@ -43,13 +46,12 @@ class VertexArray : public AbstractArray<CoordType, CoordinateCount, supportVBO>
             glVertexPointer(CoordinateCount, OpenGLTypeConstant<CoordType>::constant, 0, data);
         }
 
-    private:
         friend class boost::serialization::access;
 
         template <class Archive>
         void serialize(Archive & ar, const unsigned int /* version */)
         {
-            ar & boost::serialization::base_object< AbstractArray<CoordType, CoordinateCount, supportVBO> >(*this);
+            ar & boost::serialization::base_object< AbstractArray<CoordType, CoordinateCount, supportVBO, VertexArray<CoordType, CoordinateCount, supportVBO> > >(*this);
         }
 };
 

@@ -26,26 +26,28 @@
 #include "gl_type_constants.hpp"
 
 template <typename CoordType, bool supportVBO = true>
-class NormalArray : public AbstractArray<CoordType, 3, supportVBO>
+class NormalArray : public AbstractArray<CoordType, 3, supportVBO, NormalArray<CoordType, supportVBO> >
 {
     public:
-        typedef typename AbstractArray<CoordType, 3, supportVBO>::value_type value_type;
-        typedef typename AbstractArray<CoordType, 3, supportVBO>::transform_type transform_type;
+        typedef typename AbstractArray<CoordType, 3, supportVBO, NormalArray<CoordType, supportVBO> >::value_type value_type;
+        typedef typename AbstractArray<CoordType, 3, supportVBO, NormalArray<CoordType, supportVBO> >::transform_type transform_type;
 
-    protected:
-        virtual void glPassPointer(value_type const * const data) const
+    private:
+	friend class AbstractArray<CoordType, 3, supportVBO,
+	       NormalArray<CoordType, supportVBO> >;
+
+        void glPassPointer(value_type const * const data) const
         {
             // Pass all of our texture coordinates as a Texture Coordinates Array
             glNormalPointer(OpenGLTypeConstant<CoordType>::constant, 0, data);
         }
 
-    private:
         friend class boost::serialization::access;
 
         template <class Archive>
         void serialize(Archive & ar, const unsigned int /* version */)
         {
-            ar & boost::serialization::base_object< AbstractArray<CoordType, 3, supportVBO> >(*this);
+            ar & boost::serialization::base_object< AbstractArray<CoordType, 3, supportVBO, NormalArray<CoordType, supportVBO> > >(*this);
         }
 };
 

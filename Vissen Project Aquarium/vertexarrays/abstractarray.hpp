@@ -24,24 +24,21 @@
 #include <boost/serialization/base_object.hpp>
 #include "vertexbuffer.hpp"
 
-template <typename CoordType, std::size_t CoordinateCount, bool supportVBO = true>
+template <typename CoordType, std::size_t CoordinateCount, bool supportVBO, typename Derived>
 class AbstractArray;
 
-template <typename CoordType, std::size_t CoordinateCount>
-class AbstractArray<CoordType, CoordinateCount, false> : public AbstractArrayBase<CoordType, CoordinateCount, AbstractArray<CoordType, CoordinateCount, false> >
+template <typename CoordType, std::size_t CoordinateCount, typename Derived>
+class AbstractArray<CoordType, CoordinateCount, false, Derived> : public AbstractArrayBase<CoordType, CoordinateCount, AbstractArray<CoordType, CoordinateCount, false, Derived> >
 {
     public:
         typedef AbstractArrayBase<CoordType, CoordinateCount,
-                AbstractArray<CoordType, CoordinateCount, false> >  base_type;
-        typedef typename base_type::value_type                      value_type;
-        typedef typename base_type::transform_type                  transform_type;
-
-    protected:
-        virtual void glPassPointer(value_type const * data) const = 0;
+                AbstractArray<CoordType, CoordinateCount, false, Derived> > base_type;
+        typedef typename base_type::value_type                              value_type;
+        typedef typename base_type::transform_type                          transform_type;
 
     private:
         friend class AbstractArrayBase<CoordType, CoordinateCount,
-               AbstractArray<CoordType, CoordinateCount, false> >;
+               AbstractArray<CoordType, CoordinateCount, false, Derived> >;
 
         /** Passes all of this AbstractArray's data to the OpenGL API.
          */
@@ -50,7 +47,7 @@ class AbstractArray<CoordType, CoordinateCount, false> : public AbstractArrayBas
             // This is required to make sure that OpenGL can actually work with our data
             BOOST_STATIC_ASSERT(sizeof(value_type) == sizeof(CoordType[CoordinateCount]));
 
-            glPassPointer(&(*this)[0]);
+            return static_cast<const Derived *>(this)->glPassPointer(&(*this)[0]);
         }
 
         void DataChanged() {}
@@ -65,18 +62,18 @@ class AbstractArray<CoordType, CoordinateCount, false> : public AbstractArrayBas
         template <class Archive>
         void serialize(Archive & ar, const unsigned int /* version */)
         {
-            ar & boost::serialization::base_object< AbstractArrayBase<CoordType, CoordinateCount, AbstractArray<CoordType, CoordinateCount, false> > >(*this);
+            ar & boost::serialization::base_object< AbstractArrayBase<CoordType, CoordinateCount, AbstractArray<CoordType, CoordinateCount, false, Derived> > >(*this);
         }
 };
 
-template <typename CoordType, std::size_t CoordinateCount>
-class AbstractArray<CoordType, CoordinateCount, true> : public AbstractArrayBase<CoordType, CoordinateCount, AbstractArray<CoordType, CoordinateCount, true> >
+template <typename CoordType, std::size_t CoordinateCount, typename Derived>
+class AbstractArray<CoordType, CoordinateCount, true, Derived> : public AbstractArrayBase<CoordType, CoordinateCount, AbstractArray<CoordType, CoordinateCount, true, Derived> >
 {
     public:
         typedef AbstractArrayBase<CoordType, CoordinateCount,
-                AbstractArray<CoordType, CoordinateCount, true> >   base_type;
-        typedef typename base_type::value_type                      value_type;
-        typedef typename base_type::transform_type                  transform_type;
+                AbstractArray<CoordType, CoordinateCount, true, Derived> >  base_type;
+        typedef typename base_type::value_type                              value_type;
+        typedef typename base_type::transform_type                          transform_type;
 
         AbstractArray() :
             _vbo(VertexBufferObject::is_supported() ? new VertexBufferObject : 0),
@@ -103,12 +100,9 @@ class AbstractArray<CoordType, CoordinateCount, true> : public AbstractArrayBase
             _vbo = 0;
         }
 
-    protected:
-        virtual void glPassPointer(value_type const * data) const = 0;
-
     private:
         friend class AbstractArrayBase<CoordType, CoordinateCount,
-               AbstractArray<CoordType, CoordinateCount, true> >;
+               AbstractArray<CoordType, CoordinateCount, true, Derived> >;
 
         /** Passes all of this AbstractArray's data to the OpenGL API.
          */
@@ -125,12 +119,12 @@ class AbstractArray<CoordType, CoordinateCount, true> : public AbstractArrayBase
                 }
 
                 _vbo->bind();
-                glPassPointer(0);
+                return static_cast<const Derived *>(this)->glPassPointer(0);
                 _vbo->unbind();
             }
             else
             {
-                glPassPointer(&(*this)[0]);
+                return static_cast<const Derived *>(this)->glPassPointer(&(*this)[0]);
             }
         }
 
@@ -158,7 +152,7 @@ class AbstractArray<CoordType, CoordinateCount, true> : public AbstractArrayBase
         template <class Archive>
         void serialize(Archive & ar, const unsigned int /* version */)
         {
-            ar & boost::serialization::base_object< AbstractArrayBase<CoordType, CoordinateCount, AbstractArray<CoordType, CoordinateCount, true> > >(*this);
+            ar & boost::serialization::base_object< AbstractArrayBase<CoordType, CoordinateCount, AbstractArray<CoordType, CoordinateCount, true, Derived> > >(*this);
         }
 
         VertexBufferObject*     _vbo;
