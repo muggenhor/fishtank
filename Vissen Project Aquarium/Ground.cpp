@@ -1,8 +1,13 @@
+#include <boost/array.hpp>
+#include <boost/circular_buffer.hpp>
+#include <boost/foreach.hpp>
 #include <Eigen/Geometry>
 #include "Ground.h"
 #include "AquariumController.h"
 #include "JPEG.h"
 #include "math-helpers.hpp"
+
+#define foreach BOOST_FOREACH
 
 using namespace std;
 
@@ -34,18 +39,16 @@ void Ground::GenerateGroundFromImage(const string &filename)
 	widthAmount = image.width;
 	lengthAmount = image.height;
 	ground.resize(widthAmount * lengthAmount);
-	normals.resize(widthAmount * lengthAmount);
 
 	for (int y = 0; y < lengthAmount; y++)
 	{
  		for (int x = 0; x < widthAmount; x++)
  		{
 			ground[x + y * widthAmount] = -aquariumSize.y() / 2 + ((unsigned char)(image.data[x * 3 + y * image.rowSpan])) / 255.0 * maxHeight;
-
-			// Generate a cache of normals
-			normals[x + y * widthAmount] = -(PosAt(x + 1, y) - PosAt(x - 1, y)).cross(PosAt(x, y + 1) - PosAt(x, y - 1)).normalized();
  		}
 	}
+
+	updateRenderData();
 }
 
 int Ground::HeightAt(int x, int y) const
@@ -54,22 +57,6 @@ int Ground::HeightAt(int x, int y) const
 	y = clip(y, 0, lengthAmount - 1);
 
 	return ground[x + y * widthAmount];
-}
-
-Eigen::Vector3f Ground::PosAt(int x, int y)
-{
-	const float relativeX = x * aquariumSize.x() / float(widthAmount - 1) - 0.5 * aquariumSize.x();
-	const float relativeY = y * aquariumSize.z() / float(lengthAmount - 1) - 0.5 * aquariumSize.z();
-
-	return Eigen::Vector3f(relativeX, HeightAt(x, y), relativeY);
-}
-
-const Eigen::Vector3f& Ground::NormalAt(int x, int y) const
-{
-	x = clip(x, 0, widthAmount - 1);
-	y = clip(y, 0, lengthAmount - 1);
-
-	return normals[x + y * widthAmount];
 }
 
 void Ground::Draw()
@@ -113,21 +100,8 @@ void Ground::Draw()
 		//glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_MODULATE);
 	}
 
-	for (int y = 1; y < lengthAmount; ++y)
-	{
-		glBegin(GL_TRIANGLE_STRIP);
-		for (int x = 0; x < widthAmount; ++x)
-		{
-			glTexCoord2i(x, y);
-			glNormal3fv(NormalAt(x, y).data());
-			glVertex3fv(PosAt(x, y).data());
+	triangles.draw();
 
-			glTexCoord2i(x, y - 1);
-			glNormal3fv(NormalAt(x, y - 1).data());
-			glVertex3fv(PosAt(x, y - 1).data());
-		}
-		glEnd();
-	}
 	glDisable(GL_LIGHTING);
 	glDisable(GL_LIGHT0);
 	glDisable(GL_COLOR_MATERIAL) ;
@@ -141,4 +115,67 @@ void Ground::Draw()
 	}
 
 	glColor3f(1,1,1);
+}
+
+static Eigen::Vector3f PosAt(const Ground& ground, int x, int y)
+{
+	const float relativeX = x * aquariumSize.x() / float(ground.widthAmount - 1) - 0.5 * aquariumSize.x();
+	const float relativeY = y * aquariumSize.z() / float(ground.lengthAmount - 1) - 0.5 * aquariumSize.z();
+
+	return Eigen::Vector3f(relativeX, ground.HeightAt(x, y), relativeY);
+}
+
+static void AddTriangleStripPoint(const Ground& ground,
+                                  boost::circular_buffer<Eigen::Vector2i>& vertices,
+                                  bool& flip_vertices,
+                                  TriangleArray<unsigned int, float, int, float>& triangles,
+                                  const Eigen::Vector2i& point)
+{
+	vertices.push_back(point);
+	// Keep collecting vertices until we've got enough to draw a triangle
+	assert(vertices.capacity() == 3);
+	if (vertices.size() < 3)
+		return;
+
+	boost::array<unsigned int, 3> indexes;
+	if ((flip_vertices = !flip_vertices))
+	{
+		indexes[0] = 0;
+		indexes[1] = 1;
+		indexes[2] = 2;
+	}
+	else
+	{
+		indexes[0] = 1;
+		indexes[1] = 0;
+		indexes[2] = 2;
+	}
+
+	foreach(unsigned int i, indexes)
+	{
+		const Eigen::Vector2i& point = vertices[i];
+
+		// Comput the normal for this position
+		const Eigen::Vector3f normal(-(PosAt(ground, point.x() + 1, point.y()) - PosAt(ground, point.x() - 1, point.y())).cross(PosAt(ground, point.x(), point.y() + 1) - PosAt(ground, point.x(), point.y() - 1)).normalized());
+
+		triangles.AddPoint(PosAt(ground, point.x(), point.y()), point, normal);
+	}
+}
+
+void Ground::updateRenderData()
+{
+	triangles.clear();
+
+	for (int y = 1; y < lengthAmount; ++y)
+	{
+		// Triangles have 3 vertices
+		boost::circular_buffer<Eigen::Vector2i> vertices(3);
+		bool flip_vertices = false;
+
+		for (int x = 0; x < widthAmount; ++x)
+		{
+			AddTriangleStripPoint(*this, vertices, flip_vertices, triangles, Eigen::Vector2i(x, y));
+			AddTriangleStripPoint(*this, vertices, flip_vertices, triangles, Eigen::Vector2i(x, y - 1));
+		}
+	}
 }

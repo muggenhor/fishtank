@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include "JPEG.h"
+#include "vertexarrays/trianglearray.hpp"
 
 class Ground
 {
@@ -24,16 +25,13 @@ class Ground
 		std::string file;
 
 	private:
-		Eigen::Vector3f PosAt(int x, int y);
-		const Eigen::Vector3f& NormalAt(int x, int y) const;
+		void updateRenderData();
 
 	private:
 		//de hoogtes in een vector
 		std::vector<int> ground;
-		std::vector<Eigen::Vector3f> normals;
-		//de dimenties
-		//het texture id
 		Texture texture;
+		TriangleArray<unsigned int, float, int, float> triangles;
 };
 
 #endif // __INCLUDED_GROUND_H__
