@@ -207,7 +207,6 @@ class TriangleArray
                 AddPoint(v[i], t, n[i]);
         }
 
-    private:
         void AddPoint(const vertex_type& vertex, const texcoord_type& texcoord, const normal_type& normal)
         {
             _indices_modified = true;
@@ -242,6 +241,7 @@ class TriangleArray
                 _indices->push_back(index);
         }
 
+    private:
         friend class boost::serialization::access;
 
         template <class Archive>
