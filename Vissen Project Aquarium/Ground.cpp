@@ -3,6 +3,7 @@
 #include <boost/foreach.hpp>
 #include <Eigen/Core>
 #include "Ground.h"
+#include <iostream>
 #include "AquariumController.h"
 #include "JPEG.h"
 #include "math-helpers.hpp"
@@ -15,6 +16,12 @@ Ground::Ground(const char* const filename, int maxHeight, const char* const text
 	texture(texturename ? Texture(Image::LoadJPG(texturename, true)) : Texture())
 {
 	updateRenderData();
+
+#ifdef DEBUG
+	std::cerr << "Ground has:\n"
+	          << triangles.uniqueVertices() << " vertices\n"
+	          << triangles.drawnVertices() << " indices\n\n";
+#endif
 }
 
 int Ground::HeightAt(unsigned int x, unsigned int y) const
