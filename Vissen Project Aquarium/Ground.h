@@ -16,8 +16,8 @@ class Ground
 		//teken de vloer
 		void Draw();
 
-		inline unsigned int width() const { return heightmap.width; }
-		inline unsigned int depth() const { return heightmap.height; }
+		inline unsigned int width() const { return heightmap.width(); }
+		inline unsigned int depth() const { return heightmap.height(); }
 
 		int maxHeight;
 

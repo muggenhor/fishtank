@@ -2,36 +2,50 @@
 #define JPEG_H
 
 #include "GL/GLee.h"
+#include <boost/multi_array.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/serialization/scoped_ptr.hpp>
 #include <boost/serialization/split_member.hpp>
-#include <boost/serialization/vector.hpp>
-#include <vector>
+#include <Eigen/Core>
+
+namespace Eigen
+{
+	template<> struct NumTraits<unsigned char>
+	{
+		typedef unsigned char Real;
+		typedef float FloatingPoint;
+		enum {
+			IsComplex = 0,
+			HasFloatingPoint = 0,
+			ReadCost = 1,
+			AddCost = 1,
+			MulCost = 1
+		};
+	};
+}
 
 class Image
 {
 	public:
 		static Image LoadJPG(const char* filename, bool flipY = false);
 
+		inline unsigned int width() const  { return data.shape()[0]; }
+		inline unsigned int height() const { return data.shape()[1]; };
+
 	private:
 		Image() {}
-		Image(unsigned int rowSpan_, unsigned int width_, unsigned int height_);
+		Image(unsigned int num_components, unsigned int width_, unsigned int height_);
 
 		friend class boost::serialization::access;
 
 		template <class Archive>
 		void serialize(Archive & ar, const unsigned int /* version */)
 		{
-			ar & rowSpan;
-			ar & width;
-			ar & height;
 			ar & data;
 		}
 
 	public:
-		unsigned int rowSpan;
-		unsigned int width, height;
-		std::vector<unsigned char> data;
+		boost::multi_array<Eigen::Matrix<unsigned char, 3, 1>, 2> data;
 };
 
 class Texture

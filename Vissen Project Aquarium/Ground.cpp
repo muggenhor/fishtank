@@ -31,7 +31,7 @@ int Ground::HeightAt(unsigned int x, unsigned int y) const
 	x = clip(x, 0U, width() - 1);
 	y = clip(y, 0U, depth() - 1);
 
-	return heightmap.data[x * 3 + y * heightmap.rowSpan] / 255.f * maxHeight - aquariumSize.y() * 0.5f;
+	return heightmap.data[x][y][0] / 255.f * maxHeight - aquariumSize.y() * 0.5f;
 }
 
 void Ground::Draw()

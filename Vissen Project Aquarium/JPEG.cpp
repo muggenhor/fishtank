@@ -15,12 +15,10 @@ extern "C"
 # include <jpeglib.h>
 #endif
 
-Image::Image(const unsigned int rowSpan_, const unsigned int width_, const unsigned int height_) :
-	rowSpan(rowSpan_),
-	width(width_),
-	height(height_),
-	data(rowSpan * height)
+Image::Image(const unsigned int num_components, const unsigned int width_, const unsigned int height_) :
+	data(boost::extents[width_][height_], boost::fortran_storage_order())
 {
+	assert(num_components == 3);
 }
 
 Image Image::LoadJPG(const char* const filename, bool flipY)
@@ -46,16 +44,16 @@ Image Image::LoadJPG(const char* const filename, bool flipY)
 		jpeg_read_header(&cinfo, TRUE);
 		jpeg_start_decompress(&cinfo);
 
-		Image img(cinfo.image_width * cinfo.num_components, cinfo.image_width, cinfo.image_height);
+		Image img(cinfo.num_components, cinfo.image_width, cinfo.image_height);
 
-		boost::scoped_array<unsigned char*> rowPtr(new unsigned char*[img.height]);
-		for (unsigned int i = 0; i < img.height; ++i)
+		boost::scoped_array<unsigned char*> rowPtr(new unsigned char*[img.height()]);
+		for (unsigned int i = 0; i < img.height(); ++i)
 		{
 			const unsigned int rowIndex = flipY
-			                             ? img.height - 1 - i
+			                             ? img.height() - 1 - i
 			                             : i;
 
-			rowPtr[i] = &img.data[rowIndex * img.rowSpan];
+			rowPtr[i] = img.data[0][rowIndex].data();
 		}
 
 		int rowsRead = 0;
@@ -154,7 +152,7 @@ void Texture::upload_texture() const
 	glBindTexture(GL_TEXTURE_2D, _texture);
 	try
 	{
-		gluBuild2DMipmaps(GL_TEXTURE_2D, 3, _img->width, _img->height, GL_RGB, GL_UNSIGNED_BYTE, &_img->data[0]);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, 3, _img->width(), _img->height(), GL_RGB, GL_UNSIGNED_BYTE, _img->data.origin()->data());
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);

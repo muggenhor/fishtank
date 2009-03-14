@@ -359,8 +359,8 @@ void AquariumController::InitialiseComponents(Image& img)
 								};
 	static const int sidedata1 = 79;
 	static const int sidedata2 = 80;
-	unsigned char * a = &img.data[img.rowSpan * (img.height - sidedata2 - 30) + 30 * 3];
-	static int stripe = img.rowSpan;
+	unsigned char * a = img.data[30][img.height() - sidedata2 - 30].data();
+	static int stripe = img.width() * 3;
 
 	for ( int i = 0 ; i < sidedata1 * sidedata2 ; ++ i ) {
 		if ( initialisation [ i ] ) * ( unsigned int * ) ( ( i / sidedata1 ) * stripe + a + ( i % sidedata1 ) * 3 ) |= 16514302;
