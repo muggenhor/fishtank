@@ -1,4 +1,6 @@
+#include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
+#include <boost/regex.hpp>
 #include <boost/shared_ptr.hpp>
 #include "GL/GLee.h"
 #include <GL/glfw.h>
@@ -42,6 +44,38 @@ static float eye_distance=300;
 
 static map<string, boost::shared_ptr<Model> > models;
 
+namespace boost { namespace program_options {
+
+/**
+ * Enables passing @c Eigen::Vector2i as a command line argument.
+ */
+template <>
+void validate<Eigen::Vector2i, char>(boost::any& v, const std::vector<std::string>& values, Eigen::Vector2i*, long)
+{
+	using boost::lexical_cast;
+	using boost::regex;
+	using boost::regex_match;
+	using boost::smatch;
+
+	// Make sure no previous assignment to 'a' was made.
+	po::validators::check_first_occurrence(v);
+	// Extract the first string from 'values'. If there is more than
+	// one string, it's an error, and exception will be thrown.
+	const std::string& s = po::validators::get_single_string(values);
+
+	static const regex r("(-?\\d+)[,xX](-?\\d+)");
+	smatch match;
+	if (regex_match(s, match, r))
+	{
+		v = Eigen::Vector2i(lexical_cast<int>(match[1]), lexical_cast<int>(match[2]));
+	}
+	else
+	{
+		throw po::validation_error("invalid value");
+	}
+}
+}}
+
 static void ParseOptions(int argc, char** argv, std::istream& config_file)
 {
 	// Group of generic options that are only allowed on the command line
@@ -56,6 +90,10 @@ static void ParseOptions(int argc, char** argv, std::istream& config_file)
 	 */
 	po::options_description config("Configuration");
 	config.add_options()
+	    ("window-size", po::value<Eigen::Vector2i>(),
+	      _("Dimensions to use for the window."))
+	    ("window-position", po::value<Eigen::Vector2i>(),
+	      _("Top-left position to use for the window."))
 	    ("vbo", po::value<bool>(&use_vbos)->default_value(use_vbos),
 	      _("Enable or disable the use of VBOs for rendering."))
 	;
@@ -92,6 +130,18 @@ static void ParseOptions(int argc, char** argv, std::istream& config_file)
 		cerr << "Fishtank - Version <UNSPECIFIED>\n"
 		        "Created by Jasper Lammers and Dmytry Lavrov\n";
 		throw exit_exception(EXIT_FAILURE);
+	}
+
+	if (vm.count("window-size"))
+	{
+		win_width = vm["window-size"].as<Eigen::Vector2i>().x();
+		win_height = vm["window-size"].as<Eigen::Vector2i>().y();
+	}
+
+	if (vm.count("window-position"))
+	{
+		win_move_x = vm["window-position"].as<Eigen::Vector2i>().x();
+		win_move_y = vm["window-position"].as<Eigen::Vector2i>().y();
 	}
 }
 
@@ -422,6 +472,10 @@ int main(int argc, char** argv)
 	{
 		srand(time(NULL));/// make random numbers sequence depend to program start time.
 
+		// @TODO Should eventually replace this entirely by ParseOptions
+		ifstream input_file("Settings/aquaConfig.txt");
+		LoadSettings(input_file);
+
 		ifstream config("Settings/aquaConfig.cfg");
 		ParseOptions(argc, argv, config);
 		config.close();
@@ -436,11 +490,6 @@ int main(int argc, char** argv)
 		glEnable(GL_DEPTH_TEST);
 		glDepthMask(GL_TRUE);
 		glfwSetWindowTitle("");
-
-
-		// @TODO Should eventually replace this entirely by ParseOptions
-		ifstream input_file("Settings/aquaConfig.txt");
-		LoadSettings(input_file);
 
 		AquariumController aquariumController;
 

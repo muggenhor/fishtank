@@ -51,6 +51,7 @@ fishtank_LDADD = \
 	$(builddir)/GL/libGLee.la \
 	$(builddir)/vertexarrays/libvertexarrays.la \
 	$(BOOST_PROGRAM_OPTIONS_LIBS) \
+	$(BOOST_REGEX_LIBS) \
 	$(GLFW_LIBS) \
 	$(OPENGL_LIBS) \
 	$(JPEG_LIBS) \
