@@ -14,7 +14,7 @@
 Ground::Ground(const char* const filename, int maxHeight, const char* const texturename) :
 	maxHeight(maxHeight),
 	heightmap(Image::LoadJPG(filename)),
-	texture(texturename ? Texture(Image::LoadJPG(texturename, true)) : Texture())
+	texture(texturename ? Texture(Image::LoadJPG(texturename, FLIP_Y)) : Texture())
 {
 	triangles.UseVBOs(use_vbos);
 	updateRenderData();

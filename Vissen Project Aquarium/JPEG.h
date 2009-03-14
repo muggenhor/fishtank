@@ -24,10 +24,16 @@ namespace Eigen
 	};
 }
 
+enum FLIP_IMAGE_PIXELS
+{
+	NO_FLIP,
+	FLIP_Y,
+};
+
 class Image
 {
 	public:
-		static Image LoadJPG(const char* filename, bool flipY = false);
+		static Image LoadJPG(const char* filename, FLIP_IMAGE_PIXELS flip = NO_FLIP);
 
 		inline unsigned int width() const  { return data.shape()[0]; }
 		inline unsigned int height() const { return data.shape()[1]; };

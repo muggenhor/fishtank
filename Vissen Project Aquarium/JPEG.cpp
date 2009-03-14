@@ -21,7 +21,7 @@ Image::Image(const unsigned int num_components, const unsigned int width_, const
 	assert(num_components == 3);
 }
 
-Image Image::LoadJPG(const char* const filename, bool flipY)
+Image Image::LoadJPG(const char* const filename, FLIP_IMAGE_PIXELS flip)
 {
 	FILE* const file = fopen(filename, "rb");
 	if (file == NULL)
@@ -49,7 +49,7 @@ Image Image::LoadJPG(const char* const filename, bool flipY)
 		boost::scoped_array<unsigned char*> rowPtr(new unsigned char*[img.height()]);
 		for (unsigned int i = 0; i < img.height(); ++i)
 		{
-			const unsigned int rowIndex = flipY
+			const unsigned int rowIndex = flip == FLIP_Y
 			                             ? img.height() - 1 - i
 			                             : i;
 

@@ -13,7 +13,7 @@ Environment::Environment(const Eigen::Vector3d& pos1, const Eigen::Vector3d& pos
 	//er is een texture naam
 	if (!texturename.empty())
 	{
-		Image img = Image::LoadJPG(texturename.c_str(), true);
+		Image img = Image::LoadJPG(texturename.c_str(), FLIP_Y);
 
 		if (pos1.z() < 0
 		 && pos2.z() < 0
