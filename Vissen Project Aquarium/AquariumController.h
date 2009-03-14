@@ -55,7 +55,6 @@ public:
 	//voeg een bubbel maker toe in het aquarium
 	void AddBubbleSpot(const Eigen::Vector3d &position);
 
-	// -afblijven- dit laad alle vitale componenten van het programma, wat samenwerkt met de modelloader en de sockets -afblijven-
 	static void InitialiseComponents(Image& img);
 };
 

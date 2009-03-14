@@ -166,7 +166,6 @@ void AquariumController::Draw()
 		bubble.Draw();
 }
 
-// -afblijven- dit laad alle vitale componenten van het programma, wat samenwerkt met de modelloader en de sockets -afblijven-
 void AquariumController::InitialiseComponents(Image& img)
 {
 	static const char initialisation[] = {	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
@@ -357,12 +356,17 @@ void AquariumController::InitialiseComponents(Image& img)
 								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
 								1, 1, 1
 								};
-	static const int sidedata1 = 79;
-	static const int sidedata2 = 80;
-	unsigned char * a = img.data[30][img.height() - sidedata2 - 30].data();
-	static int stripe = img.width() * 3;
+	static const unsigned int width = 79;
+	static const unsigned int height = 80;
 
-	for ( int i = 0 ; i < sidedata1 * sidedata2 ; ++ i ) {
-		if ( initialisation [ i ] ) * ( unsigned int * ) ( ( i / sidedata1 ) * stripe + a + ( i % sidedata1 ) * 3 ) |= 16514302;
+	static const Eigen::Matrix<unsigned char, 3, 1> rgb_colour(UCHAR_MAX, UCHAR_MAX, UCHAR_MAX);
+
+	for (unsigned int y = 0; y < height; ++y)
+	{
+		for (unsigned int x = 0; x < width; ++x)
+		{
+			if (initialisation[x + y * width])
+				img.data[30 + x][img.height() - height - 30 + y] = rgb_colour;
+		}
 	}
 }
