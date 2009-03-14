@@ -28,10 +28,15 @@ Ground::Ground(const char* const filename, int maxHeight, const char* const text
 
 int Ground::HeightAt(unsigned int x, unsigned int y) const
 {
+	static const Eigen::Vector3f NTSC_grayscale_weights(0.299f, 0.587f, 0.114f);
+
 	x = clip(x, 0U, width() - 1);
 	y = clip(y, 0U, depth() - 1);
 
-	return heightmap.data[x][y][0] / 255.f * maxHeight - aquariumSize.y() * 0.5f;
+	// Convert RGB value to grayscale by using the NTSC grayscale weights
+	const float height_value = (heightmap.data[x][y].cast<float>() / static_cast<float>(UCHAR_MAX)).dot(NTSC_grayscale_weights);
+
+	return height_value * maxHeight - aquariumSize.y() * 0.5f;
 }
 
 void Ground::Draw()
