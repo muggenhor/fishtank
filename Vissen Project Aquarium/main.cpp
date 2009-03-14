@@ -42,8 +42,6 @@ static int win_move_x = 5, win_move_y = 30;
 //oogafstand van het aquarium
 static float eye_distance=300;
 
-static map<string, boost::shared_ptr<Model> > models;
-
 namespace boost { namespace program_options {
 
 /**
@@ -207,6 +205,8 @@ static void LoadModels(std::istream& input_file, AquariumController& aquariumCon
 		m(0, 2) =  0; m(1, 2) = 1; m(2, 2) = 0; m(3, 2) = 0;
 		m(0, 3) =  0; m(1, 3) = 0; m(2, 3) = 0; m(3, 3) = 1;
 	}
+
+	map<string, boost::shared_ptr<Model> > models;
 
 	string s;
 
