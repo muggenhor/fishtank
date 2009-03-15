@@ -34,6 +34,11 @@ namespace po = boost::program_options;
 
 bool use_vbos = true;
 
+/* The amount of additional samples per pixel to generate. Higher amounts will
+ * generally produce better anti aliasing results.
+ */
+static unsigned int multi_sample = 4;
+
 //scherm resolutie
 static int win_width=0, win_height=0;
 //de schermpositie
@@ -88,6 +93,8 @@ static void ParseOptions(int argc, char** argv, std::istream& config_file)
 	 */
 	po::options_description config("Configuration");
 	config.add_options()
+	    ("anti-aliasing", po::value<unsigned int>(&multi_sample)->default_value(multi_sample),
+	      _("Set the level of anti aliasing to use (0 disables anti aliasing)."))
 	    ("window-size", po::value<Eigen::Vector2i>(),
 	      _("Dimensions to use for the window."))
 	    ("window-position", po::value<Eigen::Vector2i>(),
@@ -481,6 +488,7 @@ int main(int argc, char** argv)
 		config.close();
 
 		glfwInit();
+		glfwOpenWindowHint(GLFW_FSAA_SAMPLES, multi_sample);
 
 		if( !glfwOpenWindow( win_width, win_height,  0,0,0,0,  16, 	 0, GLFW_WINDOW ))
 		{/// width, height, rgba bits (4 params), depth bits, stencil bits, mode.
