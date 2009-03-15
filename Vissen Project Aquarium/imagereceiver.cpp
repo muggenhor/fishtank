@@ -442,7 +442,8 @@ void PositionReceiver::AcceptClient(){
 	std::cerr<<client_address_str<<" connected"<<std::endl;
 }
 
-void PositionReceiver::Update(AquariumController *aquariumController){
+void PositionReceiver::Update(AquariumController& aquariumController)
+{
 	if(!m_socket_stream.CanRead()){
 		/*
 		pollfd pfd;
@@ -456,20 +457,24 @@ void PositionReceiver::Update(AquariumController *aquariumController){
 	}
 }
 
-void PositionReceiver::ReceiveSegment(AquariumController *aquariumController){
-        PositionInfoHeader pos;
-	int received_size=m_socket_stream.Read((char*)(&pos), 2);
-	if(received_size==2)
+void PositionReceiver::ReceiveSegment(AquariumController& aquariumController)
+{
+	PositionInfoHeader pos;
+	int received_size = m_socket_stream.Read((char*)(&pos), 2);
+
+	if (received_size==2)
+	{
+		const Eigen::Vector2d position(pos.x, pos.y);
+
+		if (type == 0)
 		{
-			if (type == 0)
-			{
-				aquariumController->GoToScreen(Eigen::Vector2d(pos.x, pos.y));
-				cout << "Zwempositie X: " << int(pos.x) << " Y: " << int(pos.y) << endl;
-			}
-			else
-			{
-				aquariumController->facePosition = Eigen::Vector2d(pos.x, pos.y);
-				cout << "Gezichtpositie X: " << int(pos.x) << " Y: " << int(pos.y) << endl;
-			}
-        }
+			aquariumController.GoToScreen(position);
+			cerr << "Zwempositie X: " << position.x() << " Y: " << position.y() << "\n";
+		}
+		else
+		{
+			aquariumController.facePosition = position;
+			cerr << "Gezichtpositie X: " << position.x() << " Y: " << position.y() << "\n";
+		}
+	}
 }

@@ -560,8 +560,8 @@ int main(int argc, char** argv)
 			image_receiver.Update();
 			image_receiver2.Update();
 
-			position_receiver.Update(&aquariumController);
-			faceposition_receiver.Update(&aquariumController);
+			position_receiver.Update(aquariumController);
+			faceposition_receiver.Update(aquariumController);
 
 
 			oldTime = curTime;

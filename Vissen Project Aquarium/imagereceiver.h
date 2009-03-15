@@ -88,13 +88,13 @@ class PositionReceiver
 	int type;
 
 	void AcceptClient();
-	void ReceiveSegment(AquariumController *aquariumController);
+	void ReceiveSegment(AquariumController& aquariumController);
 
 	public:
 	/// port: the port to listen on.
 		PositionReceiver(int type, int port=7779);
 		virtual ~PositionReceiver() {};
-		void Update(AquariumController *aquariumController);
+		void Update(AquariumController& aquariumController);
 
 		unsigned int TextureID();
 };
