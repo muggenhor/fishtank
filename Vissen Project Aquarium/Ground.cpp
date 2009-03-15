@@ -73,6 +73,7 @@ void Ground::Draw()
 	{
 		texture.bind();
 		glMatrixMode(GL_TEXTURE);
+		glPushMatrix();
 		glLoadIdentity();
 		glScalef(1.f / static_cast<float>(width()), 1.f / static_cast<float>(depth()), 1.f);
 		glMatrixMode(GL_MODELVIEW);
@@ -90,7 +91,7 @@ void Ground::Draw()
 	{
 		glDisable(GL_TEXTURE_2D);
 		glMatrixMode(GL_TEXTURE);
-		glLoadIdentity();
+		glPopMatrix();
 		glMatrixMode(GL_MODELVIEW);
 	}
 

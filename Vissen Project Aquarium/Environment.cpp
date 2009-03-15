@@ -32,10 +32,6 @@ void Environment::Draw()
 
 	texture.bind();
 
-	glMatrixMode(GL_TEXTURE);
-	glLoadIdentity();
-	glMatrixMode(GL_MODELVIEW);
-
 	//kleur wit maken
 	glColor3f(1.f, 1.f, 1.f);
 

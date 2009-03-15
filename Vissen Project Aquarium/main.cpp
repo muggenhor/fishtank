@@ -320,10 +320,6 @@ static void DrawBackground(CAMERA camera)
 			break;
 	}
 
-	glMatrixMode(GL_TEXTURE);
-	glLoadIdentity();
-	glMatrixMode(GL_MODELVIEW);
-
 	//zet kleur naar wit
 	glColor3f(1,1,1);
 
