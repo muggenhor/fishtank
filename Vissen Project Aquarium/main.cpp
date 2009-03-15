@@ -296,18 +296,30 @@ static ImageReceiver image_receiver2(7779);
 static PositionReceiver position_receiver(0, 7780);
 static PositionReceiver faceposition_receiver(1, 7781);
 
-//teken de de webcam schermen en balken, afhankelijk van de huidige campositie. cam1 == true: grote scherm. cam1 == false: kleine scherm
-static void DrawBackground(bool cam1)
+enum CAMERA
+{
+	LEFT_CAMERA,
+	RIGHT_CAMERA,
+};
+
+/**
+ * Draw the webcam screens en beams, depending on the current camera position.
+ */
+static void DrawBackground(CAMERA camera)
 {
 	glEnable(GL_TEXTURE_2D);
-	if (cam1)
+
+	switch (camera)
 	{
-		glBindTexture(GL_TEXTURE_2D, image_receiver.TextureID());
+		case LEFT_CAMERA:
+			glBindTexture(GL_TEXTURE_2D, image_receiver.TextureID());
+			break;
+
+		case RIGHT_CAMERA:
+			glBindTexture(GL_TEXTURE_2D, image_receiver2.TextureID());
+			break;
 	}
-	else
-	{
-		glBindTexture(GL_TEXTURE_2D, image_receiver2.TextureID());
-	}
+
 	glMatrixMode(GL_TEXTURE);
 	glLoadIdentity();
 	glMatrixMode(GL_MODELVIEW);
@@ -317,33 +329,35 @@ static void DrawBackground(bool cam1)
 
 	glBegin(GL_QUADS);
 
-	if (cam1)
+	switch (camera)
 	{
-		glTexCoord2f(0, 0);
-		glVertex3f(0.5*aquariumSize.x(), -0.5*aquariumSize.y() + balkSize, -0.5*aquariumSize.z() + balkSize);
+		case LEFT_CAMERA:
+			glTexCoord2f(0, 0);
+			glVertex3f(0.5*aquariumSize.x(), -0.5*aquariumSize.y() + balkSize, -0.5*aquariumSize.z() + balkSize);
 
-		glTexCoord2f(0, 1);
-		glVertex3f(0.5*aquariumSize.x(), 0.5*aquariumSize.y() - balkSize, -0.5*aquariumSize.z() + balkSize);
+			glTexCoord2f(0, 1);
+			glVertex3f(0.5*aquariumSize.x(), 0.5*aquariumSize.y() - balkSize, -0.5*aquariumSize.z() + balkSize);
 
-		glTexCoord2f(1, 1);
-		glVertex3f(0.5*aquariumSize.x(), 0.5*aquariumSize.y() - balkSize, 0.5*aquariumSize.z() - balkSize);
+			glTexCoord2f(1, 1);
+			glVertex3f(0.5*aquariumSize.x(), 0.5*aquariumSize.y() - balkSize, 0.5*aquariumSize.z() - balkSize);
 
-		glTexCoord2f(1, 0);
-		glVertex3f(0.5*aquariumSize.x(), -0.5*aquariumSize.y() + balkSize, 0.5*aquariumSize.z() - balkSize);
-	}
-	else
-	{
-		glTexCoord2f(1, 0);
-		glVertex3f(-0.5*aquariumSize.x() + balkSize, -0.5*aquariumSize.y() + balkSize, 0.5*aquariumSize.z());
+			glTexCoord2f(1, 0);
+			glVertex3f(0.5*aquariumSize.x(), -0.5*aquariumSize.y() + balkSize, 0.5*aquariumSize.z() - balkSize);
+			break;
 
-		glTexCoord2f(1, 1);
-		glVertex3f(-0.5*aquariumSize.x() + balkSize, 0.5*aquariumSize.y() - balkSize, 0.5*aquariumSize.z());
+		case RIGHT_CAMERA:
+			glTexCoord2f(1, 0);
+			glVertex3f(-0.5*aquariumSize.x() + balkSize, -0.5*aquariumSize.y() + balkSize, 0.5*aquariumSize.z());
 
-		glTexCoord2f(0, 1);
-		glVertex3f(0.5*aquariumSize.x() - balkSize, 0.5*aquariumSize.y() - balkSize, 0.5*aquariumSize.z());
+			glTexCoord2f(1, 1);
+			glVertex3f(-0.5*aquariumSize.x() + balkSize, 0.5*aquariumSize.y() - balkSize, 0.5*aquariumSize.z());
 
-		glTexCoord2f(0, 0);
-		glVertex3f(0.5*aquariumSize.x() - balkSize, -0.5*aquariumSize.y() + balkSize, 0.5*aquariumSize.z());
+			glTexCoord2f(0, 1);
+			glVertex3f(0.5*aquariumSize.x() - balkSize, 0.5*aquariumSize.y() - balkSize, 0.5*aquariumSize.z());
+
+			glTexCoord2f(0, 0);
+			glVertex3f(0.5*aquariumSize.x() - balkSize, -0.5*aquariumSize.y() + balkSize, 0.5*aquariumSize.z());
+			break;
 	}
 
 	glEnd();
@@ -355,63 +369,65 @@ static void DrawBackground(bool cam1)
 
 	if (balkSize2 != 0)
 	{
-		if (cam1)
+		switch (camera)
 		{
-			//onder bij klein scherm
-			glVertex3f(0.5 * aquariumSize.x() - 1, -0.5 * aquariumSize.y() + balkSize2, -0.5 * aquariumSize.z());
-			glVertex3f(0.5 * aquariumSize.x() - 1, -0.5 * aquariumSize.y(), -0.5 * aquariumSize.z());
-			glVertex3f(0.5 * aquariumSize.x() - 1, -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z());
-			glVertex3f(0.5 * aquariumSize.x() - 1, -0.5 * aquariumSize.y() + balkSize2, 0.5 * aquariumSize.z());
+			case LEFT_CAMERA:
+				//onder bij klein scherm
+				glVertex3f(0.5 * aquariumSize.x() - 1, -0.5 * aquariumSize.y() + balkSize2, -0.5 * aquariumSize.z());
+				glVertex3f(0.5 * aquariumSize.x() - 1, -0.5 * aquariumSize.y(), -0.5 * aquariumSize.z());
+				glVertex3f(0.5 * aquariumSize.x() - 1, -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z());
+				glVertex3f(0.5 * aquariumSize.x() - 1, -0.5 * aquariumSize.y() + balkSize2, 0.5 * aquariumSize.z());
 
-			//boven bij klein scherm
-			glVertex3f(0.5 * aquariumSize.x() - 1, 0.5 * aquariumSize.y() - balkSize2, -0.5 * aquariumSize.z());
-			glVertex3f(0.5 * aquariumSize.x() - 1, 0.5 * aquariumSize.y(), -0.5 * aquariumSize.z());
-			glVertex3f(0.5 * aquariumSize.x() - 1, 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z());
-			glVertex3f(0.5 * aquariumSize.x() - 1, 0.5 * aquariumSize.y() - balkSize2, 0.5 * aquariumSize.z());
+				//boven bij klein scherm
+				glVertex3f(0.5 * aquariumSize.x() - 1, 0.5 * aquariumSize.y() - balkSize2, -0.5 * aquariumSize.z());
+				glVertex3f(0.5 * aquariumSize.x() - 1, 0.5 * aquariumSize.y(), -0.5 * aquariumSize.z());
+				glVertex3f(0.5 * aquariumSize.x() - 1, 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z());
+				glVertex3f(0.5 * aquariumSize.x() - 1, 0.5 * aquariumSize.y() - balkSize2, 0.5 * aquariumSize.z());
 
-			//rechts bij klein scherm
-			glVertex3f(0.5 * aquariumSize.x() - 1, -0.5 * aquariumSize.y(), -0.5 * aquariumSize.z() + balkSize2);
-			glVertex3f(0.5 * aquariumSize.x() - 1, -0.5 * aquariumSize.y(), -0.5 * aquariumSize.z());
-			glVertex3f(0.5 * aquariumSize.x() - 1, 0.5 * aquariumSize.y(), -0.5 * aquariumSize.z());
-			glVertex3f(0.5 * aquariumSize.x() - 1, 0.5 * aquariumSize.y(), -0.5 * aquariumSize.z() + balkSize2);
+				//rechts bij klein scherm
+				glVertex3f(0.5 * aquariumSize.x() - 1, -0.5 * aquariumSize.y(), -0.5 * aquariumSize.z() + balkSize2);
+				glVertex3f(0.5 * aquariumSize.x() - 1, -0.5 * aquariumSize.y(), -0.5 * aquariumSize.z());
+				glVertex3f(0.5 * aquariumSize.x() - 1, 0.5 * aquariumSize.y(), -0.5 * aquariumSize.z());
+				glVertex3f(0.5 * aquariumSize.x() - 1, 0.5 * aquariumSize.y(), -0.5 * aquariumSize.z() + balkSize2);
 
-			//links bij klein scherm
-			glVertex3f(0.5 * aquariumSize.x() - 1, -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - balkSize2);
-			glVertex3f(0.5 * aquariumSize.x() - 1, -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z());
-			glVertex3f(0.5 * aquariumSize.x() - 1, 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z());
-			glVertex3f(0.5 * aquariumSize.x() - 1, 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - balkSize2);
-		}
-		else
-		{
-			//dwarsbalk bij groot scherm
-			glVertex3f(-balkSize2, -0.5 * aquariumSize.y() + balkSize2, 0.5 * aquariumSize.z() - 1);
-			glVertex3f(-balkSize2, 0.5 * aquariumSize.y() - balkSize2, 0.5 * aquariumSize.z() - 1);
-			glVertex3f(balkSize2, 0.5 * aquariumSize.y() - balkSize2, 0.5 * aquariumSize.z() - 1);
-			glVertex3f(balkSize2, -0.5 * aquariumSize.y() + balkSize2, 0.5 * aquariumSize.z() - 1);
-			
-			//onder bij groot scherm
-			glVertex3f(-0.5 * aquariumSize.x(), -0.5 * aquariumSize.y() + balkSize2, 0.5 * aquariumSize.z() - 1);
-			glVertex3f(-0.5 * aquariumSize.x(), -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
-			glVertex3f(0.5 * aquariumSize.x(), -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
-			glVertex3f(0.5 * aquariumSize.x(), -0.5 * aquariumSize.y() + balkSize2, 0.5 * aquariumSize.z() - 1);
+				//links bij klein scherm
+				glVertex3f(0.5 * aquariumSize.x() - 1, -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - balkSize2);
+				glVertex3f(0.5 * aquariumSize.x() - 1, -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z());
+				glVertex3f(0.5 * aquariumSize.x() - 1, 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z());
+				glVertex3f(0.5 * aquariumSize.x() - 1, 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - balkSize2);
+				break;
 
-			//boven bij groot scherm
-			glVertex3f(-0.5 * aquariumSize.x(), 0.5 * aquariumSize.y() - balkSize2, 0.5 * aquariumSize.z() - 1);
-			glVertex3f(-0.5 * aquariumSize.x(), 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
-			glVertex3f(0.5 * aquariumSize.x(), 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
-			glVertex3f(0.5 * aquariumSize.x(), 0.5 * aquariumSize.y() - balkSize2, 0.5 * aquariumSize.z() - 1);
+			case RIGHT_CAMERA:
+				//dwarsbalk bij groot scherm
+				glVertex3f(-balkSize2, -0.5 * aquariumSize.y() + balkSize2, 0.5 * aquariumSize.z() - 1);
+				glVertex3f(-balkSize2, 0.5 * aquariumSize.y() - balkSize2, 0.5 * aquariumSize.z() - 1);
+				glVertex3f(balkSize2, 0.5 * aquariumSize.y() - balkSize2, 0.5 * aquariumSize.z() - 1);
+				glVertex3f(balkSize2, -0.5 * aquariumSize.y() + balkSize2, 0.5 * aquariumSize.z() - 1);
+				
+				//onder bij groot scherm
+				glVertex3f(-0.5 * aquariumSize.x(), -0.5 * aquariumSize.y() + balkSize2, 0.5 * aquariumSize.z() - 1);
+				glVertex3f(-0.5 * aquariumSize.x(), -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
+				glVertex3f(0.5 * aquariumSize.x(), -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
+				glVertex3f(0.5 * aquariumSize.x(), -0.5 * aquariumSize.y() + balkSize2, 0.5 * aquariumSize.z() - 1);
 
-			//rechts bij groot scherm
-			glVertex3f(0.5 * aquariumSize.x() - balkSize2, -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
-			glVertex3f(0.5 * aquariumSize.x(), -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
-			glVertex3f(0.5 * aquariumSize.x(), 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
-			glVertex3f(0.5 * aquariumSize.x() - balkSize2, 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
+				//boven bij groot scherm
+				glVertex3f(-0.5 * aquariumSize.x(), 0.5 * aquariumSize.y() - balkSize2, 0.5 * aquariumSize.z() - 1);
+				glVertex3f(-0.5 * aquariumSize.x(), 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
+				glVertex3f(0.5 * aquariumSize.x(), 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
+				glVertex3f(0.5 * aquariumSize.x(), 0.5 * aquariumSize.y() - balkSize2, 0.5 * aquariumSize.z() - 1);
 
-			//links bij groot scherm
-			glVertex3f(-0.5 * aquariumSize.x() + balkSize2, -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
-			glVertex3f(-0.5 * aquariumSize.x(), -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
-			glVertex3f(-0.5 * aquariumSize.x(), 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
-			glVertex3f(-0.5 * aquariumSize.x() + balkSize2, 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
+				//rechts bij groot scherm
+				glVertex3f(0.5 * aquariumSize.x() - balkSize2, -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
+				glVertex3f(0.5 * aquariumSize.x(), -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
+				glVertex3f(0.5 * aquariumSize.x(), 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
+				glVertex3f(0.5 * aquariumSize.x() - balkSize2, 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
+
+				//links bij groot scherm
+				glVertex3f(-0.5 * aquariumSize.x() + balkSize2, -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
+				glVertex3f(-0.5 * aquariumSize.x(), -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
+				glVertex3f(-0.5 * aquariumSize.x(), 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
+				glVertex3f(-0.5 * aquariumSize.x() + balkSize2, 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
+				break;
 		}
 
 		//onder tegenover groot scherm
@@ -575,7 +591,7 @@ int main(int argc, char** argv)
 
 			glTranslatef(-pos.x(), -pos.y(), -(eye_distance+aquariumSize.z()*0.5));
 
-			DrawBackground(true);
+			DrawBackground(LEFT_CAMERA);
 			aquariumController.Draw();
 
 			//rechter view
@@ -594,7 +610,7 @@ int main(int argc, char** argv)
 			glTranslatef(0,0,-(eye_distance+aquariumSize.x()*0.5));
 			glRotatef(270,0,1,0);
 			
-			DrawBackground(false);
+			DrawBackground(RIGHT_CAMERA);
 			aquariumController.Draw();
 
 			//TestDrawAquarium();
