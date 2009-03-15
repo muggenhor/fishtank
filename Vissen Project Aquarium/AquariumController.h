@@ -18,9 +18,14 @@ extern Eigen::Vector3d swimArea;
 //de grootte van de zwarten balken (word geladen in main)
 extern int balkSize;
 extern int balkSize2;
-//de range in extra % de gezichten mogen herkend worden
-extern int range_x;
-extern int range_y;
+
+/**
+ * Represents the relative portion of the display in which face recognition is
+ * allowed to have an effect on the display's perspective.
+ *
+ * NOTE: The contained scalars represent a fraction for each dimension.
+ */
+extern Eigen::Vector2d faceRange;
 
 class AquariumController
 {

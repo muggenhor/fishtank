@@ -196,9 +196,9 @@ static void LoadSettings(std::istream& input_file)
 	eye_distance = atof(s.c_str());
 
 	getline(input_file, s);
-	range_x = atoi(s.c_str());
+	faceRange.x() = static_cast<double>(atoi(s.c_str())) / 100.;
 	getline(input_file, s);
-	range_y = atoi(s.c_str());
+	faceRange.y() = static_cast<double>(atoi(s.c_str())) / 100.;
 }
 
 //laad de modelen uit het opgegeven bestand
@@ -578,8 +578,8 @@ int main(int argc, char** argv)
 			double kx=0.25*aquariumSize.x();
 			double ky=((double)win_height/(double)port1_width)*kx;
 
-			Eigen::Vector2d size = Eigen::Vector2d(aquariumSize.x() * (range_x / 100.0), aquariumSize.y() * (range_y / 100.0));
-			Eigen::Vector2d pos = Eigen::Vector2d(size.x() * aquariumController.facePosition.x() / 100.0 - size.x() / 2.0, size.y() * aquariumController.facePosition.y() / 100.0 - size.y() / 2.0);
+			Eigen::Vector2d size(Eigen::Vector2d(aquariumSize.x(), aquariumSize.y()).cwise() * faceRange);
+			Eigen::Vector2d pos(size.cwise() * aquariumController.facePosition - size * .5);
 
 			glFrustum(-kx - 0.5 * pos.x(), kx - 0.5 * pos.x(), -ky - 0.5 * pos.y(), ky - 0.5 * pos.y(), 0.5 * eye_distance, eye_distance * 2 + aquariumSize.z());
 			glMatrixMode(GL_MODELVIEW);

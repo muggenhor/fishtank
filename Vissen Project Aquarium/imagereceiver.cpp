@@ -462,9 +462,11 @@ void PositionReceiver::ReceiveSegment(AquariumController& aquariumController)
 	PositionInfoHeader pos;
 	int received_size = m_socket_stream.Read((char*)(&pos), 2);
 
-	if (received_size==2)
+	if (received_size == 2)
 	{
-		const Eigen::Vector2d position(pos.x, pos.y);
+		// Received position is a percentage, we need a fraction.
+		const Eigen::Vector2d position(Eigen::Vector2d(pos.x, pos.y)
+		                              / 100.);
 
 		if (type == 0)
 		{

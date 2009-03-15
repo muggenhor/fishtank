@@ -1,4 +1,5 @@
 #include <boost/foreach.hpp>
+#include <cmath>
 #include "AquariumController.h"
 
 #define foreach BOOST_FOREACH
@@ -9,12 +10,9 @@ using namespace std;
 Eigen::Vector3d aquariumSize(440, 250, 220), swimArea(200, 90, 200);
 int balkSize = 0; //de grote van de lege ruimte die gemaakt word door textures kleiner te maken -ongebruikt ivm misteffect-
 int balkSize2 = 5; //de grote van de balken tussen de hoeken
-int range_x = 50;
-int range_y = 50;
+Eigen::Vector2d faceRange(.5, .5);
 //de radius die gebruikt wordt voor de circel wanneer de vissen naar het scherm toe zwemmen
 static const double circleDistance = 15.0;
-//pi, spreekt voorzich;)
-static const double PI=3.14159265358979323846;
 
 float my_random()
 {
@@ -41,9 +39,9 @@ AquariumController::AquariumController(void):
 		ceiling(Eigen::Vector3d(-0.5*aquariumSize.x(), 0.5*aquariumSize.y(), 0.5*aquariumSize.z()),
 					Eigen::Vector3d(-0.5*aquariumSize.x(), 0.5*aquariumSize.y(), -0.5*aquariumSize.z()),
 					Eigen::Vector3d(0.5*aquariumSize.x(), 0.5*aquariumSize.y(), -0.5*aquariumSize.z()),
-					Eigen::Vector3d(0.5*aquariumSize.x(), 0.5*aquariumSize.y(), 0.5*aquariumSize.z()), "./Data/ceiling.jpg")
+					Eigen::Vector3d(0.5*aquariumSize.x(), 0.5*aquariumSize.y(), 0.5*aquariumSize.z()), "./Data/ceiling.jpg"),
+		facePosition(.5, .5)
 {
-	facePosition = Eigen::Vector2d(50, 50);
 }
 
 //geeft een willekeurige positie, maar houd het wel op de grond
@@ -102,18 +100,21 @@ void AquariumController::Update(double dt)
 
 void AquariumController::GoToScreen(const Eigen::Vector2d &position)
 {
-	//bereken de positie relatief in het aquarium, gebruikmakende van de procenten
-	Eigen::Vector2d pos(aquariumSize.x() * position.x() / 100 - aquariumSize.x() / 2, aquariumSize.y() * position.y() / 100 - aquariumSize.y() / 2);
+	const Eigen::Vector2d size(aquariumSize.x(), aquariumSize.y());
+
+	//bereken de positie relatief in het aquarium, gebruikmakende van de factoren
+	const Eigen::Vector2d pos(size.cwise() * position - size * .5);
+
 	//laat alle vissen nu naar het punt toe zwemmen
 	for (unsigned int i = 0; i < fishes.size(); i++)
 	{
 		//geef de vissen een iets andere positie zodat ze niet door elkaar heen willen gaan (in dit geval een circel)
-		double tempx = pos.x() + sin(2 * PI / fishes.size() * i) * circleDistance;
-		double tempy = pos.y() + cos(2 * PI / fishes.size() * i) * circleDistance;
+		const double circular_position = 2. * M_PI / fishes.size() * i;
+		const Eigen::Vector2d fishGoalPos(pos.cwise() * Eigen::Vector2d(sin(circular_position), cos(circular_position)) * circleDistance);
 		//laat de vissen naar de positie zwemmen
-		fishes[i].setGoal(Eigen::Vector3f(tempx, tempy, aquariumSize.y()));
-		//fishes[i].pos = Eigen::Vector3d(tempx, tempy, aquariumSize.y());
-		cout << "Goto X: " << tempx << " Y: " << tempy << endl;
+		fishes[i].setGoal(Eigen::Vector3f(fishGoalPos.x(), fishGoalPos.y(), aquariumSize.y()));
+		//fishes[i].pos = Eigen::Vector3d(fishGoalPos.x(), fishGoalPos.y(), aquariumSize.y());
+		cerr << "Goto " << fishGoalPos << "\n";
 	}
 }
 
