@@ -55,5 +55,5 @@ void main(void)
 
 	float NdotL = max(0.0, dot(N, L));
 
-	gl_FrontColor = gl_Color * vec4(NdotL);
+	gl_FrontColor = gl_Color * vec4(NdotL, NdotL, NdotL, 1.0);
 }
