@@ -471,12 +471,12 @@ void PositionReceiver::ReceiveSegment(AquariumController& aquariumController)
 		if (type == 0)
 		{
 			aquariumController.GoToScreen(position);
-			cerr << "Zwempositie X: " << position.x() << " Y: " << position.y() << "\n";
+			cerr << "Zwempositie: " << position << "\n";
 		}
 		else
 		{
 			aquariumController.facePosition = position;
-			cerr << "Gezichtpositie X: " << position.x() << " Y: " << position.y() << "\n";
+			cerr << "Gezichtpositie: " << position << "\n";
 		}
 	}
 }
