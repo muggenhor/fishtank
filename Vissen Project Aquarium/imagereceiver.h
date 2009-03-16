@@ -93,7 +93,6 @@ class PositionReceiver
 	public:
 	/// port: the port to listen on.
 		PositionReceiver(int type, int port=7779);
-		virtual ~PositionReceiver() {};
 		void Update(AquariumController& aquariumController);
 
 		unsigned int TextureID();

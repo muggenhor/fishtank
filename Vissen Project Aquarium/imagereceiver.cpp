@@ -390,13 +390,11 @@ typedef struct tagPositionInfoHeader {
 
 const int header_size_position=sizeof(tagPositionInfoHeader);
 
-PositionReceiver::PositionReceiver(int type, int port)
+PositionReceiver::PositionReceiver(int type, int port) :
+	buffered_bytes(0),
+	image_size(0),
+	type(type)
 {
-	this->type = type;
-
-	buffered_bytes=0;
-	image_size=0;
-
 	sockaddr_in server_address;
 	memset(&server_address,0,sizeof(server_address));
 
