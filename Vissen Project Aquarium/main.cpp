@@ -480,6 +480,40 @@ static void DrawBackground(CAMERA camera)
 	glColor3f(1,1,1);
 }
 
+void render(AquariumController& aquariumController, CAMERA camera, int x, int y, ssize_t port_width, ssize_t port_height, const Eigen::Vector3d& area_size, const Eigen::Vector2d& facePosition = Eigen::Vector2d(0.5, 0.5))
+{
+	glViewport(x, y, port_width, port_height);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	const double kx = 0.25 * area_size.x();
+	const double ky = static_cast<double>(port_height) / static_cast<double>(port_width) * kx;
+
+	const Eigen::Vector2d size(Eigen::Vector2d(area_size.x(), area_size.y()).cwise() * faceRange);
+	const Eigen::Vector2d pos(size.cwise() * facePosition - size * .5);
+
+	glFrustum(-kx - 0.5 * pos.x(), kx - 0.5 * pos.x(), -ky - 0.5 * pos.y(), ky - 0.5 * pos.y(), .5 * eye_distance, eye_distance * 2. + area_size.z());
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	glTranslatef(-pos.x(), -pos.y(), -(eye_distance + area_size.z() * 0.5));
+
+	switch (camera)
+	{
+		case LEFT_CAMERA:
+			break;
+
+		case RIGHT_CAMERA:
+			glRotatef(270, 0, 1, 0);
+			break;
+	}
+
+	DrawBackground(camera);
+	aquariumController.Draw();
+}
+
 int main(int argc, char** argv)
 {
 #if defined(__GNUC__)
@@ -547,6 +581,7 @@ int main(int argc, char** argv)
 			//update
 			curTime = glfwGetTime();
 			double dt = curTime - oldTime;
+			oldTime = curTime;
 			if(dt > 0.1)
 			{
 				dt=0.1;
@@ -559,55 +594,17 @@ int main(int argc, char** argv)
 			position_receiver.Update(aquariumController);
 			faceposition_receiver.Update(aquariumController);
 
-
-			oldTime = curTime;
-
-
-			glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT);
-
 			glfwGetWindowSize(&win_width,&win_height);/// get window size
+			const unsigned int port1_width = win_width * 2. / 3.;
+			const unsigned int port2_width = win_width * 1. / 3.;
 
-			double port1_width = win_width *2.0/3.0;
-			double port2_width = win_width *1.0/3.0;
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			//linker view
-			glViewport(0, 0, port1_width, win_height);
+			// left view
+			render(aquariumController, LEFT_CAMERA, 0, 0, port1_width, win_height, aquariumSize, aquariumController.facePosition);
 
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
-			double kx=0.25*aquariumSize.x();
-			double ky=((double)win_height/(double)port1_width)*kx;
-
-			Eigen::Vector2d size(Eigen::Vector2d(aquariumSize.x(), aquariumSize.y()).cwise() * faceRange);
-			Eigen::Vector2d pos(size.cwise() * aquariumController.facePosition - size * .5);
-
-			glFrustum(-kx - 0.5 * pos.x(), kx - 0.5 * pos.x(), -ky - 0.5 * pos.y(), ky - 0.5 * pos.y(), 0.5 * eye_distance, eye_distance * 2 + aquariumSize.z());
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-
-			glTranslatef(-pos.x(), -pos.y(), -(eye_distance+aquariumSize.z()*0.5));
-
-			DrawBackground(LEFT_CAMERA);
-			aquariumController.Draw();
-
-			//rechter view
-			glViewport(port1_width, 0, port2_width, win_height);
-
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
-
-			kx=0.25*aquariumSize.z();
-			ky=((double)win_height/(double)port2_width)*kx;
-			glFrustum( -kx, kx, -ky, ky, 0.5*eye_distance, eye_distance*2+aquariumSize.x() );
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-
-
-			glTranslatef(0,0,-(eye_distance+aquariumSize.x()*0.5));
-			glRotatef(270,0,1,0);
-			
-			DrawBackground(RIGHT_CAMERA);
-			aquariumController.Draw();
+			// right view
+			render(aquariumController, RIGHT_CAMERA, port1_width, 0, port2_width, win_height, Eigen::Vector3d(aquariumSize.z(), aquariumSize.y(), aquariumSize.x()));
 
 			//TestDrawAquarium();
 
