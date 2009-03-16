@@ -39,6 +39,11 @@ bool use_vbos = true;
  */
 static unsigned int multi_sample = 4;
 
+/**
+ * Controls the framerate and contains the framerate setting.
+ */
+static FrameRateManager fps(30);
+
 //scherm resolutie
 static int win_width=0, win_height=0;
 //de schermpositie
@@ -95,6 +100,8 @@ static void ParseOptions(int argc, char** argv, std::istream& config_file)
 	config.add_options()
 	    ("anti-aliasing", po::value<unsigned int>(&multi_sample)->default_value(multi_sample),
 	      _("Set the level of anti aliasing to use (0 disables anti aliasing)."))
+	    ("fps", po::value<unsigned int>()->default_value(fps.targetRate()),
+	      _("Set the target framerate, the program will not exceed a rendering rate of this amount in Hz."))
 	    ("window-size", po::value<Eigen::Vector2i>(),
 	      _("Dimensions to use for the window."))
 	    ("window-position", po::value<Eigen::Vector2i>(),
@@ -135,6 +142,11 @@ static void ParseOptions(int argc, char** argv, std::istream& config_file)
 		cerr << "Fishtank - Version <UNSPECIFIED>\n"
 		        "Created by Jasper Lammers and Dmytry Lavrov\n";
 		throw exit_exception(EXIT_FAILURE);
+	}
+
+	if (vm.count("fps"))
+	{
+		fps.targetRate(vm["fps"].as<unsigned int>());
 	}
 
 	if (vm.count("window-size"))
@@ -574,7 +586,7 @@ int main(int argc, char** argv)
 		//glFogf(GL_FOG_END, eye_distance+aquariumSize.z()+aquariumSize.x());
 		glEnable(GL_FOG);
 
-		FrameRateManager fps(30);
+		fps.reset();
 
 		while(glfwGetWindowParam( GLFW_OPENED ))
 		{

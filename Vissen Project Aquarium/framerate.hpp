@@ -8,6 +8,8 @@ class FrameRateManager
     public:
         FrameRateManager(unsigned int rate);
 
+        void reset();
+
         void targetRate(unsigned int rate);
         unsigned int targetRate() const;
 
@@ -27,7 +29,7 @@ class FrameRateManager
         unsigned int        _targetRate;
         float               _targetTime;
         unsigned int        _lastFrameTicks;
-        const unsigned int  _avgFrameTicks;
+        unsigned int        _avgFrameTicks;
 };
 
 #endif // __INCLUDED_FRAMERATE_HPP__

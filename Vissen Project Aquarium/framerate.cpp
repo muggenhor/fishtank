@@ -27,8 +27,16 @@ FrameRateManager::FrameRateManager(unsigned int rate) :
     _targetRate(rate),
     _targetTime(1000.f / static_cast<float>(_targetRate)),
     _lastFrameTicks(::GetTickCount()),
-    _avgFrameTicks(::GetTickCount())
+    _avgFrameTicks(_lastFrameTicks)
 {
+}
+
+void FrameRateManager::reset()
+{
+    _totalFrameCount = 0;
+    _avgFrameTicks = 0;
+    _lastFrameTicks = ::GetTickCount();
+    _avgFrameTicks = _lastFrameTicks;
 }
 
 void FrameRateManager::targetRate(unsigned int rate)
