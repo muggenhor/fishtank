@@ -562,13 +562,16 @@ int main(int argc, char** argv)
 		LoadModels(input_file, aquariumController);
 		input_file.close();
 
-
-		glfwSetWindowSize(win_width * 3, win_height);
+		// We're using three screens
+		win_width *= 3;
+		glfwSetWindowSize(win_width, win_height);
 		glfwSetWindowPos(win_move_x, win_move_y);
 
-
-		double curTime;
-		double oldTime = 0;
+		/* Required to make sure the back buffer has the same size as
+		 * the window (to make sure the first frame is drawn properly
+		 * as well).
+		 */
+		glfwSwapBuffers();
 
 		//gebruik mist voor het "water effect"
 		GLfloat fogColor[4]= {0.3f, 0.4f, 0.7f, 1.0f};
@@ -588,13 +591,11 @@ int main(int argc, char** argv)
 
 		fps.reset();
 
-		while(glfwGetWindowParam( GLFW_OPENED ))
+		for (double curTime = glfwGetTime(), oldTime = curTime; glfwGetWindowParam(GLFW_OPENED); oldTime = curTime, curTime = glfwGetTime())
 		{
 			//update
-			curTime = glfwGetTime();
 			double dt = curTime - oldTime;
-			oldTime = curTime;
-			if(dt > 0.1)
+			if (dt > 0.1)
 			{
 				dt=0.1;
 			}
