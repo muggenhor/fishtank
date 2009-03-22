@@ -526,6 +526,31 @@ void render(AquariumController& aquariumController, CAMERA camera, int x, int y,
 	aquariumController.Draw();
 }
 
+static void update_and_render_simulation(AquariumController& aquariumController, const double dt)
+{
+	aquariumController.Update(dt);
+
+	image_receiver.Update();
+	image_receiver2.Update();
+
+	position_receiver.Update(aquariumController);
+	faceposition_receiver.Update(aquariumController);
+
+	glfwGetWindowSize(&win_width,&win_height);/// get window size
+	const unsigned int port1_width = win_width * 2. / 3.;
+	const unsigned int port2_width = win_width * 1. / 3.;
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// left view
+	render(aquariumController, LEFT_CAMERA, 0, 0, port1_width, win_height, aquariumSize, aquariumController.facePosition);
+
+	// right view
+	render(aquariumController, RIGHT_CAMERA, port1_width, 0, port2_width, win_height, Eigen::Vector3d(aquariumSize.z(), aquariumSize.y(), aquariumSize.x()));
+
+	//TestDrawAquarium();
+}
+
 int main(int argc, char** argv)
 {
 #if defined(__GNUC__)
@@ -593,33 +618,8 @@ int main(int argc, char** argv)
 
 		for (double curTime = glfwGetTime(), oldTime = curTime; glfwGetWindowParam(GLFW_OPENED); oldTime = curTime, curTime = glfwGetTime())
 		{
-			//update
-			double dt = curTime - oldTime;
-			if (dt > 0.1)
-			{
-				dt=0.1;
-			}
-			aquariumController.Update(dt);
-
-			image_receiver.Update();
-			image_receiver2.Update();
-
-			position_receiver.Update(aquariumController);
-			faceposition_receiver.Update(aquariumController);
-
-			glfwGetWindowSize(&win_width,&win_height);/// get window size
-			const unsigned int port1_width = win_width * 2. / 3.;
-			const unsigned int port2_width = win_width * 1. / 3.;
-
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-			// left view
-			render(aquariumController, LEFT_CAMERA, 0, 0, port1_width, win_height, aquariumSize, aquariumController.facePosition);
-
-			// right view
-			render(aquariumController, RIGHT_CAMERA, port1_width, 0, port2_width, win_height, Eigen::Vector3d(aquariumSize.z(), aquariumSize.y(), aquariumSize.x()));
-
-			//TestDrawAquarium();
+			const double dt = min(0.1, curTime - oldTime);
+			update_and_render_simulation(aquariumController, dt);
 
 			glfwSwapBuffers();
 			fps.frameRateDelay();
