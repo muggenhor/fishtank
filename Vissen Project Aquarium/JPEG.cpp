@@ -2,6 +2,7 @@
 #include <iostream>
 #include "GL/GLee.h"
 #include <GL/glu.h>
+#include <boost/gil/gil_all.hpp>
 #include <boost/scoped_array.hpp>
 #include <cassert>
 #include "glexcept.hpp"
@@ -15,6 +16,12 @@ extern "C"
 # include <jpeglib.h>
 #endif
 
+/* Needs to be included after jpeglib.h to ensure that the platform workarounds
+ * in "include/jpeglib.h" will be used before <jpeglib.h> gets included by
+ * jpeg_io.h.
+ */
+#include <boost/gil/extension/io/jpeg_io.hpp>
+
 Image::Image(const unsigned int num_components, const unsigned int width_, const unsigned int height_) :
 	data(boost::extents[width_][height_], boost::fortran_storage_order())
 {
@@ -23,56 +30,20 @@ Image::Image(const unsigned int num_components, const unsigned int width_, const
 
 Image Image::LoadJPG(const char* const filename, FLIP_IMAGE_PIXELS flip)
 {
-	FILE* const file = fopen(filename, "rb");
-	if (file == NULL)
-	{
-		/// @TODO throw exception instead
-		std::cerr << "Unable to load JPG File '" << filename << "'" << std::endl;
-		exit(EXIT_FAILURE);
-	}
+	using namespace boost::gil;
 
-	try
-	{
-		// Create a JPEG decompressor
-		struct jpeg_decompress_struct cinfo;
-		jpeg_error_mgr jerr;
-		cinfo.err = jpeg_std_error(&jerr);
-		jpeg_create_decompress(&cinfo);
+	// Allocate image memory
+	const point2<std::ptrdiff_t> dimensions = jpeg_read_dimensions(filename);
+	Image img(3, dimensions.x, dimensions.y);
 
-		// Decompress the file
-		jpeg_stdio_src(&cinfo, file);
-		jpeg_read_header(&cinfo, TRUE);
-		jpeg_start_decompress(&cinfo);
+	// Load image
+	rgb8_view_t imgView = interleaved_view(img.width(), img.height(), (rgb8_pixel_t*)img.data.origin(), img.width() * 3);
+	if (flip == FLIP_Y)
+		jpeg_read_view(filename, flipped_up_down_view(imgView));
+	else
+		jpeg_read_view(filename, imgView);
 
-		Image img(cinfo.num_components, cinfo.image_width, cinfo.image_height);
-
-		boost::scoped_array<unsigned char*> rowPtr(new unsigned char*[img.height()]);
-		for (unsigned int i = 0; i < img.height(); ++i)
-		{
-			const unsigned int rowIndex = flip == FLIP_Y
-			                             ? img.height() - 1 - i
-			                             : i;
-
-			rowPtr[i] = img.data[0][rowIndex].data();
-		}
-
-		int rowsRead = 0;
-		while (cinfo.output_scanline < cinfo.output_height)
-		{
-			rowsRead += jpeg_read_scanlines(&cinfo, &rowPtr[rowsRead], cinfo.output_height-rowsRead);
-		}
-
-		jpeg_finish_decompress(&cinfo);
-		jpeg_destroy_decompress(&cinfo);
-		fclose(file);
-
-		return img;
-	}
-	catch (...)
-	{
-		fclose(file);
-		throw;
-	}
+	return img;
 }
 
 Texture::Texture(const Image& img) :
