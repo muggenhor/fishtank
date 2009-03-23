@@ -1,6 +1,7 @@
 #include <boost/array.hpp>
 #include <boost/circular_buffer.hpp>
 #include <boost/foreach.hpp>
+#include <boost/gil/algorithm.hpp>
 #include <Eigen/Core>
 #include "Ground.h"
 #include <iostream>
@@ -9,13 +10,37 @@
 #include "math-helpers.hpp"
 #include "main.hpp"
 
+#ifdef WIN32
+extern "C"
+{
+# include "include/jpeglib.h"
+}
+#else
+# include <jpeglib.h>
+#endif
+
+/* Needs to be included after jpeglib.h to ensure that the platform workarounds
+ * in "include/jpeglib.h" will be used before <jpeglib.h> gets included by
+ * jpeg_io.h.
+ */
+#include <boost/gil/extension/io/jpeg_io.hpp>
+
 #define foreach BOOST_FOREACH
+
+using namespace boost::gil;
 
 Ground::Ground(const char* const filename, int maxHeight, const char* const texturename) :
 	maxHeight(maxHeight),
-	heightmap(Image::LoadJPG(filename)),
 	texture(texturename ? Texture(Image::LoadJPG(texturename, FLIP_Y)) : Texture())
 {
+	// Load heightmap
+	rgb8_image_t heightMapImage;
+	jpeg_read_image(filename, heightMapImage);
+
+	// Convert heightmap to grayscale (so it's usable)
+	heightmap.recreate(heightMapImage.dimensions());
+	copy_and_convert_pixels(const_view(heightMapImage), view(heightmap));
+
 	triangles.UseVBOs(use_vbos);
 	updateRenderData();
 
@@ -34,7 +59,7 @@ int Ground::HeightAt(unsigned int x, unsigned int y) const
 	y = clip(y, 0U, depth() - 1);
 
 	// Convert RGB value to grayscale by using the NTSC grayscale weights
-	const float height_value = (heightmap.data[x][y].cast<float>() / static_cast<float>(UCHAR_MAX)).dot(NTSC_grayscale_weights);
+	const float height_value = const_view(heightmap)(x, y)[0];
 
 	return height_value * maxHeight - aquariumSize.y() * 0.5f;
 }

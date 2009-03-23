@@ -1,6 +1,8 @@
 #ifndef __INCLUDED_GROUND_H__
 #define __INCLUDED_GROUND_H__
 
+#include <boost/gil/image.hpp>
+#include <boost/gil/typedefs.hpp>
 #include "JPEG.h"
 #include "vertexarrays/trianglearray.hpp"
 
@@ -24,7 +26,7 @@ class Ground
 		void updateRenderData();
 
 	private:
-		Image heightmap;
+		boost::gil::gray32f_image_t heightmap;
 		Texture texture;
 		TriangleArray<unsigned int, float, int, float> triangles;
 };
