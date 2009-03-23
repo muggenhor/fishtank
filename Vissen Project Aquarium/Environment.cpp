@@ -1,10 +1,26 @@
 #include "Environment.h"
 #include "AquariumController.h"
-#include "JPEG.h"
 
+#ifdef WIN32
+extern "C"
+{
+# include "include/jpeglib.h"
+}
+#else
+# include <jpeglib.h>
+#endif
+
+/* Needs to be included after jpeglib.h to ensure that the platform workarounds
+ * in "include/jpeglib.h" will be used before <jpeglib.h> gets included by
+ * jpeg_io.h.
+ */
+#include <boost/gil/extension/io/jpeg_io.hpp>
+
+using namespace boost::gil;
 using namespace std;
 
 Environment::Environment(const Eigen::Vector3d& pos1, const Eigen::Vector3d& pos2, const Eigen::Vector3d& pos3, const Eigen::Vector3d& pos4, const std::string &texturename) :
+	texture(0),
 	pos1(pos1),
 	pos2(pos2),
 	pos3(pos3),
@@ -13,26 +29,31 @@ Environment::Environment(const Eigen::Vector3d& pos1, const Eigen::Vector3d& pos
 	//er is een texture naam
 	if (!texturename.empty())
 	{
-		Image img = Image::LoadJPG(texturename.c_str(), FLIP_Y);
+		rgb8_image_t img;
+		jpeg_read_image(texturename, img);
 
 		if (pos1.z() < 0
 		 && pos2.z() < 0
 		 && pos3.z() < 0
 		 && pos4.z() < 0)
-			AquariumController::InitialiseComponents(img);
+			AquariumController::InitialiseComponents(flipped_up_down_view(view(img)));
 
-		texture = Texture(img);
+		texture = new Texture(flipped_up_down_view(const_view(img)));
 	}
+}
+
+Environment::~Environment()
+{
+	delete texture;
 }
 
 void Environment::Draw()
 {
-	if (texture.is_null_texture())
+	if (!texture)
 		return;
 
-	texture.bind();
+	texture->bind();
 
-	//kleur wit maken
 	glColor3f(1.f, 1.f, 1.f);
 
 	glBegin(GL_QUADS);

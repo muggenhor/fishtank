@@ -10,7 +10,7 @@
 #include <vector>
 #include <Eigen/Core>
 
-#include "JPEG.h"
+#include "textures.hpp"
 #include "vertexarrays/trianglearray.hpp"
 
 #define MS_MAX_NAME 128
@@ -89,9 +89,12 @@ class Shape
 class Material
 {
 	public:
+		Material();
+		~Material();
+
 		bool loadFromMs3dAsciiSegment(FILE* file, std::string path_);
 		void activate() const;
-		void reloadTexture( void );
+		void reloadTexture();
 
 	private:
 		friend class boost::serialization::access;
@@ -122,7 +125,7 @@ class Material
 		float Transparency;
 		char  DiffuseTexture[MS_MAX_NAME];
 		char  AlphaTexture[MS_MAX_NAME];
-		Texture texture;
+		Texture* texture;
 		std::string path;
 };
 

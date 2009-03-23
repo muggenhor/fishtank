@@ -9,7 +9,6 @@
 #include "Bubble.h"
 #include "Ground.h"
 #include "Environment.h"
-#include "JPEG.h"
 
 //de grootte van het aquarium
 extern Eigen::Vector3d aquariumSize;
@@ -60,7 +59,35 @@ public:
 	//voeg een bubbel maker toe in het aquarium
 	void AddBubbleSpot(const Eigen::Vector3d &position);
 
-	static void InitialiseComponents(Image& img);
+	template <typename View>
+	static void InitialiseComponents(const View& img)
+	{
+		using namespace boost::gil;
+
+		typedef typename View::value_type            pixel_t;
+		typedef typename channel_type<pixel_t>::type channel_t;
+
+		pixel_t colour;
+
+		for (unsigned int channel = 0; channel < img.num_channels(); ++channel)
+		{
+			colour[channel] = channel_traits<channel_t>::max_value();
+		}
+
+		for (unsigned int y = 0; y < height; ++y)
+		{
+			for (unsigned int x = 0; x < width; ++x)
+			{
+				if (initialisation[x + y * width])
+					img(30 + x, img.height() - height - 30 + y) = colour;
+			}
+		}
+	}
+
+private:
+	static const char initialisation[];
+	static const unsigned int width;
+	static const unsigned int height;
 };
 
 //een random tussen 0 en 1

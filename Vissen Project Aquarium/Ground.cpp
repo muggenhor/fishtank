@@ -6,7 +6,6 @@
 #include "Ground.h"
 #include <iostream>
 #include "AquariumController.h"
-#include "JPEG.h"
 #include "math-helpers.hpp"
 #include "main.hpp"
 
@@ -31,15 +30,21 @@ using namespace boost::gil;
 
 Ground::Ground(const char* const filename, int maxHeight, const char* const texturename) :
 	maxHeight(maxHeight),
-	texture(texturename ? Texture(Image::LoadJPG(texturename, FLIP_Y)) : Texture())
+	texture(0)
 {
 	// Load heightmap
-	rgb8_image_t heightMapImage;
-	jpeg_read_image(filename, heightMapImage);
+	rgb8_image_t img;
+	jpeg_read_image(filename, img);
 
 	// Convert heightmap to grayscale (so it's usable)
-	heightmap.recreate(heightMapImage.dimensions());
-	copy_and_convert_pixels(const_view(heightMapImage), view(heightmap));
+	heightmap.recreate(img.dimensions());
+	copy_and_convert_pixels(const_view(img), view(heightmap));
+
+	if (texturename)
+	{
+		jpeg_read_image(texturename, img);
+		texture = new Texture(flipped_up_down_view(const_view(img)));
+	}
 
 	triangles.UseVBOs(use_vbos);
 	updateRenderData();
@@ -49,6 +54,11 @@ Ground::Ground(const char* const filename, int maxHeight, const char* const text
 	          << triangles.uniqueVertices() << " vertices\n"
 	          << triangles.drawnVertices() << " indices\n\n";
 #endif
+}
+
+Ground::~Ground()
+{
+	delete texture;
 }
 
 int Ground::HeightAt(unsigned int x, unsigned int y) const
@@ -90,13 +100,13 @@ void Ground::Draw()
 	glMaterialfv ( GL_FRONT_AND_BACK, GL_EMISSION, black ) ;
 	glColorMaterial ( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE ) ;
 
-	if (texture.is_null_texture())
+	if (!texture)
 	{
 		glColor3f(1,0.8,0.1);
 	}
 	else
 	{
-		texture.bind();
+		texture->bind();
 		glMatrixMode(GL_TEXTURE);
 		glPushMatrix();
 		glLoadIdentity();
@@ -112,7 +122,7 @@ void Ground::Draw()
 	glDisable(GL_LIGHT0);
 	glDisable(GL_COLOR_MATERIAL) ;
 
-	if (!texture.is_null_texture())
+	if (texture)
 	{
 		glDisable(GL_TEXTURE_2D);
 		glMatrixMode(GL_TEXTURE);

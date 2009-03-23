@@ -209,10 +209,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\JPEG.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\main.cpp"
 				>
 			</File>
@@ -226,6 +222,10 @@
 			</File>
 			<File
 				RelativePath=".\shaders.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\textures.cpp"
 				>
 			</File>
 			<File
@@ -275,10 +275,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\JPEG.h"
-				>
-			</File>
-			<File
 				RelativePath=".\math-helpers.hpp"
 				>
 			</File>
@@ -292,6 +288,10 @@
 			</File>
 			<File
 				RelativePath=".\shaders.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\textures.hpp"
 				>
 			</File>
 			<File

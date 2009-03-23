@@ -3,14 +3,29 @@
 #include <boost/foreach.hpp>
 #include <Eigen/Geometry>
 #include <Eigen/LU>
-#include "JPEG.h"
 #include "math-helpers.hpp"
 #include "main.hpp"
 #include "MS3D_ASCII.h"
 #include <string>
 
+#ifdef WIN32
+extern "C"
+{
+# include "include/jpeglib.h"
+}
+#else
+# include <jpeglib.h>
+#endif
+
+/* Needs to be included after jpeglib.h to ensure that the platform workarounds
+ * in "include/jpeglib.h" will be used before <jpeglib.h> gets included by
+ * jpeg_io.h.
+ */
+#include <boost/gil/extension/io/jpeg_io.hpp>
+
 #define foreach BOOST_FOREACH
 
+using namespace boost::gil;
 using namespace std;
 using namespace Eigen;
 
@@ -309,6 +324,16 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 	return true;
 }
 
+Material::Material() :
+	texture(0)
+{
+}
+
+Material::~Material()
+{
+	delete texture;
+}
+
 void Material::activate() const
 {
 	glMaterialfv( GL_FRONT, GL_AMBIENT, Ambient );
@@ -317,7 +342,10 @@ void Material::activate() const
 	glMaterialfv( GL_FRONT, GL_EMISSION, Emissive );
 	glMaterialf( GL_FRONT, GL_SHININESS, Shininess );
 
-	texture.bind();
+	if (texture)
+		texture->bind();
+	else
+		glDisable(GL_TEXTURE_2D);
 }
 
 bool Material::loadFromMs3dAsciiSegment( FILE *file, std::string path_ )
@@ -385,16 +413,19 @@ bool Material::loadFromMs3dAsciiSegment( FILE *file, std::string path_ )
 	return true;
 }
 
-void Material::reloadTexture( void )
+void Material::reloadTexture()
 {
-	if ( strlen(DiffuseTexture) > 0 )
+	if (strlen(DiffuseTexture) > 0)
 	{
-		std::string tmp(path+DiffuseTexture);
-		texture = Texture(Image::LoadJPG(tmp.c_str(), FLIP_Y));
+		rgb8_image_t img;
+		jpeg_read_image(path + DiffuseTexture, img);
+
+		texture = new Texture(flipped_up_down_view(const_view(img)));
 	}
 	else
 	{
-		texture = Texture();
+		delete texture;
+		texture = 0;
 	}
 }
 

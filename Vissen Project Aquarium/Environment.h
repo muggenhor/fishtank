@@ -2,21 +2,21 @@
 #define __INCLUDED_ENVIRONMENT_H__
 
 #include <Eigen/Core>
-#include <vector>
 #include <string>
-#include "JPEG.h"
+#include "textures.hpp"
 
 //een plaatje dat getekend word, kunnen we gebruiken als muur
 class Environment
 {
 	public:
 		Environment(const Eigen::Vector3d& pos1, const Eigen::Vector3d& pos2, const Eigen::Vector3d& pos3, const Eigen::Vector3d& pos4, const std::string &texturename="");/// use no texture name if want no texture
+		~Environment();
 
 		//teken de muur
 		void Draw();
 
 	private:
-		Texture texture;
+		Texture* texture;
 		//de 4 hoeken van het plaatje
 		Eigen::Vector3d pos1, pos2, pos3, pos4;
 };

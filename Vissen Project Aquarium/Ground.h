@@ -3,13 +3,14 @@
 
 #include <boost/gil/image.hpp>
 #include <boost/gil/typedefs.hpp>
-#include "JPEG.h"
+#include "textures.hpp"
 #include "vertexarrays/trianglearray.hpp"
 
 class Ground
 {
 	public:
 		Ground(const char* filename, int maxHeight, const char* texturename = 0);/// use no texture name if want no texture
+		~Ground();
 
 		//let op: y telt voor lengte hier, niet hoogte, zoals in het aquarium
 		//verkrijg de hoogte op een bepaalde positie
@@ -27,7 +28,7 @@ class Ground
 
 	private:
 		boost::gil::gray32f_image_t heightmap;
-		Texture texture;
+		Texture* texture;
 		TriangleArray<unsigned int, float, int, float> triangles;
 };
 

@@ -22,11 +22,11 @@ fishtank_SOURCES = \
 	glexcept.cpp \
 	Ground.cpp \
 	imagereceiver.cpp \
-	JPEG.cpp \
 	main.cpp \
 	MS3D_ASCII.cpp \
 	Object.cpp \
 	shaders.cpp \
+	textures.cpp \
 	Vis.cpp \
 	wiggle.cpp
 
@@ -38,12 +38,12 @@ noinst_HEADERS = \
 	glexcept.hpp \
 	Ground.h \
 	imagereceiver.h \
-	JPEG.h \
 	main.hpp \
 	math-helpers.hpp \
 	MS3D_ASCII.h \
 	Object.h \
 	shaders.hpp \
+	textures.hpp \
 	Vis.h \
 	wiggle.hpp
 
