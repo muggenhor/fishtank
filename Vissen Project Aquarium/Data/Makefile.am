@@ -1,7 +1,6 @@
 SUBDIRS = Objecten Vissen
 
 dist_pkgdata_DATA = \
-	README.txt \
 	ceiling.jpg \
 	ceiling1.jpg \
 	ground.jpg \
@@ -16,3 +15,6 @@ dist_pkgdata_DATA = \
 	wall2.jpg \
 	wall22.jpg \
 	wiggle.glsl
+
+dist_doc_DATA = \
+	README.txt

@@ -59,3 +59,6 @@ fishtank_LDADD = \
 	$(WIN32_LIBS)
 
 fishtank_CPPFLAGS = $(GLFW_CFLAGS) $(BOOST_CPPFLAGS) $(AM_CPPFLAGS)
+
+dist_doc_DATA = \
+	Handleiding.doc
