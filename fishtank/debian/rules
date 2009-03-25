@@ -8,5 +8,5 @@ include /usr/share/cdbs/1/class/autotools.mk
 makebuilddir/fishtank::
 	sh autogen.sh
 
-DEB_CONFIGURE_EXTRA_FLAGS := --disable-debug CPPFLAGS=-I/usr/include/eigen2
+DEB_CONFIGURE_EXTRA_FLAGS := --disable-debug CPPFLAGS=-I/usr/include/eigen2 --sysconfdir=/etc/fishtank
 DEB_COMPRESS_EXCLUDE := .doc
