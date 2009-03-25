@@ -1,6 +1,7 @@
 #include <boost/foreach.hpp>
 #include <cmath>
 #include "AquariumController.h"
+#include "main.hpp"
 
 #define foreach BOOST_FOREACH
 
@@ -21,25 +22,25 @@ float my_random()
 
 AquariumController::AquariumController(void):
 		//voeg grond toe
-		ground("./Data/heightmap.jpg", 30, "./Data/ground.jpg"),
+		ground((datadir + "/heightmap.jpg").c_str(), 30, (datadir + "/ground.jpg").c_str()),
 		//voeg de muren toe
 		wall1(Eigen::Vector3d(-0.5*aquariumSize.x(), -0.5*aquariumSize.y() + balkSize, -0.5*aquariumSize.z() + balkSize),
 					Eigen::Vector3d(-0.5*aquariumSize.x(), 0.5*aquariumSize.y() - balkSize, -0.5*aquariumSize.z() + balkSize),
 					Eigen::Vector3d(-0.5*aquariumSize.x(), 0.5*aquariumSize.y() - balkSize, 0.5*aquariumSize.z() - balkSize),
-					Eigen::Vector3d(-0.5*aquariumSize.x(), -0.5*aquariumSize.y() + balkSize, 0.5*aquariumSize.z() - balkSize), "./Data/wall1.jpg"),
+					Eigen::Vector3d(-0.5*aquariumSize.x(), -0.5*aquariumSize.y() + balkSize, 0.5*aquariumSize.z() - balkSize), (datadir + "/wall1.jpg").c_str()),
 		wall2(Eigen::Vector3d(-0.5*aquariumSize.x() + balkSize, -0.5*aquariumSize.y() + balkSize, -0.5*aquariumSize.z()),
 					Eigen::Vector3d(-0.5*aquariumSize.x() + balkSize, 0.5*aquariumSize.y() - balkSize, -0.5*aquariumSize.z()),
 					Eigen::Vector3d(0.5*aquariumSize.x() - balkSize, 0.5*aquariumSize.y() - balkSize, -0.5*aquariumSize.z()),
-					Eigen::Vector3d(0.5*aquariumSize.x() - balkSize, -0.5*aquariumSize.y() + balkSize, -0.5*aquariumSize.z()), "./Data/wall2.jpg"),
+					Eigen::Vector3d(0.5*aquariumSize.x() - balkSize, -0.5*aquariumSize.y() + balkSize, -0.5*aquariumSize.z()), (datadir + "/wall2.jpg").c_str()),
 		/*ceiling(Eigen::Vector3d(-0.5*aquariumSize.x() + balkSize, 0.5*aquariumSize.y(), 0.5*aquariumSize.z() - balkSize),
 					Eigen::Vector3d(-0.5*aquariumSize.x() + balkSize, 0.5*aquariumSize.y(), -0.5*aquariumSize.z() + balkSize),
 					Eigen::Vector3d(0.5*aquariumSize.x() - balkSize, 0.5*aquariumSize.y(), -0.5*aquariumSize.z() + balkSize),
-					Eigen::Vector3d(0.5*aquariumSize.x() - balkSize, 0.5*aquariumSize.y(), 0.5*aquariumSize.z() - balkSize), "./Data/ceiling.jpg")*/
+					Eigen::Vector3d(0.5*aquariumSize.x() - balkSize, 0.5*aquariumSize.y(), 0.5*aquariumSize.z() - balkSize), (datadir + "/ceiling.jpg").c_str())*/
 		//voeg het plafond toe
 		ceiling(Eigen::Vector3d(-0.5*aquariumSize.x(), 0.5*aquariumSize.y(), 0.5*aquariumSize.z()),
 					Eigen::Vector3d(-0.5*aquariumSize.x(), 0.5*aquariumSize.y(), -0.5*aquariumSize.z()),
 					Eigen::Vector3d(0.5*aquariumSize.x(), 0.5*aquariumSize.y(), -0.5*aquariumSize.z()),
-					Eigen::Vector3d(0.5*aquariumSize.x(), 0.5*aquariumSize.y(), 0.5*aquariumSize.z()), "./Data/ceiling.jpg"),
+					Eigen::Vector3d(0.5*aquariumSize.x(), 0.5*aquariumSize.y(), 0.5*aquariumSize.z()), (datadir + "/ceiling.jpg").c_str()),
 		facePosition(.5, .5)
 {
 }

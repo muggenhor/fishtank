@@ -5,6 +5,7 @@ EXTRA_DIST= \
 	configure.ac
 
 SUBDIRS = \
+	Data \
 	GL \
 	vertexarrays
 

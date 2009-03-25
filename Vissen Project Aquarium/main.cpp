@@ -19,6 +19,7 @@
 #include <ctime>
 
 #include <algorithm>
+#include <fstream>
 #include <iostream>
 #include <vector>
 #include <map>
@@ -29,8 +30,21 @@
 // Allow for easy adding of translations
 #define _(string) (string)
 
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
+
 using namespace std;
 namespace po = boost::program_options;
+
+/// List of data directories to select from
+static const char* datadirs[] =
+{
+	"./Data", // Default fallback
+#if defined(DATADIR)
+	DATADIR,
+#endif
+};
+
+std::string datadir;
 
 bool use_vbos = true;
 
@@ -245,7 +259,7 @@ static void LoadModels(std::istream& input_file, AquariumController& aquariumCon
 		if(model_iterator==models.end())
 		{
 			boost::shared_ptr<Model> model(new Model);
-			model->loadFromMs3dAsciiFile(("./Data/Vissen/Modellen/" + model_name + ".txt").c_str(), model_matrix);
+			model->loadFromMs3dAsciiFile((datadir + "/Vissen/Modellen/" + model_name + ".txt").c_str(), model_matrix);
 			models[model_name] = model;
 		}
 
@@ -272,7 +286,7 @@ static void LoadModels(std::istream& input_file, AquariumController& aquariumCon
 		if(model_iterator==models.end())
 		{
 			boost::shared_ptr<Model> model(new Model);
-			model->loadFromMs3dAsciiFile(("./Data/Objecten/Modellen/" + model_name + ".txt").c_str(), model_matrix);
+			model->loadFromMs3dAsciiFile((datadir + "/Objecten/Modellen/" + model_name + ".txt").c_str(), model_matrix);
 			models[model_name] = model;
 		}
 
@@ -551,12 +565,32 @@ static void update_and_render_simulation(AquariumController& aquariumController,
 	//TestDrawAquarium();
 }
 
+/**
+ * Searches a list of possible data directories and selects the first one
+ * that's useable.
+ */
+static string find_data_dir()
+{
+	static const std::string test_file = "/wiggle.glsl";
+
+	for (const char** dir = &datadirs[0]; dir != &datadirs[ARRAY_SIZE(datadirs)]; ++dir)
+	{
+		std::ifstream test_if((*dir + test_file).c_str());
+		if (test_if.is_open())
+			return *dir;
+	}
+
+	return "";
+}
+
 int main(int argc, char** argv)
 {
 #if defined(__GNUC__)
 	// Report uncaught exceptions in a nicer way than terminating alone.
 	std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
 #endif
+
+	datadir = find_data_dir();
 
 	try
 	{

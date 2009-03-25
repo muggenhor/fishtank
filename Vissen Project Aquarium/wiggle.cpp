@@ -1,16 +1,18 @@
 #include <fstream>
+#include "main.hpp"
 #include <stdexcept>
+#include <string>
 #include "wiggle.hpp"
 
 #define foreach BOOST_FOREACH
 
 WiggleTransformation::WiggleTransformation()
 {
-	static const char shaderFile[] = "./Data/wiggle.glsl";
+	const std::string shaderFile = datadir + "/wiggle.glsl";
 
-	std::ifstream source(shaderFile);
+	std::ifstream source(shaderFile.c_str());
 	if (!source.is_open())
-		throw std::runtime_error("Couldn't find file " + std::string(shaderFile));
+		throw std::runtime_error("Couldn't find file " + shaderFile);
 
 	_shader.loadSource(source);
 	_shader.compile();

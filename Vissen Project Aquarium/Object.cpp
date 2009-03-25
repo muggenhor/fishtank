@@ -4,6 +4,7 @@
 #include <cmath>
 #include <ctime>
 #include <fstream>
+#include "main.hpp"
 #include <string>
 
 using namespace std;
@@ -18,7 +19,7 @@ Object::Object(boost::shared_ptr<Model> model, const std::string& propertiesFile
 void Object::LoadProperties(const string& propertiesFile)
 {
 	string s;
-	ifstream input_file(("./Data/Objecten/" + propertiesFile + ".oif").c_str());
+	ifstream input_file((datadir + "/Objecten/" + propertiesFile + ".oif").c_str());
 
 	//scaling
 	getline(input_file, s);

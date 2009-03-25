@@ -6,6 +6,7 @@
 #include <fstream>
 #include "glexcept.hpp"
 #include <iostream>
+#include "main.hpp"
 #include "math-helpers.hpp"
 #include <string>
 
@@ -165,7 +166,7 @@ Eigen::Vector3f Vis::RandomPos() const
 void Vis::LoadProperties(const string &propertiesFile)
 {
 	string s;
-	ifstream input_file(("./Data/Vissen/" + propertiesFile + ".oif").c_str());
+	ifstream input_file((datadir + "/Vissen/" + propertiesFile + ".oif").c_str());
 
 	//scaling
 	getline(input_file, s);
