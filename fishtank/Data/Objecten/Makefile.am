@@ -1,6 +1,6 @@
 objectsdir = $(pkgdatadir)/Objecten
 nobase_dist_objects_DATA = \
-	Modellen/dunne\ zw.jpg \
+	Modellen/dunne_zw.jpg \
 	Modellen/dunne_zw_stroken.txt \
 	Modellen/zeewier.jpg \
 	Modellen/zeewier.txt \
