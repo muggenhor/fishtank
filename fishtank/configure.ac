@@ -71,7 +71,7 @@ FT_CFLAGS="${FT_CFLAGS} ${WARN_AND_DEBUG_FLAGS}"
 FT_CXXFLAGS="${FT_CXXFLAGS} ${WARN_AND_DEBUG_FLAGS}"
 
 AS_IF([test "x$host_os_mingw32" != "xyes"],[
-	FT_CPPFLAGS="${FT_CPPFLAGS} -DDATADIR=\"\\\"\${pkgdatadir}\\\"\""
+	FT_CPPFLAGS="${FT_CPPFLAGS} -DDATADIR=\"\\\"\${pkgdatadir}\\\"\" -DSYSCONFDIR=\"\\\"\${sysconfdir}\\\"\""
 ])
 
 # Checks for libraries.
@@ -120,5 +120,6 @@ AC_CONFIG_FILES([Makefile
                  Data/Objecten/Makefile
                  Data/Vissen/Makefile
                  GL/Makefile
+                 Settings/Makefile
                  vertexarrays/Makefile])
 AC_OUTPUT

@@ -7,6 +7,7 @@ EXTRA_DIST= \
 SUBDIRS = \
 	Data \
 	GL \
+	Settings \
 	vertexarrays
 
 AM_CFLAGS=$(FT_CFLAGS)

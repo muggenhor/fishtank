@@ -44,6 +44,15 @@ static const char* datadirs[] =
 #endif
 };
 
+/// List of configuration derectories to select from
+static const char* sysconfdirs[] =
+{
+	"./Settings", // Default fallback
+#if defined(SYSCONFDIR)
+	SYSCONFDIR,
+#endif
+};
+
 std::string datadir;
 
 bool use_vbos = true;
@@ -141,7 +150,8 @@ static void ParseOptions(int argc, char** argv, std::istream& config_file)
 	visible.add(generic).add(config);
 
 	po::variables_map vm;
-	po::store(po::parse_command_line(argc, argv, cmdline_options), vm);
+	if (argv != NULL)
+		po::store(po::parse_command_line(argc, argv, cmdline_options), vm);
 	po::store(po::parse_config_file(config_file, cmdline_options), vm);
 	po::notify(vm);
 
@@ -596,12 +606,37 @@ int main(int argc, char** argv)
 	{
 		srand(time(NULL));/// make random numbers sequence depend to program start time.
 
-		// @TODO Should eventually replace this entirely by ParseOptions
-		ifstream input_file("Settings/aquaConfig.txt");
-		LoadSettings(input_file);
+		// Search for config files and use the first one found
+		ifstream input_file;
+		for (const char** dir = &sysconfdirs[0]; dir != &sysconfdirs[ARRAY_SIZE(sysconfdirs)]; ++dir)
+		{
+			static const string config_file = "/aquaConfig.txt";
 
-		ifstream config("Settings/aquaConfig.cfg");
+			input_file.open((*dir + config_file).c_str());
+			if (input_file.is_open())
+			{
+				// @TODO Should eventually replace this entirely by ParseOptions
+				LoadSettings(input_file);
+				break;
+			}
+		}
+
+		ifstream config;
+		// First parse command line options (to allow it to override everything else)
 		ParseOptions(argc, argv, config);
+
+		// Search for config files and use the first one found
+		for (const char** dir = &sysconfdirs[0]; dir != &sysconfdirs[ARRAY_SIZE(sysconfdirs)]; ++dir)
+		{
+			static const string config_file = "/aquaConfig.cfg";
+
+			config.open((*dir + config_file).c_str());
+			if (config.is_open())
+			{
+				ParseOptions(0, NULL, config);
+				break;
+			}
+		}
 		config.close();
 
 		glfwInit();
