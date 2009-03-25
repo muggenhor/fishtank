@@ -69,7 +69,10 @@ fi
 
 FT_CFLAGS="${FT_CFLAGS} ${WARN_AND_DEBUG_FLAGS}"
 FT_CXXFLAGS="${FT_CXXFLAGS} ${WARN_AND_DEBUG_FLAGS}"
-FT_CPPFLAGS="${FT_CPPFLAGS} -DDATADIR=\"\\\"\${pkgdatadir}\\\"\""
+
+AS_IF([test "x$host_os_mingw32" != "xyes"],[
+	FT_CPPFLAGS="${FT_CPPFLAGS} -DDATADIR=\"\\\"\${pkgdatadir}\\\"\""
+])
 
 # Checks for libraries.
 BOOST_REQUIRE([1.36])
