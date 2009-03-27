@@ -43,7 +43,7 @@ namespace VideoStreamMerger
                 variabelen = true;
             }
 
-            //cf invullen
+            // currentFrame invullen
             frameInvullen(image);
 
             //nr verhogen
@@ -68,7 +68,7 @@ namespace VideoStreamMerger
         private void frameInvullen(Bitmap image)
         {
             y = x = 0;
-            //cf invullen
+            // currentFrame invullen
             for (int i = 0; i < tot; i++, y += prec)
             {
                 if (y >= height)

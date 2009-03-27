@@ -16,7 +16,6 @@ namespace VideoStreamMerger
         private byte[] data;
         private int hoogte, breedte, totaal, imgLen;
         
-
         public ShortSide(VideoSource.CaptureDevice webcam, string ip, int poort)
         {
             video = new VideoInput(webcam);
@@ -87,8 +86,6 @@ namespace VideoStreamMerger
 
         private bool ImageVervormen(Bitmap image)
         {
-  //          Console.WriteLine("start vervormen");
-
             MemoryStream ms = new MemoryStream();
             image.Save(ms, ImageFormat.Bmp);
             ms.Flush();
@@ -113,14 +110,8 @@ namespace VideoStreamMerger
                 else
                     data[i] = data2[x + 54 + (y * imgLen)];
             }
-
-   //         Console.WriteLine("start opslaan");
-   //         Bitmap bm = (Bitmap)Bitmap.FromStream(new MemoryStream(data));
-  //          bm.Save("c://temp2.bmp");
-
             return socket.Verzenden(data);
         }
-
 
         public TCPOut Socket { get { return socket; } }
         public bool Stop { get { try { video.Close(); return true; } catch { return false; } } }

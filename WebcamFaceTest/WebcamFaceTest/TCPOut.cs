@@ -49,13 +49,7 @@ namespace VideoStreamMerger
         /// <summary> wacht met verzenden totdat de ontvanger een berichtje terug gestuurd heeft dat die de data ontvangen heeft <summary>
         public bool Verzenden(byte[] data)
         {
-            try
-            {
-     //           sock.Receive(new byte[1]);
-             //   System.Threading.Thread.Sleep(40);
-                sock.Send(data);
-                return true;
-            }
+            try { sock.Send(data); return true; }
             catch { return false; }
         }
 
