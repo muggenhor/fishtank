@@ -38,10 +38,13 @@ namespace Webcam_Project
             for (int i = 0; i < filters.Count; i++)
                 Console.WriteLine("  Webcam '" + filters[i].Name + "' gevonden");
             //de 4 webcams
-            webcams[0] = new VideoSource.CaptureDevice(); webcams[0].VideoSource = filters[Convert.ToInt32(data[0])].MonikerString;
-            webcams[1] = new VideoSource.CaptureDevice(); webcams[1].VideoSource = filters[Convert.ToInt32(data[1])].MonikerString;
-            webcams[2] = new VideoSource.CaptureDevice(); webcams[2].VideoSource = filters[Convert.ToInt32(data[2])].MonikerString;
-            webcams[3] = new VideoSource.CaptureDevice(); webcams[3].VideoSource = filters[Convert.ToInt32(data[3])].MonikerString;
+            int i = 0;
+            foreach (VideoSource.CaptureDevice webcam in webcams)
+            {
+                webcams[i] = new VideoSource.CaptureDevice();
+                webcams[i].VideoSource = filters[Convert.ToInt32(data[i])].MonikerString;
+                i++;
+            }
             //imagecontrol aanmaken
             //en de imagecontrol alles laten doen
             Console.WriteLine("PROGRAMMA STARTEN");
