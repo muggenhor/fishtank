@@ -45,16 +45,6 @@ AquariumController::AquariumController(void):
 {
 }
 
-//geeft een willekeurige positie, maar houd het wel op de grond
-Eigen::Vector3d RandomBubblePos()
-{
-	Eigen::Vector3d result;
-	result.x() = (my_random() - 0.5) * aquariumSize.x();
-	result.y() = -aquariumSize.y() / 2;
-	result.z() = (my_random() - 0.5) * aquariumSize.z();
-	return result;
-}
-
 void AquariumController::AddFish(boost::shared_ptr<Model> model, const string &propertiesFile)
 {
 	fishes.push_back(Vis(model, propertiesFile, ground.maxHeight));
@@ -70,7 +60,6 @@ void AquariumController::AddBubbleSpot(const Eigen::Vector3d &position)
 	bubbleSpots.push_back(position);
 }
 
-
 void AquariumController::Update(double dt)
 {
 	foreach (Vis& fish, fishes)
@@ -78,11 +67,11 @@ void AquariumController::Update(double dt)
 	foreach (Object& object, objects)
 		object.Update(dt);
 	//voeg op willekeurige momenten bubbels toe
-	for (std::vector<Eigen::Vector3d>::const_iterator bubbleSpot = bubbleSpots.begin(); bubbleSpot != bubbleSpots.end(); ++bubbleSpot)
+	foreach (const Eigen::Vector3d& bubbleSpot, bubbleSpots)
 	{
 		if (my_random() < dt * 9.5)
 		{
-			bubbles.push_back(Bubble(*bubbleSpot, 1 + my_random() * 2, (my_random() < dt * 2)));
+			bubbles.push_back(Bubble(bubbleSpot, 1 + my_random() * 2, (my_random() < dt * 2)));
 		}
 	}
 	//update de bubbels en kijk of ze weggegooit mogen worden
