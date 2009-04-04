@@ -55,7 +55,7 @@ void AquariumController::AddObject(boost::shared_ptr<Model> model, const string 
 	objects.push_back(Object(model, propertiesFile, position));
 }
 
-void AquariumController::AddBubbleSpot(const Eigen::Vector3d &position)
+void AquariumController::AddBubbleSpot(const Eigen::Vector3f& position)
 {
 	bubbleSpots.push_back(position);
 }
@@ -67,7 +67,7 @@ void AquariumController::Update(double dt)
 	foreach (Object& object, objects)
 		object.Update(dt);
 	//voeg op willekeurige momenten bubbels toe
-	foreach (const Eigen::Vector3d& bubbleSpot, bubbleSpots)
+	foreach (const Eigen::Vector3f& bubbleSpot, bubbleSpots)
 	{
 		if (my_random() < dt * 9.5)
 		{

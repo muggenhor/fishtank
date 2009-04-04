@@ -32,7 +32,7 @@ private:
 	std::vector<Object> objects;
 	std::vector<Vis> fishes;
 	std::vector<Bubble> bubbles;
-	std::vector<Eigen::Vector3d> bubbleSpots;
+	std::vector<Eigen::Vector3f> bubbleSpots;
 public:
 	Ground ground;
 	//de linker en achtermuur en het plafond
@@ -57,7 +57,7 @@ public:
 	//voeg een object toe in het aquarium
 	void AddObject(boost::shared_ptr<Model> model, const std::string& propertiesFile, const Eigen::Vector3d& position);
 	//voeg een bubbel maker toe in het aquarium
-	void AddBubbleSpot(const Eigen::Vector3d &position);
+	void AddBubbleSpot(const Eigen::Vector3f& position);
 
 	template <typename View>
 	static void InitialiseComponents(const View& img)

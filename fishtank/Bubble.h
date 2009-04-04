@@ -14,13 +14,13 @@ class Bubble
 		//het type beweging dat de bubbel maakt, true is een sinus, false een exponentiele beweging omhoog
 		bool wiggle;
 		//snelheid
-		Eigen::Vector3d velocity;
+		Eigen::Vector3f velocity;
 
 	public:
-		Bubble(const Eigen::Vector3d& startpos, double size, bool wiggle);
+		Bubble(const Eigen::Vector3f& startpos, double size, bool wiggle);
 
 		//de huidige positie van de bubbel
-		Eigen::Vector3d pos;
+		Eigen::Vector3f pos;
 		//dit houd bij wanneer een bubbel op het oppervlak kapot moet gaan
 		double pop;
 

@@ -322,7 +322,7 @@ static void LoadModels(std::istream& input_file, AquariumController& aquariumCon
 		int z = -(aquariumSize.z() / 2) + atoi(s.c_str());
 		int groundposx = (x + (aquariumSize.x() / 2)) / aquariumSize.x() * (aquariumController.ground.width());
 		int groundposy = (z + (aquariumSize.z() / 2)) / aquariumSize.z() * (aquariumController.ground.depth());
-		aquariumController.AddBubbleSpot(Eigen::Vector3d(x, aquariumController.ground.HeightAt(groundposx, groundposy), z));
+		aquariumController.AddBubbleSpot(Eigen::Vector3f(x, aquariumController.ground.HeightAt(groundposx, groundposy), z));
 	}
 }
 

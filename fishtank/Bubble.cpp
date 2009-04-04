@@ -7,7 +7,7 @@ GLUquadric* TheQuadric()
  	return result;
 }
 
-Bubble::Bubble(const Eigen::Vector3d& startpos, double size, bool wiggle) :
+Bubble::Bubble(const Eigen::Vector3f& startpos, double size, bool wiggle) :
 	size(size),
 	wiggleStartX(my_random() * 100),
 	wiggleStartZ(my_random() * 100),
