@@ -8,6 +8,6 @@ Standards-Version: 3.6.2
 
 Package: fishtank
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}
 Description: Fishtank renderer, renders fish swimming in a tank
  Fishtank renderer, renders fish swimming in a tank.
