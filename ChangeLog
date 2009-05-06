@@ -1,0 +1,94 @@
+2009-03-23 2009-03-25: No release
+ * Buildsystem:
+   * New: Add a Debianized package build structure
+   * New: Install the data and make the location configurable using the --datadir parameter (to ./configure)
+   * New: Install the configuration files as part of the installation
+ * Graphics:
+   * New: Use Boost.Gil for loading JPEG files instead of our own custom crafted code
+
+2009-03-15 2009-03-16: No release
+ * Graphics:
+   * New: Add anti aliasing and a configuration option to control it
+   * New: Make the maximum framerate a configuration option
+
+2009-03-13: No release
+ * General:
+   * New: Add command line and configuration file parsing using Boost.ProgramOptions
+ * Graphics:
+   * Fix: After generating the ground (from a heightmap) cache the render data in a TriangleArray to perform the necessary computations only once. This reduces the amount of time spent in Draw from 28% to 0.1%. This is a ''significant'' performance improvement!
+   * New: Display framerate info on debug builds
+   * Fix: Only use VBOs when the current OpenGL implementation supports them.
+   * Fix: Only update the VBO when it's contents have changed (huge performance gain)
+
+2009-03-12: No release
+ * General:
+   * Fix: Performance improvement by reducing the amount of data copying (r228)
+ * Graphics:
+   * New: Add a decent framerate limiter (i.e. one that dynamically adapts)
+   * Fix: Only validate the content of the index array (list of vertices) once (until it's modified again), this significantly improves rendering performance
+   * Change: Don't optimize (by trimming duplicate vertices) models that exceed a set amount of triangles (3500). This allows for a reasonable time to load larger models, at the cost of decreased rendering speed.
+
+2009-03-11: No release
+ * General:
+   * New: Prepare for serialisation of the models (allows for caching models instead of rebuilding them every time the program is started)
+ * Code cleanup:
+   * Change: Remove the CPU-based version of the wiggle transformation (this is simplifies the code a lot, though as a result shader support is now required for the wiggling to work)
+ * Graphics:
+   * New: Update the VertexArray management library to use Eigen 2.0 (instead of 1.0)
+   * New: Use VBOs for drawing (faster than VAs)
+
+2009-03-10: No release
+ * Graphics:
+   * New: Add Giel's VertexArray management library and bring it up to date
+
+2009-03-09: No release
+ * General:
+   * New: Display fatal error messages on the console as they occur.
+ * Buildsystem:
+   * Change: Update the Visual Studio 2008 build system
+   * New: Replace the raw Makefile buildsystem with an autotools buildsystem
+ * Graphics:
+   * New: Add diffuse lighting to the fishes using a static light source
+   * New: After drawing a frame, sleep for a milli-second to reduce CPU load (causes the framerate to rise because of increased system stability)
+
+2009-03-08: No release
+ * General:
+   * New: Display fatal error messages on the console as they occur.
+ * Buildsystem:
+   * Change: Update the Visual Studio 2008 build system
+ * Graphics:
+   * New: Add OpenGL shader management support to allow for the use of shaders
+   * New: Add an optional shader to perform the wiggle transformation on the GPU instead of the CPU if possible
+
+2009-03-05 - 2009-03-07: No release
+ * General:
+   * New: Replace custom crafted "math3" library with the "Eigen 2" library ( http://eigen.tuxfamily.org/ )
+   * Fix: Don't rely on implementation defined behaviour (i.e. unspecified behaviour)
+ * Code cleanup:
+   * Fix: Move duplicated code into functions to make it more maintainable
+   * Fix: Remove large amounts of unused code (only serves to confuse people, allowing for bugs to creep in)
+   * Fix: Use Boost.Foreach to walk over containers (better readability and thus maintainability)
+   * Change: Separate the wiggle algorithm from the rendering algorithm
+   * Change: Pass the rendering algorithm a transformation function it can use before rendering (allows for greater customisation than built-in wiggle transformation)
+   * Change: Only use the wiggle algorithm when rendering fishes (this *significantly* improves rendering performance of all static content)
+ * Graphics:
+   * New: Use Vertex Arrays for both storage and rendering of all models (faster than current rendering technique)
+   * Change: Don't recompute the normals of the ground every time it's rendered, instead cache them (*much*, *much* faster)
+
+2009-02-26 - 2009-02-27: No release
+ * General:
+   * Fix: Function correctly on case sensitive file systems.
+   * New: Mark possibly optimisable code
+   * New: Perform proper OpenGL extension checking (check whether extensions are available before attempting to use them) with GLee
+ * Code cleanup:
+   * Fix: Get rid of a large amount of compiler warnings (and possible bugs with them).
+   * Change: Replace custom crafted (and bugridden) safe_getline (nothing safe about it) and replace it with std::getline (much more common function and much better tested)
+   * Fix: Remove large amounts of unused code (only serves to confuse people, allowing for bugs to creep in)
+ * Buildsystem:
+   * New: Build on Unix systems as well (Unix Makefile, probably Linux-only).
+ * Resource management:
+   * Change: Manage textures and images in an object oriented fashion (easier, thus less likely to contain bugs)
+   * Fix: Get rid of a memory leak (in texture management code) by using Boost.SmartPtr (scoped_ptr) for memory management
+   * Fix: Replace large amounts of manual memory management with automatic memory management in containers (reduces chance of memory leaks)
+
+2009-02-25: The day before Giel started work on this project
