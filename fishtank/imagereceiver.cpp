@@ -15,20 +15,34 @@
 #include <io.h>
 #include <ws2tcpip.h>
 
-class StartupHax{/// need for windows
-public:
-	WSADATA stuff;
-	StartupHax(){
-		WORD ver_required=(2<<8)+2;
-		int i=WSAStartup(ver_required, &stuff);
-		if (i!=0){
-			std::cout<<"WSAStartup() failed."<<std::endl;
+/// Required for Windows
+static bool InitSocketLib()
+{
+	static bool initialised = false;
+
+	if (!initialised)
+	{
+		static WSADATA stuff;
+		WORD ver_required = (2 << 8) + 2;
+		if (WSAStartup(ver_required, &stuff) == 0)
+		{
+			initialised = true;
+		}
+		else
+		{
+			std::cerr << "Failed to initialise Winsock\n";
 		}
 	}
-};
-StartupHax StartupHax_init;
+
+	return initialised;
+}
 
 #else
+
+static bool InitSocketLib()
+{
+	return true;
+}
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -125,12 +139,14 @@ SimpleSocketStream::SimpleSocketStream(const std::string &hostname, int port):
 		m_sock(-1),
 		m_is_ok(false)
 {
+	InitSocketLib();
 	do_ClientOpen(hostname,port);
 }
 SimpleSocketStream::SimpleSocketStream(int sock_):
 		m_sock(sock_),
 		m_is_ok(sock_!=-1)
 {
+	InitSocketLib();
 }
 
 SimpleSocketStream::~SimpleSocketStream()
@@ -217,6 +233,8 @@ static const size_t header_size=sizeof(BitmapFileHeader)+sizeof(BitmapInfoHeader
 
 ImageReceiver::ImageReceiver(int port)
 {
+	InitSocketLib();
+
 	texture_id=0;
 	buffered_bytes=0;
 	image_size=0;
@@ -395,6 +413,7 @@ PositionReceiver::PositionReceiver(int type, int port) :
 	image_size(0),
 	type(type)
 {
+	InitSocketLib();
 	sockaddr_in server_address;
 	memset(&server_address,0,sizeof(server_address));
 
