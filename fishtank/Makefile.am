@@ -19,6 +19,7 @@ bin_PROGRAMS = fishtank
 fishtank_SOURCES = \
 	AquariumController.cpp \
 	Bubble.cpp \
+	camera.cpp \
 	Environment.cpp \
 	framerate.cpp \
 	glexcept.cpp \
@@ -35,6 +36,7 @@ fishtank_SOURCES = \
 noinst_HEADERS = \
 	AquariumController.h \
 	Bubble.h \
+	camera.hpp \
 	Environment.h \
 	framerate.hpp \
 	glexcept.hpp \
@@ -54,7 +56,9 @@ fishtank_LDADD = \
 	$(builddir)/vertexarrays/libvertexarrays.la \
 	$(BOOST_PROGRAM_OPTIONS_LIBS) \
 	$(BOOST_REGEX_LIBS) \
+	$(BOOST_THREAD_LIBS) \
 	$(GLFW_LIBS) \
+	$(OPENCV_LIBS) \
 	$(OPENGL_LIBS) \
 	$(JPEG_LIBS) \
 	$(WIN32_LIBS)

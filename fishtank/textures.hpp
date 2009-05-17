@@ -51,6 +51,8 @@ class Texture
 	private:
 		boost::gil::rgb8_image_t        _img;
 		GLuint                          _texture;
+
+		friend class Camera;
 };
 
 #endif // __INCLUDED_TEXTURES_HPP__

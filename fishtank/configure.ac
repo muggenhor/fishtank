@@ -83,6 +83,7 @@ BOOST_FUNCTION
 BOOST_PROGRAM_OPTIONS
 BOOST_REGEX
 BOOST_SMART_PTR
+BOOST_THREADS
 BOOST_UTILITY
 PKG_CHECK_MODULES([GLFW], [libglfw])
 
@@ -106,6 +107,13 @@ AC_CHECK_LIB([jpeg], [jpeg_start_decompress],
 	AC_SUBST([JPEG_LIBS], [-ljpeg]),
 	AC_MSG_ERROR([JPEG not found]),
 	[${WIN32_LIBS}])
+
+# Look for OpenCV's HighGUI
+AC_CHECK_HEADER([opencv/highgui.h], ,
+	AC_MSG_ERROR([OpenCV's HighGUI header not found]))
+AC_CHECK_LIB([highgui], [cvCreateCameraCapture],
+	AC_SUBST([OPENCV_LIBS], [-lhighgui]),
+	AC_MSG_ERROR([OpenCV's HighGUI not found]))
 
 # Checks for header files.
 AC_HEADER_STDC

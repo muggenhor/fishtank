@@ -1,7 +1,11 @@
+#include <boost/gil/image.hpp>
+#include <boost/gil/typedefs.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
 #include <boost/regex.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
+#include "camera.hpp"
 #include "GL/GLee.h"
 #include <GL/glfw.h>
 #include <GL/gl.h>
@@ -61,6 +65,16 @@ bool use_vbos = true;
  * generally produce better anti aliasing results.
  */
 static unsigned int multi_sample = 4;
+
+/**
+ * The camera number to select.
+ */
+static int cameraIndex = -1;
+
+/**
+ * The camera resolution to use.
+ */
+static Eigen::Vector2i cameraResolution(320, 240);
 
 /**
  * Controls the framerate and contains the framerate setting.
@@ -123,6 +137,10 @@ static void ParseOptions(int argc, char** argv, std::istream& config_file)
 	config.add_options()
 	    ("anti-aliasing", po::value<unsigned int>(&multi_sample)->default_value(multi_sample),
 	      _("Set the level of anti aliasing to use (0 disables anti aliasing)."))
+	    ("camera", po::value<int>(&cameraIndex)->default_value(cameraIndex),
+	      _("The camera number to use (-1 uses the first available camera)."))
+	    ("camera-resolution", po::value<Eigen::Vector2i>(&cameraResolution)->default_value(cameraResolution),
+	      _("The resolution to use for the camera."))
 	    ("fps", po::value<unsigned int>()->default_value(fps.targetRate()),
 	      _("Set the target framerate, the program will not exceed a rendering rate of this amount in Hz."))
 	    ("window-size", po::value<Eigen::Vector2i>(),
@@ -325,6 +343,8 @@ static void LoadModels(std::istream& input_file, AquariumController& aquariumCon
 		aquariumController.AddBubbleSpot(Eigen::Vector3f(x, aquariumController.ground.HeightAt(groundposx, groundposy), z));
 	}
 }
+static boost::shared_ptr<Camera> webcam;
+static boost::weak_ptr<Texture> webcam_texture;
 
 static ImageReceiver image_receiver(7778);
 static ImageReceiver image_receiver2(7779);
@@ -345,10 +365,25 @@ static void DrawBackground(CAMERA camera)
 {
 	glEnable(GL_TEXTURE_2D);
 
+	boost::shared_ptr<Texture> _webcam_texture(webcam_texture);
+
 	switch (camera)
 	{
 		case LEFT_CAMERA:
-			glBindTexture(GL_TEXTURE_2D, image_receiver.TextureID());
+			if (_webcam_texture)
+			{
+				if (!webcam)
+				{
+					webcam.reset(new Camera(cameraResolution.x(), cameraResolution.y(), cameraIndex));
+				}
+
+				webcam->update_texture(*_webcam_texture);
+				_webcam_texture->bind();
+			}
+			else
+			{
+				glBindTexture(GL_TEXTURE_2D, image_receiver.TextureID());
+			}
 			break;
 
 		case RIGHT_CAMERA:
@@ -666,6 +701,15 @@ int main(int argc, char** argv)
 		 * as well).
 		 */
 		glfwSwapBuffers();
+
+		boost::shared_ptr<Texture> _webcam_texture;
+		{
+			static const char pixel = 0;
+			using namespace boost::gil;
+
+			_webcam_texture.reset(new Texture(interleaved_view(1, 1, (const gray8_pixel_t*)&pixel, 1)));
+		}
+		webcam_texture = _webcam_texture;
 
 		//gebruik mist voor het "water effect"
 		GLfloat fogColor[4]= {0.3f, 0.4f, 0.7f, 1.0f};
