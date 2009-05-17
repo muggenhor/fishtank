@@ -3,7 +3,12 @@
 
 GLUquadric* TheQuadric()
 {
- 	static GLUquadric* result=gluNewQuadric();
+	static GLUquadric* result = NULL;
+	if (!result)
+	{
+		result = gluNewQuadric();
+	}
+
  	return result;
 }
 
