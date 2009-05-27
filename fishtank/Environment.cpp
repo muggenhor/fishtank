@@ -32,12 +32,6 @@ Environment::Environment(const Eigen::Vector3d& pos1, const Eigen::Vector3d& pos
 		rgb8_image_t img;
 		jpeg_read_image(texturename, img);
 
-		if (pos1.z() < 0
-		 && pos2.z() < 0
-		 && pos3.z() < 0
-		 && pos4.z() < 0)
-			AquariumController::InitialiseComponents(flipped_up_down_view(view(img)));
-
 		texture = new Texture(flipped_up_down_view(const_view(img)));
 	}
 }
