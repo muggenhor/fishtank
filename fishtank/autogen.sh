@@ -4,8 +4,8 @@
 DIE=0
 SRCDIR=`dirname $0`
 BUILDDIR=`pwd`
-srcfile=lib/net/dispatcher.hpp
-package=ProSD1
+srcfile=textures.cpp
+package=Fishtank
 
 debug ()
 # print out a debug message if DEBUG is a defined variable
@@ -81,6 +81,14 @@ version_check ()
   fi
 }
 
+# Chdir to the srcdir, then run auto* tools.
+cd "$SRCDIR"
+
+[ -f "$srcfile" ] || {
+  echo "Are you sure $SRCDIR is a valid source directory?"
+  exit 1
+}
+
 version_check 1 "autoconf" "autoconf" 2 56 || DIE=1
 version_check 1 "automake" "automake" 1 10 || DIE=1
 version_check 1 "libtoolize" "libtool" 1 5 || DIE=1
@@ -118,6 +126,9 @@ automake -a -c --foreign || {
   echo "automake failed"
   exit 1
 }
+
+# Chdir back to the builddir before the configure step.
+cd "$BUILDDIR"
 
 # now remove the cache, because it can be considered dangerous in this case
 echo "+ removing config.cache ... "
