@@ -1,12 +1,11 @@
-diff -aur boost_1_39_0.orig/include/tools/build/v2/user-config.jam boost_1_39_0/include/tools/build/v2/user-config.jam
---- boost_1_39_0.orig/include/tools/build/v2/user-config.jam	2008-07-15 15:53:41.000000000 +0200
-+++ boost_1_39_0/include/tools/build/v2/user-config.jam	2009-05-27 16:42:24.000000000 +0200
+--- $sourcebase.orig/tools/build/v2/user-config.jam
++++ $sourcebase/tools/build/v2/user-config.jam
 @@ -45,6 +45,12 @@
  # Configure specific gcc version, giving alternative name to use.
  # using gcc : 3.2 : g++-3.2 ;
  
 +# Configure gcc for cross compilation with MinGW32
-+using gcc : 4.2.1 : i586-mingw32msvc-g++ : <rc>i586-mingw32msvc-windres <archiver>i586-mingw32msvc-ar ;
++using gcc : 4.2.1 : $host_triplet-g++ : <rc>$host_triplet-windres <archiver>$host_triplet-ar ;
 +toolset.add-requirements
 +  <toolset>gcc:<target-os>windows
 +  <toolset>gcc:<threadapi>win32 ;
@@ -14,4 +13,3 @@ diff -aur boost_1_39_0.orig/include/tools/build/v2/user-config.jam boost_1_39_0/
  
  # -------------------
  # MSVC configuration.
-Only in boost_1_39_0/include/tools/build/v2: .user-config.jam.swp
