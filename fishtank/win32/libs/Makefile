@@ -1,4 +1,4 @@
-SUBDIRS=boost glfw jpeg
+SUBDIRS=boost eigen glfw jpeg
 
 all: all-recursive
 build: build-recursive
