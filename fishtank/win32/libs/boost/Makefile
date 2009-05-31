@@ -11,19 +11,20 @@ PKG_MD5SUM:=a17281fd88c48e0d866e1a12deecbcc0
 
 include $(TOPDIR)/rules.mk
 
-$(PKG_SOURCEBASE): $(TOPDIR)/downloads/$(PKG_SOURCE)
+$(PKG_SOURCEBASE) extract-stamp: $(TOPDIR)/downloads/$(PKG_SOURCE)
 	tar xjf $^
 	@rm -f patch-stamp build-bjam-stamp
+	touch extract-stamp
 
-patch-stamp: $(PKG_SOURCEBASE)
+patch-stamp: extract-stamp
 	sed -e "s/\$$sourcebase\b/$(PKG_SOURCEBASE)/g" -e "s/\$$host_triplet\b/$(HOST_TRIPLET)/g" patches/001-use-mingw-cross-compiler.diff | patch -p0
 	touch patch-stamp
 
-build-bjam-stamp:
+build-bjam-stamp: extract-stamp
 	cd $(PKG_SOURCEBASE)/tools/jam/src && ./build.sh gcc
 	touch build-bjam-stamp
 
-build-stamp: $(PKG_SOURCEBASE) patch-stamp build-bjam-stamp
+build-stamp: extract-stamp patch-stamp build-bjam-stamp
 	cd $(PKG_SOURCEBASE) && tools/jam/src/bin.*/bjam -d2 --toolset=gcc --variant=release threading=single link=static --prefix=./stage --layout=system --with-program_options --with-regex --with-thread install
 	@for lib in $(PKG_SOURCEBASE)/stage/lib/*_win32*.lib ; do \
 	    suffix=`echo $$lib | sed "s/^.*\(_win32.*\.lib\)$$/\1/"` ; \
@@ -39,4 +40,4 @@ build-stamp: $(PKG_SOURCEBASE) patch-stamp build-bjam-stamp
 build: build-stamp
 
 clean:
-	$(RM) -rf $(PKG_SOURCEBASE) patch-stamp build-stamp build-bjam-stamp
+	$(RM) -r $(PKG_SOURCEBASE) extract-stamp patch-stamp build-stamp build-bjam-stamp
