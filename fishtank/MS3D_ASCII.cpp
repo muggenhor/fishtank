@@ -7,21 +7,7 @@
 #include "main.hpp"
 #include "MS3D_ASCII.h"
 #include <string>
-
-#ifdef WIN32
-extern "C"
-{
-# include "include/jpeglib.h"
-}
-#else
-# include <jpeglib.h>
-#endif
-
-/* Needs to be included after jpeglib.h to ensure that the platform workarounds
- * in "include/jpeglib.h" will be used before <jpeglib.h> gets included by
- * jpeg_io.h.
- */
-#include <boost/gil/extension/io/jpeg_io.hpp>
+#include "image.hpp"
 
 #define foreach BOOST_FOREACH
 
@@ -418,7 +404,7 @@ void Material::reloadTexture()
 	if (strlen(DiffuseTexture) > 0)
 	{
 		rgb8_image_t img;
-		jpeg_read_image(path + DiffuseTexture, img);
+		read_image(path + DiffuseTexture, img);
 
 		texture = new Texture(flipped_up_down_view(const_view(img)));
 	}

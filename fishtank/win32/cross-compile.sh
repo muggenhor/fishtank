@@ -1,5 +1,7 @@
 #!/bin/sh
 
+cd `dirname "$0"`
+
 function execute()
 {
 	echo "$@"
@@ -32,8 +34,8 @@ execute ../../configure --host=$HOST_TRIPLET \
                         GLFW_CFLAGS="-I`pwd`/../libs/glfw/glfw.bin.WIN32/include" \
                         GLFW_LIBS="-L`pwd`/../libs/glfw/glfw.bin.WIN32/lib-mingw -lglfw" \
                         --with-boost="`pwd`/../libs/boost/boost_1_39_0/stage" \
-                        CPPFLAGS="-I`pwd`/../libs/jpeg/jpeg-6b -I`pwd`/../libs/eigen/eigen2 -I${DEVPKG}/OpenCV/include" \
-                        LDFLAGS="-L`pwd`/../libs/jpeg/jpeg-6b -L${DEVPKG}/OpenCV/bin" \
+                        CPPFLAGS="-I`pwd`/../libs/jpeg/jpeg-6b -I`pwd`/../libs/zlib -I`pwd`/../libs/eigen/eigen2 -I`pwd`/../libs/png/libpng-1.2.36 -I${DEVPKG}/OpenCV/include" \
+                        LDFLAGS="-L`pwd`/../libs/jpeg/jpeg-6b -L`pwd`/../libs/zlib -L`pwd`/../libs/png/lib -L${DEVPKG}/OpenCV/bin" \
                         CFLAGS=-O3 \
                         CXXFLAGS=-O3 \
                         "$@"

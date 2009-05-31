@@ -8,21 +8,7 @@
 #include "AquariumController.h"
 #include "math-helpers.hpp"
 #include "main.hpp"
-
-#ifdef WIN32
-extern "C"
-{
-# include "include/jpeglib.h"
-}
-#else
-# include <jpeglib.h>
-#endif
-
-/* Needs to be included after jpeglib.h to ensure that the platform workarounds
- * in "include/jpeglib.h" will be used before <jpeglib.h> gets included by
- * jpeg_io.h.
- */
-#include <boost/gil/extension/io/jpeg_io.hpp>
+#include "image.hpp"
 
 #define foreach BOOST_FOREACH
 
@@ -34,7 +20,7 @@ Ground::Ground(const char* const filename, int maxHeight, const char* const text
 {
 	// Load heightmap
 	rgb8_image_t img;
-	jpeg_read_image(filename, img);
+	read_image(filename, img);
 
 	// Convert heightmap to grayscale (so it's usable)
 	heightmap.recreate(img.dimensions());
@@ -42,7 +28,7 @@ Ground::Ground(const char* const filename, int maxHeight, const char* const text
 
 	if (texturename)
 	{
-		jpeg_read_image(texturename, img);
+		read_image(texturename, img);
 		texture = new Texture(flipped_up_down_view(const_view(img)));
 	}
 

@@ -1,20 +1,6 @@
 #include "Environment.h"
 #include "AquariumController.h"
-
-#ifdef WIN32
-extern "C"
-{
-# include "include/jpeglib.h"
-}
-#else
-# include <jpeglib.h>
-#endif
-
-/* Needs to be included after jpeglib.h to ensure that the platform workarounds
- * in "include/jpeglib.h" will be used before <jpeglib.h> gets included by
- * jpeg_io.h.
- */
-#include <boost/gil/extension/io/jpeg_io.hpp>
+#include "image.hpp"
 
 using namespace boost::gil;
 using namespace std;
@@ -30,7 +16,7 @@ Environment::Environment(const Eigen::Vector3d& pos1, const Eigen::Vector3d& pos
 	if (!texturename.empty())
 	{
 		rgb8_image_t img;
-		jpeg_read_image(texturename, img);
+		read_image(texturename, img);
 
 		texture = new Texture(flipped_up_down_view(const_view(img)));
 	}

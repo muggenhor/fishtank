@@ -27,7 +27,7 @@ PKG_PROG_PKG_CONFIG
 case ${host_os} in
 	*mingw32*)
 		host_os_mingw32=yes
-		WIN32_LIBS='-lwsock32'
+		WIN32_LIBS='-lwsock32 -lz'
 		AC_SUBST([WIN32_LIBS])
 		;;
 esac
@@ -106,6 +106,14 @@ AC_CHECK_HEADER([jpeglib.h], ,
 AC_CHECK_LIB([jpeg], [jpeg_start_decompress],
 	AC_SUBST([JPEG_LIBS], [-ljpeg]),
 	AC_MSG_ERROR([JPEG not found]),
+	[${WIN32_LIBS}])
+
+# Look for libpng
+AC_CHECK_HEADER([png.h], ,
+	AC_MSG_ERROR([PNG headers not found]))
+AC_CHECK_LIB([png], [png_read_row],
+	AC_SUBST([PNG_LIBS], [-lpng]),
+	AC_MSG_ERROR([PNG not found]),
 	[${WIN32_LIBS}])
 
 # Look for OpenCV's HighGUI

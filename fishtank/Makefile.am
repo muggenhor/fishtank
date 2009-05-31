@@ -41,6 +41,7 @@ noinst_HEADERS = \
 	framerate.hpp \
 	glexcept.hpp \
 	Ground.h \
+	image.hpp \
 	imagereceiver.h \
 	main.hpp \
 	math-helpers.hpp \
@@ -61,6 +62,7 @@ fishtank_LDADD = \
 	$(OPENCV_LIBS) \
 	$(OPENGL_LIBS) \
 	$(JPEG_LIBS) \
+	$(PNG_LIBS) \
 	$(WIN32_LIBS)
 
 fishtank_LDFLAGS = \
