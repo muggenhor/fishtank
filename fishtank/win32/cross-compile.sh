@@ -23,6 +23,8 @@ for arg in "$@"; do
 	esac
 
 	case "$arg" in
+	-with-* | --with-* | -enable-* | --enable-*)
+		;;
 	*=*)
 		var=`expr "x$arg" : 'x\([^=]*\)='`
 		# Reject names that are not valid shell variable names.
