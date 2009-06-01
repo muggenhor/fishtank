@@ -62,7 +62,7 @@ void Bubble::Draw() const
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glColor4f(1, 1, 1, 0.5);
 
-	gluSphere(TheQuadric(), size / 2, 20, 20);
+	gluSphere(TheQuadric(), size / 2, 6, 6);
 
 	glDisable(GL_BLEND);
 
