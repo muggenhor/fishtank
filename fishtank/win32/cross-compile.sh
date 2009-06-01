@@ -42,12 +42,9 @@ for arg in "$@"; do
 	esac
 done
 
-# Make sure we've got build and download directories for our dependencies
+# Make sure we've got a build directory
 if [ ! -d build ] ; then
 	mkdir build
-fi
-if [ ! -d downloads ] ; then
-	mkdir downloads
 fi
 
 # Make sure that the dependencies have been built
