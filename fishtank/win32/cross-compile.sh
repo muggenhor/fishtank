@@ -53,7 +53,7 @@ execute make -C libs HOST_TRIPLET=$HOST_TRIPLET
 cd build
 
 execute ../../autogen.sh
-execute ../../configure --host=$HOST_TRIPLET \
+execute ../../configure --host=$HOST_TRIPLET --enable-static --disable-shared \
                         GLFW_CFLAGS="-I`pwd`/../libs/glfw/glfw.bin.WIN32/include" \
                         GLFW_LIBS="-L`pwd`/../libs/glfw/glfw.bin.WIN32/lib-mingw -lglfw" \
                         --with-boost="`pwd`/../libs/boost/boost_1_39_0/stage" \
