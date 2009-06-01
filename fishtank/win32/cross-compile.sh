@@ -16,6 +16,30 @@ DEVPKG=${HOME}/svn/fishtank/devpkg
 
 HOST_TRIPLET=i686-mingw32
 
+for arg in "$@"; do
+	case "$arg" in
+	*=*) val=`expr "X$arg" : '[^=]*=\(.*\)'` ;;
+	*)   val=yes ;;
+	esac
+
+	case "$arg" in
+	*=*)
+		var=`expr "x$arg" : 'x\([^=]*\)='`
+		# Reject names that are not valid shell variable names.
+		expr "x$var" : ".*[^_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789]" >/dev/null && {
+			echo "$0: error: invalid variable name: $var" >&2
+			exit 1
+		}
+		eval $var=\$val
+		export $var
+		;;
+	*)
+		echo "$0: error: unknown command line option: $arg" >&2
+		exit 1
+		;;
+	esac
+done
+
 # Make sure we've got build and download directories for our dependencies
 if [ ! -d build ] ; then
 	mkdir build
