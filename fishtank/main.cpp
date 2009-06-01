@@ -31,6 +31,10 @@
 #include "imagereceiver.h"
 #include "glexcept.hpp"
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 // Allow for easy adding of translations
 #define _(string) (string)
 
@@ -633,6 +637,10 @@ int main(int argc, char** argv)
 #if defined(__GNUC__)
 	// Report uncaught exceptions in a nicer way than terminating alone.
 	std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
+#endif
+
+#ifdef CONFIGURE_LINE
+	fprintf(stderr, "%s\n", "fishtank was configured with " CONFIGURE_LINE);
 #endif
 
 	datadir = find_data_dir();

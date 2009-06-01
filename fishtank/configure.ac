@@ -7,6 +7,8 @@ AM_INIT_AUTOMAKE([1.10])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([main.cpp])
 
+CONFIGURE_LINE="`echo "$0 $ac_configure_args" | sed -e 's/\\\/\\\\\\\/g'`"
+
 # HACK
 # Workaround stupid autoconf CFLAGS default
 # (Bash considers set but empty variables different from null for the ${VAR:+alt} operator)
@@ -66,6 +68,8 @@ else
 	WARN_AND_DEBUG_FLAGS="${WARN_AND_DEBUG_FLAGS}"
 	FT_CPPFLAGS="${FT_CPPFLAGS} -DNDEBUG"
 fi
+
+AC_DEFINE_UNQUOTED(CONFIGURE_LINE, "${CONFIGURE_LINE}", [The ./configure command line])
 
 FT_CFLAGS="${FT_CFLAGS} ${WARN_AND_DEBUG_FLAGS}"
 FT_CXXFLAGS="${FT_CXXFLAGS} ${WARN_AND_DEBUG_FLAGS}"
