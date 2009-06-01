@@ -11,7 +11,7 @@ class Texture;
 class Camera
 {
 	public:
-		Camera(int width, int height, int index = 0);
+		Camera(int width, int height, int index = -1);
 		~Camera();
 
 		void update_texture(Texture& texture);
