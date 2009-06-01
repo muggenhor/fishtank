@@ -75,6 +75,8 @@ static unsigned int multi_sample = 4;
  */
 static int cameraIndex = -1;
 
+static std::vector<Transformation> cameraTransformations;
+
 /**
  * The camera resolution to use.
  */
@@ -141,6 +143,8 @@ static void ParseOptions(int argc, char** argv, std::istream& config_file)
 	config.add_options()
 	    ("anti-aliasing", po::value<unsigned int>(&multi_sample)->default_value(multi_sample),
 	      _("Set the level of anti aliasing to use (0 disables anti aliasing)."))
+	    ("cam-flip-up-down", _("Flip the camera's image up-down."))
+	    ("cam-rotate-90ccw", _("Rotate the camera's image 90 degrees counter clockwise."))
 	    ("camera", po::value<int>(&cameraIndex)->default_value(cameraIndex),
 	      _("The camera number to use (-1 uses the first available camera)."))
 	    ("camera-resolution", po::value<Eigen::Vector2i>(&cameraResolution)->default_value(cameraResolution),
@@ -205,6 +209,16 @@ static void ParseOptions(int argc, char** argv, std::istream& config_file)
 	{
 		win_move_x = vm["window-position"].as<Eigen::Vector2i>().x();
 		win_move_y = vm["window-position"].as<Eigen::Vector2i>().y();
+	}
+
+	if (vm.count("cam-flip-up-down"))
+	{
+		cameraTransformations.push_back(Transformation(Transformation::FLIP_UP_DOWN));
+	}
+
+	if (vm.count("cam-rotate-90ccw"))
+	{
+		cameraTransformations.push_back(Transformation(Transformation::ROTATE_90CCW));
 	}
 }
 
@@ -378,7 +392,7 @@ static void DrawBackground(CAMERA camera)
 			{
 				if (!webcam)
 				{
-					webcam.reset(new Camera(cameraResolution.x(), cameraResolution.y(), cameraIndex));
+					webcam.reset(new Camera(cameraResolution.x(), cameraResolution.y(), cameraTransformations.begin(), cameraTransformations.end(), cameraIndex));
 				}
 
 				webcam->update_texture(*_webcam_texture);
