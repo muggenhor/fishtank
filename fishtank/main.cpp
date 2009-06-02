@@ -364,11 +364,11 @@ static void LoadModels(std::istream& input_file, AquariumController& aquariumCon
 static boost::shared_ptr<Camera> webcam;
 static boost::weak_ptr<Texture> webcam_texture;
 
-static ImageReceiver image_receiver(7778);
-static ImageReceiver image_receiver2(7779);
+static boost::shared_ptr<ImageReceiver> image_receiver;
+static boost::shared_ptr<ImageReceiver> image_receiver2;
 
-static PositionReceiver position_receiver(0, 7780);
-static PositionReceiver faceposition_receiver(1, 7781);
+static boost::shared_ptr<PositionReceiver> position_receiver;
+static boost::shared_ptr<PositionReceiver> faceposition_receiver;
 
 enum CAMERA
 {
@@ -400,12 +400,12 @@ static void DrawBackground(CAMERA camera)
 			}
 			else
 			{
-				glBindTexture(GL_TEXTURE_2D, image_receiver.TextureID());
+				glBindTexture(GL_TEXTURE_2D, image_receiver->TextureID());
 			}
 			break;
 
 		case RIGHT_CAMERA:
-			glBindTexture(GL_TEXTURE_2D, image_receiver2.TextureID());
+			glBindTexture(GL_TEXTURE_2D, image_receiver2->TextureID());
 			break;
 	}
 
@@ -607,11 +607,11 @@ static void update_and_render_simulation(AquariumController& aquariumController,
 {
 	aquariumController.Update(dt);
 
-	image_receiver.Update();
-	image_receiver2.Update();
+	image_receiver->Update();
+	image_receiver2->Update();
 
-	position_receiver.Update(aquariumController);
-	faceposition_receiver.Update(aquariumController);
+	position_receiver->Update(aquariumController);
+	faceposition_receiver->Update(aquariumController);
 
 	glfwGetWindowSize(&win_width,&win_height);/// get window size
 	const unsigned int port1_width = win_width * 2. / 3.;
@@ -750,6 +750,11 @@ int main(int argc, char** argv)
 		glEnable(GL_FOG);
 
 		fps.reset();
+
+		image_receiver.reset(new ImageReceiver(7778));
+		image_receiver2.reset(new ImageReceiver(7779));
+		position_receiver.reset(new PositionReceiver(0, 7780));
+		faceposition_receiver.reset(new PositionReceiver(1, 7781));
 
 		for (double curTime = glfwGetTime(), oldTime = curTime; glfwGetWindowParam(GLFW_OPENED); oldTime = curTime, curTime = glfwGetTime())
 		{
