@@ -64,6 +64,7 @@ static const char* sysconfdirs[] =
 std::string datadir;
 
 bool use_vbos = true;
+static bool enable_fog = true;
 
 /* The amount of additional samples per pixel to generate. Higher amounts will
  * generally produce better anti aliasing results.
@@ -149,6 +150,8 @@ static void ParseOptions(int argc, char** argv, std::istream& config_file)
 	      _("The camera number to use (-1 uses the first available camera)."))
 	    ("camera-resolution", po::value<Eigen::Vector2i>(&cameraResolution)->default_value(cameraResolution),
 	      _("The resolution to use for the camera."))
+	    ("fog", po::value<bool>(&enable_fog)->default_value(enable_fog),
+	      _("Enable or disable the fog."))
 	    ("fps", po::value<unsigned int>()->default_value(fps.targetRate()),
 	      _("Set the target framerate, the program will not exceed a rendering rate of this amount in Hz."))
 	    ("window-size", po::value<Eigen::Vector2i>(),
@@ -747,7 +750,10 @@ int main(int argc, char** argv)
 		//glHint(GL_FOG_HINT, GL_NICEST);
 		//glFogf(GL_FOG_START, eye_distance);
 		//glFogf(GL_FOG_END, eye_distance+aquariumSize.z()+aquariumSize.x());
-		glEnable(GL_FOG);
+		if (enable_fog)
+			glEnable(GL_FOG);
+		else
+			glDisable(GL_FOG);
 
 		fps.reset();
 
