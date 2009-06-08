@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="Vissen Project"
 	ProjectGUID="{E9D57600-821F-41F3-9C2B-23F5907BE331}"
 	RootNamespace="testempty"
@@ -21,7 +21,9 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
+			UseOfMFC="0"
 			CharacterSet="1"
+			EnableManagedIncrementalBuild="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -41,11 +43,14 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				InlineFunctionExpansion="0"
 				AdditionalIncludeDirectories="."
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_USE_MATH_DEFINES;NOMINMAX"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
+				ForceConformanceInForLoopScope="true"
+				OpenMP="false"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
@@ -61,8 +66,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="lib/libjpeg-static-mt.lib opengl32.lib glfw.lib glu32.lib wsock32.lib"
+				AdditionalDependencies="highgui.lib cxcore.lib libpng.lib jpeg.lib opengl32.lib glfw.lib glu32.lib wsock32.lib"
 				LinkIncremental="2"
+				IgnoreAllDefaultLibraries="false"
+				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -136,7 +143,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="lib/libjpeg-static-mt.lib opengl32.lib glfw.lib glu32.lib wsock32.lib"
+				AdditionalDependencies="highgui.lib cxcore.lib libpng.lib jpeg.lib opengl32.lib glfw.lib glu32.lib wsock32.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -185,6 +192,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\camera.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Environment.cpp"
 				>
 			</File>
@@ -195,6 +206,22 @@
 			<File
 				RelativePath=".\GL\GLee.c"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\glexcept.cpp"
@@ -243,6 +270,14 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\vertexarrays\abstractarray.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\vertexarrays\abstractarraybase.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\AquariumController.h"
 				>
 			</File>
@@ -251,11 +286,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\camera.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Environment.h"
 				>
 			</File>
 			<File
 				RelativePath=".\framerate.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\vertexarrays\gl_type_constants.hpp"
 				>
 			</File>
 			<File
@@ -271,7 +314,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\image.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\imagereceiver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\main.hpp"
 				>
 			</File>
 			<File
@@ -283,6 +334,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\vertexarrays\normalarray.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Object.h"
 				>
 			</File>
@@ -291,7 +346,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\vertexarrays\texcoordarray.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\textures.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\vertexarrays\trianglearray.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\vertexarrays\vertexarray.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\vertexarrays\vertexbuffer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\vertexarrays\vertexbuffer.hpp"
 				>
 			</File>
 			<File
