@@ -572,7 +572,7 @@ static void DrawBackground(CAMERA camera)
 	glColor3f(1,1,1);
 }
 
-void render(AquariumController& aquariumController, CAMERA camera, int x, int y, ssize_t port_width, ssize_t port_height, const Eigen::Vector3d& area_size, const Eigen::Vector2d& facePosition = Eigen::Vector2d(0.5, 0.5))
+void render(AquariumController& aquariumController, CAMERA camera, int x, int y, int port_width, int port_height, const Eigen::Vector3d& area_size, const Eigen::Vector2d& facePosition = Eigen::Vector2d(0.5, 0.5))
 {
 	glViewport(x, y, port_width, port_height);
 
