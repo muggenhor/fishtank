@@ -6,6 +6,12 @@
 #include "textures.hpp"
 #include "vertexarrays/trianglearray.hpp"
 
+#define CAUSTICSNAME "./Data/caustics/caust"
+#define NUMCAUSTICS 32  // Number of caustXX.jpg textures (eg. 00-31)
+#define SPEEDCAUSTICS 4 // Higher number = slower movement
+#define SCALECAUSTICS 24 // Higher number = bigger texture
+#define CAUSTICOPACITY 0.25f // Opacity of the caustics (eg. 0.25f for 25%)
+
 class Ground
 {
 	public:
@@ -21,14 +27,16 @@ class Ground
 
 		inline unsigned int width() const { return heightmap.width(); }
 		inline unsigned int depth() const { return heightmap.height(); }
-
 		int maxHeight;
 
 		void updateRenderData();
 
 	private:
+		Texture* getCausticTexture();
+
 		boost::gil::gray32f_image_t heightmap;
 		Texture* texture;
+		Texture* caustics[NUMCAUSTICS];
 		TriangleArray<unsigned int, float, int, float> triangles;
 };
 

@@ -18,6 +18,8 @@ Ground::Ground(const char* const filename, int maxHeight, const char* const text
 	maxHeight(maxHeight),
 	texture(0)
 {
+	char causticsfilename[64];
+
 	// Load heightmap
 	rgb8_image_t img;
 	read_image(filename, img);
@@ -32,6 +34,15 @@ Ground::Ground(const char* const filename, int maxHeight, const char* const text
 		texture = new Texture(flipped_up_down_view(const_view(img)));
 	}
 
+	// Loop until we have loaded in all the desired JPEGs
+	for(int i = 0; i < NUMCAUSTICS; i++)
+	{
+		sprintf(causticsfilename, "%s%d%d.jpg", CAUSTICSNAME, i / 10, i % 10);
+
+		read_image(causticsfilename, img);
+		caustics[i] = new Texture(const_view(img));
+	}
+
 	triangles.UseVBOs(use_vbos);
 	updateRenderData();
 
@@ -40,6 +51,20 @@ Ground::Ground(const char* const filename, int maxHeight, const char* const text
 	          << triangles.uniqueVertices() << " vertices\n"
 	          << triangles.drawnVertices() << " indices\n\n";
 #endif
+}
+
+Texture* Ground::getCausticTexture()
+{
+	// We add a counter here so we can slow down or speed up the caustics animation
+	static int num = 0;
+	static int currentindex = 0;
+
+	if(num++ == SPEEDCAUSTICS)
+	{
+		currentindex = ((currentindex + 1) % NUMCAUSTICS);
+		num = 0;
+	}
+	return caustics[currentindex];
 }
 
 Ground::~Ground()
@@ -63,7 +88,6 @@ int Ground::HeightAt(unsigned int x, unsigned int y) const
 void Ground::Draw()
 {
 	glDisable(GL_LIGHT1);
-
 	glDisable(GL_LIGHT2);
 
 	glEnable(GL_LIGHTING);
@@ -86,36 +110,65 @@ void Ground::Draw()
 	glMaterialfv ( GL_FRONT_AND_BACK, GL_EMISSION, black ) ;
 	glColorMaterial ( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE ) ;
 
+	/**
+	 * Enable blending and alpha for the ground texture and caustics
+	 * Multitexture would've been easier, but since we use TriangleArray::draw,
+	 * we can't manipulate glMultiTexCoords
+	 */
+
+	glEnable(GL_BLEND);
+	glEnable(GL_ALPHA);	
+
 	if (!texture)
 	{
 		glColor3f(1,0.8,0.1);
 	}
 	else
 	{
+		glEnable(GL_TEXTURE_2D);
+
 		texture->bind();
 		glMatrixMode(GL_TEXTURE);
-		glPushMatrix();
-		glLoadIdentity();
-		glScalef(1.f / static_cast<float>(width()), 1.f / static_cast<float>(depth()), 1.f);
+			glPushMatrix();
+			glLoadIdentity();
+			glScalef(1.f / static_cast<float>(width()), 1.f / static_cast<float>(depth()), 1.f);
 		glMatrixMode(GL_MODELVIEW);
-		glColor3f(1,1,1);
-		//glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_MODULATE);
+		glBlendFunc(GL_ONE,GL_ZERO);
+ 		glColor4f(1.f,1.f,1.f,1.f);
 	}
+	triangles.draw();
+
+	// Disable depth testing for the second pass
+	if (glIsEnabled(GL_DEPTH_TEST))
+		glDisable(GL_DEPTH_TEST);
+
+	// Take alpha into account for blending
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f(1.f,1.f,1.f,CAUSTICOPACITY);
+
+	// Bind the current caustics texture
+	getCausticTexture()->bind();
+	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+
+	glMatrixMode(GL_TEXTURE);
+		glLoadIdentity();
+		glScalef(1.f / SCALECAUSTICS, 1.f / SCALECAUSTICS, 1.f);
+	glMatrixMode(GL_MODELVIEW);
 
 	triangles.draw();
 
+	glMatrixMode(GL_TEXTURE);
+		glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+	glDisable(GL_TEXTURE_2D);
+
+	glDisable(GL_BLEND);
+	glDisable(GL_ALPHA);
 	glDisable(GL_LIGHTING);
 	glDisable(GL_LIGHT0);
 	glDisable(GL_COLOR_MATERIAL) ;
 
-	if (texture)
-	{
-		glDisable(GL_TEXTURE_2D);
-		glMatrixMode(GL_TEXTURE);
-		glPopMatrix();
-		glMatrixMode(GL_MODELVIEW);
-	}
-
+	glEnable(GL_DEPTH_TEST);
 	glColor3f(1,1,1);
 }
 
