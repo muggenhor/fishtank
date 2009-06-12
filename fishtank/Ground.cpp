@@ -120,7 +120,7 @@ void Ground::Draw()
 	 */
 
 	glEnable(GL_BLEND);
-	glEnable(GL_ALPHA);	
+	glEnable(GL_ALPHA);
 
 	if (texture.empty())
 	{
