@@ -1,6 +1,7 @@
 #include <boost/array.hpp>
 #include <boost/circular_buffer.hpp>
 #include <boost/foreach.hpp>
+#include <boost/format.hpp>
 #include <boost/gil/algorithm.hpp>
 #include <Eigen/Core>
 #include "Ground.h"
@@ -12,14 +13,14 @@
 
 #define foreach BOOST_FOREACH
 
+using namespace boost;
 using namespace boost::gil;
+using namespace std;
 
 Ground::Ground(const char* const filename, int maxHeight, const char* const texturename) :
 	maxHeight(maxHeight),
 	texture(0)
 {
-	char causticsfilename[64];
-
 	// Load heightmap
 	rgb8_image_t img;
 	read_image(filename, img);
@@ -37,7 +38,7 @@ Ground::Ground(const char* const filename, int maxHeight, const char* const text
 	// Loop until we have loaded in all the desired JPEGs
 	for(int i = 0; i < NUMCAUSTICS; i++)
 	{
-		sprintf(causticsfilename, "%s%02d.jpg", CAUSTICSNAME, i);
+		const string causticsfilename = (format("%s%02d.jpg") % CAUSTICSNAME % i).str();
 
 		read_image(causticsfilename, img);
 		caustics[i] = new Texture(const_view(img));
