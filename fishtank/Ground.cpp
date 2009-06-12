@@ -37,7 +37,7 @@ Ground::Ground(const char* const filename, int maxHeight, const char* const text
 	// Loop until we have loaded in all the desired JPEGs
 	for(int i = 0; i < NUMCAUSTICS; i++)
 	{
-		sprintf(causticsfilename, "%s%d%d.jpg", CAUSTICSNAME, i / 10, i % 10);
+		sprintf(causticsfilename, "%s%02d.jpg", CAUSTICSNAME, i);
 
 		read_image(causticsfilename, img);
 		caustics[i] = new Texture(const_view(img));
