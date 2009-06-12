@@ -729,10 +729,9 @@ int main(int argc, char** argv)
 
 		boost::shared_ptr<Texture> _webcam_texture;
 		{
-			static const char pixel = 0;
 			using namespace boost::gil;
 
-			_webcam_texture.reset(new Texture(interleaved_view(1, 1, (const gray8_pixel_t*)&pixel, 1)));
+			_webcam_texture.reset(new Texture);
 		}
 		webcam_texture = _webcam_texture;
 

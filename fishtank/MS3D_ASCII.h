@@ -90,7 +90,6 @@ class Material
 {
 	public:
 		Material();
-		~Material();
 
 		bool loadFromMs3dAsciiSegment(FILE* file, std::string path_);
 		void activate() const;
@@ -125,7 +124,7 @@ class Material
 		float Transparency;
 		char  DiffuseTexture[MS_MAX_NAME];
 		char  AlphaTexture[MS_MAX_NAME];
-		Texture* texture;
+		Texture texture;
 		std::string path;
 };
 

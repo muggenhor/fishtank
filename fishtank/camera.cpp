@@ -35,9 +35,11 @@ void Camera::update_texture(Texture& texture)
 	if (!frame)
 		return;
 
-	if (texture._img.dimensions() != frame->dimensions())
-		texture._img.recreate(frame->dimensions());
-	texture._img.swap(*frame);
+	if (!texture._img)
+		texture._img = new rgb8_image_t(frame->dimensions());
+	if (texture._img->dimensions() != frame->dimensions())
+		texture._img->recreate(frame->dimensions());
+	texture._img->swap(*frame);
 	texture.upload_texture();
 }
 

@@ -310,14 +310,8 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 	return true;
 }
 
-Material::Material() :
-	texture(0)
+Material::Material()
 {
-}
-
-Material::~Material()
-{
-	delete texture;
 }
 
 void Material::activate() const
@@ -328,8 +322,8 @@ void Material::activate() const
 	glMaterialfv( GL_FRONT, GL_EMISSION, Emissive );
 	glMaterialf( GL_FRONT, GL_SHININESS, Shininess );
 
-	if (texture)
-		texture->bind();
+	if (!texture.empty())
+		texture.bind();
 	else
 		glDisable(GL_TEXTURE_2D);
 }
@@ -406,12 +400,11 @@ void Material::reloadTexture()
 		rgb8_image_t img;
 		read_image(path + DiffuseTexture, img);
 
-		texture = new Texture(flipped_up_down_view(const_view(img)));
+		texture = flipped_up_down_view(const_view(img));
 	}
 	else
 	{
-		delete texture;
-		texture = 0;
+		texture.clear();
 	}
 }
 

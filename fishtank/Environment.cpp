@@ -6,7 +6,6 @@ using namespace boost::gil;
 using namespace std;
 
 Environment::Environment(const Eigen::Vector3d& pos1, const Eigen::Vector3d& pos2, const Eigen::Vector3d& pos3, const Eigen::Vector3d& pos4, const std::string &texturename) :
-	texture(0),
 	pos1(pos1),
 	pos2(pos2),
 	pos3(pos3),
@@ -18,21 +17,16 @@ Environment::Environment(const Eigen::Vector3d& pos1, const Eigen::Vector3d& pos
 		rgb8_image_t img;
 		read_image(texturename, img);
 
-		texture = new Texture(flipped_up_down_view(const_view(img)));
+		texture = flipped_up_down_view(const_view(img));
 	}
-}
-
-Environment::~Environment()
-{
-	delete texture;
 }
 
 void Environment::Draw()
 {
-	if (!texture)
+	if (texture.empty())
 		return;
 
-	texture->bind();
+	texture.bind();
 
 	glColor3f(1.f, 1.f, 1.f);
 

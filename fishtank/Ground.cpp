@@ -17,9 +17,15 @@ using namespace boost;
 using namespace boost::gil;
 using namespace std;
 
+static const char CAUSTICSNAME[] = "./Data/caustics/caust";
+
+static const int NUMCAUSTICS = 32; // Number of caustXX.jpg textures (eg. 00-31)
+static const int SPEEDCAUSTICS = 4; // Higher number = slower movement
+static const float SCALECAUSTICS = 24; // Higher number = bigger texture
+static const float CAUSTICOPACITY = 0.25f; // Opacity of the caustics (eg. 0.25f for 25%)
+
 Ground::Ground(const char* const filename, int maxHeight, const char* const texturename) :
-	maxHeight(maxHeight),
-	texture(0)
+	maxHeight(maxHeight)
 {
 	// Load heightmap
 	rgb8_image_t img;
@@ -32,16 +38,16 @@ Ground::Ground(const char* const filename, int maxHeight, const char* const text
 	if (texturename)
 	{
 		read_image(texturename, img);
-		texture = new Texture(flipped_up_down_view(const_view(img)));
+		texture = flipped_up_down_view(const_view(img));
 	}
 
 	// Loop until we have loaded in all the desired JPEGs
-	for(int i = 0; i < NUMCAUSTICS; i++)
+	for (int i = 0; i < NUMCAUSTICS; ++i)
 	{
 		const string causticsfilename = (format("%s%02d.jpg") % CAUSTICSNAME % i).str();
 
 		read_image(causticsfilename, img);
-		caustics[i] = new Texture(const_view(img));
+		caustics.push_back(const_view(img));
 	}
 
 	triangles.UseVBOs(use_vbos);
@@ -54,23 +60,19 @@ Ground::Ground(const char* const filename, int maxHeight, const char* const text
 #endif
 }
 
-Texture* Ground::getCausticTexture()
+Texture& Ground::getCausticTexture()
 {
 	// We add a counter here so we can slow down or speed up the caustics animation
 	static int num = 0;
 	static int currentindex = 0;
 
-	if(num++ == SPEEDCAUSTICS)
+	if (++num == SPEEDCAUSTICS)
 	{
-		currentindex = ((currentindex + 1) % NUMCAUSTICS);
+		currentindex = (currentindex + 1) % caustics.size();
 		num = 0;
 	}
-	return caustics[currentindex];
-}
 
-Ground::~Ground()
-{
-	delete texture;
+	return caustics[currentindex];
 }
 
 int Ground::HeightAt(unsigned int x, unsigned int y) const
@@ -120,7 +122,7 @@ void Ground::Draw()
 	glEnable(GL_BLEND);
 	glEnable(GL_ALPHA);	
 
-	if (!texture)
+	if (texture.empty())
 	{
 		glColor3f(1,0.8,0.1);
 	}
@@ -128,7 +130,7 @@ void Ground::Draw()
 	{
 		glEnable(GL_TEXTURE_2D);
 
-		texture->bind();
+		texture.bind();
 		glMatrixMode(GL_TEXTURE);
 			glPushMatrix();
 			glLoadIdentity();
@@ -148,7 +150,7 @@ void Ground::Draw()
 	glColor4f(1.f,1.f,1.f,CAUSTICOPACITY);
 
 	// Bind the current caustics texture
-	getCausticTexture()->bind();
+	getCausticTexture().bind();
 	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
 
 	glMatrixMode(GL_TEXTURE);

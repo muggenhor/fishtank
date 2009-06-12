@@ -10,19 +10,41 @@
 class Texture
 {
 	public:
+		Texture();
+
 		template <typename View>
 		Texture(const View& img) :
-			_img(img.dimensions())
+			_img(new boost::gil::rgb8_image_t(img.dimensions()))
 		{
-			boost::gil::copy_and_convert_pixels(img, view(_img));
+			boost::gil::copy_and_convert_pixels(img, view(*_img));
 			gen_texture();
 			upload_texture();
 		}
 
 		~Texture();
 
+		template <typename View>
+		Texture& operator=(const View& rhs)
+		{
+			if (!_img
+			 || _img->dimensions() != rhs.dimensions())
+			{
+				clear();
+				_img = new boost::gil::rgb8_image_t(rhs.dimensions());
+				gen_texture();
+			}
+
+			boost::gil::copy_and_convert_pixels(rhs, view(*_img));
+			upload_texture();
+
+			return *this;
+		}
+
 		Texture(const Texture& rhs);
 		Texture& operator=(const Texture& rhs);
+
+		void clear();
+		bool empty() const;
 
 		void bind() const;
 
@@ -49,7 +71,7 @@ class Texture
 		BOOST_SERIALIZATION_SPLIT_MEMBER()
 
 	private:
-		boost::gil::rgb8_image_t        _img;
+		boost::gil::rgb8_image_t*       _img;
 		GLuint                          _texture;
 
 		friend class Camera;
