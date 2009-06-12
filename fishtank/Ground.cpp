@@ -19,7 +19,6 @@ using namespace std;
 
 static const char CAUSTICSNAME[] = "./Data/caustics/caust";
 
-static const int NUMCAUSTICS = 32; // Number of caustXX.jpg textures (eg. 00-31)
 static const int SPEEDCAUSTICS = 4; // Higher number = slower movement
 static const float SCALECAUSTICS = 24; // Higher number = bigger texture
 static const float CAUSTICOPACITY = 0.25f; // Opacity of the caustics (eg. 0.25f for 25%)
@@ -42,12 +41,19 @@ Ground::Ground(const char* const filename, int maxHeight, const char* const text
 	}
 
 	// Loop until we have loaded in all the desired JPEGs
-	for (int i = 0; i < NUMCAUSTICS; ++i)
+	for (int i = 0;; ++i)
 	{
-		const string causticsfilename = (format("%s%02d.jpg") % CAUSTICSNAME % i).str();
+		try
+		{
+			const string causticsfilename = (format("%s%02d.jpg") % CAUSTICSNAME % i).str();
 
-		read_image(causticsfilename, img);
-		caustics.push_back(const_view(img));
+			read_image(causticsfilename, img);
+			caustics.push_back(const_view(img));
+		}
+		catch (std::ios_base::failure& e)
+		{
+			break;
+		}
 	}
 
 	triangles.UseVBOs(use_vbos);
