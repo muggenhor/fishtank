@@ -24,6 +24,7 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/static_assert.hpp>
 #include "../GL/GLee.h"
+#include "../glexcept.hpp"
 #include "gl_type_constants.hpp"
 #include "normalarray.hpp"
 #include "vertexarray.hpp"
@@ -47,6 +48,10 @@ class TriangleArray
 #endif
             _indices(use_indices ? new std::vector<IndexIntegerType> : 0)
         {
+            if (textureCount > 1
+             && !GLEE_VERSION_1_3
+             && !GLEE_ARB_multitexture)
+                throw OpenGL::missing_capabilities("The GL_ARB_multitexture extension is required to perform multi-layered texturing.");
         }
 
         ~TriangleArray()
@@ -73,12 +78,38 @@ class TriangleArray
             _NormalArray.draw();
 
             // Pass texture data for all texture units
-            GLenum unit = GL_TEXTURE0;
-            for (size_t i = 0; i < textureCount; ++i)
+            /* NOTE: Although the single loop would suffice, to allow the
+             *       compiler to optimise this code (by removing unreachable
+             *       code in case of <= 1 texture) this switch statement is
+             *       required.
+             */
+            switch (textureCount)
             {
-                glClientActiveTexture(unit++);
-                glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-                _TexCoordArrays[i].draw();
+                case 0:
+                    break;
+
+                case 1:
+                    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+                    _TexCoordArrays[0].draw();
+                    break;
+
+                default:
+                {
+                    GLenum unit = GL_TEXTURE0;
+                    for (size_t i = 0; i < textureCount; ++i)
+                    {
+                        if (GLEE_VERSION_1_3)
+                            glClientActiveTexture(unit++);
+                        else if (GLEE_ARB_multitexture)
+                            glClientActiveTextureARB(unit++);
+                        else
+                            assert(!"Shouldn't ever get here!");
+
+                        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+                        _TexCoordArrays[i].draw();
+                    }
+                    break;
+                }
             }
 
             if (_indices)
@@ -109,13 +140,42 @@ class TriangleArray
             glDisableClientState(GL_NORMAL_ARRAY);
             glDisableClientState(GL_VERTEX_ARRAY);
 
-            unit = GL_TEXTURE0;
-            for (size_t i = 0; i < textureCount; ++i)
+            /* NOTE: Although the single loop would suffice, to allow the
+             *       compiler to optimise this code (by removing unreachable
+             *       code in case of <= 1 texture) this switch statement is
+             *       required.
+             */
+            switch (textureCount)
             {
-                glClientActiveTexture(unit++);
-                glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+                case 0:
+                    break;
+
+                case 1:
+                    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+                    break;
+
+                default:
+                {
+                    GLenum unit = GL_TEXTURE0;
+                    for (size_t i = 0; i < textureCount; ++i)
+                    {
+                        if (GLEE_VERSION_1_3)
+                            glClientActiveTexture(unit++);
+                        else if (GLEE_ARB_multitexture)
+                            glClientActiveTextureARB(unit++);
+                        else
+                            assert(!"Shouldn't ever get here!");
+                        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+                    }
+                    if (GLEE_VERSION_1_3)
+                        glClientActiveTexture(GL_TEXTURE0);
+                    else if (GLEE_ARB_multitexture)
+                        glClientActiveTextureARB(GL_TEXTURE0);
+                    else
+                        assert(!"Shouldn't ever get here!");
+                    break;
+                }
             }
-            glClientActiveTexture(GL_TEXTURE0);
         }
 
         bool empty() const
