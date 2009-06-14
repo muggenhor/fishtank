@@ -17,7 +17,7 @@ using namespace boost;
 using namespace boost::gil;
 using namespace std;
 
-static const int SPEEDCAUSTICS = 4; // Higher number = slower movement
+static const float SPEEDCAUSTICS = 20.f; // frequency of caustics in Hz
 static const float SCALECAUSTICS = 24; // Higher number = bigger texture
 static const float CAUSTICOPACITY = 0.25f; // Opacity of the caustics (eg. 0.25f for 25%)
 
@@ -70,16 +70,9 @@ Ground::Ground(const char* const filename, int maxHeight, const char* const text
 Texture& Ground::getCausticTexture()
 {
 	// We add a counter here so we can slow down or speed up the caustics animation
-	static int num = 0;
-	static int currentindex = 0;
+	const double currentTime = glfwGetTime();
 
-	if (++num == SPEEDCAUSTICS)
-	{
-		currentindex = (currentindex + 1) % caustics.size();
-		num = 0;
-	}
-
-	return caustics[currentindex];
+	return caustics[fmodf(currentTime * SPEEDCAUSTICS, caustics.size())];
 }
 
 int Ground::HeightAt(unsigned int x, unsigned int y) const
