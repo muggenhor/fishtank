@@ -142,16 +142,16 @@ void AquariumController::AvoidFishBounce()
 
 void AquariumController::Draw()
 {
-	foreach (const Vis& fish, fishes)
-		fish.Draw();
-	foreach (const Object& object, objects)
-		object.Draw();
 	//teken alle muren die niet webcams zijn
 	ground.Draw();
 	wall1.Draw();
 	wall2.Draw();
 	ceiling.Draw();
 
+	foreach (const Vis& fish, fishes)
+		fish.Draw();
+	foreach (const Object& object, objects)
+		object.Draw();
 	// Draw bubbles as last to get proper alpha blending
 	foreach (const Bubble& bubble, bubbles)
 		bubble.Draw();
