@@ -30,15 +30,16 @@
 #include "texcoordarray.hpp"
 #include <cassert>
 
-template <typename IndexIntegerType, typename VertexCoordType, typename TexCoordType, typename NormalCoordType, bool supportVertexVBOs = true, bool supportTexVBOs = true, bool supportNormalVBOs = true, std::size_t VertexCoordinateCount = 3, std::size_t TexCoordCount = 2>
+template <typename IndexIntegerType, typename VertexCoordType, typename TexCoordType, typename NormalCoordType, std::size_t textureCount = 1, bool supportVertexVBOs = true, bool supportTexVBOs = true, bool supportNormalVBOs = true, std::size_t VertexCoordinateCount = 3, std::size_t TexCoordCount = 2>
 class TriangleArray
 {
     public:
+        typedef TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs>                                          texcoord_array_type;
         typedef typename VertexArray<VertexCoordType, VertexCoordinateCount, supportVertexVBOs>::value_type         vertex_type;
-        typedef typename TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs>::value_type                     texcoord_type;
+        typedef typename texcoord_array_type::value_type                                                            texcoord_type;
         typedef typename NormalArray<NormalCoordType, supportNormalVBOs>::value_type                                normal_type;
         typedef typename VertexArray<VertexCoordType, VertexCoordinateCount, supportVertexVBOs>::transform_type     vertex_transform_type;
-        typedef typename TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs>::transform_type                 texcoord_transform_type;
+        typedef typename texcoord_array_type::transform_type                                                        texcoord_transform_type;
 
         TriangleArray(const bool use_indices = true) :
 #ifndef NDEBUG
@@ -61,16 +62,24 @@ class TriangleArray
 
             // Pass all of our triangle data
             glEnableClientState(GL_VERTEX_ARRAY);
-            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
             glEnableClientState(GL_NORMAL_ARRAY);
 
-            assert(_VertexArray.size() == _TexCoordArray.size()
+            assert((textureCount == 0
+                 || _VertexArray.size() == _TexCoordArrays[0].size())
                 && _VertexArray.size() == _NormalArray.size());
 
             // Pass the VertexArray
             _VertexArray.draw();
-            _TexCoordArray.draw();
             _NormalArray.draw();
+
+            // Pass texture data for all texture units
+            GLenum unit = GL_TEXTURE0;
+            for (size_t i = 0; i < textureCount; ++i)
+            {
+                glClientActiveTexture(unit++);
+                glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+                _TexCoordArrays[i].draw();
+            }
 
             if (_indices)
             {
@@ -99,7 +108,14 @@ class TriangleArray
             // Disable the GL_VERTEX_ARRAY client state to prevent strange behaviour
             glDisableClientState(GL_NORMAL_ARRAY);
             glDisableClientState(GL_VERTEX_ARRAY);
-            glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+            unit = GL_TEXTURE0;
+            for (size_t i = 0; i < textureCount; ++i)
+            {
+                glClientActiveTexture(unit++);
+                glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+            }
+            glClientActiveTexture(GL_TEXTURE0);
         }
 
         bool empty() const
@@ -110,7 +126,8 @@ class TriangleArray
         void clear()
         {
             _VertexArray.clear();
-            _TexCoordArray.clear();
+            for (size_t i = 0; i < textureCount; ++i)
+                _TexCoordArrays[i].clear();
             _NormalArray.clear();
             if (_indices)
                 _indices->clear();
@@ -136,12 +153,14 @@ class TriangleArray
 
         void TextureLeftMult(texcoord_transform_type const& m)
         {
-            _TexCoordArray.leftmultiply(m);
+            for (size_t i = 0; i < textureCount; ++i)
+                _TexCoordArrays[i].leftmultiply();
         }
 
         void TextureMult(texcoord_transform_type const& m)
         {
-            _TexCoordArray.multiply(m);
+            for (size_t i = 0; i < textureCount; ++i)
+                _TexCoordArrays[i].multiply();
         }
 
         bool HasVertexVBO() const
@@ -159,15 +178,24 @@ class TriangleArray
 
         bool HasTexVBO() const
         {
-            return _TexCoordArray.HasVBO();
+            for (size_t i = 0; i < textureCount; ++i)
+                return _TexCoordArrays[i].HasVBO();
+
+            return false;
         }
 
         void UseTexVBO(bool const vbo = false)
         {
             if (vbo)
-                _TexCoordArray.UseVBO();
+            {
+                for (size_t i = 0; i < textureCount; ++i)
+                    _TexCoordArrays[i].UseVBO();
+            }
             else
-                _TexCoordArray.UseVA();
+            {
+                for (size_t i = 0; i < textureCount; ++i)
+                    _TexCoordArrays[i].UseVA();
+            }
         }
 
         void HasNormalVBO() const
@@ -218,6 +246,14 @@ class TriangleArray
 
         void AddPoint(const vertex_type& vertex, const texcoord_type& texcoord, const normal_type& normal)
         {
+            return AddPoint(vertex, &texcoord, &texcoord + 1, normal);
+        }
+
+        template <typename TexForwardIterator>
+        void AddPoint(const vertex_type& vertex, TexForwardIterator firstTexcoord, const TexForwardIterator lastTexcoord, const normal_type& normal)
+        {
+            assert(std::distance(firstTexcoord, lastTexcoord) == textureCount);
+
 #ifndef NDEBUG
             _indices_modified = true;
 #endif
@@ -229,9 +265,16 @@ class TriangleArray
                 for (index = 0; index < _VertexArray.size(); ++index)
                 {
                     if (_VertexArray[index]   == vertex
-                     && _TexCoordArray[index] == texcoord
                      && _NormalArray[index]   == normal)
                     {
+                        TexForwardIterator compare = firstTexcoord;
+                        for (size_t i = 0; i < textureCount; ++i)
+                        {
+                            assert(compare != lastTexcoord);
+
+                            if (*compare++ != _TexCoordArrays[i][index])
+                                goto not_found;
+                        }
                         // If we found a vertex that's the same then add the index
                         // to the index table and bail out
                         _indices->push_back(index);
@@ -241,12 +284,23 @@ class TriangleArray
                 }
             }
 
+not_found:
             // If we found no instance of this vertex then we'll obviously need to add it
             index = _VertexArray.push_back(vertex);
-            _TexCoordArray.push_back(texcoord);
             _NormalArray.push_back(normal);
+
+            // Add all texture coordinates
+            TexForwardIterator insert = firstTexcoord;
+            for (size_t i = 0; i < textureCount; ++i)
+            {
+                assert(insert != lastTexcoord);
+
+                _TexCoordArrays[i].push_back(*insert++);
+            }
+
             assert(index == _VertexArray.size()   - 1
-                && index == _TexCoordArray.size() - 1
+                && (textureCount == 0
+                 || index == _TexCoordArrays[0].size() - 1)
                 && index == _NormalArray.size()   - 1);
             if (_indices)
                 _indices->push_back(index);
@@ -259,7 +313,7 @@ class TriangleArray
         void serialize(Archive & ar, const unsigned int /* version */)
         {
             ar & _VertexArray;
-            ar & _TexCoordArray;
+            ar & _TexCoordArrays;
             ar & _NormalArray;
             ar & _indices;
 #ifndef NDEBUG
@@ -270,7 +324,7 @@ class TriangleArray
     private:
         VertexArray<VertexCoordType, VertexCoordinateCount, supportVertexVBOs> _VertexArray;
         NormalArray<NormalCoordType, supportNormalVBOs> _NormalArray;
-        TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs> _TexCoordArray;
+        TexCoordArray<TexCoordType, TexCoordCount, supportTexVBOs> _TexCoordArrays[textureCount];
 #ifndef NDEBUG
         mutable bool _indices_modified;
 #endif

@@ -113,66 +113,46 @@ void Ground::Draw()
 	glMaterialfv ( GL_FRONT_AND_BACK, GL_EMISSION, black ) ;
 	glColorMaterial ( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE ) ;
 
-	/**
-	 * Enable blending and alpha for the ground texture and caustics
-	 * Multitexture would've been easier, but since we use TriangleArray::draw,
-	 * we can't manipulate glMultiTexCoords
-	 */
-
-	glEnable(GL_BLEND);
-	glEnable(GL_ALPHA);
-
 	if (texture.empty())
 	{
 		glColor3f(1,0.8,0.1);
 	}
 	else
 	{
-		glEnable(GL_TEXTURE_2D);
-
+		glActiveTexture(GL_TEXTURE0);
 		texture.bind();
 		glMatrixMode(GL_TEXTURE);
 			glPushMatrix();
 			glLoadIdentity();
 			glScalef(1.f / static_cast<float>(width()), 1.f / static_cast<float>(depth()), 1.f);
 		glMatrixMode(GL_MODELVIEW);
-		glBlendFunc(GL_ONE,GL_ZERO);
+		glActiveTexture(GL_TEXTURE1);
+		getCausticTexture().bind();
+		glActiveTexture(GL_TEXTURE0);
  		glColor4f(1.f,1.f,1.f,1.f);
 	}
-	triangles.draw();
-
-	// Disable depth testing for the second pass
-	if (glIsEnabled(GL_DEPTH_TEST))
-		glDisable(GL_DEPTH_TEST);
-
-	// Take alpha into account for blending
-	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-	glColor4f(1.f,1.f,1.f,CAUSTICOPACITY);
-
-	// Bind the current caustics texture
-	getCausticTexture().bind();
-	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-
-	glMatrixMode(GL_TEXTURE);
-		glLoadIdentity();
-		glScalef(1.f / SCALECAUSTICS, 1.f / SCALECAUSTICS, 1.f);
-	glMatrixMode(GL_MODELVIEW);
 
 	triangles.draw();
 
 	glMatrixMode(GL_TEXTURE);
 		glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
-	glDisable(GL_TEXTURE_2D);
 
-	glDisable(GL_BLEND);
-	glDisable(GL_ALPHA);
 	glDisable(GL_LIGHTING);
 	glDisable(GL_LIGHT0);
-	glDisable(GL_COLOR_MATERIAL) ;
 
-	glEnable(GL_DEPTH_TEST);
-	glColor3f(1,1,1);
+	if (!texture.empty())
+	{
+		glActiveTexture(GL_TEXTURE1);
+		glDisable(GL_TEXTURE_2D);
+		glActiveTexture(GL_TEXTURE0);
+		glDisable(GL_TEXTURE_2D);
+		glMatrixMode(GL_TEXTURE);
+		glPopMatrix();
+		glMatrixMode(GL_MODELVIEW);
+	}
+
+	glColor4f(1.f, 1.f, 1.f, 1.f);
 }
 
 static Eigen::Vector3f PosAt(const Ground& ground, int x, int y)
@@ -186,7 +166,7 @@ static Eigen::Vector3f PosAt(const Ground& ground, int x, int y)
 static void AddTriangleStripPoint(const Ground& ground,
                                   boost::circular_buffer<Eigen::Vector2i>& vertices,
                                   bool& flip_vertices,
-                                  TriangleArray<unsigned int, float, int, float>& triangles,
+                                  TriangleArray<unsigned int, float, float, float, 2>& triangles,
                                   const Eigen::Vector2i& point)
 {
 	vertices.push_back(point);
@@ -212,11 +192,16 @@ static void AddTriangleStripPoint(const Ground& ground,
 	foreach(unsigned int i, indexes)
 	{
 		const Eigen::Vector2i& point = vertices[i];
+		const array<Eigen::Vector2f, 2> texturePoints =
+		{{
+			 point.cast<float>(),
+			 point.cast<float>() / SCALECAUSTICS,
+		}};
 
 		// Comput the normal for this position
 		const Eigen::Vector3f normal(-(PosAt(ground, point.x() + 1, point.y()) - PosAt(ground, point.x() - 1, point.y())).cross(PosAt(ground, point.x(), point.y() + 1) - PosAt(ground, point.x(), point.y() - 1)).normalized());
 
-		triangles.AddPoint(PosAt(ground, point.x(), point.y()), point, normal);
+		triangles.AddPoint(PosAt(ground, point.x(), point.y()), texturePoints.begin(), texturePoints.end(), normal);
 	}
 }
 
