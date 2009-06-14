@@ -17,8 +17,6 @@ using namespace boost;
 using namespace boost::gil;
 using namespace std;
 
-static const char CAUSTICSNAME[] = "./Data/caustics/caust";
-
 static const int SPEEDCAUSTICS = 4; // Higher number = slower movement
 static const float SCALECAUSTICS = 24; // Higher number = bigger texture
 static const float CAUSTICOPACITY = 0.25f; // Opacity of the caustics (eg. 0.25f for 25%)
@@ -41,17 +39,20 @@ Ground::Ground(const char* const filename, int maxHeight, const char* const text
 	}
 
 	// Loop until we have loaded in all the desired JPEGs
+	format causticsNameFmt(datadir + "/caustics/caust%02d.jpg");
 	for (int i = 0;; ++i)
 	{
+		const string causticsfilename = (causticsNameFmt % i).str();
+
 		try
 		{
-			const string causticsfilename = (format("%s%02d.jpg") % CAUSTICSNAME % i).str();
-
 			read_image(causticsfilename, img);
 			caustics.push_back(const_view(img));
+			std::cerr << "Succesfully read caustic: " << causticsfilename << "\n";
 		}
 		catch (std::ios_base::failure& e)
 		{
+			std::cerr << "Exception while reading caustic: " << causticsfilename << ": " << e.what() << "\n";
 			break;
 		}
 	}
