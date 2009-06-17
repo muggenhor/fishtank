@@ -126,6 +126,9 @@ void Ground::Draw()
 			glLoadIdentity();
 			glScalef(1.f / static_cast<float>(width()), 1.f / static_cast<float>(depth()), 1.f);
 		glMatrixMode(GL_MODELVIEW);
+
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
 		glActiveTexture(GL_TEXTURE1);
 		getCausticTexture().bind();
 		glMatrixMode(GL_TEXTURE);
@@ -133,8 +136,23 @@ void Ground::Draw()
 			glLoadIdentity();
 			glScalef(1.f / SCALECAUSTICS, 1.f / SCALECAUSTICS, 1.f);
 		glMatrixMode(GL_MODELVIEW);
+
+		const GLfloat causticBlendColour[] = { 0.f, 0.f, 0.f, CAUSTICOPACITY };
+		glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, causticBlendColour);
+
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_INTERPOLATE);
+
+		glTexEnvi(GL_TEXTURE_ENV, GL_SRC0_RGB, GL_PREVIOUS);
+		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
+
+		glTexEnvi(GL_TEXTURE_ENV, GL_SRC1_RGB, GL_TEXTURE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
+
+		glTexEnvi(GL_TEXTURE_ENV, GL_SRC2_RGB, GL_CONSTANT);
+		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND2_RGB, GL_ONE_MINUS_SRC_ALPHA);
+
 		glActiveTexture(GL_TEXTURE0);
- 		glColor4f(1.f,1.f,1.f,1.f);
 	}
 
 	triangles.draw();
@@ -151,16 +169,17 @@ void Ground::Draw()
 		glActiveTexture(GL_TEXTURE1);
 		glDisable(GL_TEXTURE_2D);
 		glMatrixMode(GL_TEXTURE);
-		glPopMatrix();
+			glPopMatrix();
 		glMatrixMode(GL_MODELVIEW);
+
 		glActiveTexture(GL_TEXTURE0);
 		glDisable(GL_TEXTURE_2D);
 		glMatrixMode(GL_TEXTURE);
-		glPopMatrix();
+			glPopMatrix();
 		glMatrixMode(GL_MODELVIEW);
-	}
 
-	glColor4f(1.f, 1.f, 1.f, 1.f);
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	}
 }
 
 static Eigen::Vector3f PosAt(const Ground& ground, int x, int y)
