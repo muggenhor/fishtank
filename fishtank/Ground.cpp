@@ -128,6 +128,11 @@ void Ground::Draw()
 		glMatrixMode(GL_MODELVIEW);
 		glActiveTexture(GL_TEXTURE1);
 		getCausticTexture().bind();
+		glMatrixMode(GL_TEXTURE);
+			glPushMatrix();
+			glLoadIdentity();
+			glScalef(1.f / SCALECAUSTICS, 1.f / SCALECAUSTICS, 1.f);
+		glMatrixMode(GL_MODELVIEW);
 		glActiveTexture(GL_TEXTURE0);
  		glColor4f(1.f,1.f,1.f,1.f);
 	}
@@ -145,6 +150,9 @@ void Ground::Draw()
 	{
 		glActiveTexture(GL_TEXTURE1);
 		glDisable(GL_TEXTURE_2D);
+		glMatrixMode(GL_TEXTURE);
+		glPopMatrix();
+		glMatrixMode(GL_MODELVIEW);
 		glActiveTexture(GL_TEXTURE0);
 		glDisable(GL_TEXTURE_2D);
 		glMatrixMode(GL_TEXTURE);
@@ -166,7 +174,7 @@ static Eigen::Vector3f PosAt(const Ground& ground, int x, int y)
 static void AddTriangleStripPoint(const Ground& ground,
                                   boost::circular_buffer<Eigen::Vector2i>& vertices,
                                   bool& flip_vertices,
-                                  TriangleArray<unsigned int, float, float, float, 2>& triangles,
+                                  TriangleArray<unsigned int, float, int, float, 2>& triangles,
                                   const Eigen::Vector2i& point)
 {
 	vertices.push_back(point);
@@ -192,10 +200,10 @@ static void AddTriangleStripPoint(const Ground& ground,
 	foreach(unsigned int i, indexes)
 	{
 		const Eigen::Vector2i& point = vertices[i];
-		const array<Eigen::Vector2f, 2> texturePoints =
+		const array<Eigen::Vector2i, 2> texturePoints =
 		{{
-			 point.cast<float>(),
-			 point.cast<float>() / SCALECAUSTICS,
+			 point,
+			 point,
 		}};
 
 		// Comput the normal for this position

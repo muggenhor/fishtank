@@ -31,7 +31,7 @@ class Ground
 		boost::gil::gray32f_image_t heightmap;
 		Texture texture;
 		std::vector<Texture> caustics;
-		TriangleArray<unsigned int, float, float, float, 2> triangles;
+		TriangleArray<unsigned int, float, int, float, 2> triangles;
 };
 
 #endif // __INCLUDED_GROUND_H__
