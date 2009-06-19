@@ -413,7 +413,8 @@ static void DrawBackground(CAMERA camera)
 	}
 
 	//zet kleur naar wit
-	glColor3f(1,1,1);
+	glColor3f(0,0,0);
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
 	glBegin(GL_QUADS);
 
@@ -450,8 +451,7 @@ static void DrawBackground(CAMERA camera)
 
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
-
-	glColor3f(0,0,0);
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	glBegin(GL_QUADS);
 
