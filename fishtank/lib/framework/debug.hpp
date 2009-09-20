@@ -77,6 +77,8 @@ class DebugStream : public std::ostream
 
 	private:
 		static boost::array<bool, LOG_LAST> enabled_debug;
+
+	public:
 		static const boost::array<std::string, LOG_LAST> debug_level_names;
 
 	private:

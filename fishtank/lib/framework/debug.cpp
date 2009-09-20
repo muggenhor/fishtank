@@ -1,4 +1,5 @@
 #include "debug.hpp"
+#include <algorithm>
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/program_options.hpp>
@@ -10,6 +11,7 @@
 #define foreach BOOST_FOREACH
 
 using namespace boost::posix_time;
+using namespace std;
 namespace po = boost::program_options;
 
 boost::array<bool, LOG_LAST> DebugStream::enabled_debug =
@@ -20,6 +22,7 @@ boost::array<bool, LOG_LAST> DebugStream::enabled_debug =
 #endif
 }};
 
+// NOTE: Order and contents of this array *must* be the same as code_part up until LOG_LAST
 const boost::array<std::string, LOG_LAST> DebugStream::debug_level_names =
 {{
 	"error",
@@ -41,28 +44,26 @@ static void validate(boost::any& v, const std::vector<std::string>& values, code
 	// one string, it's an error, and exception will be thrown.
 	const std::string& s = po::validators::get_single_string(values);
 
-	if      (s == "error")
-		v = LOG_ERROR;
-	else if (s == "warning")
-		v = LOG_WARNING;
-	else if (s == "never")
-		v = LOG_NEVER;
-	else if (s == "main")
-		v = LOG_MAIN;
-	else if (s == "media")
-		v = LOG_MEDIA;
-	else if (s == "net")
-		v = LOG_NET;
-	else if (s == "rpc")
-		v = LOG_RPC;
-	else if (s == "memory")
-		v = LOG_MEMORY;
-	else if (s == "gui")
-		v = LOG_GUI;
-	else if (s == "all")
+	if (s == "all")
+	{
 		v = LOG_ALL;
-	else
+		return;
+	}
+
+	const boost::array<std::string, LOG_LAST>::const_iterator
+	  log_part = find(
+	    DebugStream::debug_level_names.begin(),
+	    DebugStream::debug_level_names.end(),
+	    s
+	  );
+
+	if (log_part == DebugStream::debug_level_names.end())
 		throw po::validation_error("invalid value");
+
+	v = static_cast<code_part>(distance(
+	  DebugStream::debug_level_names.begin(),
+	  log_part
+	));
 }
 
 void DebugStream::addCommandLineOptions(boost::program_options::options_description& desc)
