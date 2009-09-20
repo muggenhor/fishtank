@@ -144,6 +144,10 @@ DebugStream _debug(const code_part part, const char* const function)
 			ds << "net   : ";
 			break;
 
+		case LOG_RPC:
+			ds << "rpc   : ";
+			break;
+
 		case LOG_MEMORY:
 			ds << "memory: ";
 			break;

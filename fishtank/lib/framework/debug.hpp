@@ -19,6 +19,7 @@ enum code_part
 	LOG_MAIN,
 	LOG_MEDIA,
 	LOG_NET,
+	LOG_RPC,
 	LOG_MEMORY,
 	LOG_GUI,
 
