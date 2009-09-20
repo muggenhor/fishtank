@@ -37,6 +37,8 @@ static void validate(boost::any& v, const std::vector<std::string>& values, code
 		v = LOG_MEDIA;
 	else if (s == "net")
 		v = LOG_NET;
+	else if (s == "rpc")
+		v = LOG_RPC;
 	else if (s == "memory")
 		v = LOG_MEMORY;
 	else if (s == "gui")
