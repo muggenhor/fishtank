@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
+#include <boost/lambda/bind.hpp>
+#include <boost/lambda/lambda.hpp>
 #include <boost/program_options.hpp>
 #include <cassert>
 #include <fstream>
@@ -10,6 +12,7 @@
 
 #define foreach BOOST_FOREACH
 
+using namespace boost;
 using namespace boost::posix_time;
 using namespace std;
 namespace po = boost::program_options;
@@ -35,6 +38,27 @@ const boost::array<std::string, LOG_LAST> DebugStream::debug_level_names =
 	"memory",
 	"gui",
 }};
+
+static const string& getMessageFormatString()
+{
+	using namespace boost::lambda;
+
+	/* Make field width for log-part field dynamic. I.e. tune it to be
+	 * large enough to fit all log-parts.
+	 */
+	static format formatGen("%%-%us (%%s): [%%s] %%s");
+
+	static string generatedFormat((formatGen
+	  % max_element(
+	      DebugStream::debug_level_names.begin(),
+	      DebugStream::debug_level_names.end(),
+	      bind(&std::string::size, _1) < bind(&std::string::size, _2)
+	    )->size()
+	  ).str()
+	);
+
+	return generatedFormat;
+}
 
 static void validate(boost::any& v, const std::vector<std::string>& values, code_part*, int)
 {
@@ -158,8 +182,12 @@ DebugStream::~DebugStream()
 			}
 		}
 
+		format formattedMessage(getMessageFormatString());
+
+		formattedMessage % debug_level_names[_part] % _time % _function % message;
+
 		foreach (const boost::shared_ptr<std::ostream>& stream, _streams)
-			*stream << boost::format("%-8s (%8s): [%s] %s") % debug_level_names[_part] % _time % _function % message << endl;
+			*stream << formattedMessage << endl;
 	}
 }
 
