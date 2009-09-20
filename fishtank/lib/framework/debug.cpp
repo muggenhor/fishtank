@@ -1,9 +1,12 @@
 #include "debug.hpp"
 #include <boost/foreach.hpp>
+#include <boost/format.hpp>
 #include <boost/program_options.hpp>
 #include <cassert>
+#include <ctime>
 #include <fstream>
 #include <iostream>
+#include <string>
 
 #define foreach BOOST_FOREACH
 
@@ -15,6 +18,19 @@ boost::array<bool, LOG_LAST> DebugStream::enabled_debug =
 #ifndef NDEBUG
 	true, // LOG_WARNING
 #endif
+}};
+
+const boost::array<std::string, LOG_LAST> DebugStream::debug_level_names =
+{{
+	"error",
+	"warning",
+	"never",
+	"main",
+	"media",
+	"net",
+	"rpc",
+	"memory",
+	"gui",
 }};
 
 static void validate(boost::any& v, const std::vector<std::string>& values, code_part*, int)
@@ -74,17 +90,35 @@ void DebugStream::processOptions(const boost::program_options::variables_map& op
 	}
 }
 
-DebugStream::DebugStream(boost::shared_ptr<std::ostream> os) :
-	std::basic_ios<char, std::char_traits<char> >(os->rdbuf()),
-	std::ostream(os->rdbuf()),
-	_os(os)
+boost::mutex DebugStream::_lastDataMutex;
+std::string DebugStream::_lastFunction;
+std::string DebugStream::_lastMessage;
+unsigned int DebugStream::_lastMessageRepeated = 0;
+unsigned int DebugStream::_lastMessageNext = 2;
+unsigned int DebugStream::_lastMessagePrev = 0;
+
+DebugStream::DebugStream(boost::shared_ptr<std::ostream> os, const code_part part, const char* const function) :
+	std::basic_ios<char, std::char_traits<char> >(initCache()->rdbuf()),
+	std::ostream(_osCache->rdbuf()),
+	_os(os),
+	_part(part),
+	_function(function)
 {
+	::time(&_time);
+}
+
+std::ostringstream* DebugStream::initCache()
+{
+	return _osCache = new std::ostringstream;
 }
 
 DebugStream::DebugStream(const DebugStream& rhs) :
-	std::basic_ios<char, std::char_traits<char> >(rhs._os->rdbuf()),
-	std::ostream(rhs._os->rdbuf()),
-	_os(rhs._os)
+	std::basic_ios<char, std::char_traits<char> >(rhs._osCache->rdbuf()),
+	std::ostream(rhs._osCache->rdbuf()),
+	_osCache(rhs._osCache),
+	_os(rhs._os),
+	_part(rhs._part),
+	_function(rhs._function)
 {
 }
 
@@ -94,7 +128,61 @@ DebugStream::~DebugStream()
 	 * terminate the line.
 	 */
 	if (_os.unique())
-		*_os << std::endl;
+	{
+		// Finish the message and retrieve it from cache
+		*_osCache << std::endl;
+		std::string message(_osCache->str());
+		delete _osCache;
+
+		// Check for repeated messages
+		{
+			const boost::lock_guard<boost::mutex> lockLastData(_lastDataMutex);
+			if (_function == _lastFunction
+			 && message == _lastMessage)
+			{
+				++_lastMessageRepeated;
+				if (_lastMessageRepeated == _lastMessageNext)
+				{
+					writeRepeatMessage();
+					_lastMessagePrev = _lastMessageRepeated;
+					_lastMessageNext *= 2;
+				}
+
+				return;
+			}
+			else
+			{
+				/* Current message didn't got repeated, check if the
+				 * previous one did (and spam a message if that was the case).
+				 */
+				if (_lastMessageRepeated > 1
+				 && _lastMessageRepeated != _lastMessagePrev)
+					writeRepeatMessage();
+
+				_lastMessageRepeated = 0;
+				_lastMessageNext = 2;
+				_lastMessagePrev = 0;
+			}
+		}
+
+		struct tm * locTime = localtime(&_time);
+		char timestring[10];
+		strftime(timestring, sizeof(timestring), "%H:%M:%S", locTime);
+
+		*_os << boost::format("%-8s (%8s): [%s] %s") % debug_level_names[_part] % timestring % _function % message;
+	}
+}
+
+void DebugStream::writeRepeatMessage()
+{
+	if (_lastMessageRepeated > 2)
+	{
+		*_os << boost::format("last message repeated %u times (total %u repeats)\n") % (_lastMessageRepeated - _lastMessagePrev) % _lastMessageRepeated;
+	}
+	else
+	{
+		*_os << boost::format("last message repeated %u times\n") % (_lastMessageRepeated - _lastMessagePrev);
+	}
 }
 
 boost::mutex DebugStream::stderr_wrapper::_global_mutex;
@@ -116,51 +204,5 @@ DebugStream _debug(const code_part part, const char* const function)
 	else
 		os.reset(new std::ofstream("/dev/null"));
 
-	DebugStream ds(os);
-
-	ds << "[" << function << "] ";
-
-	switch (part)
-	{
-		case LOG_ERROR:
-			ds << "error  : ";
-			break;
-
-		case LOG_WARNING:
-			ds << "warning: ";
-			break;
-
-		case LOG_NEVER:
-			ds << "never  : ";
-			break;
-
-		case LOG_MAIN:
-			ds << "main   : ";
-			break;
-
-		case LOG_MEDIA:
-			ds << "media : ";
-			break;
-
-		case LOG_NET:
-			ds << "net   : ";
-			break;
-
-		case LOG_RPC:
-			ds << "rpc   : ";
-			break;
-
-		case LOG_MEMORY:
-			ds << "memory: ";
-			break;
-
-		case LOG_GUI:
-			ds << "gui   : ";
-			break;
-
-		default:
-			assert(!"debug part out of range");
-	}
-
-	return ds;
+	return DebugStream(os, part, function);
 }

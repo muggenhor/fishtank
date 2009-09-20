@@ -5,6 +5,8 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/thread/mutex.hpp>
 #include <ostream>
+#include <sstream>
+#include <string>
 
 namespace boost { namespace program_options {
 class options_description;
@@ -50,9 +52,13 @@ class DebugStream : public std::ostream
 		 * Construction is only allowed through the @c _debug(code_part, const char*)
 		 * function.
 		 */
-		DebugStream(boost::shared_ptr<std::ostream> os);
+		DebugStream(boost::shared_ptr<std::ostream> os, code_part part, const char* function);
 
 		friend DebugStream _debug(code_part, const char*);
+
+	private:
+		std::ostringstream* initCache();
+		void writeRepeatMessage();
 
 	private:
 		/** 
@@ -70,9 +76,22 @@ class DebugStream : public std::ostream
 
 	private:
 		static boost::array<bool, LOG_LAST> enabled_debug;
+		static const boost::array<std::string, LOG_LAST> debug_level_names;
 
 	private:
+		std::ostringstream* _osCache;
 		boost::shared_ptr<std::ostream> _os;
+
+		const code_part _part;
+		const std::string _function;
+		time_t _time;
+
+		static boost::mutex _lastDataMutex;
+		static std::string _lastFunction;
+		static std::string _lastMessage;
+		static unsigned int _lastMessageRepeated;
+		static unsigned int _lastMessageNext;
+		static unsigned int _lastMessagePrev;
 };
 
 /**
