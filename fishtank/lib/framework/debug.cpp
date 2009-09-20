@@ -33,6 +33,7 @@ const boost::array<std::string, LOG_LAST> DebugStream::debug_level_names =
 	"never",
 	"main",
 	"media",
+	"camera",
 	"net",
 	"rpc",
 	"memory",

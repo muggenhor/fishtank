@@ -22,6 +22,7 @@ enum code_part
 	LOG_NEVER, /**< if too verbose for anything but dedicated debugging... */
 	LOG_MAIN,
 	LOG_MEDIA,
+	LOG_CAMERA,
 	LOG_NET,
 	LOG_RPC,
 	LOG_MEMORY,
