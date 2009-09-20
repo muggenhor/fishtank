@@ -1,9 +1,15 @@
 #ifndef __INCLUDED_LIB_FRAMEWORK_DEBUG_HPP__
 #define __INCLUDED_LIB_FRAMEWORK_DEBUG_HPP__
 
+#include <boost/array.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/thread/mutex.hpp>
 #include <ostream>
+
+namespace boost { namespace program_options {
+class options_description;
+class variables_map;
+}}
 
 enum code_part
 {
@@ -16,12 +22,18 @@ enum code_part
 	LOG_MEMORY,
 	LOG_GUI,
 
-	LOG_LAST /**< _must_ be last! */
+	LOG_LAST, /**< _must_ be the last valid log level! */
+
+	LOG_ALL, /**< special; used to enable all debug levels */
 };
 
 class DebugStream : public std::ostream
 {
 	public:
+		static void addCommandLineOptions(boost::program_options::options_description& desc);
+
+		static void processOptions(const boost::program_options::variables_map& options);
+
 		DebugStream(const DebugStream& rhs);
 		virtual ~DebugStream();
 
@@ -56,7 +68,7 @@ class DebugStream : public std::ostream
 		};
 
 	private:
-		static bool enabled_debug[LOG_LAST];
+		static boost::array<bool, LOG_LAST> enabled_debug;
 
 	private:
 		boost::shared_ptr<std::ostream> _os;
