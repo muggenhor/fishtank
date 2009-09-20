@@ -116,7 +116,7 @@ DebugStream _debug(const code_part part, const char* const function)
 
 	DebugStream ds(os);
 
-	ds << "[" << function << " ]";
+	ds << "[" << function << "] ";
 
 	switch (part)
 	{
