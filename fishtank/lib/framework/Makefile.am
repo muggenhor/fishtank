@@ -5,9 +5,11 @@ AM_CXXFLAGS = $(FT_CXXFLAGS)
 noinst_LTLIBRARIES = libframework.la
 
 libframework_la_SOURCES = \
+	debug-net-out.cpp \
 	debug.cpp
 
 noinst_HEADERS = \
+	debug-net-out.hpp \
 	debug.hpp
 
 libframework_la_LIBADD = \
