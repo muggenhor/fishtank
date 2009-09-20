@@ -43,7 +43,7 @@ class DebugStream : public std::ostream
 		template <typename Printable>
 		DebugStream operator<<(const Printable& printable)
 		{
-			*_os << printable;
+			*_osCache << printable;
 			return *this;
 		}
 

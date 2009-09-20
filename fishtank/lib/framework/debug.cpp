@@ -118,7 +118,8 @@ DebugStream::DebugStream(const DebugStream& rhs) :
 	_osCache(rhs._osCache),
 	_os(rhs._os),
 	_part(rhs._part),
-	_function(rhs._function)
+	_function(rhs._function),
+	_time(rhs._time)
 {
 }
 
@@ -137,6 +138,7 @@ DebugStream::~DebugStream()
 		// Check for repeated messages
 		{
 			const boost::lock_guard<boost::mutex> lockLastData(_lastDataMutex);
+
 			if (_function == _lastFunction
 			 && message == _lastMessage)
 			{
@@ -155,13 +157,15 @@ DebugStream::~DebugStream()
 				/* Current message didn't got repeated, check if the
 				 * previous one did (and spam a message if that was the case).
 				 */
-				if (_lastMessageRepeated > 1
+				if (_lastMessageRepeated
 				 && _lastMessageRepeated != _lastMessagePrev)
 					writeRepeatMessage();
 
 				_lastMessageRepeated = 0;
 				_lastMessageNext = 2;
 				_lastMessagePrev = 0;
+				_lastFunction = _function;
+				_lastMessage = message;
 			}
 		}
 
