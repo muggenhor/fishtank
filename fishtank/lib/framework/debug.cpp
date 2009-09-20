@@ -39,6 +39,9 @@ const boost::array<std::string, LOG_LAST> DebugStream::debug_level_names =
 	"gui",
 }};
 
+std::vector< boost::shared_ptr<std::ostream> > DebugStream::streams_registry;
+boost::mutex DebugStream::streams_mutex;
+
 static const string& getMessageFormatString()
 {
 	using namespace boost::lambda;
@@ -94,25 +97,52 @@ void DebugStream::addCommandLineOptions(boost::program_options::options_descript
 {
 	desc.add_options()
 		("debug", po::value< std::vector<code_part> >(), "Enable debug messages for given level")
+		("debugfile", po::value< std::vector<std::string> >(), "Log debug output to file")
 	;
 }
 
 void DebugStream::processOptions(const boost::program_options::variables_map& options)
 {
-	if (options.count("debug") == 0)
-		return;
-
-	foreach (const code_part& part, options["debug"].as< std::vector<code_part> >())
+	if (options.count("debug"))
 	{
-		if (part == LOG_ALL)
+		foreach (const code_part& part, options["debug"].as< std::vector<code_part> >())
 		{
-			foreach (bool& log, enabled_debug)
-				log = true;
-			continue;
-		}
+			if (part == LOG_ALL)
+			{
+				foreach (bool& log, enabled_debug)
+					log = true;
+				continue;
+			}
 
-		enabled_debug[part] = true;
+			assert(part < LOG_LAST);
+
+			enabled_debug[part] = true;
+		}
 	}
+
+	if (options.count("debugfile"))
+	{
+		foreach (const std::string& file, options["debugfile"].as< std::vector<std::string> >())
+		{
+			ofstream* const os = new ofstream(file.c_str(), ios_base::out | ios_base::app);
+			*os << "\n"
+			    << "Starting new log at: " << microsec_clock::local_time() << "\n"
+			    << "------------------------------------------------------------------------------\n"
+			    << "\n";
+			registerDebugOutput(os);
+		}
+	}
+}
+
+void DebugStream::registerDebugOutput(boost::shared_ptr<std::ostream> const os)
+{
+	const boost::lock_guard<boost::mutex> lockStreams(streams_mutex);
+	streams_registry.push_back(os);
+}
+
+void DebugStream::registerDebugOutput(std::ostream* const os)
+{
+	return registerDebugOutput(boost::shared_ptr<std::ostream>(os));
 }
 
 boost::mutex DebugStream::_lastDataMutex;
@@ -141,7 +171,7 @@ DebugStream::DebugStream(const DebugStream& rhs) :
 DebugStream::~DebugStream()
 {
 	/* If this is the last DebugStream instance of the debug() invocation
-	 * terminate the line.
+	 * write to all outputs and terminate the line.
 	 */
 	if (_osCache.unique())
 	{
@@ -186,6 +216,7 @@ DebugStream::~DebugStream()
 
 		formattedMessage % debug_level_names[_part] % _time % _function % message;
 
+		const boost::lock_guard<boost::mutex> lockStreams(streams_mutex);
 		foreach (const boost::shared_ptr<std::ostream>& stream, _streams)
 			*stream << formattedMessage << endl;
 	}
@@ -204,16 +235,14 @@ void DebugStream::writeRepeatMessage()
 		repeatMessage = (boost::format("last message repeated %u times") % (_lastMessageRepeated - _lastMessagePrev)).str();
 	}
 
+	const boost::lock_guard<boost::mutex> lockStreams(streams_mutex);
 	foreach (const boost::shared_ptr<std::ostream>& stream, _streams)
 		*stream << repeatMessage << endl;
 }
 
-boost::mutex DebugStream::stderr_wrapper::_global_mutex;
-
-DebugStream::stderr_wrapper::stderr_wrapper() :
+stderr_wrapper::stderr_wrapper() :
 	std::basic_ios<char, std::char_traits<char> >(std::cerr.rdbuf()),
-	std::ostream(std::cerr.rdbuf()),
-	_lock(_global_mutex)
+	std::ostream(std::cerr.rdbuf())
 {
 }
 
@@ -221,9 +250,19 @@ DebugStream _debug(const code_part part, const char* const function)
 {
 	assert(part < LOG_LAST && "debug part out of range");
 
-	std::vector< boost::shared_ptr<std::ostream> > os;
+	const boost::lock_guard<boost::mutex> lockStreams(DebugStream::streams_mutex);
 	if (DebugStream::enabled_debug[part])
-		os.push_back(boost::shared_ptr<std::ostream>(new DebugStream::stderr_wrapper));
-
-	return DebugStream(os.begin(), os.end(), part, function);
+		return DebugStream(
+		  DebugStream::streams_registry.begin(),
+		  DebugStream::streams_registry.end(),
+		  part,
+		  function
+		);
+	else
+		return DebugStream(
+		  DebugStream::streams_registry.end(), // end == end means no debug output
+		  DebugStream::streams_registry.end(),
+		  part,
+		  function
+		);
 }

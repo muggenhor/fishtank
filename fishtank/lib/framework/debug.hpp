@@ -32,12 +32,24 @@ enum code_part
 	LOG_ALL, /**< special; used to enable all debug levels */
 };
 
+/** 
+ * This class implements a C++ ostream object wrapping stderr.
+ */
+class stderr_wrapper : public std::ostream
+{
+	public:
+		stderr_wrapper();
+};
+
 class DebugStream : public std::ostream
 {
 	public:
 		static void addCommandLineOptions(boost::program_options::options_description& desc);
 
 		static void processOptions(const boost::program_options::variables_map& options);
+
+		static void registerDebugOutput(boost::shared_ptr<std::ostream> os);
+		static void registerDebugOutput(std::ostream* os);
 
 		DebugStream(const DebugStream& rhs);
 		virtual ~DebugStream();
@@ -73,21 +85,9 @@ class DebugStream : public std::ostream
 		void writeRepeatMessage();
 
 	private:
-		/** 
-		 * This class implements a C++ ostream object wrapping stderr.
-		 */
-		class stderr_wrapper : public std::ostream
-		{
-			public:
-				stderr_wrapper();
-
-			private:
-				static boost::mutex                     _global_mutex;
-				const boost::lock_guard<boost::mutex>   _lock;
-		};
-
-	private:
 		static boost::array<bool, LOG_LAST> enabled_debug;
+		static std::vector< boost::shared_ptr<std::ostream> > streams_registry;
+		static boost::mutex streams_mutex;
 
 	public:
 		static const boost::array<std::string, LOG_LAST> debug_level_names;
