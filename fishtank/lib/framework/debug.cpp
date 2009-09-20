@@ -104,7 +104,7 @@ DebugStream::stderr_wrapper::stderr_wrapper() :
 {
 }
 
-DebugStream debug(const code_part part)
+DebugStream _debug(const code_part part, const char* const function)
 {
 	assert(part < LOG_LAST && "debug part out of range");
 
@@ -115,6 +115,8 @@ DebugStream debug(const code_part part)
 		os.reset(new std::ofstream("/dev/null"));
 
 	DebugStream ds(os);
+
+	ds << "[" << function << " ]";
 
 	switch (part)
 	{

@@ -46,12 +46,12 @@ class DebugStream : public std::ostream
 
 	private:
 		/**
-		 * Construction is only allowed through the @c debug(code_part)
+		 * Construction is only allowed through the @c _debug(code_part, const char*)
 		 * function.
 		 */
 		DebugStream(boost::shared_ptr<std::ostream> os);
 
-		friend DebugStream debug(code_part);
+		friend DebugStream _debug(code_part, const char*);
 
 	private:
 		/** 
@@ -74,6 +74,12 @@ class DebugStream : public std::ostream
 		boost::shared_ptr<std::ostream> _os;
 };
 
-DebugStream debug(code_part part);
+/**
+ * Output iostream style str.
+ *
+ * Only outputs if debugging of part was formerly enabled in DebugStream::enabled_debug.
+ */
+#define debug(part) _debug(part, __FUNCTION__)
+DebugStream _debug(code_part part, const char* function);
 
 #endif // __INCLUDED_LIB_FRAMEWORK_DEBUG_HPP__
