@@ -96,10 +96,13 @@ static void validate(boost::any& v, const std::vector<std::string>& values, code
 
 void DebugStream::addCommandLineOptions(boost::program_options::options_description& desc)
 {
-	desc.add_options()
+	po::options_description debugOps("Debug Options");
+	debugOps.add_options()
 		("debug", po::value< std::vector<code_part> >(), "Enable debug messages for given level")
 		("debugfile", po::value< std::vector<std::string> >(), "Log debug output to file")
 	;
+
+	desc.add(debugOps);
 }
 
 void DebugStream::processOptions(const boost::program_options::variables_map& options)
