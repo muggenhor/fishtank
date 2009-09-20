@@ -8,6 +8,7 @@
 #include <ostream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 namespace boost { namespace program_options {
 class options_description;
@@ -53,7 +54,17 @@ class DebugStream : public std::ostream
 		 * Construction is only allowed through the @c _debug(code_part, const char*)
 		 * function.
 		 */
-		DebugStream(boost::shared_ptr<std::ostream> os, code_part part, const char* function);
+		template <typename InputIterator>
+		DebugStream(const InputIterator firstOs, const InputIterator lastOs, const code_part part, const char* const function) :
+			std::basic_ios<char, std::char_traits<char> >(initCache()->rdbuf()),
+			std::ostream(_osSafeCacheInit->rdbuf()),
+			_osCache(_osSafeCacheInit),
+			_streams(firstOs, lastOs),
+			_part(part),
+			_function(function),
+			_time(boost::posix_time::microsec_clock::local_time())
+		{
+		}
 
 		friend DebugStream _debug(code_part, const char*);
 
@@ -82,8 +93,9 @@ class DebugStream : public std::ostream
 		static const boost::array<std::string, LOG_LAST> debug_level_names;
 
 	private:
-		std::ostringstream* _osCache;
-		boost::shared_ptr<std::ostream> _os;
+		std::ostringstream* _osSafeCacheInit;
+		boost::shared_ptr<std::ostringstream> _osCache;
+		std::vector< boost::shared_ptr<std::ostream> > _streams;
 
 		const code_part _part;
 		const std::string _function;

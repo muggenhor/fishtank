@@ -98,26 +98,16 @@ unsigned int DebugStream::_lastMessageRepeated = 0;
 unsigned int DebugStream::_lastMessageNext = 2;
 unsigned int DebugStream::_lastMessagePrev = 0;
 
-DebugStream::DebugStream(boost::shared_ptr<std::ostream> os, const code_part part, const char* const function) :
-	std::basic_ios<char, std::char_traits<char> >(initCache()->rdbuf()),
-	std::ostream(_osCache->rdbuf()),
-	_os(os),
-	_part(part),
-	_function(function),
-	_time(microsec_clock::local_time())
-{
-}
-
 std::ostringstream* DebugStream::initCache()
 {
-	return _osCache = new std::ostringstream;
+	return _osSafeCacheInit = new std::ostringstream;
 }
 
 DebugStream::DebugStream(const DebugStream& rhs) :
 	std::basic_ios<char, std::char_traits<char> >(rhs._osCache->rdbuf()),
 	std::ostream(rhs._osCache->rdbuf()),
 	_osCache(rhs._osCache),
-	_os(rhs._os),
+	_streams(rhs._streams),
 	_part(rhs._part),
 	_function(rhs._function),
 	_time(rhs._time)
@@ -129,12 +119,10 @@ DebugStream::~DebugStream()
 	/* If this is the last DebugStream instance of the debug() invocation
 	 * terminate the line.
 	 */
-	if (_os.unique())
+	if (_osCache.unique())
 	{
 		// Finish the message and retrieve it from cache
-		*_osCache << std::endl;
 		std::string message(_osCache->str());
-		delete _osCache;
 
 		// Check for repeated messages
 		{
@@ -170,20 +158,26 @@ DebugStream::~DebugStream()
 			}
 		}
 
-		*_os << boost::format("%-8s (%8s): [%s] %s") % debug_level_names[_part] % _time % _function % message;
+		foreach (const boost::shared_ptr<std::ostream>& stream, _streams)
+			*stream << boost::format("%-8s (%8s): [%s] %s") % debug_level_names[_part] % _time % _function % message << endl;
 	}
 }
 
 void DebugStream::writeRepeatMessage()
 {
+	string repeatMessage;
+
 	if (_lastMessageRepeated > 2)
 	{
-		*_os << boost::format("last message repeated %u times (total %u repeats)\n") % (_lastMessageRepeated - _lastMessagePrev) % _lastMessageRepeated;
+		repeatMessage = (boost::format("last message repeated %u times (total %u repeats)") % (_lastMessageRepeated - _lastMessagePrev) % _lastMessageRepeated).str();
 	}
 	else
 	{
-		*_os << boost::format("last message repeated %u times\n") % (_lastMessageRepeated - _lastMessagePrev);
+		repeatMessage = (boost::format("last message repeated %u times") % (_lastMessageRepeated - _lastMessagePrev)).str();
 	}
+
+	foreach (const boost::shared_ptr<std::ostream>& stream, _streams)
+		*stream << repeatMessage << endl;
 }
 
 boost::mutex DebugStream::stderr_wrapper::_global_mutex;
@@ -199,11 +193,9 @@ DebugStream _debug(const code_part part, const char* const function)
 {
 	assert(part < LOG_LAST && "debug part out of range");
 
-	boost::shared_ptr<std::ostream> os;
+	std::vector< boost::shared_ptr<std::ostream> > os;
 	if (DebugStream::enabled_debug[part])
-		os.reset(new DebugStream::stderr_wrapper);
-	else
-		os.reset(new std::ofstream("/dev/null"));
+		os.push_back(boost::shared_ptr<std::ostream>(new DebugStream::stderr_wrapper));
 
-	return DebugStream(os, part, function);
+	return DebugStream(os.begin(), os.end(), part, function);
 }
