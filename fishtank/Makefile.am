@@ -6,6 +6,7 @@ EXTRA_DIST= \
 
 SUBDIRS = \
 	Data \
+	lib \
 	GL \
 	Settings \
 	vertexarrays
@@ -54,6 +55,7 @@ noinst_HEADERS = \
 
 fishtank_LDADD = \
 	$(builddir)/GL/libGLee.la \
+	$(builddir)/lib/framework/libframework.la \
 	$(builddir)/vertexarrays/libvertexarrays.la \
 	$(BOOST_PROGRAM_OPTIONS_LIBS) \
 	$(BOOST_REGEX_LIBS) \
