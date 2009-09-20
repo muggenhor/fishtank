@@ -9,6 +9,13 @@ bool DebugStream::enabled_debug[LOG_LAST] =
 #ifndef NDEBUG
 	true, // LOG_WARNING
 #endif
+	// TODO: Remove this, as it enables *all* debug levels
+	true,
+	true,
+	true,
+	true,
+	true,
+	true,
 };
 
 DebugStream::DebugStream(boost::shared_ptr<std::ostream> os) :
