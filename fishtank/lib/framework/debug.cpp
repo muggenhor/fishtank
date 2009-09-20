@@ -3,13 +3,13 @@
 #include <boost/format.hpp>
 #include <boost/program_options.hpp>
 #include <cassert>
-#include <ctime>
 #include <fstream>
 #include <iostream>
 #include <string>
 
 #define foreach BOOST_FOREACH
 
+using namespace boost::posix_time;
 namespace po = boost::program_options;
 
 boost::array<bool, LOG_LAST> DebugStream::enabled_debug =
@@ -102,9 +102,9 @@ DebugStream::DebugStream(boost::shared_ptr<std::ostream> os, const code_part par
 	std::ostream(_osCache->rdbuf()),
 	_os(os),
 	_part(part),
-	_function(function)
+	_function(function),
+	_time(microsec_clock::local_time())
 {
-	::time(&_time);
 }
 
 std::ostringstream* DebugStream::initCache()
@@ -169,11 +169,7 @@ DebugStream::~DebugStream()
 			}
 		}
 
-		struct tm * locTime = localtime(&_time);
-		char timestring[10];
-		strftime(timestring, sizeof(timestring), "%H:%M:%S", locTime);
-
-		*_os << boost::format("%-8s (%8s): [%s] %s") % debug_level_names[_part] % timestring % _function % message;
+		*_os << boost::format("%-8s (%8s): [%s] %s") % debug_level_names[_part] % _time % _function % message;
 	}
 }
 

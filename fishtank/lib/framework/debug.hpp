@@ -4,6 +4,7 @@
 #include <boost/array.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/thread/mutex.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <ostream>
 #include <sstream>
 #include <string>
@@ -84,7 +85,7 @@ class DebugStream : public std::ostream
 
 		const code_part _part;
 		const std::string _function;
-		time_t _time;
+		boost::posix_time::ptime _time;
 
 		static boost::mutex _lastDataMutex;
 		static std::string _lastFunction;
