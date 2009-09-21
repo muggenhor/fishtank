@@ -29,7 +29,7 @@ PKG_PROG_PKG_CONFIG
 case ${host_os} in
 	*mingw32*)
 		host_os_mingw32=yes
-		WIN32_LIBS='-lwsock32 -lz'
+		WIN32_LIBS='-lwsock32 -lws2_32 -lz'
 		AC_SUBST([WIN32_LIBS])
 		;;
 esac

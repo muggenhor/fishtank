@@ -28,7 +28,7 @@ build-bjam-stamp: extract-stamp
 	touch build-bjam-stamp
 
 build-stamp: extract-stamp patch-stamp build-bjam-stamp
-	cd $(PKG_SOURCEBASE) && tools/jam/src/bin.*/bjam -d2 --toolset=gcc --variant=release threading=multi link=static --prefix=./stage --layout=system --with-program_options --with-regex --with-thread stage
+	cd $(PKG_SOURCEBASE) && tools/jam/src/bin.*/bjam -d2 --toolset=gcc --variant=release threading=multi link=static --prefix=./stage --layout=system --with-program_options --with-regex --with-system --with-thread stage
 	test -L "$(PKG_SOURCEBASE)/stage/include" || ln -s .. "$(PKG_SOURCEBASE)/stage/include"
 	@for lib in $(PKG_SOURCEBASE)/stage/lib/*_win32*.lib ; do \
 	    suffix=`echo $$lib | sed "s/^.*\(_win32.*\.lib\)$$/\1/"` ; \
