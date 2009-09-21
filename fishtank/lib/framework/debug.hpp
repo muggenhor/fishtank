@@ -20,6 +20,7 @@ enum code_part
 	LOG_ERROR, /**< special; on by default. _must_ be first! */
 	LOG_WARNING, /**< special; on in debug mode. _must_ be second! */
 	LOG_NEVER, /**< if too verbose for anything but dedicated debugging... */
+	LOG_3D,
 	LOG_MAIN,
 	LOG_MEDIA,
 	LOG_CAMERA,

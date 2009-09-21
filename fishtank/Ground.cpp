@@ -4,6 +4,7 @@
 #include <boost/format.hpp>
 #include <boost/gil/algorithm.hpp>
 #include <Eigen/Core>
+#include <framework/debug.hpp>
 #include "Ground.h"
 #include <iostream>
 #include "AquariumController.h"
@@ -48,11 +49,11 @@ Ground::Ground(const char* const filename, int maxHeight, const char* const text
 		{
 			read_image(causticsfilename, img);
 			caustics.push_back(const_view(img));
-			std::cerr << "Succesfully read caustic: " << causticsfilename << "\n";
+			debug(LOG_MAIN) << format("Succesfully read caustic: %s") % causticsfilename;
 		}
 		catch (std::ios_base::failure& e)
 		{
-			std::cerr << "Exception while reading caustic: " << causticsfilename << ": " << e.what() << "\n";
+			debug(LOG_ERROR) << format("Exception while reading caustic: %s: %s") % causticsfilename % e.what();
 			break;
 		}
 	}
@@ -61,9 +62,9 @@ Ground::Ground(const char* const filename, int maxHeight, const char* const text
 	updateRenderData();
 
 #ifdef DEBUG
-	std::cerr << "Ground has:\n"
-	          << triangles.uniqueVertices() << " vertices\n"
-	          << triangles.drawnVertices() << " indices\n\n";
+	debug(LOG_NEVER) << "Ground has:\n"
+	                 << triangles.uniqueVertices() << " vertices\n"
+	                 << triangles.drawnVertices() << " indices\n";
 #endif
 }
 

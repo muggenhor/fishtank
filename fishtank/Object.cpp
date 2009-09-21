@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <ctime>
+#include <framework/debug.hpp>
 #include <fstream>
 #include "main.hpp"
 #include <string>
@@ -35,7 +36,7 @@ void Object::LoadProperties(const string& propertiesFile)
 		scale = object_height / (model->bb_h.y() - model->bb_l.y());
 	}else{
 		scale = object_height;
-		std::cerr<<"Error: trying to load properties for object that has no model, cant determine scaling"<<std::endl;
+		debug(LOG_ERROR) << "Trying to load properties for object that has no model, cant determine scaling";
 	}
 }
 

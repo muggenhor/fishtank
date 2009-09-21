@@ -72,7 +72,7 @@ fishtank_LDFLAGS = \
 	$(BOOST_REGEX_LDFLAGS) \
 	$(BOOST_THREAD_LDFLAGS)
 
-fishtank_CPPFLAGS = $(GLFW_CFLAGS) $(BOOST_CPPFLAGS) $(AM_CPPFLAGS)
+fishtank_CPPFLAGS = -I$(srcdir)/lib $(GLFW_CFLAGS) $(BOOST_CPPFLAGS) $(AM_CPPFLAGS)
 
 dist_doc_DATA = \
 	Handleiding.doc

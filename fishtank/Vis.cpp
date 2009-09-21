@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
+#include <framework/debug.hpp>
 #include <fstream>
 #include "glexcept.hpp"
 #include <iostream>
@@ -107,13 +108,13 @@ Vis::Vis(boost::shared_ptr<Model> model, const std::string& propertiesFile, int 
 	}
 	catch (const OpenGL::missing_capabilities& e)
 	{
-		std::cerr << "Failed to create WiggleShaderProgram due to missing OpenGL capabilities: " << e.what() << "\n";
+		debug(LOG_ERROR) << "Failed to create WiggleShaderProgram due to missing OpenGL capabilities: " << e.what() << "\n";
 	}
 	catch (const OpenGL::shader_source_error& e)
 	{
-		std::cerr << "Failed to compile, link or validate the WiggleShaderProgram: " << e.what() << "\n"
-		          << "Info log contains:\n"
-		          << e.infoLog() << "\n";
+		debug(LOG_ERROR) << "Failed to compile, link or validate the WiggleShaderProgram: " << e.what() << "\n"
+		                 << "Info log contains:\n"
+		                 << e.infoLog();
 	}
 
 	pos = RandomPos();
@@ -183,7 +184,7 @@ void Vis::LoadProperties(const string &propertiesFile)
 	else
 	{
 		scale = fish_length;
-		std::cerr<<"Error: trying to load properties for fish that has no model, cant determine scaling"<<std::endl;
+		debug(LOG_ERROR) << "Trying to load properties for fish that has no model, cant determine scaling";
 	}
 
 	//speeds

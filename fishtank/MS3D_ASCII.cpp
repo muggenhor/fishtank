@@ -1,8 +1,10 @@
 #include <algorithm>
 #include <boost/array.hpp>
 #include <boost/foreach.hpp>
+#include <boost/format.hpp>
 #include <Eigen/Geometry>
 #include <Eigen/LU>
+#include <framework/debug.hpp>
 #include "math-helpers.hpp"
 #include "main.hpp"
 #include "MS3D_ASCII.h"
@@ -14,6 +16,7 @@
 using namespace boost::gil;
 using namespace std;
 using namespace Eigen;
+using boost::format;
 
 const unsigned int Shape::max_optimizing_triangles = 3500;
 
@@ -253,7 +256,7 @@ bool Shape::loadFromMs3dAsciiSegment(FILE* file, const Eigen::Matrix4f& transfor
 
 	if (!optimize_triangles)
 	{
-		std::cerr << "warning: will not optimize this model for faster rendering because it exceeds the maximum amount of optimisable triangles (" << max_optimizing_triangles << ").\n";
+		debug(LOG_WARNING) << format("warning: will not optimize this model for faster rendering because it exceeds the maximum amount of optimisable triangles (%u)") % max_optimizing_triangles;
 	}
 
 	for (size_t j = 0; j < num_triangles; ++j)
@@ -503,17 +506,17 @@ bool Model::loadFromMs3dAsciiFile(const char* filename, const Eigen::Matrix4f& t
 
 #ifdef DEBUG
 	size_t vertices = 0, indices = 0;
-	cerr << "Finished loading model " << filename << '\n';
+	debug(LOG_3D) << format("Finished loading model %s") % filename;
 	foreach (const Shape& shape, shapes)
 	{
-		cerr << shape.vertex_count() << " vertices\n"
-		     << shape.index_count() << " indices\n";
+		debug(LOG_3D) << shape.vertex_count() << " vertices\n"
+		              << shape.index_count() << " indices";
 		vertices += shape.vertex_count();
 		indices += shape.index_count();
 	}
-	cerr << "------------------------\n"
-	     << vertices << " vertices\n"
-	     << indices << " indices\n\n";
+	debug(LOG_3D) << "------------------------\n"
+	              << vertices << " vertices\n"
+	              << indices << " indices\n";
 #endif
 
 	return true;

@@ -1,6 +1,7 @@
 #include <boost/foreach.hpp>
 #include <cmath>
 #include "AquariumController.h"
+#include <framework/debug.hpp>
 #include "main.hpp"
 
 #define foreach BOOST_FOREACH
@@ -104,7 +105,7 @@ void AquariumController::GoToScreen(const Eigen::Vector2d &position)
 		//laat de vissen naar de positie zwemmen
 		fishes[i].setGoal(Eigen::Vector3f(fishGoalPos.x(), fishGoalPos.y(), aquariumSize.y()));
 		//fishes[i].pos = Eigen::Vector3d(fishGoalPos.x(), fishGoalPos.y(), aquariumSize.y());
-		cerr << "Goto " << fishGoalPos << "\n";
+		debug(LOG_NEVER) << "Goto " << fishGoalPos;
 	}
 }
 
@@ -123,7 +124,7 @@ void AquariumController::AvoidFishBounce()
 			if (fish.Colliding(collidable.pos, collidable.sphere)
 			 && fish.IsGoingTowards(collidable.pos))
 			{
-				//std::cout<<"Fish-fish collision "<<i<<":"<<j<<std::endl;
+				//debug(LOG_NEVER) << "Fish-fish collision " << i << ":" << j;
 				fish.Avade();
 			}
 		}

@@ -6,6 +6,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include "camera.hpp"
+#include <framework/debug.hpp>
 #include "GL/GLee.h"
 #include <GL/glfw.h>
 #include <GL/gl.h>
@@ -170,13 +171,20 @@ static void ParseOptions(int argc, char** argv, std::istream& config_file)
 	;
 
 	po::options_description cmdline_options;
-	cmdline_options.add(generic).add(config).add(hidden);
+	cmdline_options.add(generic);
+	DebugStream::addCommandLineOptions(cmdline_options);
+	cmdline_options.add(config);
+	cmdline_options.add(hidden);
 
 	po::options_description config_file_options;
-	config_file_options.add(config).add(hidden);
+	DebugStream::addCommandLineOptions(config_file_options);
+	config_file_options.add(config);
+	config_file_options.add(hidden);
 
-	po::options_description visible("Allowed options");
-	visible.add(generic).add(config);
+	po::options_description visible;
+	visible.add(generic);
+	DebugStream::addCommandLineOptions(visible);
+	visible.add(config);
 
 	po::variables_map vm;
 	if (argv != NULL)
@@ -223,6 +231,8 @@ static void ParseOptions(int argc, char** argv, std::istream& config_file)
 	{
 		cameraTransformations.push_back(Transformation(Transformation::ROTATE_90CCW));
 	}
+
+	DebugStream::processOptions(vm);
 }
 
 //laad de settings uit het opgegeven bestand
@@ -656,9 +666,7 @@ int main(int argc, char** argv)
 	std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
 #endif
 
-#ifdef CONFIGURE_LINE
-	fprintf(stderr, "%s\n", "fishtank was configured with " CONFIGURE_LINE);
-#endif
+	DebugStream::registerDebugOutput(new stderr_wrapper);
 
 	datadir = find_data_dir();
 
@@ -699,13 +707,17 @@ int main(int argc, char** argv)
 		}
 		config.close();
 
+#ifdef CONFIGURE_LINE
+		debug(LOG_NEVER) << "fishtank was configured with " CONFIGURE_LINE;
+#endif
+
 		glfwInit();
 		glfwOpenWindowHint(GLFW_FSAA_SAMPLES, multi_sample);
 
 		if( !glfwOpenWindow( win_width, win_height,  0,0,0,0,  16, 	 0, GLFW_WINDOW ))
 		{/// width, height, rgba bits (4 params), depth bits, stencil bits, mode.
-			cout << "Bye world! Open window failed" << endl;
-			return 1;
+			debug(LOG_ERROR) << "Bye cruel world! glfwOpenWindow() failed";
+			throw exit_exception(EXIT_FAILURE);
 		}
 		glEnable(GL_DEPTH_TEST);
 		glDepthMask(GL_TRUE);
@@ -770,7 +782,7 @@ int main(int argc, char** argv)
 			fps.frameRateDelay();
 #ifdef DEBUG
 			if (fps.frameCount() % fps.targetRate() == 0)
-				std::cerr << "Rendered frames: " << fps.frameCount() <<  "; in seconds: " << fps.countTime() << "; with average framerate: " << fps.avgFrameRate() << "; current measured framerate (inaccurate): " << fps.recentAvgFrameRate() << "\n";
+				debug(LOG_MAIN) << "Rendered frames: " << fps.frameCount() <<  "; in seconds: " << fps.countTime() << "; with average framerate: " << fps.avgFrameRate() << "; current measured framerate (inaccurate): " << fps.recentAvgFrameRate();
 #endif
 		}
 
@@ -782,15 +794,15 @@ int main(int argc, char** argv)
 	}
 	catch (const OpenGL::shader_source_error& e)
 	{
-		std::cerr << "Unhandled OpenGL::shader_source_error exception caught: " << e.what() << "\n"
-		          << "Info log contains:\n"
-		          << e.infoLog() << "\n";
+		debug(LOG_ERROR) << "Unhandled OpenGL::shader_source_error exception caught: " << e.what() << "\n"
+		                 << "Info log contains:\n"
+		                 << e.infoLog();
 		throw;
 	}
 	catch (const OpenGL::shader_uniform_location_error& e)
 	{
-		std::cerr << "Unhandled OpenGL::shader_uniform_location_error exception caught: " << e.what() << "\n"
-		          << "Uniform name is: \"" << e.uniform_name() << "\"\n";
+		debug(LOG_ERROR) << "Unhandled OpenGL::shader_uniform_location_error exception caught: " << e.what() << "\n"
+		                 << "Uniform name is: \"" << e.uniform_name();
 		throw;
 	}
 }

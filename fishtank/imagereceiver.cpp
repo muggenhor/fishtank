@@ -3,6 +3,8 @@
 #include "AquariumController.h"
 
 #include <algorithm>
+#include <boost/format.hpp>
+#include <framework/debug.hpp>
 
 #include <sys/types.h>
 
@@ -14,6 +16,8 @@
 #include <winsock2.h>
 #include <io.h>
 #include <ws2tcpip.h>
+
+using namespace std;
 
 /// Required for Windows
 static bool InitSocketLib()
@@ -30,7 +34,7 @@ static bool InitSocketLib()
 		}
 		else
 		{
-			std::cerr << "Failed to initialise Winsock\n";
+			debug(LOG_ERROR) << "Failed to initialise Winsock\n";
 		}
 	}
 
@@ -248,12 +252,12 @@ ImageReceiver::ImageReceiver(int port)
 	m_server_socket=socket (PF_INET, SOCK_STREAM, 0);
 	if (m_server_socket < 0)
 	{
-		std::cerr<<"Error creating socket!"<<std::endl;
+		debug(LOG_ERROR) << "Failed to create socket";
 	}
 	if (bind(m_server_socket, (sockaddr *)&server_address, sizeof(server_address)) < 0){
-		std::cerr<<"Error binding socket!"<<std::endl;
+		debug(LOG_ERROR) << "Failed to bind socket";
 	}
-	std::cerr<<"Listening on port "<<port<<std::endl;
+	debug(LOG_NET) << boost::format("Listening on port %d") % port;
 	listen(m_server_socket, 5);
 
 
@@ -261,7 +265,7 @@ ImageReceiver::ImageReceiver(int port)
 	u_long NonBlock = 1;
 	if (ioctlsocket(m_server_socket, FIONBIO, &NonBlock) == SOCKET_ERROR)
   {
-		std::cerr<<"ioctlsocket() failed \n"<<std::endl;
+		debug(LOG_ERROR) << "ioctlsocket() failed";
 		return;
   }
 #else
@@ -276,12 +280,11 @@ void ImageReceiver::AcceptClient(){
 	socklen_t client_address_len=sizeof(client_address);
 	int client_socket=accept(m_server_socket,(struct sockaddr *) &client_address, &client_address_len);
 	if (client_socket<0){
-		//std::cerr<<"accept() failed"<<std::endl;
+		//debug(LOG_ERROR) << "accept() failed";
 		return;
 	}
 	m_socket_stream.SetSocket(client_socket);
-	std::string client_address_str=inet_ntoa(client_address.sin_addr);
-	std::cerr<<client_address_str<<" connected"<<std::endl;
+	debug(LOG_NET) << boost::format("%s connected") % inet_ntoa(client_address.sin_addr);
 }
 
 void ImageReceiver::Update(){
@@ -303,7 +306,7 @@ bool ImageReceiver::ReceiveSegment(){
 		BitmapFileHeader *header=(BitmapFileHeader *)(&buffer[0]);
 		image_size=header->bfSize;
 		if(header->bfType!=BITMAP_MAGIC_NUMBER || image_size<buffered_bytes){
-			std::cerr<<"Stream is corrupt(1), closing connection!"<<std::endl;
+			debug(LOG_ERROR) << "Stream is corrupt(1), closing connection!";
 			m_socket_stream.Close();
 			return false;
 		}
@@ -314,7 +317,7 @@ bool ImageReceiver::ReceiveSegment(){
 	if(buffer.size()<wanted_buffer_size)buffer.resize(wanted_buffer_size);
 	const int bytes_to_receive=wanted_buffer_size-buffered_bytes;
 	if(bytes_to_receive<0){
-		std::cerr<<"Stream is corrupt(2), closing connection!"<<std::endl;
+		debug(LOG_ERROR) << "Stream is corrupt(2), closing connection!";
 		m_socket_stream.Close();
 		return false;
 	}
@@ -325,7 +328,7 @@ bool ImageReceiver::ReceiveSegment(){
 			buffered_bytes=0;
 			return false;/// dont retry load till next frame.
 		}else{/// got just header, wtf, should never be here
-			std::cerr<<"Something wrong in receive"<<std::endl;
+			debug(LOG_ERROR) << "Something wrong in receive";
 			return false;
 		}
 	}
@@ -339,7 +342,6 @@ unsigned int ImageReceiver::TextureID(){
 	return texture_id;
 }
 
-using namespace std;
 void ImageReceiver::ReceivedImage()
 {
 	//std::cerr<<"Received an image"<<std::endl;
@@ -359,7 +361,7 @@ void ImageReceiver::ReceivedImage()
 	cout << "biYPelsPerMeter =" << bmih.biYPelsPerMeter << endl;
 	*/
 	if(info->biBitCount!=24){
-		std::cerr<<"Error: image isnt 24 bits per pixel"<<std::endl;
+		debug(LOG_ERROR) << "Image isnt 24 bits per pixel";
 		return;
 	}
 
@@ -372,7 +374,7 @@ void ImageReceiver::ReceivedImage()
 	int height=abs(info->biHeight);/// silly format can have negative height. o_0
 
 	if(buffer.size()<header_size+width*height*3){
-			std::cerr<<"Error: image dimensions incorrect"<<std::endl;
+			debug(LOG_ERROR) << "Image dimensions incorrect";
 		return;
 	}
 	int last=header_size+width*height*3;
@@ -386,7 +388,7 @@ void ImageReceiver::ReceivedImage()
 	gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, width, height, GL_RGB, GL_UNSIGNED_BYTE, &buffer[header_size]);
 	int i=glGetError();
 	if(i!=GL_NO_ERROR){
-		std::cerr<<"Error: glTexImage2D failed"<<std::endl;
+		debug(LOG_ERROR) << "glTexImage2D failed";
 	}
 
 	glBindTexture(GL_TEXTURE_2D,0);
@@ -423,12 +425,12 @@ PositionReceiver::PositionReceiver(int type, int port) :
 	m_server_socket=socket (PF_INET, SOCK_STREAM, 0);
 	if (m_server_socket < 0)
 	{
-		std::cerr<<"Error creating socket!"<<std::endl;
+		debug(LOG_ERROR) << "Failed to create socket";
 	}
 	if (bind(m_server_socket, (sockaddr *)&server_address, sizeof(server_address)) < 0){
-		std::cerr<<"Error binding socket!"<<std::endl;
+		debug(LOG_ERROR) << "Failed to bind socket";
 	}
-	std::cerr<<"Listening on port "<<port<<std::endl;
+	debug(LOG_NET) << boost::format("Listening on port %d") % port;
 	listen(m_server_socket, 5);
 
 
@@ -436,7 +438,7 @@ PositionReceiver::PositionReceiver(int type, int port) :
 	u_long NonBlock = 1;
 	if (ioctlsocket(m_server_socket, FIONBIO, &NonBlock) == SOCKET_ERROR)
   {
-		std::cerr<<"ioctlsocket() failed \n"<<std::endl;
+		debug(LOG_ERROR) << "ioctlsocket() failed";
 		return;
   }
 #else
@@ -451,12 +453,11 @@ void PositionReceiver::AcceptClient(){
 	socklen_t client_address_len=sizeof(client_address);
 	int client_socket=accept(m_server_socket,(struct sockaddr *) &client_address, &client_address_len);
 	if (client_socket<0){
-		//std::cerr<<"accept() failed"<<std::endl;
+		//debug(LOG_ERROR) << "accept() failed";
 		return;
 	}
 	m_socket_stream.SetSocket(client_socket);
-	std::string client_address_str=inet_ntoa(client_address.sin_addr);
-	std::cerr<<client_address_str<<" connected"<<std::endl;
+	debug(LOG_NET) << boost::format("%s connected") % inet_ntoa(client_address.sin_addr);
 }
 
 void PositionReceiver::Update(AquariumController& aquariumController)
@@ -488,12 +489,12 @@ void PositionReceiver::ReceiveSegment(AquariumController& aquariumController)
 		if (type == 0)
 		{
 			aquariumController.GoToScreen(position);
-			cerr << "Zwempositie: " << position << "\n";
+			debug(LOG_NEVER) << "Zwempositie: " << position;
 		}
 		else
 		{
 			aquariumController.facePosition = position;
-			cerr << "Gezichtpositie: " << position << "\n";
+			debug(LOG_NEVER) << "Gezichtpositie: " << position;
 		}
 	}
 }
