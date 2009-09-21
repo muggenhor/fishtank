@@ -1,3 +1,4 @@
+#include <boost/asio/io_service.hpp>
 #include <boost/gil/image.hpp>
 #include <boost/gil/typedefs.hpp>
 #include <boost/lexical_cast.hpp>
@@ -7,6 +8,8 @@
 #include <boost/weak_ptr.hpp>
 #include "camera.hpp"
 #include <framework/debug.hpp>
+#include <framework/debug-net-out.hpp>
+#include <framework/threadpool.hpp>
 #include "GL/GLee.h"
 #include <GL/glfw.h>
 #include <GL/gl.h>
@@ -89,6 +92,11 @@ static Eigen::Vector2i cameraResolution(320, 240);
  */
 static FrameRateManager fps(30);
 
+/**
+ * Amount of worker threads to handle various I/O jobs
+ */
+static unsigned int io_threads = 1;
+
 //scherm resolutie
 static int win_width=0, win_height=0;
 //de schermpositie
@@ -129,7 +137,7 @@ void validate<Eigen::Vector2i, char>(boost::any& v, const std::vector<std::strin
 }
 }}
 
-static void ParseOptions(int argc, char** argv, std::istream& config_file)
+static void ParseOptions(int argc, char** argv, std::istream& config_file, boost::asio::io_service& io_svc)
 {
 	// Group of generic options that are only allowed on the command line
 	po::options_description generic("Generic options");
@@ -155,6 +163,8 @@ static void ParseOptions(int argc, char** argv, std::istream& config_file)
 	      _("Enable or disable the fog."))
 	    ("fps", po::value<unsigned int>()->default_value(fps.targetRate()),
 	      _("Set the target framerate, the program will not exceed a rendering rate of this amount in Hz."))
+	    ("io-threads", po::value<unsigned int>(&io_threads)->default_value(0),
+	      _("The amount of additional threads to use for handling I/O in. Additional to the single thread that the program already has."))
 	    ("window-size", po::value<Eigen::Vector2i>(),
 	      _("Dimensions to use for the window."))
 	    ("window-position", po::value<Eigen::Vector2i>(),
@@ -173,17 +183,20 @@ static void ParseOptions(int argc, char** argv, std::istream& config_file)
 	po::options_description cmdline_options;
 	cmdline_options.add(generic);
 	DebugStream::addCommandLineOptions(cmdline_options);
+	DebugNetOutputStream::addCommandLineOptions(cmdline_options);
 	cmdline_options.add(config);
 	cmdline_options.add(hidden);
 
 	po::options_description config_file_options;
 	DebugStream::addCommandLineOptions(config_file_options);
+	DebugNetOutputStream::addCommandLineOptions(config_file_options);
 	config_file_options.add(config);
 	config_file_options.add(hidden);
 
 	po::options_description visible;
 	visible.add(generic);
 	DebugStream::addCommandLineOptions(visible);
+	DebugNetOutputStream::addCommandLineOptions(visible);
 	visible.add(config);
 
 	po::variables_map vm;
@@ -233,6 +246,7 @@ static void ParseOptions(int argc, char** argv, std::istream& config_file)
 	}
 
 	DebugStream::processOptions(vm);
+	DebugNetOutputStream::processOptions(io_svc, vm);
 }
 
 //laad de settings uit het opgegeven bestand
@@ -690,8 +704,9 @@ int main(int argc, char** argv)
 		}
 
 		ifstream config;
+		boost::asio::io_service io_svc;
 		// First parse command line options (to allow it to override everything else)
-		ParseOptions(argc, argv, config);
+		ParseOptions(argc, argv, config, io_svc);
 
 		// Search for config files and use the first one found
 		for (const char** dir = &sysconfdirs[0]; dir != &sysconfdirs[ARRAY_SIZE(sysconfdirs)]; ++dir)
@@ -701,7 +716,7 @@ int main(int argc, char** argv)
 			config.open((*dir + config_file).c_str());
 			if (config.is_open())
 			{
-				ParseOptions(0, NULL, config);
+				ParseOptions(0, NULL, config, io_svc);
 				break;
 			}
 		}
@@ -710,6 +725,16 @@ int main(int argc, char** argv)
 #ifdef CONFIGURE_LINE
 		debug(LOG_NEVER) << "fishtank was configured with " CONFIGURE_LINE;
 #endif
+
+		/* Prevents io_service's run() function from returning if no
+		 * jobs are available. Required to make sure the I/O threads
+		 * stay alive when there's little to do.
+		 */
+		boost::asio::io_service::work work(io_svc);
+
+		// Fire off several worker threads.
+		boost::thread_group threads;
+		create_thread_pool(io_svc, threads, io_threads);
 
 		glfwInit();
 		glfwOpenWindowHint(GLFW_FSAA_SAMPLES, multi_sample);

@@ -85,6 +85,8 @@ AS_IF([test "x$host_os_mingw32" != "xyes"],[
 
 # Checks for libraries.
 BOOST_REQUIRE([1.36])
+BOOST_SYSTEM([${BOOSTSUFFIX}]) # *Must* be called before BOOST_ASIO to prevent being invoked (as dependency) without the $BOOSTSUFFIX parameter
+BOOST_ASIO
 BOOST_BIND
 BOOST_CONVERSION
 BOOST_FOREACH
