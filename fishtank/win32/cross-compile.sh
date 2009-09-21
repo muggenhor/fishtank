@@ -53,11 +53,11 @@ execute make -C libs HOST_TRIPLET=$HOST_TRIPLET
 cd build
 
 execute ../../autogen.sh
-execute ../../configure --host=$HOST_TRIPLET --enable-static --disable-shared \
+execute ../../configure --host=$HOST_TRIPLET --enable-static --disable-shared --enable-debug=relaxed \
                         GLFW_CFLAGS="-I`pwd`/../libs/glfw/glfw.bin.WIN32/include" \
                         GLFW_LIBS="-L`pwd`/../libs/glfw/glfw.bin.WIN32/lib-mingw -lglfw" \
                         --with-boost="`pwd`/../libs/boost/boost_1_39_0/stage" \
-                        CPPFLAGS="-I`pwd`/../libs/jpeg/jpeg-6b -I`pwd`/../libs/zlib -I`pwd`/../libs/eigen/eigen2 -I`pwd`/../libs/png/libpng-1.2.36 -I${DEVPKG}/OpenCV/include" \
+                        CPPFLAGS="-I`pwd`/../libs/jpeg/jpeg-6b -I`pwd`/../libs/zlib -I`pwd`/../libs/eigen/eigen2 -I`pwd`/../libs/png/libpng-1.2.36 -I${DEVPKG}/OpenCV/include -D_WIN32_WINNT=0x0501" \
                         LDFLAGS="-L`pwd`/../libs/jpeg/jpeg-6b -L`pwd`/../libs/zlib -L`pwd`/../libs/png/lib -L${DEVPKG}/OpenCV/bin" \
                         CFLAGS=-O3 \
                         CXXFLAGS=-O3 \
