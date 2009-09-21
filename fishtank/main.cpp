@@ -163,7 +163,7 @@ static void ParseOptions(int argc, char** argv, std::istream& config_file, boost
 	      _("Enable or disable the fog."))
 	    ("fps", po::value<unsigned int>()->default_value(fps.targetRate()),
 	      _("Set the target framerate, the program will not exceed a rendering rate of this amount in Hz."))
-	    ("io-threads", po::value<unsigned int>(&io_threads)->default_value(0),
+	    ("io-threads", po::value<unsigned int>(&io_threads)->default_value(io_threads),
 	      _("The amount of additional threads to use for handling I/O in. Additional to the single thread that the program already has."))
 	    ("window-size", po::value<Eigen::Vector2i>(),
 	      _("Dimensions to use for the window."))
