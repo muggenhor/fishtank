@@ -194,13 +194,13 @@ static void ParseOptions(int argc, char** argv, std::istream& config_file)
 
 	if (vm.count("help"))
 	{
-		cerr << visible;
+		cout << visible;
 		throw exit_exception(EXIT_FAILURE);
 	}
 
 	if (vm.count("version"))
 	{
-		cerr << "Fishtank - Version <UNSPECIFIED>\n"
+		cout << "Fishtank - Version <UNSPECIFIED>\n"
 		        "Created by Jasper Lammers and Dmytry Lavrov\n";
 		throw exit_exception(EXIT_FAILURE);
 	}
