@@ -722,10 +722,6 @@ int main(int argc, char** argv)
 		}
 		config.close();
 
-#ifdef CONFIGURE_LINE
-		debug(LOG_NEVER) << "fishtank was configured with " CONFIGURE_LINE;
-#endif
-
 		/* Prevents io_service's run() function from returning if no
 		 * jobs are available. Required to make sure the I/O threads
 		 * stay alive when there's little to do.
@@ -735,6 +731,10 @@ int main(int argc, char** argv)
 		// Fire off several worker threads.
 		boost::thread_group threads;
 		create_thread_pool(io_svc, threads, io_threads);
+
+#ifdef CONFIGURE_LINE
+		debug(LOG_NEVER) << "fishtank was configured with " CONFIGURE_LINE;
+#endif
 
 		glfwInit();
 		glfwOpenWindowHint(GLFW_FSAA_SAMPLES, multi_sample);
