@@ -44,16 +44,16 @@ const boost::array<std::string, LOG_LAST> DebugStream::debug_level_names =
 std::vector< boost::shared_ptr<std::ostream> > DebugStream::streams_registry;
 boost::mutex DebugStream::streams_mutex;
 
-static const string& getMessageFormatString()
+static const string& getMessagePrefixFormatString()
 {
 	using namespace boost::lambda;
 
 	/* Make field width for log-part field dynamic. I.e. tune it to be
 	 * large enough to fit all log-parts.
 	 */
-	static format formatGen("%%-%us (%%s): [%%s] %%s");
+	static format prefixGen("%%-%us (%%s): [%%s] ");
 
-	static string generatedFormat((formatGen
+	static string generatedPrefixFormat((prefixGen
 	  % max_element(
 	      DebugStream::debug_level_names.begin(),
 	      DebugStream::debug_level_names.end(),
@@ -62,7 +62,7 @@ static const string& getMessageFormatString()
 	  ).str()
 	);
 
-	return generatedFormat;
+	return generatedPrefixFormat;
 }
 
 static void validate(boost::any& v, const std::vector<std::string>& values, code_part*, int)
@@ -217,13 +217,35 @@ DebugStream::~DebugStream()
 			}
 		}
 
-		format formattedMessage(getMessageFormatString());
+		format prefix(getMessagePrefixFormatString());
 
-		formattedMessage % debug_level_names[_part] % _time % _function % message;
+		prefix % debug_level_names[_part] % _time % _function;
 
 		const boost::lock_guard<boost::mutex> lockStreams(streams_mutex);
 		foreach (const boost::shared_ptr<std::ostream>& stream, _streams)
-			*stream << formattedMessage << endl;
+		{
+			bool first = true;
+			*stream << prefix;
+
+			string prefix_space(prefix.size(), ' ');
+
+			string::size_type eol, last_eol = -1;
+			while ((eol = message.find('\n', last_eol + 1)) != string::npos)
+			{
+				if (!first)
+					*stream << prefix_space;
+				stream->write(message.data() + last_eol + 1, eol - last_eol);
+
+				first = false;
+				last_eol = eol;
+			}
+
+			if (!first)
+				*stream << prefix_space;
+			stream->write(message.data() + last_eol + 1, message.length() - last_eol - 1);
+
+			*stream << endl;
+		}
 	}
 }
 
