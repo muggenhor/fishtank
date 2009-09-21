@@ -6,11 +6,13 @@ noinst_LTLIBRARIES = libframework.la
 
 libframework_la_SOURCES = \
 	debug-net-out.cpp \
-	debug.cpp
+	debug.cpp \
+	threadpool.cpp
 
 noinst_HEADERS = \
 	debug-net-out.hpp \
-	debug.hpp
+	debug.hpp \
+	threadpool.hpp
 
 libframework_la_LIBADD = \
 	$(BOOST_PROGRAM_OPTIONS_LIBS) \
