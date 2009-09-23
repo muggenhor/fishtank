@@ -807,7 +807,7 @@ int main(int argc, char** argv)
 			fps.frameRateDelay();
 #ifdef DEBUG
 			if (fps.frameCount() % fps.targetRate() == 0)
-				debug(LOG_MAIN) << "Rendered frames: " << fps.frameCount() <<  "; in seconds: " << fps.countTime() << "; with average framerate: " << fps.avgFrameRate() << "; current measured framerate (inaccurate): " << fps.recentAvgFrameRate();
+				debug(LOG_MAIN) << fps.frameCount() <<  " frames in " << fps.countTime() << " seconds, average framerate: " << fps.avgFrameRate() << "; current framerate (inaccurate): " << fps.recentAvgFrameRate();
 #endif
 		}
 
