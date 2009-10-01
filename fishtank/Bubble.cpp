@@ -1,7 +1,7 @@
 #include "AquariumController.h"
 #include "Bubble.h"
 
-GLUquadric* TheQuadric()
+static GLUquadric* TheQuadric()
 {
 	static GLUquadric* result = NULL;
 	if (!result)
@@ -9,7 +9,7 @@ GLUquadric* TheQuadric()
 		result = gluNewQuadric();
 	}
 
- 	return result;
+	return result;
 }
 
 Bubble::Bubble(const Eigen::Vector3f& startpos, double size, bool wiggle) :
