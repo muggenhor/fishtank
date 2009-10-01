@@ -31,7 +31,7 @@ void Object::LoadProperties(const string& propertiesFile)
 	object_height = object_height + my_random() * n;
 
 	Eigen::Vector3f const diagonal(model->bb_h - model->bb_l);
-	radius = diagonal.norm();
+	radius = diagonal.norm() * 0.5f;
 
 	if(model){
 		scale = object_height / (model->bb_h.y() - model->bb_l.y());
