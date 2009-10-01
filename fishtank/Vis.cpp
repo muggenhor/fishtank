@@ -214,11 +214,48 @@ void Vis::LoadProperties(const string &propertiesFile)
 
 bool Vis::Colliding(const Eigen::Vector3f& object, float otherRadius)
 {
-	float distance = (object - pos).norm();
-	distance -= otherRadius;
-	distance -= radius;
+	Eigen::Vector3f const swimDirection(goalPos - pos),
+	                      objectDirection(object - pos);
+	float const swimDistance   = swimDirection.norm(),
+	            objectDistance = objectDirection.norm();
 
-	return (distance <= 0.);
+	if (objectDistance < (radius + otherRadius))
+	{
+		/*
+		 * We're using this theorem from the dot product, u and v are
+		 * vectors, T is the smallest angle between those vectors.
+		 *
+		 * u · v = |u| |v| cos T
+		 *
+		 * Thus:
+		 *           u · v
+		 * cos T = ---------
+		 *          |u| |v|
+		 *
+		 * Additionally, given that T is always the smallest angle,
+		 * thus T is always <= π. Also cos x / dx for 0 <= x <= π is
+		 * always <= 0. Thus for S,T in [0,π] S < T, S > T and S = T
+		 * imply cos S < cos T, cos S > T and cos S = T respectively.
+		 *
+		 * Thus while we cannot use cos T as T, we can use it to
+		 * compare the angle T with another angle S. Hence we don't
+		 * need to find T by obtaining arccos cos T, which we would be
+		 * quite computationally expensive.
+		 */
+		float const cos_angle = swimDirection.dot(objectDirection)
+		                      / (swimDistance * objectDistance);
+
+		/*
+		 * Only act on our collision if *this* is the object crashing
+		 * right into it, i.e. our angle with that object is less than
+		 * 90˚. If our angle is greater than 90˚ then we are in fact
+		 * already traveling away from the colliding object.
+		 */
+		if (cos_angle < M_PI_2)
+			return true;
+	}
+
+	return false;
 }
 
 bool Vis::IsGoingTowards(const Eigen::Vector3f& object)
