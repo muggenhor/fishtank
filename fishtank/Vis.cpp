@@ -249,9 +249,11 @@ bool Vis::Colliding(const Eigen::Vector3f& object, float otherRadius)
 		 * Only act on our collision if *this* is the object crashing
 		 * right into it, i.e. our angle with that object is less than
 		 * 90˚. If our angle is greater than 90˚ then we are in fact
-		 * already traveling away from the colliding object.
+		 * already traveling away from the colliding object. For angles
+		 * x from 0˚ to 90˚ cos(x) ranges from 1 to 0, i.e. remains
+		 * positive.
 		 */
-		if (cos_angle < M_PI_2)
+		if (cos_angle >= 0.f)
 			return true;
 	}
 
