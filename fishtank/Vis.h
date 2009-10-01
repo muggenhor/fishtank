@@ -50,7 +50,7 @@ class Vis
 		double wiggle_phase, wiggle_amplitude;
 
 		//de botsarea
-		int sphere;
+		float radius;
 		//de vloerhoogte, om ervoor te zorgen dat de vissen niet lager dan dit gaan zwemmen
 		int maxFloorHeight;
 
@@ -58,7 +58,7 @@ class Vis
 		//draag de vis op om een andere positie te pakken (iets te ontwijken)
 		void Avade();
 		//geeft true als de vis botst met een ander object, hier gegeven in een positie en een botsarea
-		bool Colliding(const Eigen::Vector3f& object, int sphere);
+		bool Colliding(const Eigen::Vector3f& object, float otherRadius);
 		//geeft true als de vis richting het gegeven punt aan het zwemmen is
 		bool IsGoingTowards(const Eigen::Vector3f& object);
 

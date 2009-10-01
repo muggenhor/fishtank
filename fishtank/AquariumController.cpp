@@ -121,7 +121,7 @@ void AquariumController::AvoidFishBounce()
 				continue;
 
 			//needs goalcheck in this if aswell
-			if (fish.Colliding(collidable.pos, collidable.sphere)
+			if (fish.Colliding(collidable.pos, collidable.radius)
 			 && fish.IsGoingTowards(collidable.pos))
 			{
 				//debug(LOG_NEVER) << "Fish-fish collision " << i << ":" << j;
@@ -133,7 +133,7 @@ void AquariumController::AvoidFishBounce()
 		{
 			//needs goalcheck in this if aswell
 			Eigen::Vector3f object_center(0.5f * (collidable.model->bb_h + collidable.model->bb_l));
-			if (fish.Colliding(object_center, collidable.sphere) && fish.IsGoingTowards(object_center))
+			if (fish.Colliding(object_center, collidable.radius) && fish.IsGoingTowards(object_center))
 			{
 				fish.Avade();
 			}

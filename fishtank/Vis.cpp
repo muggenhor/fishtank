@@ -98,6 +98,7 @@ Vis::Vis(boost::shared_ptr<Model> model, const std::string& propertiesFile, int 
 	usingTempGoal(false),
 	model(model),
 	scale(200),
+	radius(20),
 	maxFloorHeight(maxFloorHeight)
 {
 	try
@@ -150,8 +151,6 @@ Vis::Vis(boost::shared_ptr<Model> model, const std::string& propertiesFile, int 
 	/// need to set goal after we did load all the properties,
 	/// because setting of goal needs some of properties (min and max speed)
 	newGoal();
-
-	sphere = 20;
 }
 
 Eigen::Vector3f Vis::RandomPos() const
@@ -196,7 +195,7 @@ void Vis::LoadProperties(const string &propertiesFile)
 
 	//sphere
 	getline(input_file, s);
-	sphere = (model->bb_h - model->bb_l).norm() * scale * 0.5 + atoi(s.c_str());
+	radius = (model->bb_h - model->bb_l).norm() * scale * 0.5 + atoi(s.c_str());
 
 	//wiggle
 	getline(input_file, s);
@@ -213,12 +212,13 @@ void Vis::LoadProperties(const string &propertiesFile)
 	turn_acceleration = atof(s.c_str()) / 100;
 }
 
-bool Vis::Colliding(const Eigen::Vector3f& object, int otherSphere)
+bool Vis::Colliding(const Eigen::Vector3f& object, float otherRadius)
 {
-	double distance = (object - pos).norm();
-	distance -= otherSphere;
-	distance -= sphere;
-	return (distance < 0);
+	float distance = (object - pos).norm();
+	distance -= otherRadius;
+	distance -= radius;
+
+	return (distance <= 0.);
 }
 
 bool Vis::IsGoingTowards(const Eigen::Vector3f& object)

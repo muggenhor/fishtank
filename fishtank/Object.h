@@ -19,7 +19,7 @@ class Object
 
 		boost::shared_ptr<Model> model;
 		// Collision area
-		int sphere;
+		float radius;
 
 	private:
 		Eigen::Vector3d pos;
