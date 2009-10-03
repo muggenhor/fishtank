@@ -4,7 +4,7 @@
 #include <string>
 
 // FIXME: #includes from top level dir
-#include "../main.hpp"
+#include "../../main.hpp"
 #include "../../MS3D_ASCII.h"
 
 using namespace boost;
