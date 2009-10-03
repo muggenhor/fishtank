@@ -53,9 +53,9 @@ public:
 	void GoToScreen(const Eigen::Vector2d &position);
 
 	//voeg een vis toe in het aquarium
-	void AddFish(boost::shared_ptr<Model> model, const std::string& propertiesFile);
+	void AddFish(boost::shared_ptr<const Model> model, const std::string& propertiesFile);
 	//voeg een object toe in het aquarium
-	void AddObject(boost::shared_ptr<Model> model, const std::string& propertiesFile, const Eigen::Vector3d& position);
+	void AddObject(boost::shared_ptr<const Model> model, const std::string& propertiesFile, const Eigen::Vector3d& position);
 	//voeg een bubbel maker toe in het aquarium
 	void AddBubbleSpot(const Eigen::Vector3f& position);
 };

@@ -9,6 +9,7 @@
 #include "camera.hpp"
 #include <framework/debug.hpp>
 #include <framework/debug-net-out.hpp>
+#include <framework/resource.hpp>
 #include <framework/threadpool.hpp>
 #include "GL/GLee.h"
 #include <GL/glfw.h>
@@ -315,8 +316,6 @@ static void LoadModels(std::istream& input_file, AquariumController& aquariumCon
 		m(0, 3) =  0; m(1, 3) = 0; m(2, 3) = 0; m(3, 3) = 1;
 	}
 
-	map<string, boost::shared_ptr<Model> > models;
-
 	string s;
 
 	getline(input_file, s);
@@ -330,14 +329,6 @@ static void LoadModels(std::istream& input_file, AquariumController& aquariumCon
 	{
 		string model_name;
 		getline(input_file, model_name);
-		map<string, boost::shared_ptr<Model> >::iterator model_iterator = models.find(model_name);
-		//model bestaat niet
-		if(model_iterator==models.end())
-		{
-			boost::shared_ptr<Model> model(new Model);
-			model->loadFromMs3dAsciiFile((datadir + "/Vissen/Modellen/" + model_name + ".txt").c_str(), model_matrix);
-			models[model_name] = model;
-		}
 
 		string propertieFile;
 		getline(input_file, propertieFile);
@@ -346,7 +337,8 @@ static void LoadModels(std::istream& input_file, AquariumController& aquariumCon
 		int m=atoi(s.c_str());
 		for (int j = 0; j < m; j++)
 		{
-			aquariumController.AddFish(models[model_name], propertieFile);
+			aquariumController.AddFish(loadModel("Vissen/Modellen", model_name, model_matrix),
+			                           propertieFile);
 		}
 	}
 
@@ -357,14 +349,6 @@ static void LoadModels(std::istream& input_file, AquariumController& aquariumCon
 	{
 		string model_name;
 		getline(input_file, model_name);
-		map<string, boost::shared_ptr<Model> >::iterator model_iterator = models.find(model_name);
-		//model bestaat niet
-		if(model_iterator==models.end())
-		{
-			boost::shared_ptr<Model> model(new Model);
-			model->loadFromMs3dAsciiFile((datadir + "/Objecten/Modellen/" + model_name + ".txt").c_str(), model_matrix);
-			models[model_name] = model;
-		}
 
 		string propertieFile;
 		getline(input_file, propertieFile);
@@ -375,7 +359,8 @@ static void LoadModels(std::istream& input_file, AquariumController& aquariumCon
 		int z = -(aquariumSize.z() / 2) + atoi(s.c_str());
 		int groundposx = (x + (aquariumSize.x() / 2)) / aquariumSize.x() * (aquariumController.ground.width());
 		int groundposy = (z + (aquariumSize.z() / 2)) / aquariumSize.z() * (aquariumController.ground.depth());
-		aquariumController.AddObject(models[model_name], propertieFile, Eigen::Vector3d(x, aquariumController.ground.HeightAt(groundposx, groundposy), z));
+		aquariumController.AddObject(loadModel("Objecten/Modellen", model_name, model_matrix),
+		                             propertieFile, Eigen::Vector3d(x, aquariumController.ground.HeightAt(groundposx, groundposy), z));
 	}
 
 	getline(input_file, s);

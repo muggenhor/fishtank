@@ -10,7 +10,7 @@
 
 using namespace std;
 
-Object::Object(boost::shared_ptr<Model> model, const std::string& propertiesFile, const Eigen::Vector3d& position) :
+Object::Object(boost::shared_ptr<const Model> model, const std::string& propertiesFile, const Eigen::Vector3d& position) :
 	model(model),
 	pos(position)
 {

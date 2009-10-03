@@ -7,11 +7,13 @@ noinst_LTLIBRARIES = libframework.la
 libframework_la_SOURCES = \
 	debug-net-out.cpp \
 	debug.cpp \
+	resource.cpp \
 	threadpool.cpp
 
 noinst_HEADERS = \
 	debug-net-out.hpp \
 	debug.hpp \
+	resource.hpp \
 	threadpool.hpp
 
 libframework_la_LIBADD = \

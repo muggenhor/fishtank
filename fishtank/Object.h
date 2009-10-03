@@ -9,7 +9,7 @@
 class Object
 {
 	public:
-		Object(boost::shared_ptr<Model> model, const std::string& propertiesFile, const Eigen::Vector3d& position);
+		Object(boost::shared_ptr<const Model> model, const std::string& propertiesFile, const Eigen::Vector3d& position);
 		//haalt info uit de file, gegeven als path
 		void LoadProperties(const std::string &propertiesFile);
 		//update voor de wiggle
@@ -18,7 +18,7 @@ class Object
 		void Draw() const;
 		void DrawCollisionSphere() const;
 
-		boost::shared_ptr<Model> model;
+		boost::shared_ptr<const Model> model;
 		// Collision area
 		float radius;
 
