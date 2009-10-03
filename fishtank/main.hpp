@@ -24,5 +24,6 @@ class exit_exception
 extern std::string datadir;
 
 extern bool use_vbos;
+extern bool drawCollisionSpheres;
 
 #endif // __INCLUDED_MAIN_HPP__

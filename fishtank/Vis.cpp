@@ -15,6 +15,9 @@ using namespace std;
 
 boost::shared_ptr<WiggleTransformation> Vis::_wiggle;
 
+const Eigen::Vector4f Vis::uncollided_colour(1.f, 1.f, 1.f, .5f);
+const Eigen::Vector4f Vis::collision_colour (1.f, 0.f, 0.f, .5f);
+
 void TestDrawAquarium()
 {
 #if 0
@@ -99,7 +102,8 @@ Vis::Vis(boost::shared_ptr<Model> model, const std::string& propertiesFile, int 
 	model(model),
 	scale(200),
 	radius(20),
-	maxFloorHeight(maxFloorHeight)
+	maxFloorHeight(maxFloorHeight),
+	collided(0.f)
 {
 	try
 	{
@@ -254,7 +258,10 @@ bool Vis::Colliding(const Eigen::Vector3f& object, float otherRadius)
 		 * positive.
 		 */
 		if (cos_angle >= 0.f)
+		{
+			collided = 1.f;
 			return true;
+		}
 	}
 
 	return false;
@@ -263,6 +270,17 @@ bool Vis::Colliding(const Eigen::Vector3f& object, float otherRadius)
 bool Vis::IsGoingTowards(const Eigen::Vector3f& object)
 {
 	return (goalPos - pos).dot(object - pos) > 0;
+}
+
+static GLUquadric* TheQuadric()
+{
+	static GLUquadric* result = NULL;
+	if (!result)
+	{
+		result = gluNewQuadric();
+	}
+
+	return result;
 }
 
 void Vis::Draw() const
@@ -310,6 +328,48 @@ void Vis::Draw() const
 		}
 
 		glPopMatrix();
+	}
+}
+
+void Vis::DrawCollisionSphere() const
+{
+	if (!model)
+		return;
+
+	glPushMatrix();
+	glTranslatef(pos.x(), pos.y(), pos.z());
+	glRotatef(-swimDirAngle * 180. / M_PI, 0,1,0);
+
+	glRotatef(pitch * 180. / M_PI, 0,0,1);
+
+	glEnable(GL_NORMALIZE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	/*
+	 * Interpolate from uncollided_colour to collision_colour using
+	 * collided, which ranges from 0 to 1.
+	 *
+	 * Use this equation, for linear interpolation between two
+	 * vectors, w is the interpolated vector, u and v are the
+	 * vectors to interpolate between according to the
+	 * interpolation factor f which ranges from 0 (w=u) to 1 (w=1):
+	 *
+	 *   w = u - f(u - v)
+	 */
+	Eigen::Vector4f colour(uncollided_colour - collided * (uncollided_colour - collision_colour));
+	glColor4fv(colour.data());
+	gluSphere(TheQuadric(), radius, 21, 21);
+
+	glColor3f(1.f, 1.f, 1.f);
+	glDisable(GL_BLEND);
+	glPopMatrix();
+
+	if (collided >= 0.f)
+	{
+		collided -= 1.f / 30.f;
+		if (collided < 0.f)
+			collided = 0.f;
 	}
 }
 

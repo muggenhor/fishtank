@@ -68,6 +68,7 @@ class Vis
 		void Update(double dt);
 		//teken de vis
 		void Draw() const;
+		void DrawCollisionSphere() const;
 		//haalt info uit de file, gegeven als path
 		void LoadProperties(const std::string &propertiesFile);
 		//positiebeheer
@@ -76,7 +77,9 @@ class Vis
 		void setTemporaryGoal(const Eigen::Vector3f& temp_goal);/// use that to set temporary goal when avoiding collision or something.
 
 	private:
+		mutable float collided;
 		static boost::shared_ptr<WiggleTransformation> _wiggle;
+		static const Eigen::Vector4f uncollided_colour, collision_colour;
 };
 
 //teken het aquarium, gebruikmakende van witte lijnen

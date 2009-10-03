@@ -153,7 +153,14 @@ void AquariumController::Draw()
 		fish.Draw();
 	foreach (const Object& object, objects)
 		object.Draw();
-	// Draw bubbles as last to get proper alpha blending
+	// Draw transparent objects last to get proper alpha blending
 	foreach (const Bubble& bubble, bubbles)
 		bubble.Draw();
+	if (drawCollisionSpheres)
+	{
+		foreach (const Object& object, objects)
+			object.DrawCollisionSphere();
+		foreach (const Vis& fish, fishes)
+			fish.DrawCollisionSphere();
+	}
 }

@@ -68,6 +68,7 @@ static const char* sysconfdirs[] =
 std::string datadir;
 
 bool use_vbos = true;
+bool drawCollisionSpheres = false;
 static bool enable_fog = true;
 
 /* The amount of additional samples per pixel to generate. Higher amounts will
@@ -159,6 +160,8 @@ static void ParseOptions(int argc, char** argv, std::istream& config_file, boost
 	      _("The camera number to use (-1 uses the first available camera)."))
 	    ("camera-resolution", po::value<Eigen::Vector2i>(&cameraResolution)->default_value(cameraResolution),
 	      _("The resolution to use for the camera."))
+	    ("draw-collision-spheres", po::value<bool>(&drawCollisionSpheres)->default_value(drawCollisionSpheres),
+	      _("Draw the spheres used to perform collision detection with"))
 	    ("fog", po::value<bool>(&enable_fog)->default_value(enable_fog),
 	      _("Enable or disable the fog."))
 	    ("fps", po::value<unsigned int>()->default_value(fps.targetRate()),

@@ -16,6 +16,7 @@ class Object
 		void Update(double dt);
 		//teken het object
 		void Draw() const;
+		void DrawCollisionSphere() const;
 
 		boost::shared_ptr<Model> model;
 		// Collision area

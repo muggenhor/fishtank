@@ -41,6 +41,17 @@ void Object::LoadProperties(const string& propertiesFile)
 	}
 }
 
+static GLUquadric* TheQuadric()
+{
+	static GLUquadric* result = NULL;
+	if (!result)
+	{
+		result = gluNewQuadric();
+	}
+
+	return result;
+}
+
 void Object::Draw() const
 {
 	glPushMatrix();
@@ -51,6 +62,23 @@ void Object::Draw() const
 
 	model->render();
 
+	glPopMatrix();
+}
+
+void Object::DrawCollisionSphere() const
+{
+	glPushMatrix();
+	glTranslatef(pos.x(), pos.y(), pos.z());
+
+	glEnable(GL_NORMALIZE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glColor4f(1.f, 1.f, 1.f, .5f);
+	gluSphere(TheQuadric(), radius, 21, 21);
+
+	glColor4f(1.f, 1.f, 1.f, 1.f);
+	glDisable(GL_BLEND);
 	glPopMatrix();
 }
 
