@@ -197,9 +197,10 @@ void Vis::LoadProperties(const string &propertiesFile)
 	getline(input_file, s);
 	max_speed = atof(s.c_str());
 
-	//sphere
+	//sphere - input parameter ignored
 	getline(input_file, s);
-	radius = (model->bb_h - model->bb_l).norm() * scale * 0.5 + atoi(s.c_str());
+	Eigen::Vector3f const diagonal(model->bb_h - model->bb_l);
+	radius = diagonal.norm() * scale * 0.5f;
 
 	//wiggle
 	getline(input_file, s);
