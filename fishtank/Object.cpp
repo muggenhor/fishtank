@@ -4,6 +4,7 @@
 #include <cmath>
 #include <ctime>
 #include <framework/debug.hpp>
+#include <framework/resource.hpp>
 #include <fstream>
 #include "main.hpp"
 #include <string>
@@ -41,17 +42,6 @@ void Object::LoadProperties(const string& propertiesFile)
 	}
 }
 
-static GLUquadric* TheQuadric()
-{
-	static GLUquadric* result = NULL;
-	if (!result)
-	{
-		result = gluNewQuadric();
-	}
-
-	return result;
-}
-
 void Object::Draw() const
 {
 	glPushMatrix();
@@ -67,15 +57,19 @@ void Object::Draw() const
 
 void Object::DrawCollisionSphere() const
 {
+	if (!collisionModel)
+		collisionModel = loadModel("", "icosphere-4");
+
 	glPushMatrix();
 	glTranslatef(pos.x(), pos.y(), pos.z());
+	glScalef(radius, radius, radius);
 
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glColor4f(1.f, 1.f, 1.f, .5f);
-	gluSphere(TheQuadric(), radius, 21, 21);
+	collisionModel->render();
 
 	glColor4f(1.f, 1.f, 1.f, 1.f);
 	glDisable(GL_BLEND);

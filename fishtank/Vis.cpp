@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <framework/debug.hpp>
+#include <framework/resource.hpp>
 #include <fstream>
 #include "glexcept.hpp"
 #include <iostream>
@@ -273,17 +274,6 @@ bool Vis::IsGoingTowards(const Eigen::Vector3f& object)
 	return (goalPos - pos).dot(object - pos) > 0;
 }
 
-static GLUquadric* TheQuadric()
-{
-	static GLUquadric* result = NULL;
-	if (!result)
-	{
-		result = gluNewQuadric();
-	}
-
-	return result;
-}
-
 void Vis::Draw() const
 {
 	if(model)
@@ -337,11 +327,12 @@ void Vis::DrawCollisionSphere() const
 	if (!model)
 		return;
 
+	if (!collisionModel)
+		collisionModel = loadModel("", "icosphere-4");
+
 	glPushMatrix();
 	glTranslatef(pos.x(), pos.y(), pos.z());
-	glRotatef(-swimDirAngle * 180. / M_PI, 0,1,0);
-
-	glRotatef(pitch * 180. / M_PI, 0,0,1);
+	glScalef(radius, radius, radius);
 
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_BLEND);
@@ -360,7 +351,7 @@ void Vis::DrawCollisionSphere() const
 	 */
 	Eigen::Vector4f colour(uncollided_colour - collided * (uncollided_colour - collision_colour));
 	glColor4fv(colour.data());
-	gluSphere(TheQuadric(), radius, 21, 21);
+	collisionModel->render();
 
 	glColor3f(1.f, 1.f, 1.f);
 	glDisable(GL_BLEND);

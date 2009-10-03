@@ -72,7 +72,7 @@ void AquariumController::Update(double dt)
 	{
 		if (my_random() < dt * 9.5)
 		{
-			bubbles.push_back(Bubble(bubbleSpot, 1 + my_random() * 2, (my_random() < dt * 2)));
+			bubbles.push_back(Bubble(bubbleSpot, 1.f + my_random(), (my_random() < dt * 2)));
 		}
 	}
 	//update de bubbels en kijk of ze weggegooit mogen worden

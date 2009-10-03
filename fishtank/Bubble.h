@@ -8,7 +8,7 @@ class Bubble
 {
 	private:
 		//de grootte van de bubbel
-		double size;
+		float radius;
 		//een random tussen 0 en 100 die er voor zorgt dat de sinusen random lijken
 		double wiggleStartX, wiggleStartZ;
 		//het type beweging dat de bubbel maakt, true is een sinus, false een exponentiele beweging omhoog
@@ -17,7 +17,7 @@ class Bubble
 		Eigen::Vector3f velocity;
 
 	public:
-		Bubble(const Eigen::Vector3f& startpos, double size, bool wiggle);
+		Bubble(const Eigen::Vector3f& startpos, float radius, bool wiggle);
 
 		//de huidige positie van de bubbel
 		Eigen::Vector3f pos;
@@ -28,6 +28,9 @@ class Bubble
 		void Update(double dt);
 		//deze funtie tekend de bubbel
 		void Draw() const;
+
+	private:
+		boost::shared_ptr<const Model> model;
 };
 
 #endif // __INCLUDED_BUBBLE_H__

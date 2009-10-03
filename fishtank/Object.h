@@ -2,6 +2,7 @@
 #define __INCLUDED_OBJECT_H__
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 #include <Eigen/Core>
 #include "MS3D_ASCII.h"
 
@@ -27,6 +28,8 @@ class Object
 
 		//de hoogte
 		double scale;
+
+		mutable boost::shared_ptr<const Model> collisionModel;
 };
 
 #endif // __INCLUDED_OBJECT_H__

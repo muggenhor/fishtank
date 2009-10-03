@@ -2,6 +2,7 @@
 #define __INCLUDED_VIS_H__
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 #include <Eigen/Core>
 #include "wiggle.hpp"
 
@@ -78,6 +79,7 @@ class Vis
 
 	private:
 		mutable float collided;
+		mutable boost::shared_ptr<const Model> collisionModel;
 		static boost::shared_ptr<WiggleTransformation> _wiggle;
 		static const Eigen::Vector4f uncollided_colour, collision_colour;
 };
