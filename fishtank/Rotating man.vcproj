@@ -232,10 +232,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\imagereceiver.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\main.cpp"
 				>
 			</File>
@@ -315,10 +311,6 @@
 			</File>
 			<File
 				RelativePath=".\image.hpp"
-				>
-			</File>
-			<File
-				RelativePath=".\imagereceiver.h"
 				>
 			</File>
 			<File

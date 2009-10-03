@@ -25,7 +25,6 @@ fishtank_SOURCES = \
 	framerate.cpp \
 	glexcept.cpp \
 	Ground.cpp \
-	imagereceiver.cpp \
 	main.cpp \
 	MS3D_ASCII.cpp \
 	Object.cpp \
@@ -43,7 +42,6 @@ noinst_HEADERS = \
 	glexcept.hpp \
 	Ground.h \
 	image.hpp \
-	imagereceiver.h \
 	main.hpp \
 	math-helpers.hpp \
 	MS3D_ASCII.h \

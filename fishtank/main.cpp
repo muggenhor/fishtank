@@ -33,7 +33,6 @@
 #include <vector>
 #include <map>
 
-#include "imagereceiver.h"
 #include "glexcept.hpp"
 
 #ifdef HAVE_CONFIG_H
@@ -379,12 +378,6 @@ static void LoadModels(std::istream& input_file, AquariumController& aquariumCon
 static boost::shared_ptr<Camera> webcam;
 static boost::weak_ptr<Texture> webcam_texture;
 
-static boost::shared_ptr<ImageReceiver> image_receiver;
-static boost::shared_ptr<ImageReceiver> image_receiver2;
-
-static boost::shared_ptr<PositionReceiver> position_receiver;
-static boost::shared_ptr<PositionReceiver> faceposition_receiver;
-
 enum CAMERA
 {
 	LEFT_CAMERA,
@@ -413,14 +406,10 @@ static void DrawBackground(CAMERA camera)
 				webcam->update_texture(*_webcam_texture);
 				_webcam_texture->bind();
 			}
-			else
-			{
-				glBindTexture(GL_TEXTURE_2D, image_receiver->TextureID());
-			}
 			break;
 
 		case RIGHT_CAMERA:
-			glBindTexture(GL_TEXTURE_2D, image_receiver2->TextureID());
+			glBindTexture(GL_TEXTURE_2D, 0);
 			break;
 	}
 
@@ -622,12 +611,6 @@ static void update_and_render_simulation(AquariumController& aquariumController,
 {
 	aquariumController.Update(dt);
 
-	image_receiver->Update();
-	image_receiver2->Update();
-
-	position_receiver->Update(aquariumController);
-	faceposition_receiver->Update(aquariumController);
-
 	glfwGetWindowSize(&win_width,&win_height);/// get window size
 	const unsigned int port1_width = win_width * 2. / 3.;
 	const unsigned int port2_width = win_width * 1. / 3.;
@@ -780,11 +763,6 @@ int main(int argc, char** argv)
 			glDisable(GL_FOG);
 
 		fps.reset();
-
-		image_receiver.reset(new ImageReceiver(7778));
-		image_receiver2.reset(new ImageReceiver(7779));
-		position_receiver.reset(new PositionReceiver(0, 7780));
-		faceposition_receiver.reset(new PositionReceiver(1, 7781));
 
 		for (double curTime = glfwGetTime(), oldTime = curTime; glfwGetWindowParam(GLFW_OPENED); oldTime = curTime, curTime = glfwGetTime())
 		{
