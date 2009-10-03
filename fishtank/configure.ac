@@ -144,6 +144,7 @@ AC_SUBST([FT_CPPFLAGS])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES([Makefile
                  Data/Makefile
+                 Data/caustics/Makefile
                  Data/Objecten/Makefile
                  Data/Vissen/Makefile
                  GL/Makefile

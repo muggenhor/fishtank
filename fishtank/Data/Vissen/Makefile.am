@@ -1,36 +1,37 @@
 fishdir = $(pkgdatadir)/Vissen
 nobase_dist_fish_DATA = \
-	Angel.oif \
-	Modellen/Angel.txt \
 	Modellen/AngelTex.jpg \
-	Modellen/BlueTaT.jpg \
+	Modellen/Angel.txt \
 	Modellen/BlueTang0.txt \
-	Modellen/GuppyBT.jpg \
-	Modellen/GuppyBlueGrass.txt \
-	Modellen/Kumanomi.jpg \
-	Modellen/NeonTeT.jpg \
-	Modellen/Rantyu.txt \
-	Modellen/Rantyu0.txt \
-	Modellen/RantyuT.jpg \
-	Modellen/RantyuTe.jpg \
-	Modellen/RedBetta.jpg \
-	Modellen/RedBetta.txt \
-	Modellen/RyugunT.jpg \
-	Modellen/RyugunoTukai0.txt \
-	Modellen/TurquoT.jpg \
+	Modellen/BlueTaT.jpg \
+	Modellen/clownfish.txt \
+	Modellen/clownvis.jpg \
 	Modellen/fence_uw.jpg \
+	Modellen/GuppyBlueGrass.txt \
+	Modellen/GuppyBT.jpg \
+	Modellen/haai.jpg \
+	Modellen/haai.txt \
+	Modellen/Kumanomi.jpg \
 	Modellen/kumanomi.txt \
-	Modellen/main.jpg \
-	Modellen/main_uwv.jpg \
+	Modellen/main_uvw.jpg \
 	Modellen/motor_uv.jpg \
+	Modellen/NeonTeT.jpg \
 	Modellen/neonTeT.txt \
 	Modellen/pipes_uv.jpg \
-	Modellen/sidepane.jpg \
+	Modellen/Rantyu0.txt \
+	Modellen/RantyuTe.jpg \
+	Modellen/RantyuT.jpg \
+	Modellen/Rantyu.txt \
+	Modellen/RedBetta.jpg \
+	Modellen/RedBetta.txt \
+	Modellen/RyugunoTukai0.txt \
+	Modellen/RyugunT.jpg \
+	Modellen/TurquoT.jpg \
 	Modellen/vis2.txt \
-	Modellen/windows_.jpg \
 	Modellen/yellow_submarine.txt \
-	YellowSubmarine.oif \
+	Angel.oif \
 	bluetang.oif \
+	clownfish.oif \
 	guppieBT.oif \
 	haai.oif \
 	kumanomi.oif \
@@ -40,4 +41,4 @@ nobase_dist_fish_DATA = \
 	testvisadhd.oif \
 	vis2.oif \
 	vis3.oif \
-	yellow_submarine.oif
+	YellowSubmarine.oif
