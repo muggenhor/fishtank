@@ -9,7 +9,7 @@ using namespace std;
 
 Object::Object(boost::shared_ptr<const Model> model, const Eigen::Vector3f& pos) :
 	model(model),
-	collisionRadius((model->bb_h - model->bb_l).norm() * .5f),
+	collisionRadius(this, (model->bb_h - model->bb_l).norm() * .5f),
 	pos(this, pos),
 	scale(this, 1.f)
 {
@@ -43,8 +43,7 @@ void Object::doDrawCollisionSphere(const Eigen::Vector4f& colour) const
 
 	glPushMatrix();
 
-	glMultMatrixf(renderTransformation.data());
-	glScalef(collisionRadius, collisionRadius, collisionRadius);
+	glMultMatrixf(collisionModelTransformation.data());
 
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_BLEND);
@@ -60,16 +59,24 @@ void Object::doDrawCollisionSphere(const Eigen::Vector4f& colour) const
 
 void Object::updateRenderTransformation()
 {
-	if (!drawCollisionSpheres)
-		return;
-
-	// Recreate the transformation matrix for the collision model if necessary
+	// Recreate the transformation matrix for the model if necessary
 	const float s = scale;
 	renderTransformation <<
 		s, 0, 0, pos.x(),
 		0, s, 0, pos.y(),
 		0, 0, s, pos.z(),
 		0, 0, 0, 1;
+
+	if (!drawCollisionSpheres)
+		return;
+
+	// collisionModelTransformation is renderTransformation matrix scaled by collisionRadius
+	const float r = collisionRadius;
+	collisionModelTransformation = renderTransformation * (Eigen::Matrix4f() <<
+		r, 0, 0, 0,
+		0, r, 0, 0,
+		0, 0, r, 0,
+		0, 0, 0, 1).finished();
 }
 
 bool Object::collidingWith(const Object& object) const

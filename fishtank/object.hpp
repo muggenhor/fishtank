@@ -41,7 +41,7 @@ class Object
 		/**
 		 * Collision radius.
 		 */
-		float collisionRadius;
+		ScalarProperty<float, Object, &Object::setRenderVar> collisionRadius;
 
 		/**
 		 * Position of this @c Object in space.
@@ -56,7 +56,7 @@ class Object
 	private:
 		// Cached data used for rendering
 		mutable boost::shared_ptr<const Model> collisionModel;
-		mutable Eigen::Matrix4f renderTransformation;
+		mutable Eigen::Matrix4f renderTransformation, collisionModelTransformation;
 };
 
 #endif // __INCLUDED_OBJECT_HPP__
