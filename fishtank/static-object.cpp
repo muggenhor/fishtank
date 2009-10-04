@@ -36,16 +36,3 @@ void StaticObject::LoadProperties(const string& propertiesFile)
 		debug(LOG_ERROR) << "Trying to load properties for object that has no model, cant determine scaling";
 	}
 }
-
-void StaticObject::draw() const
-{
-	glPushMatrix();
-	glTranslatef(pos.x(), pos.y(), pos.z());
-
-	glScalef(scale, scale, scale);
-	glEnable(GL_NORMALIZE);
-
-	model->render();
-
-	glPopMatrix();
-}

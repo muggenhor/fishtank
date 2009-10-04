@@ -13,7 +13,7 @@ class Object
 		Object(boost::shared_ptr<const Model> model, const Eigen::Vector3f& pos = Eigen::Vector3f::Zero());
 		virtual ~Object() {}
 
-		virtual void draw() const = 0;
+		virtual void draw() const;
 		virtual void drawCollisionSphere() const;
 
 		virtual bool collidingWith(const Object& object) const;
@@ -24,13 +24,13 @@ class Object
 
 	private:
 		template <typename T>
-		const T& setCollisionVar(T& var, const T& newVal)
+		const T& setRenderVar(T& var, const T& newVal)
 		{
 			var = newVal;
-			updateCollisionModelTransformation();
+			updateRenderTransformation();
 			return var;
 		}
-		void updateCollisionModelTransformation();
+		void updateRenderTransformation();
 
 	public:
 		/**
@@ -41,32 +41,22 @@ class Object
 		/**
 		 * Collision radius.
 		 */
-		ScalarProperty<float, Object, &Object::setCollisionVar> collisionRadius;
+		float collisionRadius;
 
 		/**
 		 * Position of this @c Object in space.
 		 */
-		Property<Eigen::Vector3f, Object, &Object::setCollisionVar> pos;
+		Property<Eigen::Vector3f, Object, &Object::setRenderVar> pos;
 
 		/**
 		 * Scale factor to apply to the model.
 		 */
-		ScalarProperty<float, Object, &Object::setCollisionVar> scale;
+		ScalarProperty<float, Object, &Object::setRenderVar> scale;
 
 	private:
-		// Cached data used for rendering the collision model
+		// Cached data used for rendering
 		mutable boost::shared_ptr<const Model> collisionModel;
-		mutable Eigen::Matrix4f collisionModelTransformation;
-};
-
-//een object in een aquarium (plantje, steen of iets dergelijks)
-class StaticObject : public Object
-{
-	public:
-		StaticObject(boost::shared_ptr<const Model> model, const std::string& propertiesFile, const Eigen::Vector3f& position);
-
-		void LoadProperties(const std::string &propertiesFile);
-		virtual void draw() const;
+		mutable Eigen::Matrix4f renderTransformation;
 };
 
 #endif // __INCLUDED_OBJECT_HPP__

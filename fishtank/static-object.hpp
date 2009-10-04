@@ -16,7 +16,6 @@ class StaticObject : public Object
 		StaticObject(boost::shared_ptr<const Model> model, const std::string& propertiesFile, const Eigen::Vector3f& position);
 
 		void LoadProperties(const std::string &propertiesFile);
-		virtual void draw() const;
 };
 
 #endif // __INCLUDED_STATIC_OBJECT_HPP__

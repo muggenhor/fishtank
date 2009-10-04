@@ -9,10 +9,22 @@ using namespace std;
 
 Object::Object(boost::shared_ptr<const Model> model, const Eigen::Vector3f& pos) :
 	model(model),
-	collisionRadius(this, (model->bb_h - model->bb_l).norm() * .5f),
+	collisionRadius((model->bb_h - model->bb_l).norm() * .5f),
 	pos(this, pos),
 	scale(this, 1.f)
 {
+}
+
+void Object::draw() const
+{
+	glPushMatrix();
+	glMultMatrixf(renderTransformation.data());
+
+	glEnable(GL_NORMALIZE);
+
+	model->render();
+
+	glPopMatrix();
 }
 
 void Object::drawCollisionSphere() const
@@ -31,7 +43,8 @@ void Object::doDrawCollisionSphere(const Eigen::Vector4f& colour) const
 
 	glPushMatrix();
 
-	glMultMatrixf(collisionModelTransformation.data());
+	glMultMatrixf(renderTransformation.data());
+	glScalef(collisionRadius, collisionRadius, collisionRadius);
 
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_BLEND);
@@ -45,17 +58,17 @@ void Object::doDrawCollisionSphere(const Eigen::Vector4f& colour) const
 	glPopMatrix();
 }
 
-void Object::updateCollisionModelTransformation()
+void Object::updateRenderTransformation()
 {
 	if (!drawCollisionSpheres)
 		return;
 
 	// Recreate the transformation matrix for the collision model if necessary
-	const float r = collisionRadius * scale;
-	collisionModelTransformation << 
-		r, 0, 0, pos.x(),
-		0, r, 0, pos.y(),
-		0, 0, r, pos.z(),
+	const float s = scale;
+	renderTransformation <<
+		s, 0, 0, pos.x(),
+		0, s, 0, pos.y(),
+		0, 0, s, pos.z(),
 		0, 0, 0, 1;
 }
 
