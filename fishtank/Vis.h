@@ -30,8 +30,9 @@ class Vis : public Object
 		double max_speed;
 		double min_speed;
 
-		//graden per seconde
+		/// radians per second
 		double max_turn_speed;
+		/// radians per second per second
 		double turn_acceleration;
 
 		//groter, meer vibratie

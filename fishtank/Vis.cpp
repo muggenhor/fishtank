@@ -36,7 +36,23 @@ const double bending_factor=0.75;/// larger = fish has to bend more to move. (no
 
 Vis::Vis(boost::shared_ptr<const Model> model, const std::string& propertiesFile, int maxFloorHeight) :
 	Object(model),
+	finalGoalPos(0.f, 0.f, 0.f),
+	velocity(0.f, 0.f, 0.f),
 	usingTempGoal(false),
+	swimDirAngle(0.),
+	speed(0.),
+	turn_speed(0.),
+	bending(0.),
+	pitch(0.),
+	max_speed(20.),
+	min_speed(15.),
+	max_turn_speed(2.), /// radians per second
+	turn_acceleration(.5), /// radians per second per second
+	wiggle_factor(2.), /// amount of wiggle displacement (controls amplitude vs speed), larger, fish bends more for wiggling
+	wiggle_freq(.15), ///larger = means more wiggle waves on fish.
+	myWaitTime(20. + 20. * my_random()),
+	wiggle_phase(0.),
+	wiggle_amplitude(0.),
 	maxFloorHeight(maxFloorHeight),
 	collided(0.f)
 {
@@ -58,35 +74,10 @@ Vis::Vis(boost::shared_ptr<const Model> model, const std::string& propertiesFile
 		                 << e.infoLog();
 	}
 
-	pos = RandomPos();
-	finalGoalPos = Eigen::Vector3f(0., 0., 0.);
-	velocity=Eigen::Vector3f(0., 0., 0.);
-	speed=0;
-	turn_speed=0;
-	bending=0;
-	pitch=0;
-
-	//goalPos = RandomPos();
 	//desired_speed=min_speed+my_random()*(max_speed-min_speed);
 
-
-
-	swimDirAngle=0;
-	wiggle_phase=0;
-	wiggle_amplitude=0;
-	myWaitTime = 20+20*my_random();
-
-	//just in case
-	max_speed = 20.0;
-	min_speed = 15.0;
-
-	max_turn_speed = 2.0;///radians per second
-	turn_acceleration = 0.5;///radians per second per second
-
-	wiggle_factor=2;/// amount of wiggle displacement (controls amplitude vs speed), larger, fish bends more for wiggling
-	wiggle_freq=0.15;///larger = means more wiggle waves on fish.
-
 	LoadProperties(propertiesFile);
+	pos = RandomPos(); // RandomPos depends on scale, which is updated by LoadProperties
 
 	/// need to set goal after we did load all the properties,
 	/// because setting of goal needs some of properties (min and max speed)
@@ -95,12 +86,11 @@ Vis::Vis(boost::shared_ptr<const Model> model, const std::string& propertiesFile
 
 Eigen::Vector3f Vis::RandomPos() const
 {
-	Eigen::Vector3f result;
-	result.x() = (my_random() - 0.5) * swimArea.x();
-	int noswim = maxFloorHeight - model->bb_l.y() * scale;
-	result.y() = (my_random() - 0.5) * (swimArea.y() - noswim) + (noswim / 2);
-	result.z() = (my_random() - 0.5) * swimArea.z();
-	return result;
+	float noswim = maxFloorHeight - model->bb_l.y() * scale;
+
+	return Eigen::Vector3f((my_random() - .5) *  swimArea.x(),
+	                       (my_random() - .5) * (swimArea.y() - noswim) + (noswim / 2.f),
+	                       (my_random() - .5) *  swimArea.z());
 }
 
 void Vis::LoadProperties(const string &propertiesFile)
@@ -426,7 +416,8 @@ void Vis::update(double dt)
 	wiggle_amplitude=wiggle_factor-wiggle_factor/(speed+1.0);
 
 	/// magische constante
-	wiggle_phase+=wiggle_freq*dt*speed*wiggle_speed_factor;
+	wiggle_phase = fmod(wiggle_phase + wiggle_freq * dt * speed * wiggle_speed_factor,
+	  2. * M_PI);
 
 	//buigen
 	//buig radius is snelheid / buig snelheid
@@ -444,16 +435,10 @@ void Vis::update(double dt)
 
 	/// stabielheid dingen:
 
-	//even zorgen dat de wiggle_phase niet te hoog wordt
-	if(wiggle_phase > 2 * M_PI)
-	{
-		wiggle_phase -= 2 * M_PI;
-	}
-
 	myWaitTime -= dt;
-	if (myWaitTime < 0)
+	if (myWaitTime <= 0.)
 	{
-		myWaitTime = ((int)20+20*my_random());
+		myWaitTime = (20. + 20. * my_random());
 		newGoal();
 	}
 }
