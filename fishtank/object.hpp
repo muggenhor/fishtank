@@ -1,5 +1,5 @@
-#ifndef __INCLUDED_OBJECT_H__
-#define __INCLUDED_OBJECT_H__
+#ifndef __INCLUDED_OBJECT_HPP__
+#define __INCLUDED_OBJECT_HPP__
 
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
@@ -69,4 +69,4 @@ class StaticObject : public Object
 		virtual void draw() const;
 };
 
-#endif // __INCLUDED_OBJECT_H__
+#endif // __INCLUDED_OBJECT_HPP__
