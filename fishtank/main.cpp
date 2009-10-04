@@ -409,7 +409,7 @@ static void DrawBackground(CAMERA camera)
 			break;
 
 		case RIGHT_CAMERA:
-			glBindTexture(GL_TEXTURE_2D, 0);
+			glDisable(GL_TEXTURE_2D);
 			break;
 	}
 
