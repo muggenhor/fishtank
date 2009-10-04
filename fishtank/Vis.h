@@ -72,6 +72,7 @@ class Vis : public Object
 	private:
 		mutable float collided;
 		static boost::shared_ptr<WiggleTransformation> _wiggle;
+		static const float collisionVisualLength;
 		static const Eigen::Vector4f uncollided_colour, collision_colour;
 };
 

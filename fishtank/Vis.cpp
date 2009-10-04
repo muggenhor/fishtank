@@ -16,6 +16,7 @@ using namespace std;
 
 boost::shared_ptr<WiggleTransformation> Vis::_wiggle;
 
+const float Vis::collisionVisualLength = 2.f;
 const Eigen::Vector4f Vis::uncollided_colour(1.f, 1.f, 1.f, .5f);
 const Eigen::Vector4f Vis::collision_colour (1.f, 0.f, 0.f, .5f);
 
@@ -258,7 +259,7 @@ bool Vis::collidingWith(const Object& object) const
 		 */
 		if (cos_angle >= 0.f)
 		{
-			collided = 1.f;
+			collided = collisionVisualLength;
 			return true;
 		}
 	}
@@ -332,7 +333,7 @@ void Vis::drawCollisionSphere() const
 	 *
 	 *   w = u - f(u - v)
 	 */
-	Eigen::Vector4f colour(uncollided_colour - collided * (uncollided_colour - collision_colour));
+	Eigen::Vector4f colour(uncollided_colour - collided / collisionVisualLength * (uncollided_colour - collision_colour));
 
 	doDrawCollisionSphere(colour);
 }
