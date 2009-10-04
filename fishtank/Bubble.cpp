@@ -3,59 +3,48 @@
 #include <framework/resource.hpp>
 
 Bubble::Bubble(const Eigen::Vector3f& startpos, float radius, bool wiggle) :
-	radius(radius),
+	Object(loadModel("", "icosphere-2"), startpos),
 	wiggleStartX(my_random() * 100),
 	wiggleStartZ(my_random() * 100),
 	wiggle(wiggle),
 	velocity(-3 + my_random() * 6, 10, -3 + my_random() * 6),
-	pos(startpos),
-	pop(1 + my_random() * 0.8),
-	model(loadModel("", "icosphere-2"))
+	pop(1 + my_random() * 0.8)
 {
+	scale = radius;
 }
 
 void Bubble::update(double dt)
 {
 	pos += velocity * dt;
-	if (pos.y() == aquariumSize.y() / 2)
+	if (pos.y() >= aquariumSize.y() / 2.f)
 	{
 		pop -= dt;
+		pos.y() = aquariumSize.y() / 2.f;
+		velocity.y() = 0.f;
+		return;
 	}
-	if (pos.y() > aquariumSize.y() / 2)
+
+	if (wiggle)
 	{
-		pos.y() = aquariumSize.y() / 2;
-		velocity.y() = 0;
+		velocity.x() = sin(pos.y() / 10 + wiggleStartX) * 20;
+		velocity.z() = sin(pos.y() / 10 + wiggleStartZ) * 20;
+		velocity.y() += scale * dt * 10.f;
 	}
 	else
 	{
-		if (wiggle)
-		{
-			velocity.x() = sin(pos.y() / 10 + wiggleStartX) * 20;
-			velocity.z() = sin(pos.y() / 10 + wiggleStartZ) * 20;
-			velocity.y() += (radius * dt) * 10;
-		}
-		else
-		{
-			velocity.y() += (radius * dt) * 5;
-		}
+		velocity.y() += scale * dt * 5.f;
 	}
 }
 
-void Bubble::Draw() const
+void Bubble::draw() const
 {
-	glPushMatrix();
-	glTranslatef(pos.x(), pos.y(), pos.z());
-	glScalef(radius, radius, radius);
-
 	glDisable(GL_TEXTURE_2D);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glColor4f(1, 1, 1, 0.5);
+	glColor4f(1.f, 1.f, 1.f, .5f);
 
-	model->render();
+	Object::draw();
 
 	glDisable(GL_BLEND);
-
-	glPopMatrix();
 }

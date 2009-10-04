@@ -1,4 +1,7 @@
 #include <boost/foreach.hpp>
+#include <boost/format.hpp>
+#include <boost/lambda/bind.hpp>
+#include <boost/lambda/lambda.hpp>
 #include <cmath>
 #include "AquariumController.h"
 #include <framework/debug.hpp>
@@ -7,6 +10,7 @@
 #define foreach BOOST_FOREACH
 
 using namespace boost;
+using namespace boost::lambda;
 using namespace std;
 
 //staan in header uitgelegd
@@ -73,19 +77,18 @@ void AquariumController::update(double dt)
 	{
 		if (my_random() < dt * 9.5)
 		{
-			bubbles.push_back(Bubble(bubbleSpot, 1.f + my_random(), (my_random() < dt * 2)));
+			bubbles.push_back(shared_ptr<Bubble>(new Bubble(bubbleSpot, 1.f + my_random(), (my_random() < dt * 2))));
 		}
 	}
-	//update de bubbels en kijk of ze weggegooit mogen worden
-	foreach (Bubble& bubble, bubbles)
-	{
-		bubble.update(dt);
-		if (bubble.pop < 0)
-		{
-			bubble = bubbles.back();
-			bubbles.pop_back();
-		}
-	}
+
+	// Update all bubbles and remove those who expired passed their "pop"-time
+	bubbles.erase(std::remove_if(bubbles.begin(), bubbles.end(),
+	    (
+	      bind(&Bubble::update, *_1, dt),
+	      bind(&Bubble::pop, *_1) <= 0.)
+	    ),
+	  bubbles.end());
+
 	//kijk of vissen aan het botsen zijn, en onderneem eventueel actie
 	AvoidFishBounce();
 }
@@ -147,17 +150,17 @@ void AquariumController::draw()
 {
 	//teken alle muren die niet webcams zijn
 	ground.Draw();
-	wall1.Draw();
-	wall2.Draw();
-	ceiling.Draw();
+	wall1.draw();
+	wall2.draw();
+	ceiling.draw();
 
 	foreach (const shared_ptr<Vis>& fish, fishes)
 		fish->draw();
 	foreach (const shared_ptr<StaticObject>& object, objects)
 		object->draw();
 	// Draw transparent objects last to get proper alpha blending
-	foreach (const Bubble& bubble, bubbles)
-		bubble.Draw();
+	foreach (const shared_ptr<Bubble>& bubble, bubbles)
+		bubble->draw();
 	if (drawCollisionSpheres)
 	{
 		foreach (const shared_ptr<StaticObject>& object, objects)

@@ -31,7 +31,7 @@ class AquariumController
 private:
 	std::vector< boost::shared_ptr<StaticObject> > objects;
 	std::vector< boost::shared_ptr<Vis> > fishes;
-	std::vector<Bubble> bubbles;
+	std::vector< boost::shared_ptr<Bubble> > bubbles;
 	std::vector<Eigen::Vector3f> bubbleSpots;
 public:
 	Ground ground;

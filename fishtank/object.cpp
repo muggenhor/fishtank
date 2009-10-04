@@ -9,7 +9,7 @@ using namespace std;
 
 Object::Object(boost::shared_ptr<const Model> model, const Eigen::Vector3f& pos) :
 	model(model),
-	collisionRadius(this, (model->bb_h - model->bb_l).norm() * .5f),
+	collisionRadius(this, model ? (model->bb_h - model->bb_l).norm() * .5f : 0.f),
 	pos(this, pos),
 	scale(this, 1.f)
 {

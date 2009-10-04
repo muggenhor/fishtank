@@ -21,7 +21,7 @@ Environment::Environment(const Eigen::Vector3d& pos1, const Eigen::Vector3d& pos
 	}
 }
 
-void Environment::Draw()
+void Environment::draw() const
 {
 	if (texture.empty())
 		return;
