@@ -240,7 +240,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Object.cpp"
+				RelativePath=".\object.cpp"
 				>
 			</File>
 			<File
@@ -330,7 +330,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Object.h"
+				RelativePath=".\object.hpp"
 				>
 			</File>
 			<File

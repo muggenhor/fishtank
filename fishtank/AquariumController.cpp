@@ -6,6 +6,7 @@
 
 #define foreach BOOST_FOREACH
 
+using namespace boost;
 using namespace std;
 
 //staan in header uitgelegd
@@ -48,12 +49,12 @@ AquariumController::AquariumController(void):
 
 void AquariumController::AddFish(boost::shared_ptr<const Model> model, const string &propertiesFile)
 {
-	fishes.push_back(Vis(model, propertiesFile, ground.maxHeight));
+	fishes.push_back(shared_ptr<Vis>(new Vis(model, propertiesFile, ground.maxHeight)));
 }
 
-void AquariumController::AddObject(boost::shared_ptr<const Model> model, const string &propertiesFile, const Eigen::Vector3d &position)
+void AquariumController::AddObject(boost::shared_ptr<const Model> model, const string &propertiesFile, const Eigen::Vector3f &position)
 {
-	objects.push_back(Object(model, propertiesFile, position));
+	objects.push_back(shared_ptr<StaticObject>(new StaticObject(model, propertiesFile, position)));
 }
 
 void AquariumController::AddBubbleSpot(const Eigen::Vector3f& position)
@@ -61,12 +62,12 @@ void AquariumController::AddBubbleSpot(const Eigen::Vector3f& position)
 	bubbleSpots.push_back(position);
 }
 
-void AquariumController::Update(double dt)
+void AquariumController::update(double dt)
 {
-	foreach (Vis& fish, fishes)
-		fish.Update(dt);
-	foreach (Object& object, objects)
-		object.Update(dt);
+	foreach (shared_ptr<Vis>& fish, fishes)
+		fish->update(dt);
+	foreach (shared_ptr<StaticObject>& object, objects)
+		object->update(dt);
 	//voeg op willekeurige momenten bubbels toe
 	foreach (const Eigen::Vector3f& bubbleSpot, bubbleSpots)
 	{
@@ -78,7 +79,7 @@ void AquariumController::Update(double dt)
 	//update de bubbels en kijk of ze weggegooit mogen worden
 	foreach (Bubble& bubble, bubbles)
 	{
-		bubble.Update(dt);
+		bubble.update(dt);
 		if (bubble.pop < 0)
 		{
 			bubble = bubbles.back();
@@ -103,8 +104,8 @@ void AquariumController::GoToScreen(const Eigen::Vector2d &position)
 		const double circular_position = 2. * M_PI / fishes.size() * i;
 		const Eigen::Vector2d fishGoalPos(pos.cwise() * Eigen::Vector2d(sin(circular_position), cos(circular_position)) * circleDistance);
 		//laat de vissen naar de positie zwemmen
-		fishes[i].setGoal(Eigen::Vector3f(fishGoalPos.x(), fishGoalPos.y(), aquariumSize.y()));
-		//fishes[i].pos = Eigen::Vector3d(fishGoalPos.x(), fishGoalPos.y(), aquariumSize.y());
+		fishes[i]->setGoal(Eigen::Vector3f(fishGoalPos.x(), fishGoalPos.y(), aquariumSize.y()));
+		//fishes[i]->pos = Eigen::Vector3d(fishGoalPos.x(), fishGoalPos.y(), aquariumSize.y());
 		debug(LOG_NEVER) << "Goto " << fishGoalPos;
 	}
 }
@@ -112,36 +113,37 @@ void AquariumController::GoToScreen(const Eigen::Vector2d &position)
 void AquariumController::AvoidFishBounce()
 {
 	// FIXME: O(n^2) behaviour
-	foreach (Vis& fish, fishes)
+	foreach (shared_ptr<Vis>& fish, fishes)
 	{
-		foreach (const Vis& collidable, fishes)
+		foreach (const shared_ptr<Vis>& collidable, fishes)
 		{
 			// No collision detection with self
-			if (&collidable == &fish)
+			if (&*collidable == &*fish)
 				continue;
 
 			//needs goalcheck in this if aswell
-			if (fish.Colliding(collidable.pos, collidable.radius)
-			 && fish.IsGoingTowards(collidable.pos))
+			if (fish->collidingWith(*collidable)
+			 && fish->IsGoingTowards(collidable->pos))
 			{
 				//debug(LOG_NEVER) << "Fish-fish collision " << i << ":" << j;
-				fish.Avade();
+				fish->Avade();
 			}
 		}
 
-		foreach (const Object& collidable, objects)
+		foreach (const shared_ptr<StaticObject>& collidable, objects)
 		{
 			//needs goalcheck in this if aswell
-			Eigen::Vector3f object_center(0.5f * (collidable.model->bb_h + collidable.model->bb_l));
-			if (fish.Colliding(object_center, collidable.radius) && fish.IsGoingTowards(object_center))
+			Eigen::Vector3f object_center(0.5f * (collidable->model->bb_h + collidable->model->bb_l));
+			if (fish->collidingWith(*collidable)
+			 && fish->IsGoingTowards(object_center))
 			{
-				fish.Avade();
+				fish->Avade();
 			}
 		}
 	}
 }
 
-void AquariumController::Draw()
+void AquariumController::draw()
 {
 	//teken alle muren die niet webcams zijn
 	ground.Draw();
@@ -149,18 +151,18 @@ void AquariumController::Draw()
 	wall2.Draw();
 	ceiling.Draw();
 
-	foreach (const Vis& fish, fishes)
-		fish.Draw();
-	foreach (const Object& object, objects)
-		object.Draw();
+	foreach (const shared_ptr<Vis>& fish, fishes)
+		fish->draw();
+	foreach (const shared_ptr<StaticObject>& object, objects)
+		object->draw();
 	// Draw transparent objects last to get proper alpha blending
 	foreach (const Bubble& bubble, bubbles)
 		bubble.Draw();
 	if (drawCollisionSpheres)
 	{
-		foreach (const Object& object, objects)
-			object.DrawCollisionSphere();
-		foreach (const Vis& fish, fishes)
-			fish.DrawCollisionSphere();
+		foreach (const shared_ptr<StaticObject>& object, objects)
+			object->drawCollisionSphere();
+		foreach (const shared_ptr<Vis>& fish, fishes)
+			fish->drawCollisionSphere();
 	}
 }

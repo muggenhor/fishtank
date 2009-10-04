@@ -99,13 +99,12 @@ const double bending_factor=0.75;/// larger = fish has to bend more to move. (no
 
 
 Vis::Vis(boost::shared_ptr<const Model> model, const std::string& propertiesFile, int maxFloorHeight) :
+	Object(model),
 	usingTempGoal(false),
-	model(model),
-	scale(200),
-	radius(20),
 	maxFloorHeight(maxFloorHeight),
 	collided(0.f)
 {
+	scale = 200.f;
 	try
 	{
 		// Create the shader if it hasn't been created yet
@@ -200,8 +199,6 @@ void Vis::LoadProperties(const string &propertiesFile)
 
 	//sphere - input parameter ignored
 	getline(input_file, s);
-	Eigen::Vector3f const diagonal(model->bb_h - model->bb_l);
-	radius = diagonal.norm() * scale * 0.5f;
 
 	//wiggle
 	getline(input_file, s);
@@ -218,14 +215,14 @@ void Vis::LoadProperties(const string &propertiesFile)
 	turn_acceleration = atof(s.c_str()) / 100;
 }
 
-bool Vis::Colliding(const Eigen::Vector3f& object, float otherRadius)
+bool Vis::collidingWith(const Object& object) const
 {
-	Eigen::Vector3f const swimDirection(goalPos - pos),
-	                      objectDirection(object - pos);
+	Eigen::Vector3f const swimDirection(goalPos - this->pos),
+	                      objectDirection(object.pos - this->pos);
 	float const swimDistance   = swimDirection.norm(),
 	            objectDistance = objectDirection.norm();
 
-	if (objectDistance < (radius + otherRadius))
+	if (objectDistance < (this->collisionRadius * this->scale + object.collisionRadius * object.scale))
 	{
 		/*
 		 * We're using this theorem from the dot product, u and v are
@@ -274,7 +271,7 @@ bool Vis::IsGoingTowards(const Eigen::Vector3f& object)
 	return (goalPos - pos).dot(object - pos) > 0;
 }
 
-void Vis::Draw() const
+void Vis::draw() const
 {
 	if(model)
 	{
@@ -322,22 +319,8 @@ void Vis::Draw() const
 	}
 }
 
-void Vis::DrawCollisionSphere() const
+void Vis::drawCollisionSphere() const
 {
-	if (!model)
-		return;
-
-	if (!collisionModel)
-		collisionModel = loadModel("", "icosphere-4");
-
-	glPushMatrix();
-	glTranslatef(pos.x(), pos.y(), pos.z());
-	glScalef(radius, radius, radius);
-
-	glEnable(GL_NORMALIZE);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 	/*
 	 * Interpolate from uncollided_colour to collision_colour using
 	 * collided, which ranges from 0 to 1.
@@ -350,19 +333,8 @@ void Vis::DrawCollisionSphere() const
 	 *   w = u - f(u - v)
 	 */
 	Eigen::Vector4f colour(uncollided_colour - collided * (uncollided_colour - collision_colour));
-	glColor4fv(colour.data());
-	collisionModel->render();
 
-	glColor3f(1.f, 1.f, 1.f);
-	glDisable(GL_BLEND);
-	glPopMatrix();
-
-	if (collided >= 0.f)
-	{
-		collided -= 1.f / 30.f;
-		if (collided < 0.f)
-			collided = 0.f;
-	}
+	doDrawCollisionSphere(colour);
 }
 
 void Vis::Avade()
@@ -421,8 +393,15 @@ double TowardsGoalBy(double a, double goal, double by){
 }
 
 // - afblijven - de update van de vis, deze houd het bewegen van de vis bij en voert een stap uit - afblijven -
-void Vis::Update(double dt)
+void Vis::update(double dt)
 {
+	if (collided >= 0.f)
+	{
+		collided -= dt;
+		if (collided < 0.f)
+			collided = 0.f;
+	}
+
 	pos += velocity * dt;
 
 	Eigen::Vector3f delta = goalPos - pos;
@@ -542,4 +521,3 @@ void Vis::Update(double dt)
 		newGoal();
 	}
 }
-

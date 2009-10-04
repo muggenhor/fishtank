@@ -25,7 +25,7 @@ class Bubble
 		double pop;
 
 		//deze functie berekend een stap van de bubbel
-		void Update(double dt);
+		void update(double dt);
 		//deze funtie tekend de bubbel
 		void Draw() const;
 

@@ -14,7 +14,7 @@ Bubble::Bubble(const Eigen::Vector3f& startpos, float radius, bool wiggle) :
 {
 }
 
-void Bubble::Update(double dt)
+void Bubble::update(double dt)
 {
 	pos += velocity * dt;
 	if (pos.y() == aquariumSize.y() / 2)

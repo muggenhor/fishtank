@@ -359,7 +359,7 @@ static void LoadModels(std::istream& input_file, AquariumController& aquariumCon
 		int groundposx = (x + (aquariumSize.x() / 2)) / aquariumSize.x() * (aquariumController.ground.width());
 		int groundposy = (z + (aquariumSize.z() / 2)) / aquariumSize.z() * (aquariumController.ground.depth());
 		aquariumController.AddObject(loadModel("Objecten/Modellen", model_name, model_matrix),
-		                             propertieFile, Eigen::Vector3d(x, aquariumController.ground.HeightAt(groundposx, groundposy), z));
+		                             propertieFile, Eigen::Vector3f(x, aquariumController.ground.HeightAt(groundposx, groundposy), z));
 	}
 
 	getline(input_file, s);
@@ -604,12 +604,12 @@ void render(AquariumController& aquariumController, CAMERA camera, int x, int y,
 	}
 
 	DrawBackground(camera);
-	aquariumController.Draw();
+	aquariumController.draw();
 }
 
 static void update_and_render_simulation(AquariumController& aquariumController, const double dt)
 {
-	aquariumController.Update(dt);
+	aquariumController.update(dt);
 
 	glfwGetWindowSize(&win_width,&win_height);/// get window size
 	const unsigned int port1_width = win_width * 2. / 3.;

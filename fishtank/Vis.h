@@ -4,22 +4,19 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <Eigen/Core>
+#include "object.hpp"
 #include "wiggle.hpp"
 
 class Model;
 
-class Vis
+class Vis : public Object
 {
 	public:
-		//pos = huidige positie
 		//goalPos = positie waar de vis naartoe wil zwemmen (deze is finalgoalpos, tenzij de vis iets moet ontwijken, en met een omweg zwemt)
 		//finalgoalpos = de positie waar de vis wil belanden
-		Eigen::Vector3f pos, goalPos, finalGoalPos, velocity;
+		Eigen::Vector3f goalPos, finalGoalPos, velocity;
 		//true als goalpos gebruikt wordt als tijdelijk doel, om te ontwijken
 		bool usingTempGoal;
-
-		//het model
-		boost::shared_ptr<const Model> model;
 
 		//informatie voor het gedrag van de vis
 		double swimDirAngle;
@@ -42,16 +39,11 @@ class Vis
 		double wiggle_freq;
 		//instellingen end
 
-		//de lengte van de vis
-		double scale;
-
 		//de (willekeurige) tijd voor de vis om te besluiten een nieuw punt te zoeken, als de vis zijn punt niet kan bereiken (bijvoorbeeld omdat deze te dichtbij is en er rondjes omheen gaat zwemmen)
 		double myWaitTime;
 
 		double wiggle_phase, wiggle_amplitude;
 
-		//de botsarea
-		float radius;
 		//de vloerhoogte, om ervoor te zorgen dat de vissen niet lager dan dit gaan zwemmen
 		int maxFloorHeight;
 
@@ -59,17 +51,17 @@ class Vis
 		//draag de vis op om een andere positie te pakken (iets te ontwijken)
 		void Avade();
 		//geeft true als de vis botst met een ander object, hier gegeven in een positie en een botsarea
-		bool Colliding(const Eigen::Vector3f& object, float otherRadius);
+		virtual bool collidingWith(const Object& object) const;
 		//geeft true als de vis richting het gegeven punt aan het zwemmen is
 		bool IsGoingTowards(const Eigen::Vector3f& object);
 
 		//geeft een willekeurige posite binnen de zwemarea, rekening houdende met de maxFloorHeight
 		Eigen::Vector3f RandomPos() const;
 		// - afblijven - de update van de vis, deze houd het bewegen van de vis bij en voert een stap uit - afblijven -
-		void Update(double dt);
+		virtual void update(double dt);
 		//teken de vis
-		void Draw() const;
-		void DrawCollisionSphere() const;
+		virtual void draw() const;
+		virtual void drawCollisionSphere() const;
 		//haalt info uit de file, gegeven als path
 		void LoadProperties(const std::string &propertiesFile);
 		//positiebeheer
@@ -79,7 +71,6 @@ class Vis
 
 	private:
 		mutable float collided;
-		mutable boost::shared_ptr<const Model> collisionModel;
 		static boost::shared_ptr<WiggleTransformation> _wiggle;
 		static const Eigen::Vector4f uncollided_colour, collision_colour;
 };

@@ -14,6 +14,7 @@ libframework_la_SOURCES = \
 noinst_HEADERS = \
 	debug-net-out.hpp \
 	debug.hpp \
+	property.hpp \
 	resource.hpp \
 	threadpool.hpp
 

@@ -5,7 +5,7 @@
 #include <Eigen/Core>
 #include <vector>
 #include "Vis.h"
-#include "Object.h"
+#include "static-object.hpp"
 #include "Bubble.h"
 #include "Ground.h"
 #include "Environment.h"
@@ -29,8 +29,8 @@ extern Eigen::Vector2d faceRange;
 class AquariumController
 {
 private:
-	std::vector<Object> objects;
-	std::vector<Vis> fishes;
+	std::vector< boost::shared_ptr<StaticObject> > objects;
+	std::vector< boost::shared_ptr<Vis> > fishes;
 	std::vector<Bubble> bubbles;
 	std::vector<Eigen::Vector3f> bubbleSpots;
 public:
@@ -43,9 +43,9 @@ public:
 	AquariumController(void);
 
 	//update alle posities van vissen en laat ze nadenken (laat ze even een stapje leven)
-	void Update(double dt);
+	void update(double dt);
 	//teken alle vissen, muren, objecten en bubbels
-	void Draw();
+	void draw();
 
 	//deze functie kijkt voor elke vis of ze botsen, zo ja, dan nemen ze een actie in om te ontwijken
 	void AvoidFishBounce();
@@ -55,7 +55,7 @@ public:
 	//voeg een vis toe in het aquarium
 	void AddFish(boost::shared_ptr<const Model> model, const std::string& propertiesFile);
 	//voeg een object toe in het aquarium
-	void AddObject(boost::shared_ptr<const Model> model, const std::string& propertiesFile, const Eigen::Vector3d& position);
+	void AddObject(boost::shared_ptr<const Model> model, const std::string& propertiesFile, const Eigen::Vector3f& position);
 	//voeg een bubbel maker toe in het aquarium
 	void AddBubbleSpot(const Eigen::Vector3f& position);
 };

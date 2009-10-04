@@ -27,8 +27,9 @@ fishtank_SOURCES = \
 	Ground.cpp \
 	main.cpp \
 	MS3D_ASCII.cpp \
-	Object.cpp \
+	object.cpp \
 	shaders.cpp \
+	static-object.cpp \
 	textures.cpp \
 	Vis.cpp \
 	wiggle.cpp
@@ -45,8 +46,9 @@ noinst_HEADERS = \
 	main.hpp \
 	math-helpers.hpp \
 	MS3D_ASCII.h \
-	Object.h \
+	object.hpp \
 	shaders.hpp \
+	static-object.hpp \
 	textures.hpp \
 	Vis.h \
 	wiggle.hpp
