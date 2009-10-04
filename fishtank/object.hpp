@@ -10,6 +10,9 @@
 class Object
 {
 	public:
+		// Required because we've got Eigen members for which sizeof % 16 (128bit) = 0
+		EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+
 		Object(boost::shared_ptr<const Model> model, const Eigen::Vector3f& pos = Eigen::Vector3f::Zero());
 		virtual ~Object() {}
 
