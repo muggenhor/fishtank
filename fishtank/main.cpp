@@ -622,8 +622,6 @@ static void update_and_render_simulation(AquariumController& aquariumController,
 
 	// right view
 	render(aquariumController, RIGHT_CAMERA, port1_width, 0, port2_width, win_height, Eigen::Vector3d(aquariumSize.z(), aquariumSize.y(), aquariumSize.x()));
-
-	//TestDrawAquarium();
 }
 
 /**
