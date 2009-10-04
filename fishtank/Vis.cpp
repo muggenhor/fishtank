@@ -43,7 +43,7 @@ Vis::Vis(boost::shared_ptr<const Model> model, const std::string& propertiesFile
 	speed(0.),
 	turn_speed(0.),
 	bending(0.),
-	pitch(0.),
+	pitch(0.f),
 	max_speed(20.),
 	min_speed(15.),
 	max_turn_speed(2.), /// radians per second
@@ -221,7 +221,7 @@ void Vis::draw() const
 		glTranslatef(pos.x(), pos.y(), pos.z());
 		glRotatef(-swimDirAngle * 180. / M_PI, 0,1,0);
 
-		glRotatef(pitch * 180. / M_PI, 0,0,1);
+		glRotatef(pitch * 180.f / M_PI, 0,0,1);
 
 		glScalef(scale,scale,scale);
 		glEnable(GL_NORMALIZE);
@@ -306,16 +306,19 @@ void Vis::setTemporaryGoal(const Eigen::Vector3f& temp_goal)
 	goalPos = temp_goal;
 }
 
-double TowardsGoalBy(double a, double goal, double by){
-	if(a < goal - by)
-	{
-		return a + by;
-	}
-	if(a > goal + by)
-	{
-		return a - by;
-	}
-	return goal;
+/**
+ * Move @c val towards @c goal by incrementing or decrementing it by a number
+ * up to @c step (the smallest number to reach @c goal is choosen).
+ */
+template <typename T>
+static inline T StepTowards(T val, T goal, T step)
+{
+	if      (val + step < goal)
+		return val + step;
+	else if (val - step > goal)
+		return val - step;
+	else
+		return goal;
 }
 
 // - afblijven - de update van de vis, deze houd het bewegen van de vis bij en voert een stap uit - afblijven -
@@ -350,15 +353,15 @@ void Vis::update(double dt)
 	Eigen::Vector3d fishForward(cos(swimDirAngle), 0, sin(swimDirAngle));
 
 	double dfs=dt*forward_acceleration;
-	speed=TowardsGoalBy(speed, desired_speed, dfs);
+	speed = StepTowards(speed, desired_speed, dfs);
 
 	velocity.x() = fishForward.x() * speed;
 	velocity.z() = fishForward.z() * speed;
 	//vertikale beweging
-	double desired_vertical_speed = delta.y() * speed/ dist;// /sqrt(delta.x*delta.x+delta.z*delta.z)
-	double dvs = vertical_acceleration * dt;
+	float desired_vertical_speed = delta.y() * speed / dist;// / sqrt(powf(delta.x(), 2.f) * powf(delta.z, 2.f))
+	float dvs = vertical_acceleration * dt;
 
-	velocity.y() = TowardsGoalBy(velocity.y(), desired_vertical_speed, dvs);
+	velocity.y() = StepTowards(velocity.y(), desired_vertical_speed, dvs);
 
 	//double forwardFactor = fishForward.dot(desiredVelocity.normalized());
 
@@ -386,17 +389,17 @@ void Vis::update(double dt)
 	}
 
 
-	if(angleDelta>0.5*turn_speed*turn_speed/turn_acceleration)
+	if      (angleDelta >  0.5 * pow(turn_speed, 2.) / turn_acceleration)
 	{
-		turn_speed=TowardsGoalBy(turn_speed, max_turn_speed, dt*turn_acceleration);
+		turn_speed = StepTowards(turn_speed,  max_turn_speed, dt * turn_acceleration);
 	}
-	else if(angleDelta<-0.5*turn_speed*turn_speed/turn_acceleration)
+	else if (angleDelta < -0.5 * pow(turn_speed, 2.) / turn_acceleration)
 	{
-		turn_speed=TowardsGoalBy(turn_speed, -max_turn_speed, dt*turn_acceleration);
+		turn_speed = StepTowards(turn_speed, -max_turn_speed, dt * turn_acceleration);
 	}
 	else
 	{
-		turn_speed=TowardsGoalBy(turn_speed, 0, dt*turn_acceleration);
+		turn_speed = StepTowards(turn_speed,              0., dt * turn_acceleration);
 	}
 	swimDirAngle+=dt*turn_speed;
 
@@ -426,11 +429,10 @@ void Vis::update(double dt)
 		bending=-bending_factor*(turn_speed/speed);
 	}
 
-	//pitch
 	const float desired_pitch = clip(atan2f(pitch_factor * velocity.y(), sqrt(velocity.x() * velocity.x() + velocity.z() * velocity.z())),
 	                                 min_pitch,
 	                                 max_pitch);
-	pitch = TowardsGoalBy(pitch, desired_pitch, pitch_change_speed*dt);
+	pitch = StepTowards(pitch, desired_pitch, static_cast<float>(pitch_change_speed * dt));
 
 
 	/// stabielheid dingen:

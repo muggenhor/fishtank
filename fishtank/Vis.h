@@ -24,7 +24,7 @@ class Vis : public Object
 		double speed;
 		double turn_speed;
 		double bending;
-		double pitch;
+		float pitch;
 
 		//instellingen
 		double max_speed;
