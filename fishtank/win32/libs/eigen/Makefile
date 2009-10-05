@@ -1,9 +1,9 @@
 PKG_NAME:=eigen
-PKG_VERSION=2.0.2
+PKG_VERSION=2.0.6
 
 PKG_SOURCE:=$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=http://bitbucket.org/eigen/eigen2/get
-PKG_MD5SUM:=d8d0fb1e22b15fce8d90f396c2edb3ca
+PKG_MD5SUM:=0673563a5e7f74ae4ee130553458b81e
 
 include $(TOPDIR)/rules.mk
 
