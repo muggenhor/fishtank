@@ -30,6 +30,8 @@ case ${host_os} in
 	*mingw32*)
 		host_os_mingw32=yes
 		WIN32_LIBS='-lwsock32 -lws2_32 -lz'
+		FT_CFLAGS="${FT_CFLAGS} -mthreads"
+		FT_CXXFLAGS="${FT_CXXFLAGS} -mthreads"
 		AC_SUBST([WIN32_LIBS])
 		;;
 esac
