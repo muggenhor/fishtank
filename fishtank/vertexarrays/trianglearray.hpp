@@ -59,6 +59,35 @@ class TriangleArray
             delete _indices;
         }
 
+	TriangleArray(const TriangleArray& rhs) :
+		_VertexArray(rhs._VertexArray),
+		_NormalArray(rhs._NormalArray),
+		_TexCoordArrays(rhs._TexCoordArrays),
+#ifndef NDEBUG
+		_indices_modified(rhs._indices_modified),
+#endif
+		_indices(rhs._indices ? new std::vector<IndexIntegerType>(*rhs._indices) : 0)
+	{
+	}
+
+	TriangleArray& operator=(const TriangleArray& rhs)
+	{
+		_VertexArray = rhs._VertexArray;
+		_NormalArray = rhs._NormalArray;
+		for (std::size_t i = 0; i < textureCount; ++i)
+			_TexCoordArrays[i] = rhs._TexCoordArrays[i];
+#ifndef NDEBUG
+		_indices_modified = true;
+#endif
+		std::vector<IndexIntegerType>* new_indices = 0;
+		if (rhs._indices)
+			new_indices = new std::vector<IndexIntegerType>(*rhs._indices);
+		delete _indices;
+		_indices = new_indices;
+
+		return *this;
+	}
+
         void draw() const
         {
             // Bail out if there's nothing to draw
@@ -388,7 +417,7 @@ not_found:
 #ifndef NDEBUG
         mutable bool _indices_modified;
 #endif
-        std::vector<IndexIntegerType>* const _indices;
+        std::vector<IndexIntegerType>* _indices;
 };
 
 #endif // __INCLUDED_IMD_HPP__
