@@ -1,4 +1,4 @@
-#include "AquariumController.h"
+#include "aquarium.hpp"
 #include <boost/bind.hpp>
 #include <framework/debug.hpp>
 #include <framework/resource.hpp>

@@ -1,4 +1,4 @@
-#include "AquariumController.h"
+#include "aquarium.hpp"
 #include "Vis.h"
 #include <cmath>
 #include <cstdlib>

@@ -18,7 +18,7 @@ AM_CPPFLAGS=$(FT_CPPFLAGS)
 bin_PROGRAMS = fishtank
 
 fishtank_SOURCES = \
-	AquariumController.cpp \
+	aquarium.cpp \
 	Bubble.cpp \
 	camera.cpp \
 	Environment.cpp \
@@ -35,7 +35,7 @@ fishtank_SOURCES = \
 	wiggle.cpp
 
 noinst_HEADERS = \
-	AquariumController.h \
+	aquarium.hpp \
 	Bubble.h \
 	camera.hpp \
 	Environment.h \

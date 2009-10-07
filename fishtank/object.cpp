@@ -1,4 +1,4 @@
-#include "AquariumController.h"
+#include "aquarium.hpp"
 #include "object.hpp"
 #include <framework/debug.hpp>
 #include <framework/resource.hpp>

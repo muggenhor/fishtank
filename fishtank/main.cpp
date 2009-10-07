@@ -18,7 +18,7 @@
 #include "framerate.hpp"
 #include "main.hpp"
 #include "Vis.h"
-#include "AquariumController.h"
+#include "aquarium.hpp"
 #include "MS3D_ASCII.h"
 #include <fstream>
 #include <string>
@@ -304,7 +304,7 @@ static void LoadSettings(std::istream& input_file)
 }
 
 //laad de modelen uit het opgegeven bestand
-static void LoadModels(std::istream& input_file, AquariumController& aquariumController)
+static void LoadModels(std::istream& input_file, Aquarium& aquarium)
 {
 	Eigen::Matrix4f model_matrix;
 	{
@@ -318,8 +318,8 @@ static void LoadModels(std::istream& input_file, AquariumController& aquariumCon
 	string s;
 
 	getline(input_file, s);
-	aquariumController.ground.maxHeight = atoi(s.c_str());
-	aquariumController.ground.updateRenderData();
+	aquarium.ground.maxHeight = atoi(s.c_str());
+	aquarium.ground.updateRenderData();
 
 	getline(input_file, s);
 	int n=atoi(s.c_str());
@@ -336,7 +336,7 @@ static void LoadModels(std::istream& input_file, AquariumController& aquariumCon
 		int m=atoi(s.c_str());
 		for (int j = 0; j < m; j++)
 		{
-			aquariumController.AddFish(loadModel("Vissen/Modellen", model_name, model_matrix),
+			aquarium.AddFish(loadModel("Vissen/Modellen", model_name, model_matrix),
 			                           propertieFile);
 		}
 	}
@@ -356,10 +356,10 @@ static void LoadModels(std::istream& input_file, AquariumController& aquariumCon
 		int x = -(aquariumSize.x() / 2) + atoi(s.c_str());
 		getline(input_file, s);
 		int z = -(aquariumSize.z() / 2) + atoi(s.c_str());
-		int groundposx = (x + (aquariumSize.x() / 2)) / aquariumSize.x() * (aquariumController.ground.width());
-		int groundposy = (z + (aquariumSize.z() / 2)) / aquariumSize.z() * (aquariumController.ground.depth());
-		aquariumController.AddObject(loadModel("Objecten/Modellen", model_name, model_matrix),
-		                             propertieFile, Eigen::Vector3f(x, aquariumController.ground.HeightAt(groundposx, groundposy), z));
+		int groundposx = (x + (aquariumSize.x() / 2)) / aquariumSize.x() * (aquarium.ground.width());
+		int groundposy = (z + (aquariumSize.z() / 2)) / aquariumSize.z() * (aquarium.ground.depth());
+		aquarium.AddObject(loadModel("Objecten/Modellen", model_name, model_matrix),
+		                             propertieFile, Eigen::Vector3f(x, aquarium.ground.HeightAt(groundposx, groundposy), z));
 	}
 
 	getline(input_file, s);
@@ -370,9 +370,9 @@ static void LoadModels(std::istream& input_file, AquariumController& aquariumCon
 		int x = -(aquariumSize.x() / 2) + atoi(s.c_str());
 		getline(input_file, s);
 		int z = -(aquariumSize.z() / 2) + atoi(s.c_str());
-		int groundposx = (x + (aquariumSize.x() / 2)) / aquariumSize.x() * (aquariumController.ground.width());
-		int groundposy = (z + (aquariumSize.z() / 2)) / aquariumSize.z() * (aquariumController.ground.depth());
-		aquariumController.AddBubbleSpot(Eigen::Vector3f(x, aquariumController.ground.HeightAt(groundposx, groundposy), z));
+		int groundposx = (x + (aquariumSize.x() / 2)) / aquariumSize.x() * (aquarium.ground.width());
+		int groundposy = (z + (aquariumSize.z() / 2)) / aquariumSize.z() * (aquarium.ground.depth());
+		aquarium.AddBubbleSpot(Eigen::Vector3f(x, aquarium.ground.HeightAt(groundposx, groundposy), z));
 	}
 }
 static boost::shared_ptr<Camera> webcam;
@@ -573,7 +573,7 @@ static void DrawBackground(CAMERA camera)
 	glColor3f(1,1,1);
 }
 
-void render(AquariumController& aquariumController, CAMERA camera, int x, int y, int port_width, int port_height, const Eigen::Vector3d& area_size, const Eigen::Vector2d& facePosition = Eigen::Vector2d(0.5, 0.5))
+void render(Aquarium& aquarium, CAMERA camera, int x, int y, int port_width, int port_height, const Eigen::Vector3d& area_size, const Eigen::Vector2d& facePosition = Eigen::Vector2d(0.5, 0.5))
 {
 	glViewport(x, y, port_width, port_height);
 
@@ -604,12 +604,12 @@ void render(AquariumController& aquariumController, CAMERA camera, int x, int y,
 	}
 
 	DrawBackground(camera);
-	aquariumController.draw();
+	aquarium.draw();
 }
 
-static void update_and_render_simulation(AquariumController& aquariumController, const double dt)
+static void update_and_render_simulation(Aquarium& aquarium, const double dt)
 {
-	aquariumController.update(dt);
+	aquarium.update(dt);
 
 	glfwGetWindowSize(&win_width,&win_height);/// get window size
 	const unsigned int port1_width = win_width * 2. / 3.;
@@ -618,10 +618,10 @@ static void update_and_render_simulation(AquariumController& aquariumController,
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// left view
-	render(aquariumController, LEFT_CAMERA, 0, 0, port1_width, win_height, aquariumSize, aquariumController.facePosition);
+	render(aquarium, LEFT_CAMERA, 0, 0, port1_width, win_height, aquariumSize, aquarium.facePosition);
 
 	// right view
-	render(aquariumController, RIGHT_CAMERA, port1_width, 0, port2_width, win_height, Eigen::Vector3d(aquariumSize.z(), aquariumSize.y(), aquariumSize.x()));
+	render(aquarium, RIGHT_CAMERA, port1_width, 0, port2_width, win_height, Eigen::Vector3d(aquariumSize.z(), aquariumSize.y(), aquariumSize.x()));
 }
 
 /**
@@ -717,9 +717,9 @@ int main(int argc, char** argv)
 		glDepthMask(GL_TRUE);
 		glfwSetWindowTitle("");
 
-		AquariumController aquariumController;
+		Aquarium aquarium;
 
-		LoadModels(input_file, aquariumController);
+		LoadModels(input_file, aquarium);
 		input_file.close();
 
 		// We're using three screens
@@ -765,7 +765,7 @@ int main(int argc, char** argv)
 		for (double curTime = glfwGetTime(), oldTime = curTime; glfwGetWindowParam(GLFW_OPENED); oldTime = curTime, curTime = glfwGetTime())
 		{
 			const double dt = min(0.1, curTime - oldTime);
-			update_and_render_simulation(aquariumController, dt);
+			update_and_render_simulation(aquarium, dt);
 
 			glfwSwapBuffers();
 			fps.frameRateDelay();

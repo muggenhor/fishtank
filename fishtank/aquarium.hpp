@@ -1,5 +1,5 @@
-#ifndef __INCLUDED_AQUARIUM_CONTROLLER_H__
-#define __INCLUDED_AQUARIUM_CONTROLLER_H__
+#ifndef __INCLUDED_AQUARIUM_HPP__
+#define __INCLUDED_AQUARIUM_HPP__
 
 #include <boost/shared_ptr.hpp>
 #include <Eigen/Core>
@@ -26,7 +26,7 @@ extern int balkSize2;
  */
 extern Eigen::Vector2d faceRange;
 
-class AquariumController
+class Aquarium
 {
 private:
 	std::vector< boost::shared_ptr<StaticObject> > objects;
@@ -40,7 +40,7 @@ public:
 	//de positie van een persoon die voor het scherm staat
 	Eigen::Vector2d facePosition;
 
-	AquariumController(void);
+	Aquarium();
 
 	//update alle posities van vissen en laat ze nadenken (laat ze even een stapje leven)
 	void update(double dt);
@@ -63,4 +63,4 @@ public:
 //een random tussen 0 en 1
 float my_random();
 
-#endif // __INCLUDED_AQUARIUM_CONTROLLER_H__
+#endif // __INCLUDED_AQUARIUM_HPP__

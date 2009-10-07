@@ -7,7 +7,7 @@
 #include <framework/debug.hpp>
 #include "Ground.h"
 #include <iostream>
-#include "AquariumController.h"
+#include "aquarium.hpp"
 #include "math-helpers.hpp"
 #include "main.hpp"
 #include "image.hpp"

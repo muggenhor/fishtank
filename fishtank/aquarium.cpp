@@ -3,7 +3,7 @@
 #include <boost/lambda/bind.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <cmath>
-#include "AquariumController.h"
+#include "aquarium.hpp"
 #include <framework/debug.hpp>
 #include "main.hpp"
 
@@ -26,7 +26,7 @@ float my_random()
 	return rand() / float(RAND_MAX);
 }
 
-AquariumController::AquariumController(void):
+Aquarium::Aquarium() :
 		//voeg grond toe
 		ground((datadir + "/heightmap.jpg").c_str(), 30, (datadir + "/ground.jpg").c_str()),
 		//voeg de muren toe
@@ -51,22 +51,22 @@ AquariumController::AquariumController(void):
 {
 }
 
-void AquariumController::AddFish(boost::shared_ptr<const Model> model, const string &propertiesFile)
+void Aquarium::AddFish(boost::shared_ptr<const Model> model, const string &propertiesFile)
 {
 	fishes.push_back(shared_ptr<Vis>(new Vis(model, propertiesFile, ground.maxHeight)));
 }
 
-void AquariumController::AddObject(boost::shared_ptr<const Model> model, const string &propertiesFile, const Eigen::Vector3f &position)
+void Aquarium::AddObject(boost::shared_ptr<const Model> model, const string &propertiesFile, const Eigen::Vector3f &position)
 {
 	objects.push_back(shared_ptr<StaticObject>(new StaticObject(model, propertiesFile, position)));
 }
 
-void AquariumController::AddBubbleSpot(const Eigen::Vector3f& position)
+void Aquarium::AddBubbleSpot(const Eigen::Vector3f& position)
 {
 	bubbleSpots.push_back(position);
 }
 
-void AquariumController::update(double dt)
+void Aquarium::update(double dt)
 {
 	foreach (shared_ptr<Vis>& fish, fishes)
 		fish->update(dt);
@@ -93,7 +93,7 @@ void AquariumController::update(double dt)
 	AvoidFishBounce();
 }
 
-void AquariumController::GoToScreen(const Eigen::Vector2d &position)
+void Aquarium::GoToScreen(const Eigen::Vector2d &position)
 {
 	const Eigen::Vector2d size(aquariumSize.x(), aquariumSize.y());
 
@@ -113,7 +113,7 @@ void AquariumController::GoToScreen(const Eigen::Vector2d &position)
 	}
 }
 
-void AquariumController::AvoidFishBounce()
+void Aquarium::AvoidFishBounce()
 {
 	// FIXME: O(n^2) behaviour
 	foreach (shared_ptr<Vis>& fish, fishes)
@@ -146,7 +146,7 @@ void AquariumController::AvoidFishBounce()
 	}
 }
 
-void AquariumController::draw()
+void Aquarium::draw()
 {
 	//teken alle muren die niet webcams zijn
 	ground.Draw();

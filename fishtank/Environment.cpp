@@ -1,5 +1,5 @@
 #include "Environment.h"
-#include "AquariumController.h"
+#include "aquarium.hpp"
 #include "image.hpp"
 
 using namespace boost::gil;
