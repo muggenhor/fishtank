@@ -2,13 +2,14 @@
 #include "Bubble.h"
 #include <framework/resource.hpp>
 
-Bubble::Bubble(const Eigen::Vector3f& startpos, float radius, bool wiggle) :
+Bubble::Bubble(const Aquarium& aquarium, const Eigen::Vector3f& startpos, float radius, bool wiggle) :
 	Object(loadModel("", "icosphere-2"), startpos),
 	wiggleStartX(my_random() * 100),
 	wiggleStartZ(my_random() * 100),
 	wiggle(wiggle),
 	velocity(-3 + my_random() * 6, 10, -3 + my_random() * 6),
-	pop(1 + my_random() * 0.8)
+	pop(1 + my_random() * 0.8),
+	aquarium(aquarium)
 {
 	scale = radius;
 }
@@ -16,10 +17,10 @@ Bubble::Bubble(const Eigen::Vector3f& startpos, float radius, bool wiggle) :
 void Bubble::update(double dt)
 {
 	pos += velocity * dt;
-	if (pos.y() >= aquariumSize.y() / 2.f)
+	if (pos.y() >= aquarium.size().y() / 2.f)
 	{
 		pop -= dt;
-		pos.y() = aquariumSize.y() / 2.f;
+		pos.y() = aquarium.size().y() / 2.f;
 		velocity.y() = 0.f;
 		return;
 	}

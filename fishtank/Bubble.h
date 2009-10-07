@@ -4,6 +4,9 @@
 #include <Eigen/Core>
 #include "object.hpp"
 
+// Forward declaration to allow references
+class Aquarium;
+
 class Bubble : public Object
 {
 	private:
@@ -15,13 +18,16 @@ class Bubble : public Object
 		Eigen::Vector3f velocity;
 
 	public:
-		Bubble(const Eigen::Vector3f& startpos, float radius, bool wiggle);
+		Bubble(const Aquarium& aquarium, const Eigen::Vector3f& startpos, float radius, bool wiggle);
 
 		//dit houd bij wanneer een bubbel op het oppervlak kapot moet gaan
 		double pop;
 
 		virtual void update(double dt);
 		virtual void draw() const;
+
+	private:
+		const Aquarium& aquarium;
 };
 
 #endif // __INCLUDED_BUBBLE_H__

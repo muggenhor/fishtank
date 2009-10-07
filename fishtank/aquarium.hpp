@@ -10,8 +10,6 @@
 #include "Ground.h"
 #include "Environment.h"
 
-//de grootte van het aquarium
-extern Eigen::Vector3d aquariumSize;
 //de grootte van de ruimte waar de vissen mogen zwemmen
 extern Eigen::Vector3d swimArea;
 //de grootte van de zwarten balken (word geladen in main)
@@ -28,19 +26,23 @@ extern Eigen::Vector2d faceRange;
 
 class Aquarium
 {
-private:
+	private:
+		Eigen::Vector3d _size;
 	std::vector< boost::shared_ptr<StaticObject> > objects;
 	std::vector< boost::shared_ptr<Vis> > fishes;
 	std::vector< boost::shared_ptr<Bubble> > bubbles;
 	std::vector<Eigen::Vector3f> bubbleSpots;
-public:
+	public:
+		const Eigen::Vector3d& size() const { return _size; }
+		void size(const Eigen::Vector3d& v) { _size = v; }
+
 	Ground ground;
 	//de linker en achtermuur en het plafond
 	Environment wall1, wall2, ceiling;
 	//de positie van een persoon die voor het scherm staat
 	Eigen::Vector2d facePosition;
 
-	Aquarium();
+		Aquarium(const Eigen::Vector3d& size_ = Eigen::Vector3d::Zero());
 
 	//update alle posities van vissen en laat ze nadenken (laat ze even een stapje leven)
 	void update(double dt);

@@ -22,8 +22,9 @@ static const float SPEEDCAUSTICS = 20.f; // frequency of caustics in Hz
 static const float SCALECAUSTICS = 24; // Higher number = bigger texture
 static const float CAUSTICOPACITY = 0.25f; // Opacity of the caustics (eg. 0.25f for 25%)
 
-Ground::Ground(const char* const filename, int maxHeight, const char* const texturename) :
-	maxHeight(maxHeight)
+Ground::Ground(const char* const filename, int maxHeight, const Aquarium* aquarium, const char* const texturename) :
+	maxHeight(maxHeight),
+	aquarium(aquarium)
 {
 	// Load heightmap
 	rgb8_image_t img;
@@ -86,7 +87,7 @@ int Ground::HeightAt(unsigned int x, unsigned int y) const
 	// Convert RGB value to grayscale by using the NTSC grayscale weights
 	const float height_value = const_view(heightmap)(x, y)[0];
 
-	return height_value * maxHeight - aquariumSize.y() * 0.5f;
+	return height_value * maxHeight - aquarium->size().y() * 0.5f;
 }
 
 void Ground::Draw()
@@ -183,15 +184,16 @@ void Ground::Draw()
 	}
 }
 
-static Eigen::Vector3f PosAt(const Ground& ground, int x, int y)
+static Eigen::Vector3f PosAt(const Ground& ground, const Aquarium* aquarium, int x, int y)
 {
-	const float relativeX = x * aquariumSize.x() / float(ground.width() - 1) - 0.5 * aquariumSize.x();
-	const float relativeY = y * aquariumSize.z() / float(ground.depth() - 1) - 0.5 * aquariumSize.z();
+	const float relativeX = x * aquarium->size().x() / float(ground.width() - 1) - 0.5 * aquarium->size().x();
+	const float relativeY = y * aquarium->size().z() / float(ground.depth() - 1) - 0.5 * aquarium->size().z();
 
 	return Eigen::Vector3f(relativeX, ground.HeightAt(x, y), relativeY);
 }
 
 static void AddTriangleStripPoint(const Ground& ground,
+                                  const Aquarium* aquarium,
                                   boost::circular_buffer<Eigen::Vector2i>& vertices,
                                   bool& flip_vertices,
                                   TriangleArray<unsigned int, float, int, float, 2>& triangles,
@@ -227,9 +229,9 @@ static void AddTriangleStripPoint(const Ground& ground,
 		}};
 
 		// Comput the normal for this position
-		const Eigen::Vector3f normal(-(PosAt(ground, point.x() + 1, point.y()) - PosAt(ground, point.x() - 1, point.y())).cross(PosAt(ground, point.x(), point.y() + 1) - PosAt(ground, point.x(), point.y() - 1)).normalized());
+		const Eigen::Vector3f normal(-(PosAt(ground, aquarium, point.x() + 1, point.y()) - PosAt(ground, aquarium, point.x() - 1, point.y())).cross(PosAt(ground, aquarium, point.x(), point.y() + 1) - PosAt(ground, aquarium, point.x(), point.y() - 1)).normalized());
 
-		triangles.AddPoint(PosAt(ground, point.x(), point.y()), texturePoints.begin(), texturePoints.end(), normal);
+		triangles.AddPoint(PosAt(ground, aquarium, point.x(), point.y()), texturePoints.begin(), texturePoints.end(), normal);
 	}
 }
 
@@ -245,8 +247,8 @@ void Ground::updateRenderData()
 
 		for (int x = 0; x < static_cast<int>(width()); ++x)
 		{
-			AddTriangleStripPoint(*this, vertices, flip_vertices, triangles, Eigen::Vector2i(x, y));
-			AddTriangleStripPoint(*this, vertices, flip_vertices, triangles, Eigen::Vector2i(x, y - 1));
+			AddTriangleStripPoint(*this, aquarium, vertices, flip_vertices, triangles, Eigen::Vector2i(x, y));
+			AddTriangleStripPoint(*this, aquarium, vertices, flip_vertices, triangles, Eigen::Vector2i(x, y - 1));
 		}
 	}
 }

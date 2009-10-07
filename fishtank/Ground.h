@@ -7,10 +7,13 @@
 #include <vector>
 #include "vertexarrays/trianglearray.hpp"
 
+// Forward declaration to allow references
+class Aquarium;
+
 class Ground
 {
 	public:
-		Ground(const char* filename, int maxHeight, const char* texturename = 0);/// use no texture name if want no texture
+		Ground(const char* filename, int maxHeight, const Aquarium* aquarium, const char* texturename = 0);/// use no texture name if want no texture
 
 		//let op: y telt voor lengte hier, niet hoogte, zoals in het aquarium
 		//verkrijg de hoogte op een bepaalde positie
@@ -28,6 +31,8 @@ class Ground
 	private:
 		Texture& getCausticTexture();
 
+	private:
+		const Aquarium* aquarium;
 		boost::gil::gray32f_image_t heightmap;
 		Texture texture;
 		std::vector<Texture> caustics;

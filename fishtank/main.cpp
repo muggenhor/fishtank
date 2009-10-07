@@ -76,6 +76,8 @@ static bool enable_fog = true;
  */
 static unsigned int multi_sample = 4;
 
+static Eigen::Vector3d aquariumInitSize(440., 250., 220.);
+
 /**
  * The camera number to select.
  */
@@ -268,20 +270,18 @@ static void LoadSettings(std::istream& input_file)
 	win_move_y = atoi(s.c_str());
 
 	getline(input_file, s);
-	int xx = atoi(s.c_str());
+	aquariumInitSize.x() = atoi(s.c_str());
 	getline(input_file, s);
-	int yy = atoi(s.c_str());
+	aquariumInitSize.y() = atoi(s.c_str());
 	getline(input_file, s);
-	int zz = atoi(s.c_str());
-	aquariumSize = Eigen::Vector3d(xx, yy, zz);
+	aquariumInitSize.z() = atoi(s.c_str());
 
 	getline(input_file, s);
-	xx = atoi(s.c_str());
+	swimArea.x() = atoi(s.c_str());
 	getline(input_file, s);
-	yy = atoi(s.c_str());
+	swimArea.y() = atoi(s.c_str());
 	getline(input_file, s);
-	zz = atoi(s.c_str());
-	swimArea = Eigen::Vector3d(xx, yy, zz);
+	swimArea.z() = atoi(s.c_str());
 
 	getline(input_file, s);
 	balkSize2 = atoi(s.c_str());
@@ -353,11 +353,11 @@ static void LoadModels(std::istream& input_file, Aquarium& aquarium)
 		getline(input_file, propertieFile);
 
 		getline(input_file, s);
-		int x = -(aquariumSize.x() / 2) + atoi(s.c_str());
+		int x = -(aquarium.size().x() / 2) + atoi(s.c_str());
 		getline(input_file, s);
-		int z = -(aquariumSize.z() / 2) + atoi(s.c_str());
-		int groundposx = (x + (aquariumSize.x() / 2)) / aquariumSize.x() * (aquarium.ground.width());
-		int groundposy = (z + (aquariumSize.z() / 2)) / aquariumSize.z() * (aquarium.ground.depth());
+		int z = -(aquarium.size().z() / 2) + atoi(s.c_str());
+		int groundposx = (x + (aquarium.size().x() / 2)) / aquarium.size().x() * (aquarium.ground.width());
+		int groundposy = (z + (aquarium.size().z() / 2)) / aquarium.size().z() * (aquarium.ground.depth());
 		aquarium.AddObject(loadModel("Objecten/Modellen", model_name, model_matrix),
 		                             propertieFile, Eigen::Vector3f(x, aquarium.ground.HeightAt(groundposx, groundposy), z));
 	}
@@ -367,11 +367,11 @@ static void LoadModels(std::istream& input_file, Aquarium& aquarium)
 	for (int i = 0; i < n; i++)
 	{
 		getline(input_file, s);
-		int x = -(aquariumSize.x() / 2) + atoi(s.c_str());
+		int x = -(aquarium.size().x() / 2) + atoi(s.c_str());
 		getline(input_file, s);
-		int z = -(aquariumSize.z() / 2) + atoi(s.c_str());
-		int groundposx = (x + (aquariumSize.x() / 2)) / aquariumSize.x() * (aquarium.ground.width());
-		int groundposy = (z + (aquariumSize.z() / 2)) / aquariumSize.z() * (aquarium.ground.depth());
+		int z = -(aquarium.size().z() / 2) + atoi(s.c_str());
+		int groundposx = (x + (aquarium.size().x() / 2)) / aquarium.size().x() * (aquarium.ground.width());
+		int groundposy = (z + (aquarium.size().z() / 2)) / aquarium.size().z() * (aquarium.ground.depth());
 		aquarium.AddBubbleSpot(Eigen::Vector3f(x, aquarium.ground.HeightAt(groundposx, groundposy), z));
 	}
 }
@@ -387,7 +387,7 @@ enum CAMERA
 /**
  * Draw the webcam screens en beams, depending on the current camera position.
  */
-static void DrawBackground(CAMERA camera)
+static void DrawBackground(CAMERA camera, Aquarium& aquarium)
 {
 	glEnable(GL_TEXTURE_2D);
 
@@ -423,30 +423,30 @@ static void DrawBackground(CAMERA camera)
 	{
 		case LEFT_CAMERA:
 			glTexCoord2f(0, 0);
-			glVertex3f(0.5*aquariumSize.x(), -0.5*aquariumSize.y() + balkSize, -0.5*aquariumSize.z() + balkSize);
+			glVertex3f(0.5 * aquarium.size().x(), -0.5 * aquarium.size().y() + balkSize, -0.5 * aquarium.size().z() + balkSize);
 
 			glTexCoord2f(0, 1);
-			glVertex3f(0.5*aquariumSize.x(), 0.5*aquariumSize.y() - balkSize, -0.5*aquariumSize.z() + balkSize);
+			glVertex3f(0.5 * aquarium.size().x(),  0.5 * aquarium.size().y() - balkSize, -0.5 * aquarium.size().z() + balkSize);
 
 			glTexCoord2f(1, 1);
-			glVertex3f(0.5*aquariumSize.x(), 0.5*aquariumSize.y() - balkSize, 0.5*aquariumSize.z() - balkSize);
+			glVertex3f(0.5 * aquarium.size().x(),  0.5 * aquarium.size().y() - balkSize,  0.5 * aquarium.size().z() - balkSize);
 
 			glTexCoord2f(1, 0);
-			glVertex3f(0.5*aquariumSize.x(), -0.5*aquariumSize.y() + balkSize, 0.5*aquariumSize.z() - balkSize);
+			glVertex3f(0.5 * aquarium.size().x(), -0.5 * aquarium.size().y() + balkSize,  0.5 * aquarium.size().z() - balkSize);
 			break;
 
 		case RIGHT_CAMERA:
 			glTexCoord2f(1, 0);
-			glVertex3f(-0.5*aquariumSize.x() + balkSize, -0.5*aquariumSize.y() + balkSize, 0.5*aquariumSize.z());
+			glVertex3f(-0.5 * aquarium.size().x() + balkSize, -0.5 * aquarium.size().y() + balkSize, 0.5 * aquarium.size().z());
 
 			glTexCoord2f(1, 1);
-			glVertex3f(-0.5*aquariumSize.x() + balkSize, 0.5*aquariumSize.y() - balkSize, 0.5*aquariumSize.z());
+			glVertex3f(-0.5 * aquarium.size().x() + balkSize,  0.5 * aquarium.size().y() - balkSize, 0.5 * aquarium.size().z());
 
 			glTexCoord2f(0, 1);
-			glVertex3f(0.5*aquariumSize.x() - balkSize, 0.5*aquariumSize.y() - balkSize, 0.5*aquariumSize.z());
+			glVertex3f( 0.5 * aquarium.size().x() - balkSize,  0.5 * aquarium.size().y() - balkSize, 0.5 * aquarium.size().z());
 
 			glTexCoord2f(0, 0);
-			glVertex3f(0.5*aquariumSize.x() - balkSize, -0.5*aquariumSize.y() + balkSize, 0.5*aquariumSize.z());
+			glVertex3f( 0.5 * aquarium.size().x() - balkSize, -0.5 * aquarium.size().y() + balkSize, 0.5 * aquarium.size().z());
 			break;
 	}
 
@@ -462,110 +462,110 @@ static void DrawBackground(CAMERA camera)
 		{
 			case LEFT_CAMERA:
 				//onder bij klein scherm
-				glVertex3f(0.5 * aquariumSize.x() - 1, -0.5 * aquariumSize.y() + balkSize2, -0.5 * aquariumSize.z());
-				glVertex3f(0.5 * aquariumSize.x() - 1, -0.5 * aquariumSize.y(), -0.5 * aquariumSize.z());
-				glVertex3f(0.5 * aquariumSize.x() - 1, -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z());
-				glVertex3f(0.5 * aquariumSize.x() - 1, -0.5 * aquariumSize.y() + balkSize2, 0.5 * aquariumSize.z());
+				glVertex3f(0.5 * aquarium.size().x() - 1, -0.5 * aquarium.size().y() + balkSize2, -0.5 * aquarium.size().z());
+				glVertex3f(0.5 * aquarium.size().x() - 1, -0.5 * aquarium.size().y()            , -0.5 * aquarium.size().z());
+				glVertex3f(0.5 * aquarium.size().x() - 1, -0.5 * aquarium.size().y()            ,  0.5 * aquarium.size().z());
+				glVertex3f(0.5 * aquarium.size().x() - 1, -0.5 * aquarium.size().y() + balkSize2,  0.5 * aquarium.size().z());
 
 				//boven bij klein scherm
-				glVertex3f(0.5 * aquariumSize.x() - 1, 0.5 * aquariumSize.y() - balkSize2, -0.5 * aquariumSize.z());
-				glVertex3f(0.5 * aquariumSize.x() - 1, 0.5 * aquariumSize.y(), -0.5 * aquariumSize.z());
-				glVertex3f(0.5 * aquariumSize.x() - 1, 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z());
-				glVertex3f(0.5 * aquariumSize.x() - 1, 0.5 * aquariumSize.y() - balkSize2, 0.5 * aquariumSize.z());
+				glVertex3f(0.5 * aquarium.size().x() - 1, 0.5 * aquarium.size().y() - balkSize2, -0.5 * aquarium.size().z());
+				glVertex3f(0.5 * aquarium.size().x() - 1, 0.5 * aquarium.size().y()            , -0.5 * aquarium.size().z());
+				glVertex3f(0.5 * aquarium.size().x() - 1, 0.5 * aquarium.size().y()            ,  0.5 * aquarium.size().z());
+				glVertex3f(0.5 * aquarium.size().x() - 1, 0.5 * aquarium.size().y() - balkSize2,  0.5 * aquarium.size().z());
 
 				//rechts bij klein scherm
-				glVertex3f(0.5 * aquariumSize.x() - 1, -0.5 * aquariumSize.y(), -0.5 * aquariumSize.z() + balkSize2);
-				glVertex3f(0.5 * aquariumSize.x() - 1, -0.5 * aquariumSize.y(), -0.5 * aquariumSize.z());
-				glVertex3f(0.5 * aquariumSize.x() - 1, 0.5 * aquariumSize.y(), -0.5 * aquariumSize.z());
-				glVertex3f(0.5 * aquariumSize.x() - 1, 0.5 * aquariumSize.y(), -0.5 * aquariumSize.z() + balkSize2);
+				glVertex3f(0.5 * aquarium.size().x() - 1, -0.5 * aquarium.size().y(), -0.5 * aquarium.size().z() + balkSize2);
+				glVertex3f(0.5 * aquarium.size().x() - 1, -0.5 * aquarium.size().y(), -0.5 * aquarium.size().z());
+				glVertex3f(0.5 * aquarium.size().x() - 1,  0.5 * aquarium.size().y(), -0.5 * aquarium.size().z());
+				glVertex3f(0.5 * aquarium.size().x() - 1,  0.5 * aquarium.size().y(), -0.5 * aquarium.size().z() + balkSize2);
 
 				//links bij klein scherm
-				glVertex3f(0.5 * aquariumSize.x() - 1, -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - balkSize2);
-				glVertex3f(0.5 * aquariumSize.x() - 1, -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z());
-				glVertex3f(0.5 * aquariumSize.x() - 1, 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z());
-				glVertex3f(0.5 * aquariumSize.x() - 1, 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - balkSize2);
+				glVertex3f(0.5 * aquarium.size().x() - 1, -0.5 * aquarium.size().y(), 0.5 * aquarium.size().z() - balkSize2);
+				glVertex3f(0.5 * aquarium.size().x() - 1, -0.5 * aquarium.size().y(), 0.5 * aquarium.size().z());
+				glVertex3f(0.5 * aquarium.size().x() - 1,  0.5 * aquarium.size().y(), 0.5 * aquarium.size().z());
+				glVertex3f(0.5 * aquarium.size().x() - 1,  0.5 * aquarium.size().y(), 0.5 * aquarium.size().z() - balkSize2);
 				break;
 
 			case RIGHT_CAMERA:
 				//dwarsbalk bij groot scherm
-				glVertex3f(-balkSize2, -0.5 * aquariumSize.y() + balkSize2, 0.5 * aquariumSize.z() - 1);
-				glVertex3f(-balkSize2, 0.5 * aquariumSize.y() - balkSize2, 0.5 * aquariumSize.z() - 1);
-				glVertex3f(balkSize2, 0.5 * aquariumSize.y() - balkSize2, 0.5 * aquariumSize.z() - 1);
-				glVertex3f(balkSize2, -0.5 * aquariumSize.y() + balkSize2, 0.5 * aquariumSize.z() - 1);
-				
+				glVertex3f(-balkSize2, -0.5 * aquarium.size().y() + balkSize2, 0.5 * aquarium.size().z() - 1);
+				glVertex3f(-balkSize2,  0.5 * aquarium.size().y() - balkSize2, 0.5 * aquarium.size().z() - 1);
+				glVertex3f( balkSize2,  0.5 * aquarium.size().y() - balkSize2, 0.5 * aquarium.size().z() - 1);
+				glVertex3f( balkSize2, -0.5 * aquarium.size().y() + balkSize2, 0.5 * aquarium.size().z() - 1);
+
 				//onder bij groot scherm
-				glVertex3f(-0.5 * aquariumSize.x(), -0.5 * aquariumSize.y() + balkSize2, 0.5 * aquariumSize.z() - 1);
-				glVertex3f(-0.5 * aquariumSize.x(), -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
-				glVertex3f(0.5 * aquariumSize.x(), -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
-				glVertex3f(0.5 * aquariumSize.x(), -0.5 * aquariumSize.y() + balkSize2, 0.5 * aquariumSize.z() - 1);
+				glVertex3f(-0.5 * aquarium.size().x(), -0.5 * aquarium.size().y() + balkSize2, 0.5 * aquarium.size().z() - 1);
+				glVertex3f(-0.5 * aquarium.size().x(), -0.5 * aquarium.size().y()            , 0.5 * aquarium.size().z() - 1);
+				glVertex3f( 0.5 * aquarium.size().x(), -0.5 * aquarium.size().y()            , 0.5 * aquarium.size().z() - 1);
+				glVertex3f( 0.5 * aquarium.size().x(), -0.5 * aquarium.size().y() + balkSize2, 0.5 * aquarium.size().z() - 1);
 
 				//boven bij groot scherm
-				glVertex3f(-0.5 * aquariumSize.x(), 0.5 * aquariumSize.y() - balkSize2, 0.5 * aquariumSize.z() - 1);
-				glVertex3f(-0.5 * aquariumSize.x(), 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
-				glVertex3f(0.5 * aquariumSize.x(), 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
-				glVertex3f(0.5 * aquariumSize.x(), 0.5 * aquariumSize.y() - balkSize2, 0.5 * aquariumSize.z() - 1);
+				glVertex3f(-0.5 * aquarium.size().x(), 0.5 * aquarium.size().y() - balkSize2, 0.5 * aquarium.size().z() - 1);
+				glVertex3f(-0.5 * aquarium.size().x(), 0.5 * aquarium.size().y()            , 0.5 * aquarium.size().z() - 1);
+				glVertex3f( 0.5 * aquarium.size().x(), 0.5 * aquarium.size().y()            , 0.5 * aquarium.size().z() - 1);
+				glVertex3f( 0.5 * aquarium.size().x(), 0.5 * aquarium.size().y() - balkSize2, 0.5 * aquarium.size().z() - 1);
 
 				//rechts bij groot scherm
-				glVertex3f(0.5 * aquariumSize.x() - balkSize2, -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
-				glVertex3f(0.5 * aquariumSize.x(), -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
-				glVertex3f(0.5 * aquariumSize.x(), 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
-				glVertex3f(0.5 * aquariumSize.x() - balkSize2, 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
+				glVertex3f(0.5 * aquarium.size().x() - balkSize2, -0.5 * aquarium.size().y(), 0.5 * aquarium.size().z() - 1);
+				glVertex3f(0.5 * aquarium.size().x()            , -0.5 * aquarium.size().y(), 0.5 * aquarium.size().z() - 1);
+				glVertex3f(0.5 * aquarium.size().x()            ,  0.5 * aquarium.size().y(), 0.5 * aquarium.size().z() - 1);
+				glVertex3f(0.5 * aquarium.size().x() - balkSize2,  0.5 * aquarium.size().y(), 0.5 * aquarium.size().z() - 1);
 
 				//links bij groot scherm
-				glVertex3f(-0.5 * aquariumSize.x() + balkSize2, -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
-				glVertex3f(-0.5 * aquariumSize.x(), -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
-				glVertex3f(-0.5 * aquariumSize.x(), 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
-				glVertex3f(-0.5 * aquariumSize.x() + balkSize2, 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - 1);
+				glVertex3f(-0.5 * aquarium.size().x() + balkSize2, -0.5 * aquarium.size().y(), 0.5 * aquarium.size().z() - 1);
+				glVertex3f(-0.5 * aquarium.size().x()            , -0.5 * aquarium.size().y(), 0.5 * aquarium.size().z() - 1);
+				glVertex3f(-0.5 * aquarium.size().x()            ,  0.5 * aquarium.size().y(), 0.5 * aquarium.size().z() - 1);
+				glVertex3f(-0.5 * aquarium.size().x() + balkSize2,  0.5 * aquarium.size().y(), 0.5 * aquarium.size().z() - 1);
 				break;
 		}
 
 		//onder tegenover groot scherm
-		glVertex3f(-0.5 * aquariumSize.x(), -0.5 * aquariumSize.y() + balkSize2, -0.5 * aquariumSize.z() + 1);
-		glVertex3f(-0.5 * aquariumSize.x(), -0.5 * aquariumSize.y(), -0.5 * aquariumSize.z() + 1);
-		glVertex3f(0.5 * aquariumSize.x(), -0.5 * aquariumSize.y(), -0.5 * aquariumSize.z() + 1);
-		glVertex3f(0.5 * aquariumSize.x(), -0.5 * aquariumSize.y() + balkSize2, -0.5 * aquariumSize.z() + 1);
+		glVertex3f(-0.5 * aquarium.size().x(), -0.5 * aquarium.size().y() + balkSize2, -0.5 * aquarium.size().z() + 1);
+		glVertex3f(-0.5 * aquarium.size().x(), -0.5 * aquarium.size().y()            , -0.5 * aquarium.size().z() + 1);
+		glVertex3f( 0.5 * aquarium.size().x(), -0.5 * aquarium.size().y()            , -0.5 * aquarium.size().z() + 1);
+		glVertex3f( 0.5 * aquarium.size().x(), -0.5 * aquarium.size().y() + balkSize2, -0.5 * aquarium.size().z() + 1);
 
 		//boven tegenover groot scherm
-		glVertex3f(-0.5 * aquariumSize.x(), 0.5 * aquariumSize.y() - balkSize2, -0.5 * aquariumSize.z() + 1);
-		glVertex3f(-0.5 * aquariumSize.x(), 0.5 * aquariumSize.y(), -0.5 * aquariumSize.z() + 1);
-		glVertex3f(0.5 * aquariumSize.x(), 0.5 * aquariumSize.y(), -0.5 * aquariumSize.z() + 1);
-		glVertex3f(0.5 * aquariumSize.x(), 0.5 * aquariumSize.y() - balkSize2, -0.5 * aquariumSize.z() + 1);
+		glVertex3f(-0.5 * aquarium.size().x(), 0.5 * aquarium.size().y() - balkSize2, -0.5 * aquarium.size().z() + 1);
+		glVertex3f(-0.5 * aquarium.size().x(), 0.5 * aquarium.size().y()            , -0.5 * aquarium.size().z() + 1);
+		glVertex3f( 0.5 * aquarium.size().x(), 0.5 * aquarium.size().y()            , -0.5 * aquarium.size().z() + 1);
+		glVertex3f( 0.5 * aquarium.size().x(), 0.5 * aquarium.size().y() - balkSize2, -0.5 * aquarium.size().z() + 1);
 
 		//rechts tegenover groot scherm
-		glVertex3f(0.5 * aquariumSize.x() - balkSize2, -0.5 * aquariumSize.y(), -0.5 * aquariumSize.z() + 1);
-		glVertex3f(0.5 * aquariumSize.x(), -0.5 * aquariumSize.y(), -0.5 * aquariumSize.z() + 1);
-		glVertex3f(0.5 * aquariumSize.x(), 0.5 * aquariumSize.y(), -0.5 * aquariumSize.z() + 1);
-		glVertex3f(0.5 * aquariumSize.x() - balkSize2, 0.5 * aquariumSize.y(), -0.5 * aquariumSize.z() + 1);
+		glVertex3f(0.5 * aquarium.size().x() - balkSize2, -0.5 * aquarium.size().y(), -0.5 * aquarium.size().z() + 1);
+		glVertex3f(0.5 * aquarium.size().x()            , -0.5 * aquarium.size().y(), -0.5 * aquarium.size().z() + 1);
+		glVertex3f(0.5 * aquarium.size().x()            ,  0.5 * aquarium.size().y(), -0.5 * aquarium.size().z() + 1);
+		glVertex3f(0.5 * aquarium.size().x() - balkSize2,  0.5 * aquarium.size().y(), -0.5 * aquarium.size().z() + 1);
 
 		//links tegenover groot scherm
-		glVertex3f(-0.5 * aquariumSize.x() + balkSize2, -0.5 * aquariumSize.y(), -0.5 * aquariumSize.z() + 1);
-		glVertex3f(-0.5 * aquariumSize.x(), -0.5 * aquariumSize.y(), -0.5 * aquariumSize.z() + 1);
-		glVertex3f(-0.5 * aquariumSize.x(), 0.5 * aquariumSize.y(), -0.5 * aquariumSize.z() + 1);
-		glVertex3f(-0.5 * aquariumSize.x() + balkSize2, 0.5 * aquariumSize.y(), -0.5 * aquariumSize.z() + 1);
+		glVertex3f(-0.5 * aquarium.size().x() + balkSize2, -0.5 * aquarium.size().y(), -0.5 * aquarium.size().z() + 1);
+		glVertex3f(-0.5 * aquarium.size().x()            , -0.5 * aquarium.size().y(), -0.5 * aquarium.size().z() + 1);
+		glVertex3f(-0.5 * aquarium.size().x()            ,  0.5 * aquarium.size().y(), -0.5 * aquarium.size().z() + 1);
+		glVertex3f(-0.5 * aquarium.size().x() + balkSize2,  0.5 * aquarium.size().y(), -0.5 * aquarium.size().z() + 1);
 
 		//onder tegenover klein scherm
-		glVertex3f(-0.5 * aquariumSize.x() + 1, -0.5 * aquariumSize.y() + balkSize2, -0.5 * aquariumSize.z());
-		glVertex3f(-0.5 * aquariumSize.x() + 1, -0.5 * aquariumSize.y(), -0.5 * aquariumSize.z());
-		glVertex3f(-0.5 * aquariumSize.x() + 1, -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z());
-		glVertex3f(-0.5 * aquariumSize.x() + 1, -0.5 * aquariumSize.y() + balkSize2, 0.5 * aquariumSize.z());
+		glVertex3f(-0.5 * aquarium.size().x() + 1, -0.5 * aquarium.size().y() + balkSize2, -0.5 * aquarium.size().z());
+		glVertex3f(-0.5 * aquarium.size().x() + 1, -0.5 * aquarium.size().y()            , -0.5 * aquarium.size().z());
+		glVertex3f(-0.5 * aquarium.size().x() + 1, -0.5 * aquarium.size().y()            ,  0.5 * aquarium.size().z());
+		glVertex3f(-0.5 * aquarium.size().x() + 1, -0.5 * aquarium.size().y() + balkSize2,  0.5 * aquarium.size().z());
 
 		//boven tegenover klein scherm
-		glVertex3f(-0.5 * aquariumSize.x() + 1, 0.5 * aquariumSize.y() - balkSize2, -0.5 * aquariumSize.z());
-		glVertex3f(-0.5 * aquariumSize.x() + 1, 0.5 * aquariumSize.y(), -0.5 * aquariumSize.z());
-		glVertex3f(-0.5 * aquariumSize.x() + 1, 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z());
-		glVertex3f(-0.5 * aquariumSize.x() + 1, 0.5 * aquariumSize.y() - balkSize2, 0.5 * aquariumSize.z());
+		glVertex3f(-0.5 * aquarium.size().x() + 1, 0.5 * aquarium.size().y() - balkSize2, -0.5 * aquarium.size().z());
+		glVertex3f(-0.5 * aquarium.size().x() + 1, 0.5 * aquarium.size().y()            , -0.5 * aquarium.size().z());
+		glVertex3f(-0.5 * aquarium.size().x() + 1, 0.5 * aquarium.size().y()            ,  0.5 * aquarium.size().z());
+		glVertex3f(-0.5 * aquarium.size().x() + 1, 0.5 * aquarium.size().y() - balkSize2,  0.5 * aquarium.size().z());
 
 		//rechts tegenover klein scherm
-		glVertex3f(-0.5 * aquariumSize.x() + 1, -0.5 * aquariumSize.y(), -0.5 * aquariumSize.z() + balkSize2);
-		glVertex3f(-0.5 * aquariumSize.x() + 1, -0.5 * aquariumSize.y(), -0.5 * aquariumSize.z());
-		glVertex3f(-0.5 * aquariumSize.x() + 1, 0.5 * aquariumSize.y(), -0.5 * aquariumSize.z());
-		glVertex3f(-0.5 * aquariumSize.x() + 1, 0.5 * aquariumSize.y(), -0.5 * aquariumSize.z() + balkSize2);
+		glVertex3f(-0.5 * aquarium.size().x() + 1, -0.5 * aquarium.size().y(), -0.5 * aquarium.size().z() + balkSize2);
+		glVertex3f(-0.5 * aquarium.size().x() + 1, -0.5 * aquarium.size().y(), -0.5 * aquarium.size().z());
+		glVertex3f(-0.5 * aquarium.size().x() + 1,  0.5 * aquarium.size().y(), -0.5 * aquarium.size().z());
+		glVertex3f(-0.5 * aquarium.size().x() + 1,  0.5 * aquarium.size().y(), -0.5 * aquarium.size().z() + balkSize2);
 
 		//links tegenover klein scherm
-		glVertex3f(-0.5 * aquariumSize.x() + 1, -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - balkSize2);
-		glVertex3f(-0.5 * aquariumSize.x() + 1, -0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() + 20);
-		glVertex3f(-0.5 * aquariumSize.x() + 1, 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() + 20);
-		glVertex3f(-0.5 * aquariumSize.x() + 1, 0.5 * aquariumSize.y(), 0.5 * aquariumSize.z() - balkSize2);
+		glVertex3f(-0.5 * aquarium.size().x() + 1, -0.5 * aquarium.size().y(), 0.5 * aquarium.size().z() - balkSize2);
+		glVertex3f(-0.5 * aquarium.size().x() + 1, -0.5 * aquarium.size().y(), 0.5 * aquarium.size().z() + 20);
+		glVertex3f(-0.5 * aquarium.size().x() + 1,  0.5 * aquarium.size().y(), 0.5 * aquarium.size().z() + 20);
+		glVertex3f(-0.5 * aquarium.size().x() + 1,  0.5 * aquarium.size().y(), 0.5 * aquarium.size().z() - balkSize2);
 	}
 
 	glEnd();
@@ -603,7 +603,7 @@ void render(Aquarium& aquarium, CAMERA camera, int x, int y, int port_width, int
 			break;
 	}
 
-	DrawBackground(camera);
+	DrawBackground(camera, aquarium);
 	aquarium.draw();
 }
 
@@ -618,10 +618,10 @@ static void update_and_render_simulation(Aquarium& aquarium, const double dt)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// left view
-	render(aquarium, LEFT_CAMERA, 0, 0, port1_width, win_height, aquariumSize, aquarium.facePosition);
+	render(aquarium, LEFT_CAMERA, 0, 0, port1_width, win_height, aquarium.size(), aquarium.facePosition);
 
 	// right view
-	render(aquarium, RIGHT_CAMERA, port1_width, 0, port2_width, win_height, Eigen::Vector3d(aquariumSize.z(), aquariumSize.y(), aquariumSize.x()));
+	render(aquarium, RIGHT_CAMERA, port1_width, 0, port2_width, win_height, Eigen::Vector3d(aquarium.size().z(), aquarium.size().y(), aquarium.size().x()));
 }
 
 /**
@@ -717,7 +717,7 @@ int main(int argc, char** argv)
 		glDepthMask(GL_TRUE);
 		glfwSetWindowTitle("");
 
-		Aquarium aquarium;
+		Aquarium aquarium(aquariumInitSize);
 
 		LoadModels(input_file, aquarium);
 		input_file.close();
@@ -750,11 +750,11 @@ int main(int argc, char** argv)
 		//mist kleur
 		glFogfv(GL_FOG_COLOR, fogColor);
 		//mist dichtheid
-		glFogf(GL_FOG_DENSITY, 1.0f/(eye_distance+aquariumSize.z()+aquariumSize.x()));
+		glFogf(GL_FOG_DENSITY, 1.f / (eye_distance + aquarium.size().z() + aquarium.size().x()));
 		/// niet nodig
 		//glHint(GL_FOG_HINT, GL_NICEST);
 		//glFogf(GL_FOG_START, eye_distance);
-		//glFogf(GL_FOG_END, eye_distance+aquariumSize.z()+aquariumSize.x());
+		//glFogf(GL_FOG_END, eye_distance + aquarium.size().z() + aquarium.size().x());
 		if (enable_fog)
 			glEnable(GL_FOG);
 		else
