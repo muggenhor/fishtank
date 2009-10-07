@@ -99,6 +99,7 @@ BOOST_SMART_PTR
 BOOST_THREADS([${BOOSTSUFFIX}])
 BOOST_UTILITY
 PKG_CHECK_MODULES([GLFW], [libglfw])
+PKG_CHECK_MODULES([LUABIND], [luabind >= 0.8.1])
 
 # Look for OpenGL
 AC_CHECK_LIB(GL, main,
@@ -128,6 +129,16 @@ AC_CHECK_LIB([png], [png_read_row],
 	AC_SUBST([PNG_LIBS], [-lpng]),
 	AC_MSG_ERROR([PNG not found]),
 	[${WIN32_LIBS}])
+
+# First check the pkg-config lua5.1 package
+PKG_CHECK_MODULES([LUA], [lua5.1 >= 5.1], [
+	AC_SUBST([LUA_REQUIRES], [lua5.1])
+],[
+	# If that fails, check the "lua" pkg-config package
+	PKG_CHECK_MODULES([LUA], [lua >= 5.1], [
+		AC_SUBST([LUA_REQUIRES], [lua])
+	])
+])
 
 # Look for OpenCV's HighGUI
 AC_CHECK_HEADER([opencv/highgui.h], ,

@@ -42,6 +42,7 @@ build-stamp: extract-stamp patch-stamp build-bjam-stamp
 	touch build-stamp
 
 build: build-stamp
+	test -L stage || ln -s $(PKG_SOURCEBASE)/stage stage
 
 clean:
 	$(RM) -r $(PKG_SOURCEBASE) extract-stamp patch-stamp build-stamp build-bjam-stamp

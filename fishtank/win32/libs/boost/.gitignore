@@ -1,5 +1,6 @@
-/boost_1_39_0
-/build-bjam-stamp
-/build-stamp
-/extract-stamp
-/patch-stamp
+boost_1_39_0
+build-bjam-stamp
+build-stamp
+extract-stamp
+patch-stamp
+stage

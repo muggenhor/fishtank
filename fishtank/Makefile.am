@@ -70,9 +70,11 @@ fishtank_LDADD = \
 fishtank_LDFLAGS = \
 	$(BOOST_PROGRAM_OPTIONS_LDFLAGS) \
 	$(BOOST_REGEX_LDFLAGS) \
-	$(BOOST_THREAD_LDFLAGS)
+	$(BOOST_THREAD_LDFLAGS) \
+	$(LUA_LIBS) \
+	$(LUABIND_LIBS)
 
-fishtank_CPPFLAGS = -I$(srcdir)/lib $(GLFW_CFLAGS) $(BOOST_CPPFLAGS) $(AM_CPPFLAGS)
+fishtank_CPPFLAGS = -I$(srcdir)/lib $(GLFW_CFLAGS) $(BOOST_CPPFLAGS) $(LUA_CFLAGS) $(LUABIND_CFLAGS) $(AM_CPPFLAGS)
 
 dist_doc_DATA = \
 	Handleiding.doc

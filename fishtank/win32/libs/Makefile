@@ -1,4 +1,4 @@
-SUBDIRS=boost eigen glfw jpeg zlib png
+SUBDIRS=boost eigen glfw jpeg lua luabind zlib png
 
 all: all-recursive
 build: build-recursive
