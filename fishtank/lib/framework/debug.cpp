@@ -31,6 +31,7 @@ const boost::array<std::string, LOG_LAST> DebugStream::debug_level_names =
 	"error",
 	"warning",
 	"never",
+	"script",
 	"3d",
 	"main",
 	"media",

@@ -1,2 +1,3 @@
 SUBDIRS = \
-	  framework
+	  framework \
+	  script

@@ -56,11 +56,14 @@ noinst_HEADERS = \
 fishtank_LDADD = \
 	$(builddir)/GL/libGLee.la \
 	$(builddir)/lib/framework/libframework.la \
+	$(builddir)/lib/script/libscript.la \
 	$(builddir)/vertexarrays/libvertexarrays.la \
 	$(BOOST_PROGRAM_OPTIONS_LIBS) \
 	$(BOOST_REGEX_LIBS) \
 	$(BOOST_THREAD_LIBS) \
 	$(GLFW_LIBS) \
+	$(LUA_LIBS) \
+	$(LUABIND_LIBS) \
 	$(OPENCV_LIBS) \
 	$(OPENGL_LIBS) \
 	$(JPEG_LIBS) \
@@ -70,9 +73,7 @@ fishtank_LDADD = \
 fishtank_LDFLAGS = \
 	$(BOOST_PROGRAM_OPTIONS_LDFLAGS) \
 	$(BOOST_REGEX_LDFLAGS) \
-	$(BOOST_THREAD_LDFLAGS) \
-	$(LUA_LIBS) \
-	$(LUABIND_LIBS)
+	$(BOOST_THREAD_LDFLAGS)
 
 fishtank_CPPFLAGS = -I$(srcdir)/lib $(GLFW_CFLAGS) $(BOOST_CPPFLAGS) $(LUA_CFLAGS) $(LUABIND_CFLAGS) $(AM_CPPFLAGS)
 

@@ -163,6 +163,7 @@ AC_CONFIG_FILES([Makefile
                  GL/Makefile
                  lib/Makefile
                  lib/framework/Makefile
+                 lib/script/Makefile
                  Settings/Makefile
                  vertexarrays/Makefile])
 AC_OUTPUT
