@@ -4,6 +4,7 @@
 #ifdef WIN32
 extern "C"
 {
+# include <basetsd.h> // Required for the definition of INT32
 # include "include/jpeglib.h"
 }
 #else
