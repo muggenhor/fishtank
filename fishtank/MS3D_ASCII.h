@@ -91,7 +91,7 @@ class Material
 	public:
 		Material();
 
-		bool loadFromMs3dAsciiSegment(FILE* file, std::string path_);
+		bool loadFromMs3dAsciiSegment(FILE* file, const std::string& dir);
 		void activate() const;
 		void reloadTexture();
 
@@ -111,7 +111,7 @@ class Material
 			ar & DiffuseTexture;
 			ar & AlphaTexture;
 			ar & texture;
-			ar & path;
+			ar & dir;
 		}
 
 	private:
@@ -124,8 +124,8 @@ class Material
 		float Transparency;
 		char  DiffuseTexture[MS_MAX_NAME];
 		char  AlphaTexture[MS_MAX_NAME];
-		Texture texture;
-		std::string path;
+		boost::shared_ptr<const Texture> texture;
+		std::string dir;
 };
 
 
@@ -144,7 +144,7 @@ class Model
 		Eigen::Vector3f bb_l;/// bounding box for the model, low and high
 		Eigen::Vector3f bb_h;
 
-		std::string path;
+		std::string dir;
 
 	private:
 		friend class boost::serialization::access;

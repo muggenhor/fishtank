@@ -6,6 +6,11 @@
 
 // Forward declaration to allow pointers to this type
 class Model;
+class Texture;
+
+boost::shared_ptr<const Texture>
+  loadTexture(const std::string& dir,
+              const std::string& filename);
 
 boost::shared_ptr<const Model>
   loadModel(const std::string& dir,

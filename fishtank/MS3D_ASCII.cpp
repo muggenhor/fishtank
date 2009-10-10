@@ -5,6 +5,7 @@
 #include <Eigen/Geometry>
 #include <Eigen/LU>
 #include <framework/debug.hpp>
+#include <framework/resource.hpp>
 #include "math-helpers.hpp"
 #include "main.hpp"
 #include "MS3D_ASCII.h"
@@ -325,15 +326,16 @@ void Material::activate() const
 	glMaterialfv( GL_FRONT, GL_EMISSION, Emissive );
 	glMaterialf( GL_FRONT, GL_SHININESS, Shininess );
 
-	if (!texture.empty())
-		texture.bind();
+	if (texture && !texture->empty())
+		texture->bind();
 	else
 		glDisable(GL_TEXTURE_2D);
 }
 
-bool Material::loadFromMs3dAsciiSegment( FILE *file, std::string path_ )
+bool Material::loadFromMs3dAsciiSegment( FILE *file, const std::string& dir)
 {
-	path=path_;
+	this->dir = dir;
+
 	char szLine[256];
 
 	// name
@@ -400,14 +402,11 @@ void Material::reloadTexture()
 {
 	if (strlen(DiffuseTexture) > 0)
 	{
-		rgb8_image_t img;
-		read_image(path + DiffuseTexture, img);
-
-		texture = flipped_up_down_view(const_view(img));
+		texture = loadTexture(dir, DiffuseTexture);
 	}
 	else
 	{
-		texture.clear();
+		texture.reset();
 	}
 }
 
@@ -419,18 +418,9 @@ Model::Model():
 
 bool Model::loadFromMs3dAsciiFile(const char* filename, const Eigen::Matrix4f& transform)
 {
-	path = filename;
-	/// i'd use rfind but duh it cant search for both \\ and /
-	int path_length;
-	for (path_length = path.size() - 1; path_length >= 0; --path_length)
-	{
-		if (path[path_length]=='/'
-		 || path[path_length]=='\\')
-		{
-			break;
-		}
-	}
-	path.resize(path_length + 1);/// downsize the string to cut out name from path
+	dir = filename;
+	// Strip everything after (and including) the last directory separator ('/' or '\')
+	dir.erase(dir.find_last_of("/\\"));
 
 	bb_l = Vector3f(1E20,1E20,1E20);
 	bb_h = -bb_l;
@@ -496,7 +486,7 @@ bool Model::loadFromMs3dAsciiFile(const char* filename, const Eigen::Matrix4f& t
 
 			foreach (Material& material, materials)
 			{
-				if (!material.loadFromMs3dAsciiSegment(file, path))
+				if (!material.loadFromMs3dAsciiSegment(file, dir))
 				{
 					return false;
 				}
