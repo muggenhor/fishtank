@@ -34,6 +34,10 @@ case ${host_os} in
 		FT_CXXFLAGS="${FT_CXXFLAGS} -mthreads"
 		AC_SUBST([WIN32_LIBS])
 		;;
+	*)
+		FT_CFLAGS="${FT_CFLAGS} -pthread"
+		FT_CXXFLAGS="${FT_CXXFLAGS} -pthread"
+		;;
 esac
 
 # pkg-config hooks:
