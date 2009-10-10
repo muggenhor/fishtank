@@ -8,12 +8,14 @@ noinst_LTLIBRARIES = libscript.la
 libscript_la_SOURCES = \
 	debug-support.cpp \
 	eigen-support.cpp \
-	object-support.cpp
+	object-support.cpp \
+	opengl-support.cpp
 
 noinst_HEADERS = \
 	debug-support.hpp \
 	eigen-support.hpp \
-	object-support.hpp
+	object-support.hpp \
+	opengl-support.hpp
 
 libscript_la_LIBADD = \
 	$(builddir)/../framework/libframework.la
