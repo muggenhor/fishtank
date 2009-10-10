@@ -23,8 +23,8 @@ static const float SCALECAUSTICS = 24; // Higher number = bigger texture
 static const float CAUSTICOPACITY = 0.25f; // Opacity of the caustics (eg. 0.25f for 25%)
 
 Ground::Ground(const char* const filename, int maxHeight, const Aquarium* aquarium, const char* const texturename) :
-	maxHeight(maxHeight),
-	aquarium(aquarium)
+	aquarium(aquarium),
+	_maxHeight(maxHeight)
 {
 	// Load heightmap
 	rgb8_image_t img;
@@ -87,7 +87,7 @@ int Ground::HeightAt(unsigned int x, unsigned int y) const
 	// Convert RGB value to grayscale by using the NTSC grayscale weights
 	const float height_value = const_view(heightmap)(x, y)[0];
 
-	return height_value * maxHeight - aquarium->size().y() * 0.5f;
+	return height_value * maxHeight() - aquarium->size().y() * 0.5f;
 }
 
 void Ground::Draw()

@@ -318,8 +318,7 @@ static void LoadModels(std::istream& input_file, Aquarium& aquarium)
 	string s;
 
 	getline(input_file, s);
-	aquarium.ground.maxHeight = atoi(s.c_str());
-	aquarium.ground.updateRenderData();
+	aquarium.ground.maxHeight(atoi(s.c_str()));
 
 	getline(input_file, s);
 	int n=atoi(s.c_str());

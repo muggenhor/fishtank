@@ -24,15 +24,16 @@ class Ground
 
 		inline unsigned int width() const { return heightmap.width(); }
 		inline unsigned int depth() const { return heightmap.height(); }
-		int maxHeight;
-
-		void updateRenderData();
+		inline int  maxHeight() const     { return _maxHeight;   }
+		inline void maxHeight(int height) { _maxHeight = height; updateRenderData(); }
 
 	private:
+		void updateRenderData();
 		Texture& getCausticTexture();
 
 	private:
 		const Aquarium* aquarium;
+		int _maxHeight;
 		boost::gil::gray32f_image_t heightmap;
 		Texture texture;
 		std::vector<Texture> caustics;

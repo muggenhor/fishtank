@@ -54,7 +54,7 @@ Aquarium::Aquarium(const Eigen::Vector3d& size_) :
 
 void Aquarium::AddFish(boost::shared_ptr<const Model> model, const string &propertiesFile)
 {
-	fishes.push_back(shared_ptr<Vis>(new Vis(model, propertiesFile, ground.maxHeight)));
+	fishes.push_back(shared_ptr<Vis>(new Vis(model, propertiesFile, ground.maxHeight())));
 }
 
 void Aquarium::AddObject(boost::shared_ptr<const Model> model, const string &propertiesFile, const Eigen::Vector3f &position)
