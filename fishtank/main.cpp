@@ -101,9 +101,9 @@ static FrameRateManager fps(30);
 static unsigned int io_threads = 1;
 
 //scherm resolutie
-static int win_width=0, win_height=0;
+static Eigen::Vector2i win_size(0, 0);
 //de schermpositie
-static int win_move_x = 5, win_move_y = 30;
+static Eigen::Vector2i win_pos(5, 30);
 
 //oogafstand van het aquarium
 static float eye_distance=300;
@@ -230,14 +230,12 @@ static void ParseOptions(int argc, char** argv, std::istream& config_file, boost
 
 	if (vm.count("window-size"))
 	{
-		win_width = vm["window-size"].as<Eigen::Vector2i>().x();
-		win_height = vm["window-size"].as<Eigen::Vector2i>().y();
+		win_size = vm["window-size"].as<Eigen::Vector2i>();
 	}
 
 	if (vm.count("window-position"))
 	{
-		win_move_x = vm["window-position"].as<Eigen::Vector2i>().x();
-		win_move_y = vm["window-position"].as<Eigen::Vector2i>().y();
+		win_pos = vm["window-position"].as<Eigen::Vector2i>();
 	}
 
 	if (vm.count("cam-flip-up-down"))
@@ -260,14 +258,14 @@ static void LoadSettings(std::istream& input_file)
 	string s;
 
 	getline(input_file, s);
-	win_width = atoi(s.c_str());
+	win_size.x() = atoi(s.c_str());
 	getline(input_file, s);
-	win_height = atoi(s.c_str());
+	win_size.y() = atoi(s.c_str());
 
 	getline(input_file, s);
-	win_move_x = atoi(s.c_str());
+	win_pos.x() = atoi(s.c_str());
 	getline(input_file, s);
-	win_move_y = atoi(s.c_str());
+	win_pos.y() = atoi(s.c_str());
 
 	getline(input_file, s);
 	aquariumInitSize.x() = atoi(s.c_str());
@@ -610,17 +608,17 @@ static void update_and_render_simulation(Aquarium& aquarium, const double dt)
 {
 	aquarium.update(dt);
 
-	glfwGetWindowSize(&win_width,&win_height);/// get window size
-	const unsigned int port1_width = win_width * 2. / 3.;
-	const unsigned int port2_width = win_width * 1. / 3.;
+	glfwGetWindowSize(&win_size.x(), &win_size.y());/// get window size
+	const unsigned int port1_width = win_size.x() * 2. / 3.;
+	const unsigned int port2_width = win_size.x() * 1. / 3.;
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// left view
-	render(aquarium, LEFT_CAMERA, 0, 0, port1_width, win_height, aquarium.size(), aquarium.facePosition);
+	render(aquarium, LEFT_CAMERA, 0, 0, port1_width, win_size.y(), aquarium.size(), aquarium.facePosition);
 
 	// right view
-	render(aquarium, RIGHT_CAMERA, port1_width, 0, port2_width, win_height, Eigen::Vector3d(aquarium.size().z(), aquarium.size().y(), aquarium.size().x()));
+	render(aquarium, RIGHT_CAMERA, port1_width, 0, port2_width, win_size.y(), Eigen::Vector3d(aquarium.size().z(), aquarium.size().y(), aquarium.size().x()));
 }
 
 /**
@@ -707,7 +705,7 @@ int main(int argc, char** argv)
 		glfwInit();
 		glfwOpenWindowHint(GLFW_FSAA_SAMPLES, multi_sample);
 
-		if( !glfwOpenWindow( win_width, win_height,  0,0,0,0,  16, 	 0, GLFW_WINDOW ))
+		if (!glfwOpenWindow(win_size.x(), win_size.y(), 0, 0, 0, 0, 16, 0, GLFW_WINDOW))
 		{/// width, height, rgba bits (4 params), depth bits, stencil bits, mode.
 			debug(LOG_ERROR) << "Bye cruel world! glfwOpenWindow() failed";
 			throw exit_exception(EXIT_FAILURE);
@@ -722,9 +720,9 @@ int main(int argc, char** argv)
 		input_file.close();
 
 		// We're using three screens
-		win_width *= 3;
-		glfwSetWindowSize(win_width, win_height);
-		glfwSetWindowPos(win_move_x, win_move_y);
+		win_size.x() *= 3;
+		glfwSetWindowSize(win_size.x(), win_size.y());
+		glfwSetWindowPos(win_pos.x(), win_pos.y());
 
 		/* Required to make sure the back buffer has the same size as
 		 * the window (to make sure the first frame is drawn properly
