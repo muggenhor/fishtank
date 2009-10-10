@@ -45,6 +45,7 @@ static int lua_DebugPrint(lua_State* L, code_part part, int first_arg = 1)
 		{
 			function += ":";
 			function += ar.name;
+			function += "()";
 		}
 	}
 	else
@@ -54,29 +55,19 @@ static int lua_DebugPrint(lua_State* L, code_part part, int first_arg = 1)
 
 	DebugStream stream(_debug(part, function.c_str()));
 
-	for (int arg = first_arg; arg <= argc; ++arg)
+	for (int i = first_arg; i <= argc; ++i)
 	{
-		lua_getglobal(L, "tostring");
-		lua_pushvalue(L, arg);
-		if (lua_pcall(L, 1, 1, 0))
-		{
-			const char* const err_str = lua_tostring(L, -1);
-			throw err_str;
-		}
+		object arg(from_stack(L, i));
 
-		const char* const str = lua_tostring(L, -1);
-		if (!str)
-		{
-			throw "non-string argument";
-		}
-
+		string str = call_function<string>(L, "tostring", arg);
 		stream << str;
-		lua_pop(L, 1);
 
 		// Separate arguments by spaces
-		if (arg < argc
-		 && str[strlen(str) - 1] != '\n')
-			stream << ' ';
+		if (i < argc
+		 && str[str.length() - 1] != '\n'
+		 && str[str.length() - 1] != ' '
+		 && str[str.length() - 1] != '\t')
+			stream << '\t';
 	}
 
 	// no (i.e. zero) return values
@@ -87,44 +78,57 @@ static int lua_FishDebug(lua_State* L)
 {
 	try
 	{
-		if (lua_gettop(L) < 1
-		 || (!lua_isnumber(L, 1)
-		  && !lua_isstring(L, 1)))
+		if (lua_gettop(L) < 1)
 		{
 			lua_Debug ar;
 			if (!lua_getstack(L, 1, &ar)
 			 || lua_getinfo(L, "n", &ar))
 				ar.name = NULL;
-	
-			string message("bad argument #1 to '" + string(ar.name ? ar.name : "debug") + "' (string or number expected, got ");
-			if (lua_gettop(L) < 1)
-				message += "no value)";
-			else
-				message += "another type)";
+
+			string message("bad argument #1 to '" + string(ar.name ? ar.name : "debug") + "' (string or number expected, got no value)");
 			throw std::runtime_error(message);
 		}
-	
-		if (lua_isnumber(L, 1))
-			return lua_DebugPrint(L, static_cast<code_part>(lua_tonumber(L, 1)), 2);
-	
-		assert(lua_isstring(L, 1) && "coding error");
-	
-		const boost::array<std::string, LOG_LAST>::const_iterator
-		  log_part = find(
-		    DebugStream::debug_level_names.begin(),
-		    DebugStream::debug_level_names.end(),
-		    lua_tostring(L, 1)
-		  );
-	
-		if (log_part == DebugStream::debug_level_names.end())
+
+		object log_part(from_stack(L, 1));
+		switch (type(log_part))
 		{
-			throw "unknown debug log part";
+			case LUA_TNUMBER:
+			{
+				code_part log_part_num = object_cast<code_part>(log_part);
+				if (log_part_num >= LOG_LAST)
+					throw "unknown debug log part";
+
+				return lua_DebugPrint(L, log_part_num, 2);
+			}
+			case LUA_TSTRING:
+			{
+				const boost::array<std::string, LOG_LAST>::const_iterator
+				  log_part_num = find(
+				    DebugStream::debug_level_names.begin(),
+				    DebugStream::debug_level_names.end(),
+				    object_cast<std::string>(log_part)
+				  );
+
+				if (log_part_num == DebugStream::debug_level_names.end())
+					throw "unknown debug log part";
+
+				return lua_DebugPrint(L, static_cast<code_part>(distance(
+				    DebugStream::debug_level_names.begin(),
+				    log_part_num
+				  )), 2);
+			}
+			default:
+			{
+				lua_Debug ar;
+				if (!lua_getstack(L, 1, &ar)
+				 || lua_getinfo(L, "n", &ar))
+					ar.name = NULL;
+
+				string message("bad argument #1 to '" + string(ar.name ? ar.name : "debug") + "' (string or number expected, got another type)");
+				throw std::runtime_error(message);
+			}
 		}
-	
-		return lua_DebugPrint(L, static_cast<code_part>(distance(
-		    DebugStream::debug_level_names.begin(),
-		    log_part
-		  )), 2);
+
 	}
 	catch (std::exception const& e)
 	{
@@ -178,4 +182,16 @@ void debug_register_with_lua(lua_State* L)
 	globals(L)["LOG_RPC"] = LOG_RPC;
 	globals(L)["LOG_MEMORY"] = LOG_MEMORY;
 	globals(L)["LOG_GUI"] = LOG_GUI;
+}
+
+luabind::scope debug_register_with_lua()
+{
+	using namespace luabind;
+
+	return
+		// Substitute our own version of print
+		def("print", &lua_Print, raw(_1)),
+		// Register 'debug' (acts similar to the C++ version, without stream operators, instead infinite arguments are allowed)
+		def("debug", &lua_FishDebug, raw(_1))
+		;
 }
