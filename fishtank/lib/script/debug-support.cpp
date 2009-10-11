@@ -18,17 +18,25 @@ static int lua_DebugPrint(lua_State* L, code_part part, int first_arg = 1)
 	// Get information from our caller
 	lua_Debug ar;
 	if (lua_getstack(L, 1, &ar)
-	 && lua_getinfo(L, "nS", &ar))
+	 && lua_getinfo(L, "Snl", &ar))
 	{
 		if (ar.short_src
 		 && ar.short_src[0])
 		{
-			char linedefined[32];
-			snprintf(linedefined, sizeof(linedefined), "%d", ar.linedefined);
 			function += ar.short_src;
 			function += ":";
-			function += linedefined;
-			function += ":";
+
+			if (ar.currentline > 0
+			 || ar.linedefined > 0)
+			{
+				char currentline[32];
+
+				snprintf(currentline, sizeof(currentline), "%d:",
+				  ar.currentline > 0 ?
+				    ar.currentline :
+				    ar.linedefined);
+				function += currentline;
+			}
 		}
 
 		function += ar.what ? ar.what : "unknown";
