@@ -163,12 +163,10 @@ static int lua_Print(lua_State* L)
 void debug_register_with_lua(lua_State* L)
 {
 	// Substitute our own version of print
-	lua_pushcfunction(L, &lua_Print);
-	lua_setglobal(L, "print");
+	lua_register(L, "print", &lua_Print);
 
 	// Register 'debug' (acts similar to the C++ version, without stream operators, instead infinite arguments are allowed)
-	lua_pushcfunction(L, &lua_FishDebug);
-	lua_setglobal(L, "debug");
+	lua_register(L, "debug", &lua_FishDebug);
 
 	globals(L)["LOG_ERROR"] = LOG_ERROR;
 	globals(L)["LOG_WARNING"] = LOG_WARNING;
