@@ -5,6 +5,7 @@
 
 extern "C" {
 # include <lua.h>
+# include <lualib.h>
 }
 
 using namespace luabind;
@@ -86,7 +87,7 @@ static int lua_FishDebug(lua_State* L)
 {
 	try
 	{
-		if (lua_gettop(L) < 1)
+		if (lua_gettop(L) < 2)
 		{
 			lua_Debug ar;
 			if (!lua_getstack(L, 1, &ar)
@@ -96,6 +97,8 @@ static int lua_FishDebug(lua_State* L)
 			string message("bad argument #1 to '" + string(ar.name ? ar.name : "debug") + "' (string or number expected, got no value)");
 			throw std::runtime_error(message);
 		}
+
+		lua_remove(L, 1);
 
 		object log_part(from_stack(L, 1));
 		switch (type(log_part))
@@ -177,6 +180,23 @@ void debug_register_with_lua(lua_State* L)
 
 	// Register 'debug' (acts similar to the C++ version, without stream operators, instead infinite arguments are allowed)
 	lua_register(L, "debug", &lua_FishDebug);
+	object debug_func(globals(L)["debug"]);
+	globals(L)["debug"] = nil;
+
+	// Extract the 'traceback' function from the 'debug' library and ditch the rest
+	lua_pushcfunction(L, &luaopen_debug); lua_call(L, 0, 0);
+	object traceback_func = globals(L)["debug"]["traceback"];
+	registry(L)["_LOADED"]["debug"] = nil;
+	globals(L)["debug"] = nil;
+
+	object debugt(newtable(L)), debugmt(newtable(L));
+	globals(L)["debug"] = debugt;
+	setmetatable(debugt, debugmt);
+
+	// debug()
+	debugmt["__call"] = debug_func;
+	// debug.traceback()
+	debugt["traceback"] = traceback_func;
 
 	globals(L)["LOG_ERROR"] = LOG_ERROR;
 	globals(L)["LOG_WARNING"] = LOG_WARNING;
