@@ -10,7 +10,7 @@ extern "C" {
 using namespace luabind;
 using namespace std;
 
-static int lua_DebugPrint(lua_State* L, code_part part, int first_arg = 1)
+static int lua_DebugPrint(lua_State* L, code_part part)
 {
 	const int argc = lua_gettop(L);
 	string function;
@@ -63,7 +63,7 @@ static int lua_DebugPrint(lua_State* L, code_part part, int first_arg = 1)
 
 	DebugStream stream(_debug(part, function.c_str()));
 
-	for (int i = first_arg; i <= argc; ++i)
+	for (int i = 1; i <= argc; ++i)
 	{
 		object arg(from_stack(L, i));
 
@@ -106,7 +106,8 @@ static int lua_FishDebug(lua_State* L)
 				if (log_part_num >= LOG_LAST)
 					throw "unknown debug log part";
 
-				return lua_DebugPrint(L, log_part_num, 2);
+				lua_remove(L, 1);
+				return lua_DebugPrint(L, log_part_num);
 			}
 			case LUA_TSTRING:
 			{
@@ -120,10 +121,11 @@ static int lua_FishDebug(lua_State* L)
 				if (log_part_num == DebugStream::debug_level_names.end())
 					throw "unknown debug log part";
 
+				lua_remove(L, 1);
 				return lua_DebugPrint(L, static_cast<code_part>(distance(
 				    DebugStream::debug_level_names.begin(),
 				    log_part_num
-				  )), 2);
+				  )));
 			}
 			default:
 			{
