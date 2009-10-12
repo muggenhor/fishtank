@@ -243,13 +243,13 @@ class TriangleArray
         void TextureLeftMult(texcoord_transform_type const& m)
         {
             for (size_t i = 0; i < textureCount; ++i)
-                _TexCoordArrays[i].leftmultiply();
+                _TexCoordArrays[i].leftmultiply(m);
         }
 
         void TextureMult(texcoord_transform_type const& m)
         {
             for (size_t i = 0; i < textureCount; ++i)
-                _TexCoordArrays[i].multiply();
+                _TexCoordArrays[i].multiply(m);
         }
 
         bool HasVertexVBO() const
@@ -287,7 +287,7 @@ class TriangleArray
             }
         }
 
-        void HasNormalVBO() const
+        bool HasNormalVBO() const
         {
             return _NormalArray.HasVBO();
         }
