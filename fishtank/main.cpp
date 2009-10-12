@@ -304,14 +304,13 @@ static void LoadSettings(std::istream& input_file)
 //laad de modelen uit het opgegeven bestand
 static void LoadModels(std::istream& input_file, Aquarium& aquarium)
 {
+	// Negate all X coordinates, and interchange the Y and Z coordinates
 	Eigen::Matrix4f model_matrix;
-	{
-		Eigen::Matrix4f& m = model_matrix;
-		m(0, 0) = -1; m(1, 0) = 0; m(2, 0) = 0; m(3, 0) = 0;
-		m(0, 1) =  0; m(1, 1) = 0; m(2, 1) = 1; m(3, 1) = 0;
-		m(0, 2) =  0; m(1, 2) = 1; m(2, 2) = 0; m(3, 2) = 0;
-		m(0, 3) =  0; m(1, 3) = 0; m(2, 3) = 0; m(3, 3) = 1;
-	}
+	model_matrix <<
+		-1, 0, 0, 0,
+		 0, 0, 1, 0,
+		 0, 1, 0, 0,
+		 0, 0, 0, 1;
 
 	string s;
 
