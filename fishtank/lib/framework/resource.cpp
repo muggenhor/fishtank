@@ -46,6 +46,11 @@ boost::shared_ptr<const Texture>
 	return texture;
 }
 
+boost::shared_ptr<const Model> loadModel(const std::string& dir, const std::string& model_name)
+{
+	return loadModel(dir, model_name, Eigen::Matrix4f::Identity());
+}
+
 boost::shared_ptr<const Model> loadModel(const std::string& dir, const std::string& model_name, const Eigen::Matrix4f& transform)
 {
 	string model_path;

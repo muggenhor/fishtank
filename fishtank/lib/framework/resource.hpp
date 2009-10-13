@@ -14,7 +14,11 @@ boost::shared_ptr<const Texture>
 
 boost::shared_ptr<const Model>
   loadModel(const std::string& dir,
+            const std::string& model_name);
+
+boost::shared_ptr<const Model>
+  loadModel(const std::string& dir,
             const std::string& model_name,
-            const Eigen::Matrix4f& transform = Eigen::Matrix4f::Identity());
+            const Eigen::Matrix4f& transform);
 
 #endif // __INCLUDED_LIB_FRAMEWORK_RESOURCE_HPP__

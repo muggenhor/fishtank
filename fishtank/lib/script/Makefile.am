@@ -10,6 +10,7 @@ libscript_la_SOURCES = \
 	eigen-support.cpp \
 	object-support.cpp \
 	opengl-support.cpp \
+	state.cpp \
 	vertexarrays-support.cpp
 
 noinst_HEADERS = \
@@ -17,6 +18,7 @@ noinst_HEADERS = \
 	eigen-support.hpp \
 	object-support.hpp \
 	opengl-support.hpp \
+	state.hpp \
 	vertexarrays-support.hpp
 
 libscript_la_LIBADD = \
