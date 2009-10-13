@@ -84,16 +84,10 @@ nobase_dist_objects_DATA = \
 	HeteractisMagnifica1.oif \
 	HeteractisMagnifica2.oif \
 	rocks.oif \
-	schatkist.oif \
 	SiphonochalinaSiphonella1.oif \
 	SiphonochalinaSiphonella2.oif \
 	steen.oif \
 	test.oif \
 	UrbinariaReniformis1.oif \
 	UrbinariaReniformis2.oif \
-	visobject.oif \
-	zeester.oif \
-	zw_bladeren.oif \
-	zw_boom.oif \
-	zw_gras.oif \
-	zw_stroken.oif
+	zw_bladeren.oif

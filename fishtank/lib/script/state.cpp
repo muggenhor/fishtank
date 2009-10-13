@@ -148,8 +148,9 @@ void LuaScript::register_interfaces()
 
 		class_<Aquarium>("Aquarium")
 			.def("AddFish", &Aquarium::AddFish)
-			.def("AddObject", &Aquarium::AddObject)
+			.def("addObject", &Aquarium::addObject)
 			.def("AddBubbleSpot", &Aquarium::AddBubbleSpot)
+			.def_readwrite("eye_distance", &Aquarium::eye_distance)
 			.def_readwrite("ground", &Aquarium::ground)
 			.property("size", (const Eigen::Vector3d& (Aquarium::*)() const) &Aquarium::size, (void (Aquarium::*)(const Eigen::Vector3d&)) &Aquarium::size),
 

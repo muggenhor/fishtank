@@ -5,10 +5,8 @@
 #include <Eigen/Core>
 #include <vector>
 #include "Vis.h"
-#include "static-object.hpp"
 #include "Bubble.h"
 #include "Ground.h"
-#include "Environment.h"
 
 //de grootte van de ruimte waar de vissen mogen zwemmen
 extern Eigen::Vector3d swimArea;
@@ -24,11 +22,11 @@ extern int balkSize2;
  */
 extern Eigen::Vector2d faceRange;
 
-class Aquarium
+class Aquarium : boost::noncopyable
 {
 	private:
 		Eigen::Vector3d _size;
-	std::vector< boost::shared_ptr<StaticObject> > objects;
+		std::vector< boost::weak_ptr<Object> > objects;
 	std::vector< boost::shared_ptr<Vis> > fishes;
 	std::vector< boost::shared_ptr<Bubble> > bubbles;
 	std::vector<Eigen::Vector3f> bubbleSpots;
@@ -37,10 +35,9 @@ class Aquarium
 		void size(const Eigen::Vector3d& v) { _size = v; }
 
 	Ground ground;
-	//de linker en achtermuur en het plafond
-	Environment wall1, wall2, ceiling;
 	//de positie van een persoon die voor het scherm staat
 	Eigen::Vector2d facePosition;
+		float eye_distance;
 
 		Aquarium(const Eigen::Vector3d& size_ = Eigen::Vector3d::Zero());
 
@@ -57,7 +54,7 @@ class Aquarium
 	//voeg een vis toe in het aquarium
 	void AddFish(boost::shared_ptr<const Model> model, const std::string& propertiesFile);
 	//voeg een object toe in het aquarium
-	void AddObject(boost::shared_ptr<const Model> model, const std::string& propertiesFile, const Eigen::Vector3f& position);
+	void addObject(boost::shared_ptr<Object> object);
 	//voeg een bubbel maker toe in het aquarium
 	void AddBubbleSpot(const Eigen::Vector3f& position);
 };

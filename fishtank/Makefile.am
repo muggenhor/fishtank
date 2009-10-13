@@ -21,7 +21,6 @@ fishtank_SOURCES = \
 	aquarium.cpp \
 	Bubble.cpp \
 	camera.cpp \
-	Environment.cpp \
 	framerate.cpp \
 	glexcept.cpp \
 	Ground.cpp \
@@ -29,7 +28,6 @@ fishtank_SOURCES = \
 	MS3D_ASCII.cpp \
 	object.cpp \
 	shaders.cpp \
-	static-object.cpp \
 	textures.cpp \
 	Vis.cpp \
 	wiggle.cpp
@@ -38,7 +36,6 @@ noinst_HEADERS = \
 	aquarium.hpp \
 	Bubble.h \
 	camera.hpp \
-	Environment.h \
 	framerate.hpp \
 	glexcept.hpp \
 	Ground.h \
@@ -48,7 +45,6 @@ noinst_HEADERS = \
 	MS3D_ASCII.h \
 	object.hpp \
 	shaders.hpp \
-	static-object.hpp \
 	textures.hpp \
 	Vis.h \
 	wiggle.hpp

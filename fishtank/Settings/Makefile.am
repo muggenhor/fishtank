@@ -1,2 +1,2 @@
 sysconf_DATA = \
-	aquaConfig.txt
+	fishtank-setup.lua

@@ -1,4 +1,5 @@
 #include <boost/asio/io_service.hpp>
+#include <boost/format.hpp>
 #include <boost/gil/image.hpp>
 #include <boost/gil/typedefs.hpp>
 #include <boost/lexical_cast.hpp>
@@ -9,14 +10,15 @@
 #include "camera.hpp"
 #include <framework/debug.hpp>
 #include <framework/debug-net-out.hpp>
-#include <framework/resource.hpp>
 #include <framework/threadpool.hpp>
 #include "GL/GLee.h"
 #include <GL/glfw.h>
 #include <GL/gl.h>
 #include <Eigen/Core>
 #include "framerate.hpp"
+#include <luabind/luabind.hpp>
 #include "main.hpp"
+#include <script/state.hpp>
 #include "Vis.h"
 #include "aquarium.hpp"
 #include "MS3D_ASCII.h"
@@ -44,6 +46,7 @@
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
+using boost::format;
 using namespace std;
 namespace po = boost::program_options;
 
@@ -105,9 +108,6 @@ static Eigen::Vector2i win_size(0, 0);
 //de schermpositie
 static Eigen::Vector2i win_pos(5, 30);
 
-//oogafstand van het aquarium
-static float eye_distance=300;
-
 namespace boost { namespace program_options {
 
 /**
@@ -156,8 +156,6 @@ static void ParseOptions(int argc, char** argv, std::istream& config_file, boost
 	config.add_options()
 	    ("anti-aliasing", po::value<unsigned int>(&multi_sample)->default_value(multi_sample),
 	      _("Set the level of anti aliasing to use (0 disables anti aliasing)."))
-	    ("cam-flip-up-down", _("Flip the camera's image up-down."))
-	    ("cam-rotate-90ccw", _("Rotate the camera's image 90 degrees counter clockwise."))
 	    ("camera", po::value<int>(&cameraIndex)->default_value(cameraIndex),
 	      _("The camera number to use (-1 uses the first available camera)."))
 	    ("camera-resolution", po::value<Eigen::Vector2i>(&cameraResolution)->default_value(cameraResolution),
@@ -238,139 +236,10 @@ static void ParseOptions(int argc, char** argv, std::istream& config_file, boost
 		win_pos = vm["window-position"].as<Eigen::Vector2i>();
 	}
 
-	if (vm.count("cam-flip-up-down"))
-	{
-		cameraTransformations.push_back(Transformation(Transformation::FLIP_UP_DOWN));
-	}
-
-	if (vm.count("cam-rotate-90ccw"))
-	{
-		cameraTransformations.push_back(Transformation(Transformation::ROTATE_90CCW));
-	}
-
 	DebugStream::processOptions(vm);
 	DebugNetOutputStream::processOptions(io_svc, vm);
 }
 
-//laad de settings uit het opgegeven bestand
-static void LoadSettings(std::istream& input_file)
-{
-	string s;
-
-	getline(input_file, s);
-	win_size.x() = atoi(s.c_str());
-	getline(input_file, s);
-	win_size.y() = atoi(s.c_str());
-
-	getline(input_file, s);
-	win_pos.x() = atoi(s.c_str());
-	getline(input_file, s);
-	win_pos.y() = atoi(s.c_str());
-
-	getline(input_file, s);
-	aquariumInitSize.x() = atoi(s.c_str());
-	getline(input_file, s);
-	aquariumInitSize.y() = atoi(s.c_str());
-	getline(input_file, s);
-	aquariumInitSize.z() = atoi(s.c_str());
-
-	getline(input_file, s);
-	swimArea.x() = atoi(s.c_str());
-	getline(input_file, s);
-	swimArea.y() = atoi(s.c_str());
-	getline(input_file, s);
-	swimArea.z() = atoi(s.c_str());
-
-	getline(input_file, s);
-	balkSize2 = atoi(s.c_str());
-	if (balkSize2 >= 1)
-	{
-		balkSize = balkSize2 - 1;
-	}
-	else
-	{
-		balkSize = balkSize2;
-	}
-
-	getline(input_file, s);
-	eye_distance = atof(s.c_str());
-
-	getline(input_file, s);
-	faceRange.x() = static_cast<double>(atoi(s.c_str())) / 100.;
-	getline(input_file, s);
-	faceRange.y() = static_cast<double>(atoi(s.c_str())) / 100.;
-}
-
-//laad de modelen uit het opgegeven bestand
-static void LoadModels(std::istream& input_file, Aquarium& aquarium)
-{
-	// Negate all X coordinates, and interchange the Y and Z coordinates
-	Eigen::Matrix4f model_matrix;
-	model_matrix <<
-		-1, 0, 0, 0,
-		 0, 0, 1, 0,
-		 0, 1, 0, 0,
-		 0, 0, 0, 1;
-
-	string s;
-
-	getline(input_file, s);
-	aquarium.ground.maxHeight(atoi(s.c_str()));
-
-	getline(input_file, s);
-	int n=atoi(s.c_str());
-
-	for (int i = 0; i < n; i++)
-	{
-		string model_name;
-		getline(input_file, model_name);
-
-		string propertieFile;
-		getline(input_file, propertieFile);
-
-		getline(input_file, s);
-		int m=atoi(s.c_str());
-		for (int j = 0; j < m; j++)
-		{
-			aquarium.AddFish(loadModel("Vissen/Modellen", model_name, model_matrix),
-			                           propertieFile);
-		}
-	}
-
-
-	getline(input_file, s);
-	n=atoi(s.c_str());
-	for (int i = 0; i < n; i++)
-	{
-		string model_name;
-		getline(input_file, model_name);
-
-		string propertieFile;
-		getline(input_file, propertieFile);
-
-		getline(input_file, s);
-		int x = -(aquarium.size().x() / 2) + atoi(s.c_str());
-		getline(input_file, s);
-		int z = -(aquarium.size().z() / 2) + atoi(s.c_str());
-		int groundposx = (x + (aquarium.size().x() / 2)) / aquarium.size().x() * (aquarium.ground.width());
-		int groundposy = (z + (aquarium.size().z() / 2)) / aquarium.size().z() * (aquarium.ground.depth());
-		aquarium.AddObject(loadModel("Objecten/Modellen", model_name, model_matrix),
-		                             propertieFile, Eigen::Vector3f(x, aquarium.ground.HeightAt(groundposx, groundposy), z));
-	}
-
-	getline(input_file, s);
-	n=atoi(s.c_str());
-	for (int i = 0; i < n; i++)
-	{
-		getline(input_file, s);
-		int x = -(aquarium.size().x() / 2) + atoi(s.c_str());
-		getline(input_file, s);
-		int z = -(aquarium.size().z() / 2) + atoi(s.c_str());
-		int groundposx = (x + (aquarium.size().x() / 2)) / aquarium.size().x() * (aquarium.ground.width());
-		int groundposy = (z + (aquarium.size().z() / 2)) / aquarium.size().z() * (aquarium.ground.depth());
-		aquarium.AddBubbleSpot(Eigen::Vector3f(x, aquarium.ground.HeightAt(groundposx, groundposy), z));
-	}
-}
 static boost::shared_ptr<Camera> webcam;
 static boost::weak_ptr<Texture> webcam_texture;
 
@@ -569,7 +438,7 @@ static void DrawBackground(CAMERA camera, Aquarium& aquarium)
 	glColor3f(1,1,1);
 }
 
-void render(Aquarium& aquarium, CAMERA camera, int x, int y, int port_width, int port_height, const Eigen::Vector3d& area_size, const Eigen::Vector2d& facePosition = Eigen::Vector2d(0.5, 0.5))
+void render(Aquarium& aquarium, LuaScript& L, CAMERA camera, int x, int y, int port_width, int port_height, const Eigen::Vector3d& area_size, const Eigen::Vector2d& facePosition = Eigen::Vector2d(0.5, 0.5))
 {
 	glViewport(x, y, port_width, port_height);
 
@@ -582,12 +451,12 @@ void render(Aquarium& aquarium, CAMERA camera, int x, int y, int port_width, int
 	const Eigen::Vector2d size(Eigen::Vector2d(area_size.x(), area_size.y()).cwise() * faceRange);
 	const Eigen::Vector2d pos(size.cwise() * facePosition - size * .5);
 
-	glFrustum(-kx - 0.5 * pos.x(), kx - 0.5 * pos.x(), -ky - 0.5 * pos.y(), ky - 0.5 * pos.y(), .5 * eye_distance, eye_distance * 2. + area_size.z());
+	glFrustum(-kx - 0.5 * pos.x(), kx - 0.5 * pos.x(), -ky - 0.5 * pos.y(), ky - 0.5 * pos.y(), .5 * aquarium.eye_distance, aquarium.eye_distance * 2. + area_size.z());
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glTranslatef(-pos.x(), -pos.y(), -(eye_distance + area_size.z() * 0.5));
+	glTranslatef(-pos.x(), -pos.y(), -(aquarium.eye_distance + area_size.z() * 0.5));
 
 	switch (camera)
 	{
@@ -601,11 +470,17 @@ void render(Aquarium& aquarium, CAMERA camera, int x, int y, int port_width, int
 
 	DrawBackground(camera, aquarium);
 	aquarium.draw();
+
+	if (luabind::type(L["draw"]) == LUA_TFUNCTION)
+		luabind::call_function<void>(L, "draw");
 }
 
-static void update_and_render_simulation(Aquarium& aquarium, const double dt)
+static void update_and_render_simulation(Aquarium& aquarium, LuaScript& L, const double dt)
 {
 	aquarium.update(dt);
+
+	if (luabind::type(L["update"]) == LUA_TFUNCTION)
+		luabind::call_function<void>(L, "update", dt);
 
 	glfwGetWindowSize(&win_size.x(), &win_size.y());/// get window size
 	const unsigned int port1_width = win_size.x() * 2. / 3.;
@@ -614,10 +489,10 @@ static void update_and_render_simulation(Aquarium& aquarium, const double dt)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// left view
-	render(aquarium, LEFT_CAMERA, 0, 0, port1_width, win_size.y(), aquarium.size(), aquarium.facePosition);
+	render(aquarium, L, LEFT_CAMERA, 0, 0, port1_width, win_size.y(), aquarium.size(), aquarium.facePosition);
 
 	// right view
-	render(aquarium, RIGHT_CAMERA, port1_width, 0, port2_width, win_size.y(), Eigen::Vector3d(aquarium.size().z(), aquarium.size().y(), aquarium.size().x()));
+	render(aquarium, L, RIGHT_CAMERA, port1_width, 0, port2_width, win_size.y(), Eigen::Vector3d(aquarium.size().z(), aquarium.size().y(), aquarium.size().x()));
 }
 
 /**
@@ -649,24 +524,11 @@ int main(int argc, char** argv)
 
 	datadir = find_data_dir();
 
+	LuaScript lua_state;
+
 	try
 	{
 		srand(time(NULL));/// make random numbers sequence depend to program start time.
-
-		// Search for config files and use the first one found
-		ifstream input_file;
-		for (const char** dir = &sysconfdirs[0]; dir != &sysconfdirs[ARRAY_SIZE(sysconfdirs)]; ++dir)
-		{
-			static const string config_file = "/aquaConfig.txt";
-
-			input_file.open((*dir + config_file).c_str());
-			if (input_file.is_open())
-			{
-				// @TODO Should eventually replace this entirely by ParseOptions
-				LoadSettings(input_file);
-				break;
-			}
-		}
 
 		ifstream config;
 		boost::asio::io_service io_svc;
@@ -715,8 +577,32 @@ int main(int argc, char** argv)
 
 		Aquarium aquarium(aquariumInitSize);
 
-		LoadModels(input_file, aquarium);
-		input_file.close();
+		// Give management of this piece of memory to Lua
+		lua_state["aquarium"] = &aquarium;
+		lua_state["cameraTransformations"] = &cameraTransformations;
+		lua_state["faceRange"] = &faceRange;
+		lua_state["swimArea"] = &swimArea;
+		lua_state["win_pos"] = &win_pos;
+		lua_state["win_size"] = &win_size;
+
+		for (const char** dir = &sysconfdirs[0]; dir != &sysconfdirs[ARRAY_SIZE(sysconfdirs)]; ++dir)
+		{
+			static const string source_file = "/fishtank-setup.lua";
+			string lua_setup_file(*dir + source_file);
+
+			// Strip references to the current working directory (to make Lua related debug messages cleaner)
+			while (lua_setup_file.substr(0, 2) == "./")
+				lua_setup_file.erase(0, 2);
+
+			ifstream source(lua_setup_file.c_str());
+			if (!source.is_open())
+				continue;
+
+			if (luaL_dofile(lua_state, lua_setup_file.c_str()) != 0)
+			{
+				throw luabind::error(lua_state);
+			}
+		}
 
 		// We're using three screens
 		win_size.x() *= 3;
@@ -746,11 +632,11 @@ int main(int argc, char** argv)
 		//mist kleur
 		glFogfv(GL_FOG_COLOR, fogColor);
 		//mist dichtheid
-		glFogf(GL_FOG_DENSITY, 1.f / (eye_distance + aquarium.size().z() + aquarium.size().x()));
+		glFogf(GL_FOG_DENSITY, 1.f / (aquarium.eye_distance + aquarium.size().z() + aquarium.size().x()));
 		/// niet nodig
 		//glHint(GL_FOG_HINT, GL_NICEST);
-		//glFogf(GL_FOG_START, eye_distance);
-		//glFogf(GL_FOG_END, eye_distance + aquarium.size().z() + aquarium.size().x());
+		//glFogf(GL_FOG_START, aquarium.eye_distance);
+		//glFogf(GL_FOG_END, aquarium.eye_distance + aquarium.size().z() + aquarium.size().x());
 		if (enable_fog)
 			glEnable(GL_FOG);
 		else
@@ -761,7 +647,7 @@ int main(int argc, char** argv)
 		for (double curTime = glfwGetTime(), oldTime = curTime; glfwGetWindowParam(GLFW_OPENED); oldTime = curTime, curTime = glfwGetTime())
 		{
 			const double dt = min(0.1, curTime - oldTime);
-			update_and_render_simulation(aquarium, dt);
+			update_and_render_simulation(aquarium, lua_state, dt);
 
 			glfwSwapBuffers();
 			fps.frameRateDelay();
@@ -787,5 +673,11 @@ int main(int argc, char** argv)
 		debug(LOG_ERROR) << "Unhandled OpenGL::shader_uniform_location_error exception caught: " << e.what() << "\n"
 		                 << "Uniform name is: \"" << e.uniform_name();
 		throw;
+	}
+	catch (const luabind::error& e)
+	{
+		using namespace luabind;
+		object error_msg(from_stack(e.state(), -1));
+		debug(LOG_ERROR) << "Lua error: " << error_msg;
 	}
 }

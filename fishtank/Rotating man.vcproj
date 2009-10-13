@@ -196,10 +196,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Environment.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\framerate.cpp"
 				>
 			</File>
@@ -283,10 +279,6 @@
 			</File>
 			<File
 				RelativePath=".\camera.hpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Environment.h"
 				>
 			</File>
 			<File

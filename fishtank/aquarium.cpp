@@ -16,7 +16,7 @@ using namespace std;
 //staan in header uitgelegd
 Eigen::Vector3d swimArea(200, 90, 200);
 int balkSize = 0; //de grote van de lege ruimte die gemaakt word door textures kleiner te maken -ongebruikt ivm misteffect-
-int balkSize2 = 5; //de grote van de balken tussen de hoeken
+int balkSize2 = 1; //de grote van de balken tussen de hoeken
 Eigen::Vector2d faceRange(.5, .5);
 //de radius die gebruikt wordt voor de circel wanneer de vissen naar het scherm toe zwemmen
 static const double circleDistance = 15.0;
@@ -30,24 +30,6 @@ Aquarium::Aquarium(const Eigen::Vector3d& size_) :
 	_size(size_),
 	//voeg grond toe
 	ground((datadir + "/heightmap.jpg").c_str(), 30, this, (datadir + "/ground.jpg").c_str()),
-	//voeg de muren toe
-	wall1(Eigen::Vector3d(-0.5 * size().x(), -0.5 * size().y() + balkSize, -0.5 * size().z() + balkSize),
-	      Eigen::Vector3d(-0.5 * size().x(),  0.5 * size().y() - balkSize, -0.5 * size().z() + balkSize),
-	      Eigen::Vector3d(-0.5 * size().x(),  0.5 * size().y() - balkSize,  0.5 * size().z() - balkSize),
-	      Eigen::Vector3d(-0.5 * size().x(), -0.5 * size().y() + balkSize,  0.5 * size().z() - balkSize), (datadir + "/wall1.jpg").c_str()),
-	wall2(Eigen::Vector3d(-0.5 * size().x() + balkSize, -0.5 * size().y() + balkSize, -0.5 * size().z()),
-	      Eigen::Vector3d(-0.5 * size().x() + balkSize,  0.5 * size().y() - balkSize, -0.5 * size().z()),
-	      Eigen::Vector3d( 0.5 * size().x() - balkSize,  0.5 * size().y() - balkSize, -0.5 * size().z()),
-	      Eigen::Vector3d( 0.5 * size().x() - balkSize, -0.5 * size().y() + balkSize, -0.5 * size().z()), (datadir + "/wall2.jpg").c_str()),
-	/*ceiling(new Environment(Eigen::Vector3d(-0.5 * size().x() + balkSize, 0.5 * size().y(),  0.5 * size().z() - balkSize),
-	                        Eigen::Vector3d(-0.5 * size().x() + balkSize, 0.5 * size().y(), -0.5 * size().z() + balkSize),
-	                        Eigen::Vector3d( 0.5 * size().x() - balkSize, 0.5 * size().y(), -0.5 * size().z() + balkSize),
-	                        Eigen::Vector3d( 0.5 * size().x() - balkSize, 0.5 * size().y(),  0.5 * size().z() - balkSize), (datadir + "/ceiling.jpg").c_str()))*/
-	//voeg het plafond toe
-	ceiling(Eigen::Vector3d(-0.5 * size().x(), 0.5 * size().y(),  0.5 * size().z()),
-	        Eigen::Vector3d(-0.5 * size().x(), 0.5 * size().y(), -0.5 * size().z()),
-	        Eigen::Vector3d( 0.5 * size().x(), 0.5 * size().y(), -0.5 * size().z()),
-	        Eigen::Vector3d( 0.5 * size().x(), 0.5 * size().y(),  0.5 * size().z()), (datadir + "/ceiling.jpg").c_str()),
 	facePosition(.5, .5)
 {
 }
@@ -57,9 +39,10 @@ void Aquarium::AddFish(boost::shared_ptr<const Model> model, const string &prope
 	fishes.push_back(shared_ptr<Vis>(new Vis(model, propertiesFile, ground.maxHeight())));
 }
 
-void Aquarium::AddObject(boost::shared_ptr<const Model> model, const string &propertiesFile, const Eigen::Vector3f &position)
+void Aquarium::addObject(boost::shared_ptr<Object> object)
 {
-	objects.push_back(shared_ptr<StaticObject>(new StaticObject(model, propertiesFile, position)));
+	if (object)
+		objects.push_back(object);
 }
 
 void Aquarium::AddBubbleSpot(const Eigen::Vector3f& position)
@@ -71,8 +54,15 @@ void Aquarium::update(double dt)
 {
 	foreach (shared_ptr<Vis>& fish, fishes)
 		fish->update(dt);
-	foreach (shared_ptr<StaticObject>& object, objects)
-		object->update(dt);
+
+	foreach (const weak_ptr<Object>& object, objects)
+	{
+		const shared_ptr<Object> ptr(object.lock());
+		if (!ptr)
+			continue;
+		ptr->update(dt);
+	}
+
 	//voeg op willekeurige momenten bubbels toe
 	foreach (const Eigen::Vector3f& bubbleSpot, bubbleSpots)
 	{
@@ -93,6 +83,11 @@ void Aquarium::update(double dt)
 
 	//kijk of vissen aan het botsen zijn, en onderneem eventueel actie
 	AvoidFishBounce();
+
+	objects.erase(std::remove_if(objects.begin(), objects.end(),
+	    bind(&weak_ptr<Object>::expired, _1)
+	  ),
+	  objects.end());
 }
 
 void Aquarium::GoToScreen(const Eigen::Vector2d &position)
@@ -135,8 +130,12 @@ void Aquarium::AvoidFishBounce()
 			}
 		}
 
-		foreach (const shared_ptr<StaticObject>& collidable, objects)
+		foreach (const weak_ptr<Object>& object, objects)
 		{
+			const shared_ptr<Object> collidable(object.lock());
+			if (!collidable || !collidable->model)
+				continue;
+
 			//needs goalcheck in this if aswell
 			Eigen::Vector3f object_center(0.5f * (collidable->model->bb_h + collidable->model->bb_l));
 			if (fish->collidingWith(*collidable)
@@ -152,21 +151,29 @@ void Aquarium::draw()
 {
 	//teken alle muren die niet webcams zijn
 	ground.Draw();
-	wall1.draw();
-	wall2.draw();
-	ceiling.draw();
 
 	foreach (const shared_ptr<Vis>& fish, fishes)
 		fish->draw();
-	foreach (const shared_ptr<StaticObject>& object, objects)
-		object->draw();
+	foreach (const weak_ptr<Object>& object, objects)
+	{
+		const shared_ptr<Object> ptr(object.lock());
+		if (!ptr)
+			continue;
+		ptr->draw();
+	}
+
 	// Draw transparent objects last to get proper alpha blending
 	foreach (const shared_ptr<Bubble>& bubble, bubbles)
 		bubble->draw();
 	if (drawCollisionSpheres)
 	{
-		foreach (const shared_ptr<StaticObject>& object, objects)
-			object->drawCollisionSphere();
+		foreach (const weak_ptr<Object>& object, objects)
+		{
+			const shared_ptr<Object> ptr(object.lock());
+			if (!ptr)
+				continue;
+			ptr->drawCollisionSphere();
+		}
 		foreach (const shared_ptr<Vis>& fish, fishes)
 			fish->drawCollisionSphere();
 	}
