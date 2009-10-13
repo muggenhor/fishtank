@@ -14,7 +14,7 @@ extract-stamp: $(TOPDIR)/downloads/$(PKG_SOURCE)
 
 build-stamp: extract-stamp
 	$(MAKE) -C $(PKG_SOURCEBASE)/src \
-		"CC=$(HOST_TRIPLET)-gcc" \
+		"CC=$(HOST_TRIPLET)-g++" \
 		"AR=$(HOST_TRIPLET)-ar rcu" \
 		"RANLIB=$(HOST_TRIPLET)-ranlib" \
 		"MYCFLAGS=-g3" \
@@ -22,9 +22,9 @@ build-stamp: extract-stamp
 	touch build-stamp
 
 lib include:
-	ln -s $(PKG_SOURCEBASE)/src $@
+	ln -sf $(PKG_SOURCEBASE)/src $@
 
 build: build-stamp lib include
 
 clean:
-	$(RM) -r $(PKG_SOURCEBASE) build-stamp extract-stamp
+	$(RM) -r $(PKG_SOURCEBASE) build-stamp extract-stamp lib include
