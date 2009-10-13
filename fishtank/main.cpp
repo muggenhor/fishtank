@@ -770,8 +770,6 @@ int main(int argc, char** argv)
 				debug(LOG_MAIN) << fps.frameCount() <<  " frames in " << fps.countTime() << " seconds, average framerate: " << fps.avgFrameRate() << "; current framerate (inaccurate): " << fps.recentAvgFrameRate();
 #endif
 		}
-
-		return 0;
 	}
 	catch (const exit_exception& e)
 	{
