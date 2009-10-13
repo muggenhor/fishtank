@@ -84,6 +84,33 @@ static Eigen::Vector3i eigen_vector3i_sub(const Eigen::Vector3i& r, const Eigen:
 static Eigen::Vector3f eigen_vector3f_sub(const Eigen::Vector3f& r, const Eigen::Vector3f& l) { return r - l; }
 static Eigen::Vector3d eigen_vector3d_sub(const Eigen::Vector3d& r, const Eigen::Vector3d& l) { return r - l; }
 
+static Eigen::Matrix4f eigen_matrix_4f(lua_State* L, const luabind::object& table)
+{
+	using namespace luabind;
+
+	luaL_checktype(L, 1, LUA_TTABLE);
+	if (lua_objlen(L, 1) != 16)
+	{
+		const char *msg = lua_pushfstring(L, "list of 16 numbers expected, got list of %d elements",
+		                                  lua_objlen(L, 1));
+		luaL_argerror(L, 1, msg);
+		return Eigen::Matrix4f(); // to make sure the compiler knows this is the end of the function (luaL_argerror never returns)
+	}
+
+	Eigen::Matrix4f m;
+
+	unsigned int index = 0;
+	for (iterator i(table), end; i != end; ++i)
+	{
+		const unsigned int row = index / 4;
+		const unsigned int col = index % 4;
+
+		m(row, col) = object_cast<float>(*i); ++index;
+	}
+
+	return m;
+}
+
 void register_with_lua(lua_State* L)
 {
 	using namespace luabind;
@@ -100,10 +127,16 @@ luabind::scope register_with_lua()
 
 	return
 		class_<Eigen::Matrix4f>("Matrix4f")
-			.def(const_self(int(), int())),
+			.def(const_self(int(), int()))
+			.def(tostring(const_self))
+			.scope
+			[
+				def("create", &eigen_matrix_4f, raw(_1))
+			],
 
 		class_<Eigen::Vector2i>("Vector2i")
 			.def(constructor<int, int>())
+			.def(tostring(const_self))
 			.def("__mul", &eigen_vector2i_mul)
 			.def("__div", &eigen_vector2i_div)
 			.def("__add", &eigen_vector2i_add)
@@ -119,6 +152,7 @@ luabind::scope register_with_lua()
 
 		class_<Eigen::Vector2f>("Vector2f")
 			.def(constructor<double, double>())
+			.def(tostring(const_self))
 			.def("__mul", &eigen_vector2f_mul)
 			.def("__div", &eigen_vector2f_div)
 			.def("__add", &eigen_vector2f_add)
@@ -134,6 +168,7 @@ luabind::scope register_with_lua()
 
 		class_<Eigen::Vector2d>("Vector2d")
 			.def(constructor<double, double>())
+			.def(tostring(const_self))
 			.def("__mul", &eigen_vector2d_mul)
 			.def("__div", &eigen_vector2d_div)
 			.def("__add", &eigen_vector2d_add)
@@ -149,6 +184,7 @@ luabind::scope register_with_lua()
 
 		class_<Eigen::Vector3i>("Vector3i")
 			.def(constructor<int, int, int>())
+			.def(tostring(const_self))
 			.def("__mul", &eigen_vector3i_mul)
 			.def("__div", &eigen_vector3i_div)
 			.def("__add", &eigen_vector3i_add)
@@ -165,6 +201,7 @@ luabind::scope register_with_lua()
 
 		class_<Eigen::Vector3f>("Vector3f")
 			.def(constructor<float, float, float>())
+			.def(tostring(const_self))
 			.def("__mul", &eigen_vector3f_mul)
 			.def("__div", &eigen_vector3f_div)
 			.def("__add", &eigen_vector3f_add)
@@ -181,6 +218,7 @@ luabind::scope register_with_lua()
 
 		class_<Eigen::Vector3d>("Vector3d")
 			.def(constructor<double, double, double>())
+			.def(tostring(const_self))
 			.def("__mul", &eigen_vector3d_mul)
 			.def("__div", &eigen_vector3d_div)
 			.def("__add", &eigen_vector3d_add)
