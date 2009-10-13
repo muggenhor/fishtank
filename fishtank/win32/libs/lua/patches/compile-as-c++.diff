@@ -1,0 +1,69 @@
+diff -Naur $sourcebase.orig/src/lauxlib.h $sourcebase/src/lauxlib.h
+--- $sourcebase.orig/src/lauxlib.h	2007-12-27 14:02:25.000000000 +0100
++++ $sourcebase/src/lauxlib.h	2009-10-13 23:16:27.000000000 +0200
+@@ -15,6 +15,10 @@
+ #include "lua.h"
+ 
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ #if defined(LUA_COMPAT_GETN)
+ LUALIB_API int (luaL_getn) (lua_State *L, int t);
+ LUALIB_API void (luaL_setn) (lua_State *L, int t, int n);
+@@ -169,6 +173,10 @@
+ 
+ #define luaL_reg	luaL_Reg
+ 
++#if defined(__cplusplus)
++}
++#endif
++
+ #endif
+ 
+ 
+diff -Naur $sourcebase.orig/src/lua.h $sourcebase/src/lua.h
+--- $sourcebase.orig/src/lua.h	2008-08-06 15:30:12.000000000 +0200
++++ $sourcebase/src/lua.h	2009-10-13 23:16:27.000000000 +0200
+@@ -15,6 +15,9 @@
+ 
+ #include "luaconf.h"
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
+ 
+ #define LUA_VERSION	"Lua 5.1"
+ #define LUA_RELEASE	"Lua 5.1.4"
+@@ -384,5 +387,8 @@
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ ******************************************************************************/
+ 
++#if defined(__cplusplus)
++}
++#endif
+ 
+ #endif
+diff -Naur $sourcebase.orig/src/lualib.h $sourcebase/src/lualib.h
+--- $sourcebase.orig/src/lualib.h	2007-12-27 14:02:25.000000000 +0100
++++ $sourcebase/src/lualib.h	2009-10-13 23:16:27.000000000 +0200
+@@ -10,6 +10,9 @@
+ 
+ #include "lua.h"
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
+ 
+ /* Key to file-handle type */
+ #define LUA_FILEHANDLE		"FILE*"
+@@ -49,5 +52,8 @@
+ #define lua_assert(x)	((void)0)
+ #endif
+ 
++#if defined(__cplusplus)
++}
++#endif
+ 
+ #endif

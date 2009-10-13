@@ -12,7 +12,14 @@ extract-stamp: $(TOPDIR)/downloads/$(PKG_SOURCE)
 	tar xzf $^
 	touch extract-stamp
 
-build-stamp: extract-stamp
+patch-stamp: extract-stamp
+	@for patch in patches/*.diff; do \
+	    echo sed -e "s/\$$sourcebase\b/$(PKG_SOURCEBASE)/g" -e "s/\$$host_triplet\b/$(HOST_TRIPLET)/g" "$$patch" \| patch -p0 ; \
+	    sed -e "s/\$$sourcebase\b/$(PKG_SOURCEBASE)/g" -e "s/\$$host_triplet\b/$(HOST_TRIPLET)/g" "$$patch" | patch -p0 || exit ; \
+	done
+	touch patch-stamp
+
+build-stamp: extract-stamp patch-stamp
 	$(MAKE) -C $(PKG_SOURCEBASE)/src \
 		"CC=$(HOST_TRIPLET)-g++" \
 		"AR=$(HOST_TRIPLET)-ar rcu" \
@@ -27,4 +34,4 @@ lib include:
 build: build-stamp lib include
 
 clean:
-	$(RM) -r $(PKG_SOURCEBASE) build-stamp extract-stamp lib include
+	$(RM) -r $(PKG_SOURCEBASE) build-stamp extract-stamp patch-stamp lib include
