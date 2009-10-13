@@ -86,8 +86,9 @@ void Aquarium::update(double dt)
 	bubbles.erase(std::remove_if(bubbles.begin(), bubbles.end(),
 	    (
 	      bind(&Bubble::update, *_1, dt),
-	      bind(&Bubble::pop, *_1) <= 0.)
-	    ),
+	      bind(&Bubble::pop, *_1) <= 0.
+	    )
+	  ),
 	  bubbles.end());
 
 	//kijk of vissen aan het botsen zijn, en onderneem eventueel actie
