@@ -9,13 +9,15 @@ libscript_la_SOURCES = \
 	debug-support.cpp \
 	eigen-support.cpp \
 	object-support.cpp \
-	opengl-support.cpp
+	opengl-support.cpp \
+	vertexarrays-support.cpp
 
 noinst_HEADERS = \
 	debug-support.hpp \
 	eigen-support.hpp \
 	object-support.hpp \
-	opengl-support.hpp
+	opengl-support.hpp \
+	vertexarrays-support.hpp
 
 libscript_la_LIBADD = \
 	$(builddir)/../framework/libframework.la
