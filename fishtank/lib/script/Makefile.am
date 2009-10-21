@@ -8,6 +8,7 @@ noinst_LTLIBRARIES = libscript.la
 libscript_la_SOURCES = \
 	debug-support.cpp \
 	eigen-support.cpp \
+	lua-base.cpp \
 	object-support.cpp \
 	opengl-support.cpp \
 	state.cpp \
@@ -16,6 +17,7 @@ libscript_la_SOURCES = \
 noinst_HEADERS = \
 	debug-support.hpp \
 	eigen-support.hpp \
+	lua-base.hpp \
 	object-support.hpp \
 	opengl-support.hpp \
 	state.hpp \

@@ -9,6 +9,7 @@ extern "C" {
 #include <lua.h>
 #include <lualib.h>
 }
+#include "lua-base.hpp"
 #include "object-support.hpp"
 #include "opengl-support.hpp"
 #include <vector>
@@ -18,15 +19,9 @@ extern "C" {
 #include "../../aquarium.hpp"
 #include "../../camera.hpp"
 #include "../../Ground.h"
-#include "../../main.hpp"
 #include "../../wiggle.hpp"
 
 using namespace luabind;
-
-static int os_exit (lua_State* L)
-{
-	throw exit_exception(luaL_optint(L, 1, EXIT_SUCCESS));
-}
 
 LuaScript::LuaScript() :
 	globals(luabind::globals(L))
@@ -92,11 +87,7 @@ void LuaScript::register_safe_default_lua_libs()
 
 void LuaScript::register_interfaces()
 {
-	lua_getglobal(L, "os");
-	lua_pushcfunction(L, &os_exit);
-	lua_setfield(L, -2, "exit");
-	lua_pop(L, 1); // pop the 'os' table
-
+	lua_base_register_with_lua(L);
 	debug_register_with_lua(L);
 
 	OpenGL::register_with_lua(L);
