@@ -1,6 +1,7 @@
 #ifndef __INCLUDED_GROUND_H__
 #define __INCLUDED_GROUND_H__
 
+#include <boost/filesystem/path.hpp>
 #include <boost/gil/image.hpp>
 #include <boost/gil/typedefs.hpp>
 #include "textures.hpp"
@@ -13,7 +14,7 @@ class Aquarium;
 class Ground
 {
 	public:
-		Ground(const char* filename, int maxHeight, const Aquarium* aquarium, const char* texturename = 0);/// use no texture name if want no texture
+		Ground(const boost::filesystem::path& filename, int maxHeight, const Aquarium* aquarium, const boost::filesystem::path& texturename = boost::filesystem::path());/// use no texture name if want no texture
 
 		//let op: y telt voor lengte hier, niet hoogte, zoals in het aquarium
 		//verkrijg de hoogte op een bepaalde positie

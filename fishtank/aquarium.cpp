@@ -29,12 +29,12 @@ float my_random()
 Aquarium::Aquarium(const Eigen::Vector3d& size_) :
 	_size(size_),
 	//voeg grond toe
-	ground((datadir + "/heightmap.jpg").c_str(), 30, this, (datadir + "/ground.jpg").c_str()),
+	ground(datadir / "heightmap.jpg", 30, this, datadir / "ground.jpg"),
 	facePosition(.5, .5)
 {
 }
 
-void Aquarium::AddFish(boost::shared_ptr<const Model> model, const string &propertiesFile)
+void Aquarium::AddFish(boost::shared_ptr<const Model> model, const boost::filesystem::path& propertiesFile)
 {
 	fishes.push_back(shared_ptr<Vis>(new Vis(model, propertiesFile, ground.maxHeight())));
 }

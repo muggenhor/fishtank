@@ -1,4 +1,6 @@
 #include <boost/asio/io_service.hpp>
+#include <boost/filesystem/fstream.hpp>
+#include <boost/filesystem/path.hpp>
 #include <boost/format.hpp>
 #include <boost/gil/image.hpp>
 #include <boost/gil/typedefs.hpp>
@@ -22,7 +24,6 @@
 #include "Vis.h"
 #include "aquarium.hpp"
 #include "MS3D_ASCII.h"
-#include <fstream>
 #include <string>
 
 #include <cmath>
@@ -30,7 +31,6 @@
 #include <ctime>
 
 #include <algorithm>
-#include <fstream>
 #include <iostream>
 #include <vector>
 #include <map>
@@ -48,6 +48,7 @@
 
 using boost::format;
 using namespace std;
+namespace fs = boost::filesystem;
 namespace po = boost::program_options;
 
 /// List of data directories to select from
@@ -68,7 +69,7 @@ static const char* sysconfdirs[] =
 #endif
 };
 
-std::string datadir;
+fs::path datadir;
 
 bool use_vbos = true;
 bool drawCollisionSpheres = false;
@@ -499,15 +500,16 @@ static void update_and_render_simulation(Aquarium& aquarium, LuaScript& L, const
  * Searches a list of possible data directories and selects the first one
  * that's useable.
  */
-static string find_data_dir()
+static fs::path find_data_dir()
 {
 	static const std::string test_file = "/wiggle.glsl";
 
 	for (const char** dir = &datadirs[0]; dir != &datadirs[ARRAY_SIZE(datadirs)]; ++dir)
 	{
-		std::ifstream test_if((*dir + test_file).c_str());
-		if (test_if.is_open())
-			return *dir;
+		fs::path test_file(fs::path(*dir) / "wiggle.glsl");
+
+		if (fs::exists(test_file))
+			return test_file.parent_path();
 	}
 
 	return "";
@@ -530,7 +532,7 @@ int main(int argc, char** argv)
 	{
 		srand(time(NULL));/// make random numbers sequence depend to program start time.
 
-		ifstream config;
+		fs::ifstream config;
 		boost::asio::io_service io_svc;
 		// First parse command line options (to allow it to override everything else)
 		ParseOptions(argc, argv, config, io_svc);
@@ -538,9 +540,9 @@ int main(int argc, char** argv)
 		// Search for config files and use the first one found
 		for (const char** dir = &sysconfdirs[0]; dir != &sysconfdirs[ARRAY_SIZE(sysconfdirs)]; ++dir)
 		{
-			static const string config_file = "/aquaConfig.cfg";
+			fs::path config_file(fs::path(*dir) / "aquaConfig.cfg");
 
-			config.open((*dir + config_file).c_str());
+			config.open(config_file);
 			if (config.is_open())
 			{
 				ParseOptions(0, NULL, config, io_svc);
@@ -587,18 +589,16 @@ int main(int argc, char** argv)
 
 		for (const char** dir = &sysconfdirs[0]; dir != &sysconfdirs[ARRAY_SIZE(sysconfdirs)]; ++dir)
 		{
-			static const string source_file = "/fishtank-setup.lua";
-			string lua_setup_file(*dir + source_file);
+			fs::path lua_setup_file(fs::path(*dir) / "fishtank-setup.lua");
 
 			// Strip references to the current working directory (to make Lua related debug messages cleaner)
-			while (lua_setup_file.substr(0, 2) == "./")
-				lua_setup_file.erase(0, 2);
+			while (lua_setup_file.relative_path().string().substr(0, 2) == "./")
+				lua_setup_file = lua_setup_file.root_path() / lua_setup_file.relative_path().string().substr(2);
 
-			ifstream source(lua_setup_file.c_str());
-			if (!source.is_open())
+			if (!fs::exists(lua_setup_file))
 				continue;
 
-			if (luaL_dofile(lua_state, lua_setup_file.c_str()) != 0)
+			if (luaL_dofile(lua_state, lua_setup_file.file_string().c_str()) != 0)
 			{
 				throw luabind::error(lua_state);
 			}

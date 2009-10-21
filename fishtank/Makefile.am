@@ -54,6 +54,7 @@ fishtank_LDADD = \
 	$(builddir)/lib/framework/libframework.la \
 	$(builddir)/lib/script/libscript.la \
 	$(builddir)/vertexarrays/libvertexarrays.la \
+	$(BOOST_FILESYSTEM_LIBS) \
 	$(BOOST_PROGRAM_OPTIONS_LIBS) \
 	$(BOOST_REGEX_LIBS) \
 	$(BOOST_THREAD_LIBS) \
@@ -67,6 +68,7 @@ fishtank_LDADD = \
 	$(WIN32_LIBS)
 
 fishtank_LDFLAGS = \
+	$(BOOST_FILESYSTEM_LDFLAGS) \
 	$(BOOST_PROGRAM_OPTIONS_LDFLAGS) \
 	$(BOOST_REGEX_LDFLAGS) \
 	$(BOOST_THREAD_LDFLAGS)

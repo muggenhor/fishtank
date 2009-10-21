@@ -332,9 +332,9 @@ void Material::activate() const
 		glDisable(GL_TEXTURE_2D);
 }
 
-bool Material::loadFromMs3dAsciiSegment( FILE *file, const std::string& dir)
+bool Material::loadFromMs3dAsciiSegment( FILE *file, const boost::filesystem::path& filename)
 {
-	this->dir = dir;
+	this->filename = filename;
 
 	char szLine[256];
 
@@ -402,7 +402,7 @@ void Material::reloadTexture()
 {
 	if (strlen(DiffuseTexture) > 0)
 	{
-		texture = loadTexture(dir, DiffuseTexture);
+		texture = loadTexture(filename.parent_path(), DiffuseTexture);
 	}
 	else
 	{
@@ -416,11 +416,9 @@ Model::Model():
 {
 }
 
-bool Model::loadFromMs3dAsciiFile(const char* filename, const Eigen::Matrix4f& transform)
+bool Model::loadFromMs3dAsciiFile(const boost::filesystem::path& filename, const Eigen::Matrix4f& transform)
 {
-	dir = filename;
-	// Strip everything after (and including) the last directory separator ('/' or '\')
-	dir.erase(dir.find_last_of("/\\"));
+	this->filename = filename;
 
 	bb_l = Vector3f(1E20,1E20,1E20);
 	bb_h = -bb_l;
@@ -428,7 +426,7 @@ bool Model::loadFromMs3dAsciiFile(const char* filename, const Eigen::Matrix4f& t
 	char	szLine[256];
 	int		nFlags;
 
-	FileWrap const file(fopen(filename, "rt"));
+	FileWrap const file(fopen(filename.file_string().c_str(), "rt"));
 	if (!file)
 		return false;
 
@@ -486,7 +484,7 @@ bool Model::loadFromMs3dAsciiFile(const char* filename, const Eigen::Matrix4f& t
 
 			foreach (Material& material, materials)
 			{
-				if (!material.loadFromMs3dAsciiSegment(file, dir))
+				if (!material.loadFromMs3dAsciiSegment(file, filename))
 				{
 					return false;
 				}

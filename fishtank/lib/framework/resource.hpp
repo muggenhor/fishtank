@@ -1,6 +1,7 @@
 #ifndef __INCLUDED_LIB_FRAMEWORK_RESOURCE_HPP__
 #define __INCLUDED_LIB_FRAMEWORK_RESOURCE_HPP__
 
+#include <boost/filesystem/path.hpp>
 #include <boost/shared_ptr.hpp>
 #include <Eigen/Core>
 
@@ -9,15 +10,15 @@ class Model;
 class Texture;
 
 boost::shared_ptr<const Texture>
-  loadTexture(const std::string& dir,
-              const std::string& filename);
+  loadTexture(const boost::filesystem::path& dir,
+              const boost::filesystem::path& filename);
 
 boost::shared_ptr<const Model>
-  loadModel(const std::string& dir,
+  loadModel(const boost::filesystem::path& dir,
             const std::string& model_name);
 
 boost::shared_ptr<const Model>
-  loadModel(const std::string& dir,
+  loadModel(const boost::filesystem::path& dir,
             const std::string& model_name,
             const Eigen::Matrix4f& transform);
 

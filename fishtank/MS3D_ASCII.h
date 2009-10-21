@@ -4,6 +4,7 @@
 #include "GL/GLee.h"
 #include <GL/glfw.h>
 
+#include <boost/filesystem/path.hpp>
 #include <stdio.h>
 #include <GL/gl.h>
 #include <string>
@@ -91,7 +92,7 @@ class Material
 	public:
 		Material();
 
-		bool loadFromMs3dAsciiSegment(FILE* file, const std::string& dir);
+		bool loadFromMs3dAsciiSegment(FILE* file, const boost::filesystem::path& filename);
 		void activate() const;
 		void reloadTexture();
 
@@ -111,7 +112,7 @@ class Material
 			ar & DiffuseTexture;
 			ar & AlphaTexture;
 			ar & texture;
-			ar & dir;
+			ar & filename;
 		}
 
 	private:
@@ -125,7 +126,7 @@ class Material
 		char  DiffuseTexture[MS_MAX_NAME];
 		char  AlphaTexture[MS_MAX_NAME];
 		boost::shared_ptr<const Texture> texture;
-		std::string dir;
+		boost::filesystem::path filename;
 };
 
 
@@ -137,14 +138,14 @@ class Model
 	public:
 		Model();
 
-		bool loadFromMs3dAsciiFile(const char* filename, const Eigen::Matrix4f& transform = Eigen::Matrix4f::Identity());
+		bool loadFromMs3dAsciiFile(const boost::filesystem::path& filename, const Eigen::Matrix4f& transform = Eigen::Matrix4f::Identity());
 		void reloadTextures();
 		void render() const;
 
 		Eigen::Vector3f bb_l;/// bounding box for the model, low and high
 		Eigen::Vector3f bb_h;
 
-		std::string dir;
+		boost::filesystem::path filename;
 
 	private:
 		friend class boost::serialization::access;

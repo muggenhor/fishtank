@@ -28,7 +28,7 @@ build-bjam-stamp: extract-stamp
 	touch build-bjam-stamp
 
 build-stamp: extract-stamp patch-stamp build-bjam-stamp
-	cd $(PKG_SOURCEBASE) && tools/jam/src/bin.*/bjam -d2 --toolset=gcc --variant=release threading=multi link=static --prefix=./stage --layout=system --with-program_options --with-regex --with-system --with-thread stage
+	cd $(PKG_SOURCEBASE) && tools/jam/src/bin.*/bjam -d2 --toolset=gcc --variant=release threading=multi link=static --prefix=./stage --layout=system --with-filesystem --with-program_options --with-regex --with-system --with-thread stage
 	test -L "$(PKG_SOURCEBASE)/stage/include" || ln -s .. "$(PKG_SOURCEBASE)/stage/include"
 	@for lib in $(PKG_SOURCEBASE)/stage/lib/*_win32*.lib ; do \
 	    suffix=`echo $$lib | sed "s/^.*\(_win32.*\.lib\)$$/\1/"` ; \
@@ -38,6 +38,8 @@ build-stamp: extract-stamp patch-stamp build-bjam-stamp
 	@for lib in $(PKG_SOURCEBASE)/stage/lib/*.lib ; do \
 	    echo ln -s "`basename "$$lib"`" "`dirname "$$lib"`/`basename "$$lib" .lib`.a" ; \
 	    test -L "`dirname "$$lib"`/`basename "$$lib" .lib`.a" || ln -s "`basename "$$lib"`" "`dirname "$$lib"`/`basename "$$lib" .lib`.a" || exit ; \
+	    echo ln -s "`basename "$$lib"`" "`dirname "$$lib"`/`basename "$$lib" .lib`-mt.a" ; \
+	    test -L "`dirname "$$lib"`/`basename "$$lib" .lib`-mt.a" || ln -s "`basename "$$lib"`" "`dirname "$$lib"`/`basename "$$lib" .lib`-mt.a" || exit ; \
 	done
 	touch build-stamp
 

@@ -1,6 +1,7 @@
 #ifndef __INCLUDED_AQUARIUM_HPP__
 #define __INCLUDED_AQUARIUM_HPP__
 
+#include <boost/filesystem/path.hpp>
 #include <boost/shared_ptr.hpp>
 #include <Eigen/Core>
 #include <vector>
@@ -52,7 +53,7 @@ class Aquarium : boost::noncopyable
 	void GoToScreen(const Eigen::Vector2d &position);
 
 	//voeg een vis toe in het aquarium
-	void AddFish(boost::shared_ptr<const Model> model, const std::string& propertiesFile);
+	void AddFish(boost::shared_ptr<const Model> model, const boost::filesystem::path& propertiesFile);
 	//voeg een object toe in het aquarium
 	void addObject(boost::shared_ptr<Object> object);
 	//voeg een bubbel maker toe in het aquarium

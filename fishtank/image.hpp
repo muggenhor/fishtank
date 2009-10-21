@@ -18,6 +18,8 @@ extern "C"
 #include <boost/gil/extension/io/jpeg_io.hpp>
 #include <boost/gil/extension/io/png_io.hpp>
 
+#include <boost/filesystem/path.hpp>
+
 template <typename Image>
 inline void read_image(const char* filename, Image& im)
 {
@@ -37,6 +39,12 @@ template <typename Image>
 inline void read_image(const std::string& filename, Image& im)
 {
 	return read_image(filename.c_str(), im);
+}
+
+template <typename Image>
+inline void read_image(const boost::filesystem::path& filename, Image& im)
+{
+	return read_image(filename.file_string(), im);
 }
 
 #endif // __INCLUDED_IMAGE_HPP__

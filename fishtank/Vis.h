@@ -1,6 +1,7 @@
 #ifndef __INCLUDED_VIS_H__
 #define __INCLUDED_VIS_H__
 
+#include <boost/filesystem/path.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <Eigen/Core>
@@ -48,7 +49,7 @@ class Vis : public Object
 		//de vloerhoogte, om ervoor te zorgen dat de vissen niet lager dan dit gaan zwemmen
 		int maxFloorHeight;
 
-		Vis(boost::shared_ptr<const Model> model, const std::string& propertiesFile, int maxFloorHeight); //hihi
+		Vis(boost::shared_ptr<const Model> model, const boost::filesystem::path& propertiesFile, int maxFloorHeight); //hihi
 		//draag de vis op om een andere positie te pakken (iets te ontwijken)
 		void Avade();
 		//geeft true als de vis botst met een ander object, hier gegeven in een positie en een botsarea
@@ -64,7 +65,7 @@ class Vis : public Object
 		virtual void draw() const;
 		virtual void drawCollisionSphere() const;
 		//haalt info uit de file, gegeven als path
-		void LoadProperties(const std::string &propertiesFile);
+		void LoadProperties(const boost::filesystem::path& propertiesFile);
 		//positiebeheer
 		void newGoal();
 		void setGoal(const Eigen::Vector3f& final_goal);/// use that to set goal

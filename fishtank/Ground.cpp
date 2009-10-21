@@ -1,12 +1,12 @@
 #include <boost/array.hpp>
 #include <boost/circular_buffer.hpp>
+#include <boost/filesystem/operations.hpp>
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/gil/algorithm.hpp>
 #include <Eigen/Core>
 #include <framework/debug.hpp>
 #include "Ground.h"
-#include <iostream>
 #include "aquarium.hpp"
 #include "math-helpers.hpp"
 #include "main.hpp"
@@ -17,12 +17,13 @@
 using namespace boost;
 using namespace boost::gil;
 using namespace std;
+namespace fs = boost::filesystem;
 
 static const float SPEEDCAUSTICS = 20.f; // frequency of caustics in Hz
 static const float SCALECAUSTICS = 24; // Higher number = bigger texture
 static const float CAUSTICOPACITY = 0.25f; // Opacity of the caustics (eg. 0.25f for 25%)
 
-Ground::Ground(const char* const filename, int maxHeight, const Aquarium* aquarium, const char* const texturename) :
+Ground::Ground(const boost::filesystem::path& filename, int maxHeight, const Aquarium* aquarium, const boost::filesystem::path& texturename) :
 	aquarium(aquarium),
 	_maxHeight(maxHeight)
 {
@@ -34,29 +35,27 @@ Ground::Ground(const char* const filename, int maxHeight, const Aquarium* aquari
 	heightmap.recreate(img.dimensions());
 	copy_and_convert_pixels(const_view(img), view(heightmap));
 
-	if (texturename)
+	if (!texturename.empty())
 	{
 		read_image(texturename, img);
 		texture = flipped_up_down_view(const_view(img));
 	}
 
 	// Loop until we have loaded in all the desired JPEGs
-	format causticsNameFmt(datadir + "/caustics/caust%02d.jpg");
+	format causticsNameFmt("caust%02d.jpg");
 	for (int i = 0;; ++i)
 	{
-		const string causticsfilename = (causticsNameFmt % i).str();
+		const fs::path causticsfilename(datadir / "caustics" / (causticsNameFmt % i).str());
 
-		try
+		if (!fs::exists(causticsfilename))
 		{
-			read_image(causticsfilename, img);
-			caustics.push_back(const_view(img));
-			debug(LOG_MAIN) << format("Succesfully read caustic: %s") % causticsfilename;
-		}
-		catch (std::ios_base::failure& e)
-		{
-			debug(LOG_ERROR) << format("Exception while reading caustic: %s: %s") % causticsfilename % e.what();
+			debug(LOG_NEVER) << format("Stop reading caustics, file '%s' doesn't exist") % causticsfilename;
 			break;
 		}
+
+		read_image(causticsfilename, img);
+		caustics.push_back(const_view(img));
+		debug(LOG_NEVER) << format("Succesfully read caustic: %s") % causticsfilename;
 	}
 
 	triangles.UseVBOs(use_vbos);

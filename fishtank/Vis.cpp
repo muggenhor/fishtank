@@ -4,14 +4,14 @@
 #include <cstdlib>
 #include <ctime>
 #include <framework/debug.hpp>
+#include <boost/filesystem/fstream.hpp>
 #include <framework/resource.hpp>
-#include <fstream>
 #include "glexcept.hpp"
-#include <iostream>
 #include "main.hpp"
 #include "math-helpers.hpp"
 #include <string>
 
+namespace fs = boost::filesystem;
 using namespace std;
 
 boost::shared_ptr<WiggleTransformation> Vis::_wiggle;
@@ -34,7 +34,7 @@ const double wiggle_speed_factor=2.5;/// larger = fish has to wiggle more to mov
 const double bending_factor=0.75;/// larger = fish has to bend more to move. (note: long fish can entirely coil up)
 
 
-Vis::Vis(boost::shared_ptr<const Model> model, const std::string& propertiesFile, int maxFloorHeight) :
+Vis::Vis(boost::shared_ptr<const Model> model, const boost::filesystem::path& propertiesFile, int maxFloorHeight) :
 	Object(model),
 	finalGoalPos(0.f, 0.f, 0.f),
 	velocity(0.f, 0.f, 0.f),
@@ -93,10 +93,10 @@ Eigen::Vector3f Vis::RandomPos() const
 	                       (my_random() - .5) *  swimArea.z());
 }
 
-void Vis::LoadProperties(const string &propertiesFile)
+void Vis::LoadProperties(const boost::filesystem::path& propertiesFile)
 {
 	string s;
-	ifstream input_file((datadir + "/Vissen/" + propertiesFile + ".oif").c_str());
+	fs::ifstream input_file(datadir / "Vissen" / propertiesFile.parent_path() / (propertiesFile.filename() + ".oif"));
 
 	//scaling
 	getline(input_file, s);

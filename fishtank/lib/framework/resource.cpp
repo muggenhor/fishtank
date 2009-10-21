@@ -12,22 +12,23 @@
 using namespace boost;
 using namespace boost::gil;
 using namespace std;
+namespace fs = boost::filesystem;
 
 static map<string, weak_ptr<Model> > models;
 static map<string, weak_ptr<Texture> > textures;
 
 boost::shared_ptr<const Texture>
-  loadTexture(const std::string& dir,
-              const std::string& filename)
+  loadTexture(const boost::filesystem::path& dir,
+              const boost::filesystem::path& filename)
 {
-	string path;
-	if (dir.substr(0, 1) == "/"
-	 || dir.substr(0, 2) == "./")
-		path = dir + "/" + filename;
+	fs::path path;
+	if (dir.has_root_path()
+	 || dir.relative_path().string().substr(0, 2) == "./")
+		path = dir / filename;
 	else
-		path = datadir + "/" + dir + "/" + filename;
+		path = datadir / dir / filename;
 
-	map<string, weak_ptr<Texture> >::iterator texture_iterator = textures.find(path);
+	map<string, weak_ptr<Texture> >::iterator texture_iterator = textures.find(path.file_string());
 	shared_ptr<Texture> texture;
 
 	if (texture_iterator != textures.end())
@@ -41,26 +42,26 @@ boost::shared_ptr<const Texture>
 	read_image(path, img);
 
 	texture.reset(new Texture(flipped_up_down_view(const_view(img))));
-	textures[path] = texture;
+	textures[path.file_string()] = texture;
 
 	return texture;
 }
 
-boost::shared_ptr<const Model> loadModel(const std::string& dir, const std::string& model_name)
+boost::shared_ptr<const Model> loadModel(const boost::filesystem::path& dir, const std::string& model_name)
 {
 	return loadModel(dir, model_name, Eigen::Matrix4f::Identity());
 }
 
-boost::shared_ptr<const Model> loadModel(const std::string& dir, const std::string& model_name, const Eigen::Matrix4f& transform)
+boost::shared_ptr<const Model> loadModel(const boost::filesystem::path& dir, const std::string& model_name, const Eigen::Matrix4f& transform)
 {
-	string model_path;
-	if (dir.substr(0, 1) == "/"
-	 || dir.substr(0, 2) == "./")
-		model_path = dir + "/" + model_name + ".txt";
+	fs::path model_path;
+	if (dir.has_root_path()
+	 || dir.relative_path().string().substr(0, 2) == "./")
+		model_path = dir / (model_name + ".txt");
 	else
-		model_path = datadir + "/" + dir + "/" + model_name + ".txt";
+		model_path = datadir / dir / (model_name + ".txt");
 
-	map<string, weak_ptr<Model> >::iterator model_iterator = models.find(model_path);
+	map<string, weak_ptr<Model> >::iterator model_iterator = models.find(model_path.file_string());
 	shared_ptr<Model> model;
 
 	if (model_iterator != models.end())
@@ -71,8 +72,8 @@ boost::shared_ptr<const Model> loadModel(const std::string& dir, const std::stri
 	}
 
 	model.reset(new Model);
-	model->loadFromMs3dAsciiFile(model_path.c_str(), transform);
-	models[model_path] = model;
+	model->loadFromMs3dAsciiFile(model_path, transform);
+	models[model_path.file_string()] = model;
 
 	return model;
 }

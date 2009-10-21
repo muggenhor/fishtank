@@ -5,6 +5,7 @@
 #include <framework/resource.hpp>
 #include <luabind/luabind.hpp>
 #include <luabind/operator.hpp>
+#include <luabind/tag_function.hpp>
 extern "C" {
 #include <lua.h>
 #include <lualib.h>
@@ -85,6 +86,16 @@ void LuaScript::register_safe_default_lua_libs()
 	globals["os"]["setlocale"] = nil;
 }
 
+static std::string get_model_filename(const Model& model)
+{
+	return model.filename.file_string();
+}
+
+static void Aquarium_AddFish(Aquarium& aquarium, boost::shared_ptr<const Model> model, const std::string& propertiesFile)
+{
+	return aquarium.AddFish(model, propertiesFile);
+}
+
 void LuaScript::register_interfaces()
 {
 	lua_base_register_with_lua(L);
@@ -119,15 +130,15 @@ void LuaScript::register_interfaces()
 
 	module(L)
 	[
-		def("loadModel", (boost::shared_ptr<const Model> (*)(const std::string&, const std::string&))&loadModel),
-		def("loadModel", (boost::shared_ptr<const Model> (*)(const std::string&, const std::string&, const Eigen::Matrix4f&))&loadModel),
-		def("loadTexture", &loadTexture),
+		def("loadModel", tag_function<boost::shared_ptr<const Model> (const std::string&, const std::string&)>((boost::shared_ptr<const Model> (*)(const boost::filesystem::path&, const std::string&))&loadModel)),
+		def("loadModel", tag_function<boost::shared_ptr<const Model> (const std::string&, const std::string&, const Eigen::Matrix4f&)>((boost::shared_ptr<const Model> (*)(const boost::filesystem::path&, const std::string&, const Eigen::Matrix4f&))&loadModel)),
+		def("loadTexture", tag_function<boost::shared_ptr<const Texture> (const std::string&, const std::string&)>(&loadTexture)),
 
 		class_<Model, boost::shared_ptr<Model> >("Model")
 			.def("render", &Model::render)
 			.def_readonly("bb_l", &Model::bb_l)
 			.def_readonly("bb_h", &Model::bb_h)
-			.def_readonly("dir",  &Model::dir),
+			.property("filename", &get_model_filename),
 
 		Object_lua_wrapper::register_with_lua(),
 
@@ -138,7 +149,7 @@ void LuaScript::register_interfaces()
 			.def("width", &Ground::width),
 
 		class_<Aquarium>("Aquarium")
-			.def("AddFish", &Aquarium::AddFish)
+			.def("AddFish", Aquarium_AddFish)
 			.def("addObject", &Aquarium::addObject)
 			.def("AddBubbleSpot", &Aquarium::AddBubbleSpot)
 			.def_readwrite("eye_distance", &Aquarium::eye_distance)

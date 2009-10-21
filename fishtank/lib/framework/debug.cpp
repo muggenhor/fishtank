@@ -1,12 +1,13 @@
 #include "debug.hpp"
 #include <algorithm>
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/fstream.hpp>
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/lambda/bind.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/program_options.hpp>
 #include <cassert>
-#include <fstream>
 #include <iostream>
 #include <string>
 
@@ -15,6 +16,7 @@
 using namespace boost;
 using namespace boost::posix_time;
 using namespace std;
+namespace fs = boost::filesystem;
 namespace po = boost::program_options;
 
 boost::array<bool, LOG_LAST> DebugStream::enabled_debug =
@@ -101,7 +103,7 @@ void DebugStream::addCommandLineOptions(boost::program_options::options_descript
 	po::options_description debugOps("Debug Options");
 	debugOps.add_options()
 		("debug", po::value< std::vector<code_part> >(), "Enable debug messages for given level")
-		("debugfile", po::value< std::vector<std::string> >(), "Log debug output to file")
+		("debugfile", po::value< std::vector<fs::path> >(), "Log debug output to file")
 	;
 
 	desc.add(debugOps);
@@ -128,9 +130,9 @@ void DebugStream::processOptions(const boost::program_options::variables_map& op
 
 	if (options.count("debugfile"))
 	{
-		foreach (const std::string& file, options["debugfile"].as< std::vector<std::string> >())
+		foreach (const fs::path& file, options["debugfile"].as< std::vector<fs::path> >())
 		{
-			ofstream* const os = new ofstream(file.c_str(), ios_base::out | ios_base::app);
+			fs::ofstream* const os = new fs::ofstream(file, ios_base::out | ios_base::app);
 			*os << "\n"
 			    << "Starting new log at: " << microsec_clock::local_time() << "\n"
 			    << "------------------------------------------------------------------------------\n"

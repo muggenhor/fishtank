@@ -1,6 +1,7 @@
 #ifndef __INCLUDED_MAIN_HPP__
 #define __INCLUDED_MAIN_HPP__
 
+#include <boost/filesystem/path.hpp>
 #include <string>
 
 /* Exception class providing exit() like support with the added advantage that
@@ -21,7 +22,7 @@ class exit_exception
 		const int _code;
 };
 
-extern std::string datadir;
+extern boost::filesystem::path datadir;
 
 extern bool use_vbos;
 extern bool drawCollisionSpheres;

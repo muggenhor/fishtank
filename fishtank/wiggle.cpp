@@ -1,18 +1,21 @@
-#include <fstream>
+#include <boost/filesystem/fstream.hpp>
+#include <boost/filesystem/path.hpp>
 #include "main.hpp"
 #include <stdexcept>
 #include <string>
 #include "wiggle.hpp"
 
+namespace fs = boost::filesystem;
+
 #define foreach BOOST_FOREACH
 
 WiggleTransformation::WiggleTransformation()
 {
-	const std::string shaderFile = datadir + "/wiggle.glsl";
+	const fs::path shaderFile(datadir / "wiggle.glsl");
 
-	std::ifstream source(shaderFile.c_str());
+	fs::ifstream source(shaderFile);
 	if (!source.is_open())
-		throw std::runtime_error("Couldn't find file " + shaderFile);
+		throw std::runtime_error("Couldn't find file: " + shaderFile.file_string());
 
 	_shader.loadSource(source);
 	_shader.compile();
