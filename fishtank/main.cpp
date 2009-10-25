@@ -595,7 +595,7 @@ int main(int argc, char** argv)
 
 		for (const char** dir = &sysconfdirs[0]; dir != &sysconfdirs[ARRAY_SIZE(sysconfdirs)]; ++dir)
 		{
-			fs::path lua_setup_file(normalized_path(fs::path(*dir) / "fishtank-setup.lua"));
+			fs::path lua_setup_file(normalized_path(*dir) / "fishtank-setup.lua");
 
 			// Strip references to the current working directory (to make Lua related debug messages cleaner)
 			while (lua_setup_file.string().substr(0, 2) == "./")

@@ -123,7 +123,8 @@ static int base_dofile(lua_State* L)
 
 	// Find out in what file our caller lives
 	lua_Debug ar;
-	if (lua_getstack(L, 1, &ar)
+	if (!fs::path(fname).is_complete()
+	 && lua_getstack(L, 1, &ar)
 	 && lua_getinfo(L, "S", &ar)
 	 && ar.short_src
 	 && ar.short_src[0])
