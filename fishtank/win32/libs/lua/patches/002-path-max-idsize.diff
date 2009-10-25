@@ -1,0 +1,21 @@
+diff -Naur $sourcebase.orig/src/luaconf.h $sourcebase/src/luaconf.h
+--- $sourcebase.orig/src/luaconf.h	2008-02-11 17:25:08.000000000 +0100
++++ $sourcebase/src/luaconf.h	2009-10-25 21:16:37.000000000 +0100
+@@ -207,7 +207,16 @@
+ @* of a function in debug information.
+ ** CHANGE it if you want a different size.
+ */
+-#define LUA_IDSIZE	60
++#if defined(_MSC_VER)
++# define PATH_MAX MAX_PATH
++#endif
++
++#if defined(MAX_PATH) && (PATH_MAX < MAX_PATH)
++# undef PATH_MAX
++# define PATH_MAX MAX_PATH
++#endif
++
++#define LUA_IDSIZE	PATH_MAX
+ 
+ 
+ /*

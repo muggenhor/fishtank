@@ -1,0 +1,80 @@
+diff -Naur $sourcebase.orig/src/lauxlib.h $sourcebase/src/lauxlib.h
+--- $sourcebase.orig/src/lauxlib.h	2009-10-13 23:16:27.000000000 +0200
++++ $sourcebase/src/lauxlib.h	2009-10-25 22:00:41.000000000 +0100
+@@ -20,8 +20,8 @@
+ #endif
+ 
+ #if defined(LUA_COMPAT_GETN)
+-LUALIB_API int (luaL_getn) (lua_State *L, int t);
+-LUALIB_API void (luaL_setn) (lua_State *L, int t, int n);
++LUALIB_API int (luaL_getn) (lua_State *L, int t) LUA_DECL_DEPRECATED;
++LUALIB_API void (luaL_setn) (lua_State *L, int t, int n) LUA_DECL_DEPRECATED;
+ #else
+ #define luaL_getn(L,i)          ((int)lua_objlen(L, i))
+ #define luaL_setn(L,i,j)        ((void)0)  /* no op! */
+diff -Naur $sourcebase.orig/src/luaconf.h $sourcebase/src/luaconf.h
+--- $sourcebase.orig/src/luaconf.h	2008-02-11 17:25:08.000000000 +0100
++++ $sourcebase/src/luaconf.h	2009-10-25 21:16:37.000000000 +0100
+@@ -22,6 +22,62 @@
+ #  define CC_GNU_PREREQ(maj, min) 0
+ #endif
+ 
++/*
++   Convenience macros to test the versions of icc.
++*/
++#if defined(__INTEL_COMPILER) && defined(__ICC)
++#  define LUA_CC_INTEL_PREREQ(maj, min) \
++          ((__ICC) >= ((maj) * 100) + (min))
++#else
++#  define LUA_CC_INTEL_PREREQ(maj, min) 0
++#endif
++
++/*!
++ * \def LUA_DECL_DEPRECATED
++ *
++ * The LUA_DECL_DEPRECATED macro can be used to trigger compile-time warnings
++ * with newer compilers when deprecated functions are used.
++ *
++ * For non-inline functions, the macro gets inserted at front of the
++ * function declaration, right before the return type:
++ *
++ * \code
++ * LUA_DECL_DEPRECATED void deprecatedFunctionA();
++ * LUA_DECL_DEPRECATED int deprecatedFunctionB() const;
++ * \endcode
++ *
++ * For functions which are implemented inline,
++ * the LUA_DECL_DEPRECATED macro is inserted at the front, right before the return
++ * type, but after "static", "inline" or "virtual":
++ *
++ * \code
++ * LUA_DECL_DEPRECATED void deprecatedInlineFunctionA() { .. }
++ * virtual LUA_DECL_DEPRECATED int deprecatedInlineFunctionB() { .. }
++ * static LUA_DECL_DEPRECATED bool deprecatedInlineFunctionC() { .. }
++ * inline LUA_DECL_DEPRECATED bool deprecatedInlineFunctionD() { .. }
++ * \endcode
++ *
++ * You can also mark whole structs or classes as deprecated, by inserting the
++ * LUA_DECL_DEPRECATED macro after the struct/class keyword, but before the
++ * name of the struct/class:
++ *
++ * \code
++ * class LUA_DECL_DEPRECATED DeprecatedClass { };
++ * struct LUA_DECL_DEPRECATED DeprecatedStruct { };
++ * \endcode
++ *
++ * \note
++ * Description copied from KDE4, code copied from Qt4.
++ *
++ */
++#if CC_GNU_PREREQ(3,2) || LUA_CC_INTEL_PREREQ(10,0)
++#  define LUA_DECL_DEPRECATED __attribute__((__deprecated__))
++#elif defined(_MSC_VER) && _MSC_VER >= 1300 // Visual C++ .NET
++#  define LUA_DECL_DEPRECATED __declspec(deprecated)
++#else
++#  define LUA_DECL_DEPRECATED
++#endif
++
+ /*! \def LUA_DECL_FORMAT
+  * GCC: "The format attribute specifies that a function takes printf, scanf, strftime or strfmon
+  *       style arguments which should be type-checked against a format string."

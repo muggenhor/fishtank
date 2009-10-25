@@ -1,0 +1,33 @@
+diff -Naur $sourcebase.orig/src/lua.h $sourcebase/src/lua.h
+--- $sourcebase.orig/src/lua.h	2009-10-13 23:30:22.000000000 +0200
++++ $sourcebase/src/lua.h	2009-10-25 21:17:48.000000000 +0100
+@@ -167,7 +167,7 @@
+ LUA_API void  (lua_pushstring) (lua_State *L, const char *s);
+ LUA_API const char *(lua_pushvfstring) (lua_State *L, const char *fmt,
+                                                       va_list argp);
+-LUA_API const char *(lua_pushfstring) (lua_State *L, const char *fmt, ...);
++LUA_API const char *(lua_pushfstring) (lua_State *L, const char *fmt, ...) LUA_DECL_FORMAT(printf, 2, 3);
+ LUA_API void  (lua_pushcclosure) (lua_State *L, lua_CFunction fn, int n);
+ LUA_API void  (lua_pushboolean) (lua_State *L, int b);
+ LUA_API void  (lua_pushlightuserdata) (lua_State *L, void *p);
+diff -Naur $sourcebase.orig/src/luaconf.h $sourcebase/src/luaconf.h
+--- $sourcebase.orig/src/luaconf.h	2008-02-11 17:25:08.000000000 +0100
++++ $sourcebase/src/luaconf.h	2009-10-25 21:16:37.000000000 +0100
+@@ -22,6 +22,17 @@
+ #  define CC_GNU_PREREQ(maj, min) 0
+ #endif
+ 
++/*! \def LUA_DECL_FORMAT
++ * GCC: "The format attribute specifies that a function takes printf, scanf, strftime or strfmon
++ *       style arguments which should be type-checked against a format string."
++ */
++#if CC_GNU_PREREQ(2,5) && !defined(__INTEL_COMPILER)
++#  define LUA_DECL_FORMAT(archetype, string_index, first_to_check) \
++          __attribute__((__format__(archetype, string_index, first_to_check)))
++#else
++#  define LUA_DECL_FORMAT(archetype, string_index, first_to_check)
++#endif
++
+ /*!
+  * \def LUA_DECL_NOTHROW
+  * GCC: "The nothrow attribute is used to inform the compiler that a function cannot

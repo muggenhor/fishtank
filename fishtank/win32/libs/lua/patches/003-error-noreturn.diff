@@ -1,0 +1,94 @@
+diff -Naur $sourcebase.orig/src/lapi.c $sourcebase/src/lapi.c
+--- $sourcebase.orig/src/lapi.c	2008-07-04 20:41:18.000000000 +0200
++++ $sourcebase/src/lapi.c	2009-10-25 21:24:47.000000000 +0100
+@@ -966,7 +966,6 @@
+   api_checknelems(L, 1);
+   luaG_errormsg(L);
+   lua_unlock(L);
+-  return 0;  /* to avoid warnings */
+ }
+ 
+ 
+diff -Naur $sourcebase.orig/src/ldebug.h $sourcebase/src/ldebug.h
+--- $sourcebase.orig/src/ldebug.h	2007-12-27 14:02:25.000000000 +0100
++++ $sourcebase/src/ldebug.h	2009-10-25 21:34:32.000000000 +0100
+@@ -26,7 +26,7 @@
+ LUAI_FUNC int luaG_ordererror (lua_State *L, const TValue *p1,
+                                              const TValue *p2);
+ LUAI_FUNC void luaG_runerror (lua_State *L, const char *fmt, ...);
+-LUAI_FUNC void luaG_errormsg (lua_State *L);
++LUAI_FUNC void luaG_errormsg (lua_State *L) LUA_DECL_NORETURN;
+ LUAI_FUNC int luaG_checkcode (const Proto *pt);
+ LUAI_FUNC int luaG_checkopenop (Instruction i);
+ 
+diff -Naur $sourcebase.orig/src/ldo.h $sourcebase/src/ldo.h
+--- $sourcebase.orig/src/ldo.h	2007-12-27 14:02:25.000000000 +0100
++++ $sourcebase/src/ldo.h	2009-10-25 21:34:27.000000000 +0100
+@@ -48,7 +48,7 @@
+ LUAI_FUNC void luaD_reallocstack (lua_State *L, int newsize);
+ LUAI_FUNC void luaD_growstack (lua_State *L, int n);
+ 
+-LUAI_FUNC void luaD_throw (lua_State *L, int errcode);
++LUAI_FUNC void luaD_throw (lua_State *L, int errcode) LUA_DECL_NORETURN;
+ LUAI_FUNC int luaD_rawrunprotected (lua_State *L, Pfunc f, void *ud);
+ 
+ LUAI_FUNC void luaD_seterrorobj (lua_State *L, int errcode, StkId oldtop);
+diff -Naur $sourcebase.orig/src/lua.h $sourcebase/src/lua.h
+--- $sourcebase.orig/src/lua.h	2009-10-13 23:30:22.000000000 +0200
++++ $sourcebase/src/lua.h	2009-10-25 21:17:48.000000000 +0100
+@@ -237,7 +237,7 @@
+ ** miscellaneous functions
+ */
+ 
+-LUA_API int   (lua_error) (lua_State *L);
++LUA_API int   (lua_error) (lua_State *L) LUA_DECL_NORETURN;
+ 
+ LUA_API int   (lua_next) (lua_State *L, int idx);
+ 
+diff -Naur $sourcebase.orig/src/luaconf.h $sourcebase/src/luaconf.h
+--- $sourcebase.orig/src/luaconf.h	2008-02-11 17:25:08.000000000 +0100
++++ $sourcebase/src/luaconf.h	2009-10-25 21:16:37.000000000 +0100
+@@ -11,6 +11,43 @@
+ #include <limits.h>
+ #include <stddef.h>
+ 
++/*
++   Convenience macros to test the versions of gcc.
++   Copied from glibc's features.h.
++*/
++#if defined(__GNUC__) && defined(__GNUC_MINOR__)
++#  define CC_GNU_PREREQ(maj, min) \
++          ((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
++#else
++#  define CC_GNU_PREREQ(maj, min) 0
++#endif
++
++/*!
++ * \def LUA_DECL_NOTHROW
++ * GCC: "The nothrow attribute is used to inform the compiler that a function cannot
++ *       throw an exception."
++ */
++#if CC_GNU_PREREQ(3,3)
++#  define LUA_DECL_NOTHROW __attribute__ ((__nothrow__))
++#elif defined(_MSC_VER)
++#  define LUA_DECL_NOTHROW __declspec(nothrow)
++#else
++#  define LUA_DECL_NOTHROW
++#endif
++
++/*!
++ * \def LUA_DECL_NORETURN
++ * "A few standard library functions, such as abort and exit, cannot return. GCC knows this
++ *  automatically. Some programs define their own functions that never return.
++ *  You can declare them noreturn to tell the compiler this fact."
++ */
++#if CC_GNU_PREREQ(2,5)
++#  define LUA_DECL_NORETURN __attribute__ ((__noreturn__))
++#elif defined(_MSC_VER)
++#  define LUA_DECL_NORETURN __declspec(noreturn)
++#else
++#  define LUA_DECL_NORETURN
++#endif
+ 
+ /*
+ ** ==================================================================
