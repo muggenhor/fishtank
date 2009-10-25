@@ -13,6 +13,7 @@
 #include <framework/debug.hpp>
 #include <framework/debug-net-out.hpp>
 #include <framework/threadpool.hpp>
+#include <framework/vfs.hpp>
 #include "GL/GLee.h"
 #include <GL/glfw.h>
 #include <GL/gl.h>
@@ -524,6 +525,11 @@ int main(int argc, char** argv)
 
 	DebugStream::registerDebugOutput(new stderr_wrapper);
 
+	for (const char** dir = &datadirs[0]; dir != &datadirs[ARRAY_SIZE(datadirs)]; ++dir)
+		vfs::allowed_read_paths.push_back(*dir);
+	for (const char** dir = &sysconfdirs[0]; dir != &sysconfdirs[ARRAY_SIZE(sysconfdirs)]; ++dir)
+		vfs::allowed_read_paths.push_back(*dir);
+
 	datadir = find_data_dir();
 
 	LuaScript lua_state;
@@ -589,19 +595,16 @@ int main(int argc, char** argv)
 
 		for (const char** dir = &sysconfdirs[0]; dir != &sysconfdirs[ARRAY_SIZE(sysconfdirs)]; ++dir)
 		{
-			fs::path lua_setup_file(fs::path(*dir) / "fishtank-setup.lua");
+			fs::path lua_setup_file(normalized_path(fs::path(*dir) / "fishtank-setup.lua"));
 
 			// Strip references to the current working directory (to make Lua related debug messages cleaner)
 			while (lua_setup_file.relative_path().string().substr(0, 2) == "./")
-				lua_setup_file = lua_setup_file.root_path() / lua_setup_file.relative_path().string().substr(2);
+				lua_setup_file = lua_setup_file.string().substr(2);
 
 			if (!fs::exists(lua_setup_file))
 				continue;
 
-			if (luaL_dofile(lua_state, lua_setup_file.file_string().c_str()) != 0)
-			{
-				throw luabind::error(lua_state);
-			}
+			lua_state.dofile(lua_setup_file);
 		}
 
 		// We're using three screens

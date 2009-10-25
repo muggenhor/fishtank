@@ -3,9 +3,15 @@
 
 #include <boost/noncopyable.hpp>
 #include <luabind/luabind.hpp>
+#include <string>
 
 // Forward declaration to allow pointers
 struct lua_State;
+namespace boost { namespace filesystem {
+template<class String, class Traits> class basic_path;
+struct path_traits;
+typedef basic_path< std::string, path_traits > path;
+}}
 
 class LuaScript
 {
@@ -21,6 +27,8 @@ class LuaScript
 					globals, L, key
 					);
 		}
+
+		void dofile(const boost::filesystem::path& path);
 
 	private:
 		void register_safe_default_lua_libs();
@@ -41,6 +49,7 @@ class LuaScript
 	private:
 		RAIIState L;
 		const luabind::object globals;
+		luabind::object _dofile;
 };
 
 #endif // __INCLUDED_LIB_SCRIPT_STATE_HPP__

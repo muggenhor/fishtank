@@ -34,11 +34,17 @@ LuaScript::LuaScript() :
 
 	register_safe_default_lua_libs();
 	register_interfaces();
+	_dofile = globals["dofile"];
 }
 
 LuaScript::operator lua_State*()
 {
 	return L;
+}
+
+void LuaScript::dofile(const boost::filesystem::path& path)
+{
+	_dofile(path.string());
 }
 
 void LuaScript::register_safe_default_lua_libs()

@@ -19,19 +19,24 @@ win_pos.y = 0
 
 aquarium.ground.maxHeight = 30
 
-model_matrix = Eigen.Matrix4f.create({
-	-1, 0, 0, 0,
-	 0, 0, 1, 0,
-	 0, 1, 0, 0,
-	 0, 0, 0, 1
-})
+dofile 'static-object.lua'
+dofile 'wall.lua'
 
-function loadFishModels(name, properties, count)
-        local count = count or 1
-        local model = loadModel('Vissen/Modellen', name, model_matrix)
-        for i=1,count do
-                aquarium:AddFish(model, properties)
-        end
+do
+	local model_matrix = Eigen.Matrix4f.create({
+		-1, 0, 0, 0,
+		 0, 0, 1, 0,
+		 0, 1, 0, 0,
+		 0, 0, 0, 1
+	})
+
+	function loadFishModels(name, properties, count)
+		local count = count or 1
+		local model = loadModel('Vissen/Modellen', name, model_matrix)
+		for i=1,count do
+			aquarium:AddFish(model, properties)
+		end
+	end
 end
 
 -- Load fishes
@@ -49,19 +54,6 @@ for k,fish in ipairs({
 		{'haai',             'haai'              },
 	}) do
 	loadFishModels(unpack(fish))
-end
-
-class 'StaticObject' (Object)
-
-function StaticObject:__init(model_name, object_height, pos)
-	local model = model_name
-	if type(model) == 'string' then
-		model = loadModel('Objecten/Modellen', model, model_matrix)
-	end
-
-	Object.__init(self, model, pos)
-	self.scale = object_height / (model.bb_h.y - model.bb_l.y)
-	self.pos = pos
 end
 
 function v(x, z)
@@ -118,39 +110,6 @@ for k,pos in ipairs({
 end
 
 cameraTransformations:push_back(Transformation(Transformation.FLIP_UP_DOWN))
-
-class 'Wall' (Object)
-Wall.texCoords = {
-	Eigen.Vector2i(1, 0),
-	Eigen.Vector2i(1, 1),
-	Eigen.Vector2i(0, 1),
-	Eigen.Vector2i(0, 0)
-}
-
-function Wall:__init(aquarium, texture)
-	Object.__init(self)
-	self.aquarium = aquarium
-	self.texture = loadTexture('', texture)
-end
-
-function Wall:draw()
-	gl.color(1, 1, 1)
-	self.texture:bind()
-
-	gl.matrix.push()
-	gl.matrix.scale(self.aquarium.size)
-
-	gl.Begin(gl.QUADS)
-		for index = 1,4 do
-			gl.texCoord(self.texCoords[index])
-			gl.vertex(self.corners[index])
-		end
-	gl.End()
-
-	gl.matrix.pop()
-
-	self:drawCollisionSphere()
-end
 
 wall1 = Wall(aquarium, 'wall1.jpg')
 wall1.corners = {

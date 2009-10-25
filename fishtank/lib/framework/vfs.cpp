@@ -1,0 +1,203 @@
+#include "vfs.hpp"
+#include <boost/filesystem/path.hpp>
+#include <boost/format.hpp>
+#include <boost/system/error_code.hpp>
+#include <boost/system/system_error.hpp>
+#include <cerrno>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
+using namespace std;
+namespace fs = boost::filesystem;
+using boost::format;
+using boost::system::error_code;
+using boost::system::get_system_category;
+using boost::system::system_error;
+
+boost::filesystem::path normalized_path(const boost::filesystem::path& path)
+{
+	if (path.empty())
+		return path;
+
+	fs::path temp;
+	fs::path::iterator start( path.begin() );
+	fs::path::iterator last( path.end() );
+	fs::path::iterator stop( last-- );
+	for ( fs::path::iterator itr( start ); itr != stop; ++itr )
+	{
+		if (*itr == "."
+		 && itr != start
+		 && itr != last)
+			continue;
+
+		// ignore a name and following ".."
+		if (!temp.empty()
+		 && *itr == "..")
+		{
+			string lf( temp.filename() );  
+			if (!lf.empty()
+			 && lf != "."
+			 && lf != "/"
+#             ifdef BOOST_WINDOWS_PATH
+			 && !(lf.size() == 2 
+			   && lf[1] == ':')
+#             endif
+			 && lf != "..")
+			{
+				temp.remove_filename();
+				continue;
+			}
+		}
+
+		temp /= *itr;
+		if (itr != last
+		 && temp.has_root_path()
+		 && fs::is_symlink(temp))
+		{
+			temp = normalized_path(readlink(temp));
+			if (temp.filename() == ".")
+				temp = temp.parent_path();
+		}
+	}
+
+	if (temp.empty())
+		temp /= ".";
+
+	return temp;
+}
+
+bool dir_contains_path(boost::filesystem::path dir, boost::filesystem::path path)
+{
+	dir  = normalized_path(fs::system_complete(dir));
+	path = normalized_path(fs::system_complete(path));
+
+	for (fs::path::const_iterator diri(dir.begin()), pathi(path.begin());
+	     diri != dir.end();
+	     ++diri, ++pathi)
+		if (pathi == path.end()
+		 || *diri != *pathi)
+			return false;
+
+	return true;
+}
+
+boost::filesystem::path readlink(const boost::filesystem::path&
+#ifndef BOOST_WINDOWS_API
+		path
+#endif
+		)
+{
+#ifdef BOOST_WINDOWS_API
+	throw std::runtime_error("readlink() not implemented on Windows");
+#else
+	string link(path.external_file_string());
+	vector<char> buf(512);
+
+	for (;;)
+	{
+		const ssize_t len = readlink(link.c_str(), &buf[0], buf.size());
+		if (len == -1)
+		{
+			if (errno == ENAMETOOLONG)
+			{
+				buf.resize(2 * buf.size());
+				continue;
+			}
+
+			throw system_error(error_code(errno, get_system_category()));
+		}
+
+		return path.parent_path() / string(&buf[0], len);
+	}
+#endif
+}
+
+namespace vfs
+{
+
+vector<boost::filesystem::path> allowed_read_paths, allowed_readwrite_paths;
+
+bool allow_readwrite(const boost::filesystem::path& path)
+{
+	const bool symlink = fs::is_symlink(path);
+
+	for (vector<fs::path>::const_iterator
+	     dir  = allowed_readwrite_paths.begin();
+	     dir != allowed_readwrite_paths.end();
+	     ++dir)
+		if (dir_contains_path(*dir, path))
+			return symlink ?
+				allow_readwrite(readlink(path)) :
+				true;
+
+	for (vector<fs::path>::const_iterator
+	     dir  = allowed_read_paths.begin();
+	     dir != allowed_read_paths.end();
+	     ++dir)
+		if (dir_contains_path(*dir, path))
+			return symlink ?
+				allow_readwrite(readlink(path)) :
+				true;
+
+	return false;
+}
+
+bool allow_read(const boost::filesystem::path& path)
+{
+	const bool symlink = fs::is_symlink(path);
+
+	for (vector<fs::path>::const_iterator
+	     dir  = allowed_read_paths.begin();
+	     dir != allowed_read_paths.end();
+	     ++dir)
+		if (dir_contains_path(*dir, path))
+			return symlink ?
+				allow_read(readlink(path)) :
+				true;
+
+	return false;
+}
+
+boost::shared_ptr<boost::filesystem::ifstream> open_read(const boost::filesystem::path& path, const std::ios_base::openmode mode)
+{
+	boost::shared_ptr<fs::ifstream> is(new fs::ifstream);
+	open(*is, path, mode);
+	return is;
+}
+
+boost::shared_ptr<boost::filesystem::fstream> open_readwrite(const boost::filesystem::path& path, const std::ios_base::openmode mode)
+{
+	boost::shared_ptr<fs::fstream> os(new fs::fstream);
+	open(*os, path, mode);
+	return os;
+}
+
+void open(std::ifstream& is, const boost::filesystem::path& path, const std::ios_base::openmode mode)
+{
+	if (!allow_read(path))
+		throw fs::filesystem_error("Cannot open file for reading", path, error_code(EACCES, get_system_category()));
+
+	string file(path.external_file_string());
+	is.open(file.c_str(), mode);
+}
+
+void open(std::ofstream& os, const boost::filesystem::path& path, const std::ios_base::openmode mode)
+{
+	if (!allow_readwrite(path))
+		throw fs::filesystem_error("Cannot open file for writing", path, error_code(EACCES, get_system_category()));
+
+	string file(path.external_file_string());
+	os.open(file.c_str(), mode);
+}
+
+void open(std::fstream& os, const boost::filesystem::path& path, const std::ios_base::openmode mode)
+{
+	if (!allow_readwrite(path))
+		throw fs::filesystem_error("Cannot open file for writing", path, error_code(EACCES, get_system_category()));
+
+	string file(path.external_file_string());
+	os.open(file.c_str(), mode);
+}
+
+}

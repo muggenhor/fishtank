@@ -9,14 +9,16 @@ libframework_la_SOURCES = \
 	debug-net-out.cpp \
 	debug.cpp \
 	resource.cpp \
-	threadpool.cpp
+	threadpool.cpp \
+	vfs.cpp
 
 noinst_HEADERS = \
 	debug-net-out.hpp \
 	debug.hpp \
 	property.hpp \
 	resource.hpp \
-	threadpool.hpp
+	threadpool.hpp \
+	vfs.hpp
 
 libframework_la_LIBADD = \
 	$(BOOST_PROGRAM_OPTIONS_LIBS) \
