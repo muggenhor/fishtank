@@ -6,6 +6,8 @@
 #include <boost/shared_ptr.hpp>
 #include <vector>
 
+static const unsigned int SYMLOOP_MAX = 8;
+
 boost::filesystem::path normalized_path(const boost::filesystem::path& path);
 bool dir_contains_path(boost::filesystem::path dir, boost::filesystem::path path);
 boost::filesystem::path readlink(const boost::filesystem::path& path);

@@ -28,7 +28,7 @@ class LuaScript
 					);
 		}
 
-		void dofile(const boost::filesystem::path& path);
+		int dofile(const boost::filesystem::path& path);
 
 	private:
 		void register_safe_default_lua_libs();

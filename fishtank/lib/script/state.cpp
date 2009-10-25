@@ -41,9 +41,9 @@ LuaScript::operator lua_State*()
 	return L;
 }
 
-void LuaScript::dofile(const boost::filesystem::path& path)
+int LuaScript::dofile(const boost::filesystem::path& path)
 {
-	lua_base_dofile(L, path);
+	return lua_dofile(L, path);
 }
 
 void LuaScript::register_safe_default_lua_libs()

@@ -16,8 +16,6 @@ using boost::system::error_condition;
 using boost::system::get_system_category;
 using boost::system::system_error;
 
-static const unsigned int SYMLOOP_MAX = 8;
-
 #define too_many_symbolic_link_levels too_many_synbolic_link_levels
 static const error_condition loop_condition(
 	boost::system::errc::too_many_symbolic_link_levels,
