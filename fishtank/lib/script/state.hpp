@@ -49,7 +49,6 @@ class LuaScript
 	private:
 		RAIIState L;
 		const luabind::object globals;
-		luabind::object _dofile;
 };
 
 #endif // __INCLUDED_LIB_SCRIPT_STATE_HPP__

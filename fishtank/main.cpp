@@ -598,7 +598,7 @@ int main(int argc, char** argv)
 			fs::path lua_setup_file(normalized_path(fs::path(*dir) / "fishtank-setup.lua"));
 
 			// Strip references to the current working directory (to make Lua related debug messages cleaner)
-			while (lua_setup_file.relative_path().string().substr(0, 2) == "./")
+			while (lua_setup_file.string().substr(0, 2) == "./")
 				lua_setup_file = lua_setup_file.string().substr(2);
 
 			if (!fs::exists(lua_setup_file))

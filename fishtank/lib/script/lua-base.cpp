@@ -1,10 +1,11 @@
 #include "lua-base.hpp"
-#include <cstring>
+#include <boost/bind.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/format.hpp>
 #include <boost/system/error_code.hpp>
 #include <boost/system/system_error.hpp>
+#include <cstring>
 #include <framework/vfs.hpp>
 #include <fstream>
 #include <luabind/luabind.hpp>
@@ -97,12 +98,28 @@ static void base_loadfile(lua_State* L, const fs::path& path)
 		throw luabind::error(L);
 }
 
+int lua_base_dofile(lua_State* L, const boost::filesystem::path& path)
+{
+	const int n = lua_gettop(L);
+	fs::path file(path);
+
+	if (fs::is_symlink(file))
+	{
+		file = normalized_path(readlink(file));
+		// Strip references to the current working directory (to make Lua related debug messages cleaner)
+		while (file.string().substr(0, 2) == "./")
+			file = file.string().substr(2);
+	}
+
+	base_loadfile(L, file);
+	if (lua_pcall(L, 0, LUA_MULTRET, 0) != 0) // Call the Lua chunck produced by loadfile
+		throw luabind::error(L);
+	return lua_gettop(L) - n;
+}
+
 static int base_dofile(lua_State* L)
 {
-	const int argc = lua_gettop(L);
 	const char* fname = luaL_checkstring(L, 1);
-
-	lua_pushvalue(L, lua_upvalueindex(1)); // loadfile
 
 	// Find out in what file our caller lives
 	lua_Debug ar;
@@ -111,26 +128,27 @@ static int base_dofile(lua_State* L)
 	 && ar.short_src
 	 && ar.short_src[0])
 	{
-		fs::path file(ar.short_src);
-		file = file.parent_path() / fname;
-		if (fs::is_symlink(file))
-		{
-			file = normalized_path(readlink(file));
-			// Strip references to the current working directory (to make Lua related debug messages cleaner)
-			while (file.relative_path().string().substr(0, 2) == "./")
-				file = file.string().substr(2);
-		}
+		const boost::optional<int> n =
+		  handle_exceptions<int>(L,
+		    boost::bind(&lua_base_dofile,
+		      L, fs::path(ar.short_src).parent_path() / fname));
 
-		lua_pushstring(L, file.string().c_str());
+		if (n)
+			return *n;
 	}
 	else
 	{
-		lua_pushvalue(L, 1); // file (parameter)
+		const boost::optional<int> n =
+		  handle_exceptions<int>(L,
+		    boost::bind(&lua_base_dofile,
+		      L, fname));
+
+		if (n)
+			return *n;
 	}
 
-	lua_call(L, 1, 1);
-	lua_call(L, 0, LUA_MULTRET); // Call the Lua chunck produced by loadfile
-	return lua_gettop(L) - argc;
+	lua_error(L);
+	return 0; // To shut up the compiler (lua_error never returns)
 }
 
 void lua_base_register_with_lua(lua_State* L)
@@ -158,8 +176,7 @@ void lua_base_register_with_lua(lua_State* L)
 		def("loadfile", tag_function<void (lua_State*, const char*)>(&base_loadfile), raw(_1))
 	];
 
-	lua_getglobal(L, "loadfile");
-	lua_pushcclosure(L, &base_dofile, 1);
+	lua_pushcfunction(L, &base_dofile);
 	lua_setglobal(L, "dofile");
 
 	lua_getglobal(L, "os");
