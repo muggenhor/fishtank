@@ -12,8 +12,17 @@ using namespace std;
 namespace fs = boost::filesystem;
 using boost::format;
 using boost::system::error_code;
+using boost::system::error_condition;
 using boost::system::get_system_category;
 using boost::system::system_error;
+
+static const unsigned int SYMLOOP_MAX = 8;
+
+#define too_many_symbolic_link_levels too_many_synbolic_link_levels
+static const error_condition loop_condition(
+	boost::system::errc::too_many_symbolic_link_levels,
+	get_system_category());
+#undef too_many_symbolic_link_levels
 
 boost::filesystem::path normalized_path(const boost::filesystem::path& path)
 {
@@ -118,8 +127,11 @@ namespace vfs
 
 vector<boost::filesystem::path> allowed_read_paths, allowed_readwrite_paths;
 
-bool allow_readwrite(const boost::filesystem::path& path)
+static bool allow_readwrite(const boost::filesystem::path& path, const unsigned int recursion)
 {
+	if (recursion > SYMLOOP_MAX)
+		throw system_error(error_code(ELOOP, get_system_category()));
+
 	const bool symlink = fs::is_symlink(path);
 
 	for (vector<fs::path>::const_iterator
@@ -128,7 +140,7 @@ bool allow_readwrite(const boost::filesystem::path& path)
 	     ++dir)
 		if (dir_contains_path(*dir, path))
 			return symlink ?
-				allow_readwrite(readlink(path)) :
+				allow_readwrite(readlink(path), recursion + 1) :
 				true;
 
 	for (vector<fs::path>::const_iterator
@@ -137,14 +149,32 @@ bool allow_readwrite(const boost::filesystem::path& path)
 	     ++dir)
 		if (dir_contains_path(*dir, path))
 			return symlink ?
-				allow_readwrite(readlink(path)) :
+				allow_readwrite(readlink(path), recursion + 1) :
 				true;
 
 	return false;
 }
 
-bool allow_read(const boost::filesystem::path& path)
+bool allow_readwrite(const boost::filesystem::path& path)
 {
+	try
+	{
+		return allow_readwrite(path, 0);
+	}
+	catch (const system_error& e)
+	{
+		if (e.code() == loop_condition)
+			throw fs::filesystem_error("Cannot open file for reading", path, e.code());
+		else
+			throw;
+	}
+}
+
+static bool allow_read(const boost::filesystem::path& path, const unsigned int recursion)
+{
+	if (recursion > SYMLOOP_MAX)
+		throw system_error(error_code(ELOOP, get_system_category()));
+
 	const bool symlink = fs::is_symlink(path);
 
 	for (vector<fs::path>::const_iterator
@@ -153,10 +183,25 @@ bool allow_read(const boost::filesystem::path& path)
 	     ++dir)
 		if (dir_contains_path(*dir, path))
 			return symlink ?
-				allow_read(readlink(path)) :
+				allow_read(readlink(path), recursion + 1) :
 				true;
 
 	return false;
+}
+
+bool allow_read(const boost::filesystem::path& path)
+{
+	try
+	{
+		return allow_read(path, 0);
+	}
+	catch (const system_error& e)
+	{
+		if (e.code() == loop_condition)
+			throw fs::filesystem_error("Cannot open file for reading", path, e.code());
+		else
+			throw;
+	}
 }
 
 boost::shared_ptr<boost::filesystem::ifstream> open_read(const boost::filesystem::path& path, const std::ios_base::openmode mode)
