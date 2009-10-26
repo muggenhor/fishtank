@@ -196,37 +196,76 @@ bool allow_read(const boost::filesystem::path& path)
 	}
 }
 
-boost::shared_ptr<boost::filesystem::ifstream> open_read(const boost::filesystem::path& path, const std::ios_base::openmode mode)
+template < class charT, class traits >
+static const char* rwu_error_message(const basic_istream<charT, traits>&)
 {
-	boost::shared_ptr<fs::ifstream> is(new fs::ifstream);
-	open(*is, path, mode);
-	return is;
+	return "Cannot open file for reading";
 }
 
-boost::shared_ptr<boost::filesystem::ofstream> open_write(const boost::filesystem::path& path, const std::ios_base::openmode mode)
+template < class charT, class traits >
+static const char* rwu_error_message(const basic_ostream<charT, traits>&)
 {
-	boost::shared_ptr<fs::ofstream> os(new fs::ofstream);
-	open(*os, path, mode);
-	return os;
+	return "Cannot open file for writing";
 }
 
-boost::shared_ptr<boost::filesystem::fstream> open_readwrite(const boost::filesystem::path& path, const std::ios_base::openmode mode)
+template < class charT, class traits >
+static const char* rwu_error_message(const basic_iostream<charT, traits>&)
 {
-	boost::shared_ptr<fs::fstream> os(new fs::fstream);
-	open(*os, path, mode);
-	return os;
+	return "Cannot open file for updating";
 }
 
-void open(std::ifstream& is, const boost::filesystem::path& path, const std::ios_base::openmode mode)
+template<class Fstream> struct is_fs_fstream
+  { BOOST_STATIC_CONSTANT( bool, value = false ); };
+template<class charT, class traits> struct is_fs_fstream< fs::basic_ifstream<charT, traits> >
+  { BOOST_STATIC_CONSTANT( bool, value = true ); };
+template<class charT, class traits> struct is_fs_fstream< fs::basic_ofstream<charT, traits> >
+  { BOOST_STATIC_CONSTANT( bool, value = true ); };
+template<class charT, class traits> struct is_fs_fstream< fs::basic_fstream<charT, traits> >
+  { BOOST_STATIC_CONSTANT( bool, value = true ); };
+
+template < class Fstream, class Path >
+static void stream_do_open(Fstream& s,
+                           const Path& path,
+                           const std::ios_base::openmode mode,
+                           typename boost::enable_if<fs::is_basic_path<Path> >::type* = 0,
+                           typename boost::enable_if<is_fs_fstream<Fstream> >::type* = 0)
+{
+	s.open(path, mode);
+}
+
+template<class Fstream> struct is_std_fstream
+  { BOOST_STATIC_CONSTANT( bool, value = false ); };
+template<class charT, class traits> struct is_std_fstream< basic_ifstream<charT, traits> >
+  { BOOST_STATIC_CONSTANT( bool, value = true ); };
+template<class charT, class traits> struct is_std_fstream< basic_ofstream<charT, traits> >
+  { BOOST_STATIC_CONSTANT( bool, value = true ); };
+template<class charT, class traits> struct is_std_fstream< basic_fstream<charT, traits> >
+  { BOOST_STATIC_CONSTANT( bool, value = true ); };
+
+template < class Fstream >
+static void stream_do_open(Fstream& s,
+                           const fs::path& path,
+                           const std::ios_base::openmode mode,
+                           typename boost::enable_if<is_std_fstream<Fstream> >::type* = 0)
+{
+	string file(path.external_file_string());
+	s.open(file.c_str(), mode);
+}
+
+template < class Fstream, class Path >
+static void do_open(Fstream& s,
+                    const Path& path,
+                    const std::ios_base::openmode mode,
+                    typename boost::enable_if<fs::is_basic_path<Path> >::type* = 0)
 {
 	try
 	{
 		if (!allow_read(path))
 			throw system_error(error_code(EACCES, get_system_category()));
 
-		string file(path.external_file_string());
-		is.open(file.c_str(), mode);
-		if (!is.is_open())
+		stream_do_open(s, path, mode);
+
+		if (!s.is_open())
 			throw system_error(error_code(errno, get_system_category()));
 	}
 	catch (const system_error& e)
@@ -234,56 +273,46 @@ void open(std::ifstream& is, const boost::filesystem::path& path, const std::ios
 		string what(e.std::runtime_error::what());
 		if (!what.empty())
 			what = ": " + what;
-		what = "Cannot open file for reading" + what;
+		what = rwu_error_message(s) + what;
 
 		throw fs::filesystem_error(what, path, e.code());
 	}
 }
 
-void open(std::ofstream& os, const boost::filesystem::path& path, const std::ios_base::openmode mode)
+boost::shared_ptr<boost::filesystem::ifstream> open_read(const boost::filesystem::path& path, const std::ios_base::openmode mode)
 {
-	try
-	{
-		if (!allow_readwrite(path))
-			throw system_error(error_code(EACCES, get_system_category()));
-
-		string file(path.external_file_string());
-		os.open(file.c_str(), mode);
-		if (!os.is_open())
-			throw system_error(error_code(errno, get_system_category()));
-	}
-	catch (const system_error& e)
-	{
-		string what(e.std::runtime_error::what());
-		if (!what.empty())
-			what = ": " + what;
-		what = "Cannot open file for writing" + what;
-
-		throw fs::filesystem_error(what, path, e.code());
-	}
+	boost::shared_ptr<fs::ifstream> is(new fs::ifstream);
+	do_open(*is, path, mode);
+	return is;
 }
 
-void open(std::fstream& ios, const boost::filesystem::path& path, const std::ios_base::openmode mode)
+boost::shared_ptr<boost::filesystem::ofstream> open_write(const boost::filesystem::path& path, const std::ios_base::openmode mode)
 {
-	try
-	{
-		if (!allow_readwrite(path))
-			throw system_error(error_code(EACCES, get_system_category()));
+	boost::shared_ptr<fs::ofstream> os(new fs::ofstream);
+	do_open(*os, path, mode);
+	return os;
+}
 
-		string file(path.external_file_string());
-		ios.open(file.c_str(), mode);
-		if (!ios.is_open())
-			throw system_error(error_code(errno, get_system_category()));
-	}
-	catch (const system_error& e)
-	{
-		string what(e.std::runtime_error::what());
-		if (!what.empty())
-			what = ": " + what;
-		what = "Cannot open file for updating" + what;
+boost::shared_ptr<boost::filesystem::fstream> open_readwrite(const boost::filesystem::path& path, const std::ios_base::openmode mode)
+{
+	boost::shared_ptr<fs::fstream> os(new fs::fstream);
+	do_open(*os, path, mode);
+	return os;
+}
 
-		throw fs::filesystem_error(what, path, e.code());
-	}
+void open(std::ifstream& s, const boost::filesystem::path& path, const std::ios_base::openmode mode)
+{
+	do_open(s, path, mode);
+}
+
+void open(std::ofstream& s, const boost::filesystem::path& path, const std::ios_base::openmode mode)
+{
+	do_open(s, path, mode);
+}
+
+void open(std::fstream& s, const boost::filesystem::path& path, const std::ios_base::openmode mode)
+{
+	do_open(s, path, mode);
 }
 
 }
