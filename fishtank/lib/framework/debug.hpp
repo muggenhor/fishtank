@@ -2,6 +2,7 @@
 #define __INCLUDED_LIB_FRAMEWORK_DEBUG_HPP__
 
 #include <boost/array.hpp>
+#include <boost/current_function.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -117,7 +118,7 @@ class DebugStream : public std::ostream
  *
  * Only outputs if debugging of part was formerly enabled in DebugStream::enabled_debug.
  */
-#define debug(part) _debug(part, __FUNCTION__)
+#define debug(part) _debug(part, BOOST_CURRENT_FUNCTION)
 DebugStream _debug(code_part part, const char* function);
 
 #endif // __INCLUDED_LIB_FRAMEWORK_DEBUG_HPP__
