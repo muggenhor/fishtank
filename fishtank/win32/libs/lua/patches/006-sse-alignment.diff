@@ -1,0 +1,12 @@
+diff -Naur $sourcebase.orig/src/luaconf.h $sourcebase/src/luaconf.h
+--- $sourcebase.orig/src/luaconf.h	2009-10-25 21:16:37.000000000 +0100
++++ $sourcebase/src/luaconf.h	2009-10-26 20:24:36.000000000 +0100
+@@ -705,7 +705,7 @@
+ ** aligned in 16-byte boundaries, then you should add long double in the
+ ** union.) Probably you do not need to change this.
+ */
+-#define LUAI_USER_ALIGNMENT_T	union { double u; void *s; long l; }
++#define LUAI_USER_ALIGNMENT_T	union { char sse_align[128 / CHAR_BIT]; double u; void *s; long l; }
+ 
+ 
+ /*
