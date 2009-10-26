@@ -30,45 +30,45 @@ do
 		 0, 0, 0, 1
 	})
 
-	function loadFishModels(name, properties, count)
+	local function loadFishModels(name, properties, count)
 		local count = count or 1
 		local model = loadModel('Vissen/Modellen', name, model_matrix)
 		for i=1,count do
 			aquarium:AddFish(model, properties)
 		end
 	end
-end
 
--- Load fishes
-for k,fish in ipairs({
-		{'vis2',             'vis2'              },
-		{'vis2',             'vis2'              },
-		{'BlueTang0',        'vis3'              },
-		{'GuppyBlueGrass',   'guppieBT'          },
-		{'RyugunoTukai0',    'neon'              },
-		{'neonTeT',          'neon',            3},
-		{'Angel',            'Angel'             },
-		{'kumanomi',         'kumanomi',        2},
-		{'Rantyu',           'rantyu',          3},
-		{'yellow_submarine', 'YellowSubmarine'   },
-		{'haai',             'haai'              },
-	}) do
-	loadFishModels(unpack(fish))
-end
-
-function v(x, z)
-        x = -(aquarium.size.x / 2) + x
-        z = -(aquarium.size.z / 2) + z
-
-	groundposx = (x + (aquarium.size.x / 2)) / aquarium.size.x * (aquarium.ground:width())
-	groundposy = (z + (aquarium.size.z / 2)) / aquarium.size.z * (aquarium.ground:depth())
-
-        y = aquarium.ground:HeightAt(groundposx, groundposy)
-
-        return Eigen.Vector3f(x, y, z)
+	-- Load fishes
+	for k,fish in ipairs({
+			{'vis2',             'vis2'              },
+			{'vis2',             'vis2'              },
+			{'BlueTang0',        'vis3'              },
+			{'GuppyBlueGrass',   'guppieBT'          },
+			{'RyugunoTukai0',    'neon'              },
+			{'neonTeT',          'neon',            3},
+			{'Angel',            'Angel'             },
+			{'kumanomi',         'kumanomi',        2},
+			{'Rantyu',           'rantyu',          3},
+			{'yellow_submarine', 'YellowSubmarine'   },
+			{'haai',             'haai'              },
+		}) do
+		loadFishModels(unpack(fish))
+	end
 end
 
 do
+	local function v(x, z)
+		x = -(aquarium.size.x / 2) + x
+		z = -(aquarium.size.z / 2) + z
+
+		local groundposx = (x + (aquarium.size.x / 2)) / aquarium.size.x * (aquarium.ground:width())
+		local groundposy = (z + (aquarium.size.z / 2)) / aquarium.size.z * (aquarium.ground:depth())
+
+		local y = aquarium.ground:HeightAt(groundposx, groundposy)
+
+		return Eigen.Vector3f(x, y, z)
+	end
+
 	local function zeester(x, z)
 		return StaticObject('zeester', 3, v(x, z))
 	end
@@ -99,41 +99,41 @@ do
 	for key,object in pairs(objects) do
 		aquarium:addObject(object)
 	end
-end
 
--- Add bubble particle gens
-for k,pos in ipairs({
-		v(23,   67),
-		v(580, 150),
-	}) do
-	aquarium:AddBubbleSpot(pos)
+	-- Add bubble particle gens
+	for k,pos in ipairs({
+			v(23,   67),
+			v(580, 150),
+		}) do
+		aquarium:AddBubbleSpot(pos)
+	end
 end
 
 cameraTransformations:push_back(Transformation(Transformation.FLIP_UP_DOWN))
 
-wall1 = Wall(aquarium, 'wall1.jpg')
-wall1.corners = {
+objects.wall1 = Wall(aquarium, 'wall1.jpg')
+objects.wall1.corners = {
 	Eigen.Vector3d(-0.5, -0.5, -0.5),
 	Eigen.Vector3d(-0.5,  0.5, -0.5),
 	Eigen.Vector3d(-0.5,  0.5,  0.5),
 	Eigen.Vector3d(-0.5, -0.5,  0.5)
 }
-aquarium:addObject(wall1)
+aquarium:addObject(objects.wall1)
 
-wall2 = Wall(aquarium, 'wall2.jpg')
-wall2.corners = {
+objects.wall2 = Wall(aquarium, 'wall2.jpg')
+objects.wall2.corners = {
 	Eigen.Vector3d(-0.5, -0.5, -0.5),
 	Eigen.Vector3d(-0.5,  0.5, -0.5),
 	Eigen.Vector3d( 0.5,  0.5, -0.5),
 	Eigen.Vector3d( 0.5, -0.5, -0.5)
 }
-aquarium:addObject(wall2)
+aquarium:addObject(objects.wall2)
 
-ceiling = Wall(aquarium, 'ceiling.jpg')
-ceiling.corners = {
+objects.ceiling = Wall(aquarium, 'ceiling.jpg')
+objects.ceiling.corners = {
 	Eigen.Vector3d(-0.5,  0.5,  0.5),
 	Eigen.Vector3d(-0.5,  0.5, -0.5),
 	Eigen.Vector3d( 0.5,  0.5, -0.5),
 	Eigen.Vector3d( 0.5,  0.5,  0.5)
 }
-aquarium:addObject(ceiling)
+aquarium:addObject(objects.ceiling)
