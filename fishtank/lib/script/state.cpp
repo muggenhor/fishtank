@@ -61,11 +61,19 @@ void LuaScript::register_safe_default_lua_libs()
 	 *  * dofile
 	 *  * loadfile
 	 *  * print
+	 *  * io.close
+	 *  * io.flush
 	 *  * io.input
 	 *  * io.lines
 	 *  * io.open
 	 *  * io.output
 	 *  * io.popen
+	 *  * io.read
+	 *  * io.stderr
+	 *  * io.stdin
+	 *  * io.stdout
+	 *  * io.type
+	 *  * io.write
 	 *  * os.execute
 	 *  * os.exit
 	 *  * os.getenv
@@ -78,11 +86,19 @@ void LuaScript::register_safe_default_lua_libs()
 	globals["dofile"] = nil;
 	globals["loadfile"] = nil;
 	globals["print"] = nil;
+	globals["io"]["close"] = nil;
+	globals["io"]["flush"] = nil;
 	globals["io"]["input"] = nil;
 	globals["io"]["lines"] = nil;
 	globals["io"]["open"] = nil;
 	globals["io"]["output"] = nil;
 	globals["io"]["popen"] = nil;
+	globals["io"]["read"] = nil;
+	globals["io"]["stderr"] = nil;
+	globals["io"]["stdin"] = nil;
+	globals["io"]["stdout"] = nil;
+	globals["io"]["type"] = nil;
+	globals["io"]["write"] = nil;
 	globals["os"]["execute"] = nil;
 	globals["os"]["exit"] = nil;
 	globals["os"]["getenv"] = nil;
