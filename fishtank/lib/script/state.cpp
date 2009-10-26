@@ -1,5 +1,7 @@
 #include "state.hpp"
+#include <algorithm>
 #include <boost/array.hpp>
+#include <cstring>
 #include "debug-support.hpp"
 #include "eigen-support.hpp"
 #include <framework/resource.hpp>
@@ -23,6 +25,75 @@ extern "C" {
 #include "../../wiggle.hpp"
 
 using namespace luabind;
+
+/**
+ * What to do if a Lua error is raised while not in a protected environment.
+ */
+static int lua_panic(lua_State* L)
+{
+	size_t len;
+	const char * const str = lua_tolstring(L, -1, &len);
+
+	throw std::runtime_error("PANIC: unprotected error in call to Lua API (" + std::string(str, len) + ")");
+}
+
+static void* lua_aligned_alloc(void* /* ud */, void* ptr, size_t osize, size_t nsize)
+{
+	using Eigen::ei_aligned_malloc;
+	using Eigen::ei_aligned_free;
+
+	assert((osize == 0) == (ptr == NULL));
+
+	// Free behaviour
+	if (nsize == 0)
+	{
+		ei_aligned_free(ptr);
+		return NULL;
+	}
+
+	// Malloc behaviour
+	if (osize == 0)
+	{
+		try
+		{
+			return ei_aligned_malloc(nsize);
+		}
+		catch (const std::bad_alloc&)
+		{
+			return NULL;
+		}
+	}
+
+	// Realloc behaviour
+	try
+	{
+		void* const newptr = ei_aligned_malloc(nsize);
+		if (!newptr)
+		{
+			if (osize >= nsize)
+				// Don't fail when we're supposed to lose memory but fail at it
+				return ptr;
+			else
+				return NULL;
+		}
+
+		// Preserve data across reallocation
+		std::memcpy(newptr, ptr, std::min(nsize, osize));
+
+		// Loose original memory
+		ei_aligned_free(ptr);
+
+		return newptr;
+	}
+	catch (const std::bad_alloc&)
+	{
+		if (osize >= nsize)
+			// Don't fail when we're supposed to lose memory but fail at it
+			return ptr;
+		else
+			return NULL;
+	}
+}
 
 LuaScript::LuaScript() :
 	globals(luabind::globals(L))
@@ -194,8 +265,9 @@ void LuaScript::register_interfaces()
 }
 
 LuaScript::RAIIState::RAIIState() :
-	L(lua_open())
+	L(lua_newstate(&lua_aligned_alloc, 0))
 {
+	lua_atpanic(L, &lua_panic);
 }
 
 LuaScript::RAIIState::~RAIIState()
