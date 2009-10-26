@@ -26,6 +26,8 @@ int lua_dostream(lua_State* L, std::istream& is, const std::string& chunkname = 
 
 int lua_dofile(lua_State* L, const boost::filesystem::path& path);
 
+void lua_pcall(lua_State* L, int nargs = 0, int nresults = LUA_MULTRET, int (*errfunc)(lua_State*) = 0);
+
 void lua_base_register_with_lua(lua_State* L);
 
 #endif // __INCLUDED_LIB_SCRIPT_LUA_BASE_HPP__

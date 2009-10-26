@@ -1,5 +1,6 @@
 #include "debug-support.hpp"
 #include <framework/debug.hpp>
+#include "lua-base.hpp"
 #include <luabind/luabind.hpp>
 #include <string>
 
@@ -184,7 +185,7 @@ void debug_register_with_lua(lua_State* L)
 	globals(L)["debug"] = nil;
 
 	// Extract the 'traceback' function from the 'debug' library and ditch the rest
-	lua_pushcfunction(L, &luaopen_debug); lua_call(L, 0, 0);
+	lua_pushcfunction(L, &luaopen_debug); lua_pcall(L);
 	object traceback_func = globals(L)["debug"]["traceback"];
 	registry(L)["_LOADED"]["debug"] = nil;
 	globals(L)["debug"] = nil;
@@ -210,16 +211,4 @@ void debug_register_with_lua(lua_State* L)
 	globals(L)["LOG_RPC"] = LOG_RPC;
 	globals(L)["LOG_MEMORY"] = LOG_MEMORY;
 	globals(L)["LOG_GUI"] = LOG_GUI;
-}
-
-luabind::scope debug_register_with_lua()
-{
-	using namespace luabind;
-
-	return
-		// Substitute our own version of print
-		def("print", &lua_Print, raw(_1)),
-		// Register 'debug' (acts similar to the C++ version, without stream operators, instead infinite arguments are allowed)
-		def("debug", &lua_FishDebug, raw(_1))
-		;
 }

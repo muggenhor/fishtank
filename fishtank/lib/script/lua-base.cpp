@@ -124,8 +124,7 @@ int lua_dostream(lua_State* L, std::istream& is, const std::string& chunkname)
 
 	const int n = lua_gettop(L);
 	chunk.push(L);
-	if (lua_pcall(L, 0, LUA_MULTRET, 0) != 0)
-		throw luabind::error(L);
+	lua_pcall(L);
 	return lua_gettop(L) - n;
 }
 
@@ -172,6 +171,28 @@ static void base_dofile(lua_State* L, fs::path fname)
 	}
 
 	lua_dofile(L, fname);
+}
+
+void lua_pcall(lua_State* L, int nargs, int nresults, int (*errfunc)(lua_State*))
+{
+	const int errfunc_pos = errfunc ?
+		lua_gettop(L) - nargs :
+		0;
+
+	if (errfunc_pos)
+	{
+		lua_pushcfunction(L, errfunc);
+		lua_insert(L, errfunc_pos); // Put the error handler *before* the function and its arguments
+	}
+
+	const bool success =
+		lua_pcall(L, nargs, nresults, errfunc_pos) == 0;
+
+	if (errfunc_pos)
+		lua_remove(L, errfunc_pos);
+
+	if (!success)
+		throw luabind::error(L);
 }
 
 static object io_open_impl(lua_State* L, const fs::path& fname, const string& mode)

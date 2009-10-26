@@ -48,13 +48,13 @@ int LuaScript::dofile(const boost::filesystem::path& path)
 
 void LuaScript::register_safe_default_lua_libs()
 {
-	lua_pushcfunction(L, &luaopen_base);    lua_call(L, 0, 0);
-	//lua_pushcfunction(L, &luaopen_package); lua_call(L, 0, 0);
-	lua_pushcfunction(L, &luaopen_string);  lua_call(L, 0, 0);
-	lua_pushcfunction(L, &luaopen_table);   lua_call(L, 0, 0);
-	lua_pushcfunction(L, &luaopen_math);    lua_call(L, 0, 0);
-	lua_pushcfunction(L, &luaopen_io);      lua_call(L, 0, 0);
-	lua_pushcfunction(L, &luaopen_os);      lua_call(L, 0, 0);
+	lua_pushcfunction(L, &luaopen_base);    lua_pcall(L);
+	//lua_pushcfunction(L, &luaopen_package); lua_pcall(L);
+	lua_pushcfunction(L, &luaopen_string);  lua_pcall(L);
+	lua_pushcfunction(L, &luaopen_table);   lua_pcall(L);
+	lua_pushcfunction(L, &luaopen_math);    lua_pcall(L);
+	lua_pushcfunction(L, &luaopen_io);      lua_pcall(L);
+	lua_pushcfunction(L, &luaopen_os);      lua_pcall(L);
 
 	/*
 	 * Functions that need to be ditched or overridden for safety:
