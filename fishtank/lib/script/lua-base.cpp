@@ -1,6 +1,7 @@
 #include "lua-base.hpp"
 #include <algorithm>
 #include <boost/bind.hpp>
+#include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/format.hpp>
@@ -73,7 +74,7 @@ luabind::object lua_load(lua_State* L, std::istream& is, const std::string& chun
 	if (lf.f.bad())
 	{
 		lua_settop(L, n);  /* ignore results from `lua_load' */
-		throw system_error(error_code(errno, get_system_category()));
+		throw system_error(error_code(errno, get_system_category()), "Cannot read");
 	}
 	if (status != 0)
 		throw luabind::error(L);
@@ -87,8 +88,6 @@ luabind::object lua_loadfile(lua_State* L, const boost::filesystem::path& path, 
 {
 	ifstream is;
 	vfs::open(is, path, ios_base::binary);
-	if (!is.is_open())
-		throw fs::filesystem_error("cannot open", path, error_code(errno, get_system_category()));
 
 	try
 	{
@@ -96,7 +95,7 @@ luabind::object lua_loadfile(lua_State* L, const boost::filesystem::path& path, 
 	}
 	catch (const system_error& e)
 	{
-		throw fs::filesystem_error("cannot read", path, e.code());
+		throw fs::filesystem_error(e.std::runtime_error::what(), path, e.code());
 	}
 }
 
@@ -148,8 +147,6 @@ int lua_dofile(lua_State* L, const boost::filesystem::path& path)
 
 	ifstream is;
 	vfs::open(is, path, ios_base::binary);
-	if (!is.is_open())
-		throw fs::filesystem_error("cannot open", path, error_code(errno, get_system_category()));
 
 	try
 	{
@@ -177,65 +174,35 @@ static void base_dofile(lua_State* L, fs::path fname)
 	lua_dofile(L, fname);
 }
 
-static object io_open_rw(lua_State* L, const fs::path& fname, const ios_base::openmode mode)
-{
-	boost::shared_ptr<fstream> s(new fstream);
-	vfs::open(*s, fname, mode);
-	if (!s->is_open())
-		throw fs::filesystem_error("cannot open", fname, error_code(errno, get_system_category()));
-
-	return object(L, s);
-}
-
-static object io_open_r(lua_State* L, const fs::path& fname, const ios_base::openmode mode)
-{
-	boost::shared_ptr<ifstream> is(new ifstream);
-	vfs::open(*is, fname, mode);
-	if (!is->is_open())
-		throw fs::filesystem_error("cannot open", fname, error_code(errno, get_system_category()));
-
-	return object(L, is);
-}
-
-static object io_open_w(lua_State* L, const fs::path& fname, const ios_base::openmode mode)
-{
-	boost::shared_ptr<ofstream> os(new ofstream);
-	vfs::open(*os, fname, mode);
-	if (!os->is_open())
-		throw fs::filesystem_error("cannot open", fname, error_code(errno, get_system_category()));
-
-	return object(L, os);
-}
-
 static object io_open_impl(lua_State* L, const fs::path& fname, const string& mode)
 {
 	if      (mode == "r")
-		return io_open_r(L, fname, ios_base::in);
+		return object(L, vfs::open_read(fname, ios_base::in));
 	else if (mode == "rb")
-		return io_open_r(L, fname, ios_base::in|ios_base::binary);
+		return object(L, vfs::open_read(fname, ios_base::in|ios_base::binary));
 	else if (mode == "w")
-		return io_open_w(L, fname, ios_base::out|ios_base::trunc);
+		return object(L, vfs::open_write(fname, ios_base::out|ios_base::trunc));
 	else if (mode == "wb")
-		return io_open_w(L, fname, ios_base::out|ios_base::trunc|ios_base::binary);
+		return object(L, vfs::open_write(fname, ios_base::out|ios_base::trunc|ios_base::binary));
 	else if (mode == "a")
-		return io_open_w(L, fname, ios_base::out|ios_base::app|ios_base::ate);
+		return object(L, vfs::open_write(fname, ios_base::out|ios_base::app|ios_base::ate));
 	else if (mode == "ab")
-		return io_open_w(L, fname, ios_base::out|ios_base::app|ios_base::ate|ios_base::binary);
+		return object(L, vfs::open_write(fname, ios_base::out|ios_base::app|ios_base::ate|ios_base::binary));
 	else if (mode == "r+")
-		return io_open_rw(L, fname, ios_base::in|ios_base::out);
+		return object(L, vfs::open_readwrite(fname, ios_base::in|ios_base::out));
 	else if (mode == "rb+"
 	      || mode == "r+b")
-		return io_open_rw(L, fname, ios_base::in|ios_base::out|ios_base::binary);
+		return object(L, vfs::open_readwrite(fname, ios_base::in|ios_base::out|ios_base::binary));
 	else if (mode == "w+")
-		return io_open_rw(L, fname, ios_base::in|ios_base::out|ios_base::trunc);
+		return object(L, vfs::open_readwrite(fname, ios_base::in|ios_base::out|ios_base::trunc));
 	else if (mode == "wb+"
 	      || mode == "w+b")
-		return io_open_rw(L, fname, ios_base::in|ios_base::out|ios_base::trunc|ios_base::binary);
+		return object(L, vfs::open_readwrite(fname, ios_base::in|ios_base::out|ios_base::trunc|ios_base::binary));
 	else if (mode == "a+")
-		return io_open_rw(L, fname, ios_base::in|ios_base::out|ios_base::app);
+		return object(L, vfs::open_readwrite(fname, ios_base::in|ios_base::out|ios_base::app));
 	else if (mode == "ab+"
 	      || mode == "a+b")
-		return io_open_rw(L, fname, ios_base::in|ios_base::out|ios_base::app|ios_base::binary);
+		return object(L, vfs::open_readwrite(fname, ios_base::in|ios_base::out|ios_base::app|ios_base::binary));
 	else
 		throw system_error(error_code(EINVAL, get_system_category()), "Invalid mode: " + mode);
 }
@@ -356,6 +323,21 @@ static void io_file_lines(lua_State* L, boost::shared_ptr<ifstream> is)
 	return io_file_lines(L, boost::static_pointer_cast<istream>(is));
 }
 
+static void io_file_lines(lua_State* L, boost::shared_ptr<fstream> is)
+{
+	return io_file_lines(L, boost::static_pointer_cast<istream>(is));
+}
+
+static void io_file_lines(lua_State* L, boost::shared_ptr<fs::ifstream> is)
+{
+	return io_file_lines(L, boost::static_pointer_cast<istream>(is));
+}
+
+static void io_file_lines(lua_State* L, boost::shared_ptr<fs::fstream> is)
+{
+	return io_file_lines(L, boost::static_pointer_cast<istream>(is));
+}
+
 static void io_file_read(lua_State* L, istream& is, const string& format);
 static void io_file_read(lua_State* L, istream& is)
 {
@@ -450,6 +432,16 @@ static void io_file_write(ostream& os,
 	os << a << b << c << d << e;
 }
 
+/**
+ * Don't prefix @c boost::system::system_error exceptions with
+ * 'std::runtime_error'. Instead format their messages only according to
+ * @c e.what().
+ */
+static void translate_system_error_exception(lua_State* L, const system_error& e)
+{
+	lua_pushstring(L, e.what());
+}
+
 void lua_base_register_with_lua(lua_State* L)
 {
 	/*
@@ -515,7 +507,7 @@ void lua_base_register_with_lua(lua_State* L)
 			.def("seek",  (unsigned long int (*)(istream&, const string&)) &io_file_seek)
 			.def("seek",  (unsigned long int (*)(istream&, const string&, long int)) &io_file_seek),
 
-		class_<ifstream, istream, boost::shared_ptr<ifstream>, boost::shared_ptr<istream> >("file")
+		class_<ifstream, istream, boost::shared_ptr<ifstream> >("file")
 			.def("lines", (void (*)(lua_State* L, boost::shared_ptr<ifstream>)) &io_file_lines, raw(_1))
 			.def("close", &ifstream::close),
 
@@ -541,6 +533,15 @@ void lua_base_register_with_lua(lua_State* L)
 
 		class_<fstream, iostream, boost::shared_ptr<fstream> >("file")
 			.def("close", &fstream::close)
+			.def("lines", (void (*)(lua_State* L, boost::shared_ptr<fstream>)) &io_file_lines, raw(_1)),
+
+		class_<fs::ifstream, ifstream, boost::shared_ptr<fs::ifstream> >("file")
+			.def("lines", (void (*)(lua_State* L, boost::shared_ptr<fs::ifstream>)) &io_file_lines, raw(_1)),
+
+		class_<fs::ofstream, ofstream, boost::shared_ptr<fs::ofstream> >("file"),
+
+		class_<fs::fstream, fstream, boost::shared_ptr<fs::fstream> >("file")
+			.def("lines", (void (*)(lua_State* L, boost::shared_ptr<fs::fstream>)) &io_file_lines, raw(_1))
 	];
 
 	/* These classes where only registered with Luabind to make sure
@@ -553,4 +554,7 @@ void lua_base_register_with_lua(lua_State* L)
 	lua_pushcfunction(L, &os_exit);
 	lua_setfield(L, -2, "exit");
 	lua_pop(L, 1); // pop the 'os' table
+
+	// Don't prefix system_error exceptions with 'std::runtime_error'
+	luabind::register_exception_handler<system_error>(&translate_system_error_exception);
 }

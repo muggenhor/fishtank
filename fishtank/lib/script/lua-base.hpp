@@ -18,7 +18,7 @@ typedef basic_path< std::string, path_traits > path;
  */
 luabind::object lua_load(lua_State* L, std::istream& is, const std::string& chunkname = "");
 
-luabind::object lua_loadfile(lua_State* L, const boost::filesystem::path& path, const std::string& chunkname = "");
+luabind::object lua_loadfile(lua_State* L, const boost::filesystem::path& path, const std::string& chunkname);
 
 luabind::object lua_loadfile(lua_State* L, const boost::filesystem::path& path);
 
