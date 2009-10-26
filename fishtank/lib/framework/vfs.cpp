@@ -161,10 +161,7 @@ bool allow_readwrite(const boost::filesystem::path& path)
 	}
 	catch (const system_error& e)
 	{
-		if (e.code() == loop_condition)
-			throw fs::filesystem_error("Cannot open file for reading", path, e.code());
-		else
-			throw;
+		throw fs::filesystem_error(e.std::runtime_error::what(), path, e.code());
 	}
 }
 
@@ -195,10 +192,7 @@ bool allow_read(const boost::filesystem::path& path)
 	}
 	catch (const system_error& e)
 	{
-		if (e.code() == loop_condition)
-			throw fs::filesystem_error("Cannot open file for reading", path, e.code());
-		else
-			throw;
+		throw fs::filesystem_error(e.std::runtime_error::what(), path, e.code());
 	}
 }
 
@@ -207,6 +201,13 @@ boost::shared_ptr<boost::filesystem::ifstream> open_read(const boost::filesystem
 	boost::shared_ptr<fs::ifstream> is(new fs::ifstream);
 	open(*is, path, mode);
 	return is;
+}
+
+boost::shared_ptr<boost::filesystem::ofstream> open_write(const boost::filesystem::path& path, const std::ios_base::openmode mode)
+{
+	boost::shared_ptr<fs::ofstream> os(new fs::ofstream);
+	open(*os, path, mode);
+	return os;
 }
 
 boost::shared_ptr<boost::filesystem::fstream> open_readwrite(const boost::filesystem::path& path, const std::ios_base::openmode mode)
@@ -218,29 +219,71 @@ boost::shared_ptr<boost::filesystem::fstream> open_readwrite(const boost::filesy
 
 void open(std::ifstream& is, const boost::filesystem::path& path, const std::ios_base::openmode mode)
 {
-	if (!allow_read(path))
-		throw fs::filesystem_error("Cannot open file for reading", path, error_code(EACCES, get_system_category()));
+	try
+	{
+		if (!allow_read(path))
+			throw system_error(error_code(EACCES, get_system_category()));
 
-	string file(path.external_file_string());
-	is.open(file.c_str(), mode);
+		string file(path.external_file_string());
+		is.open(file.c_str(), mode);
+		if (!is.is_open())
+			throw system_error(error_code(errno, get_system_category()));
+	}
+	catch (const system_error& e)
+	{
+		string what(e.std::runtime_error::what());
+		if (!what.empty())
+			what = ": " + what;
+		what = "Cannot open file for reading" + what;
+
+		throw fs::filesystem_error(what, path, e.code());
+	}
 }
 
 void open(std::ofstream& os, const boost::filesystem::path& path, const std::ios_base::openmode mode)
 {
-	if (!allow_readwrite(path))
-		throw fs::filesystem_error("Cannot open file for writing", path, error_code(EACCES, get_system_category()));
+	try
+	{
+		if (!allow_readwrite(path))
+			throw system_error(error_code(EACCES, get_system_category()));
 
-	string file(path.external_file_string());
-	os.open(file.c_str(), mode);
+		string file(path.external_file_string());
+		os.open(file.c_str(), mode);
+		if (!os.is_open())
+			throw system_error(error_code(errno, get_system_category()));
+	}
+	catch (const system_error& e)
+	{
+		string what(e.std::runtime_error::what());
+		if (!what.empty())
+			what = ": " + what;
+		what = "Cannot open file for writing" + what;
+
+		throw fs::filesystem_error(what, path, e.code());
+	}
 }
 
-void open(std::fstream& os, const boost::filesystem::path& path, const std::ios_base::openmode mode)
+void open(std::fstream& ios, const boost::filesystem::path& path, const std::ios_base::openmode mode)
 {
-	if (!allow_readwrite(path))
-		throw fs::filesystem_error("Cannot open file for writing", path, error_code(EACCES, get_system_category()));
+	try
+	{
+		if (!allow_readwrite(path))
+			throw system_error(error_code(EACCES, get_system_category()));
 
-	string file(path.external_file_string());
-	os.open(file.c_str(), mode);
+		string file(path.external_file_string());
+		ios.open(file.c_str(), mode);
+		if (!ios.is_open())
+			throw system_error(error_code(errno, get_system_category()));
+	}
+	catch (const system_error& e)
+	{
+		string what(e.std::runtime_error::what());
+		if (!what.empty())
+			what = ": " + what;
+		what = "Cannot open file for updating" + what;
+
+		throw fs::filesystem_error(what, path, e.code());
+	}
 }
 
 }
