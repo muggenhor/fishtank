@@ -123,8 +123,7 @@ int lua_dostream(lua_State* L, std::istream& is, const std::string& chunkname)
 	object chunk(lua_load(L, is, chunkname));
 
 	const int n = lua_gettop(L);
-	chunk.push(L);
-	lua_pcall(L);
+	lua_pcall(L, chunk);
 	return lua_gettop(L) - n;
 }
 
@@ -173,15 +172,79 @@ static void base_dofile(lua_State* L, fs::path fname)
 	lua_dofile(L, fname);
 }
 
+void lua_pcall(lua_State* L, int (*func)(lua_State*), int nresults, int (*errfunc)(lua_State*))
+{
+	assert(func);
+
+	lua_pushcfunction(L, func);
+	if (!errfunc)
+	{
+		lua_pushcfunction(L, errfunc);
+		object errfunc_o(from_stack(L, -1));
+		lua_pop(L, 1);
+
+		return lua_pcall(L, 0, nresults);
+	}
+
+	return lua_pcall(L, 0, nresults, errfunc);
+}
+
+void lua_pcall(lua_State* L, const luabind::object& func, int nresults, int (*errfunc)(lua_State*))
+{
+	assert(func.is_valid());
+
+	func.push(L);
+	if (!errfunc)
+	{
+		lua_pushcfunction(L, errfunc);
+		object errfunc_o(from_stack(L, -1));
+		lua_pop(L, 1);
+
+		return lua_pcall(L, 0, nresults);
+	}
+
+	return lua_pcall(L, 0, nresults, errfunc);
+}
+
+void lua_pcall(lua_State* L, int (*func)(lua_State*), int nresults, const luabind::object& errfunc)
+{
+	assert(func);
+
+	lua_pushcfunction(L, func);
+	return lua_pcall(L, 0, nresults, errfunc);
+}
+
+void lua_pcall(lua_State* L, const luabind::object& func, int nresults, const luabind::object& errfunc)
+{
+	assert(func.is_valid());
+
+	func.push(L);
+	return lua_pcall(L, 0, nresults, errfunc);
+}
+
 void lua_pcall(lua_State* L, int nargs, int nresults, int (*errfunc)(lua_State*))
 {
-	const int errfunc_pos = errfunc ?
+	if (!errfunc)
+		return lua_pcall(L, nargs, nresults);
+
+	lua_pushcfunction(L, errfunc);
+	object errfunc_o(from_stack(L, -1));
+	lua_pop(L, 1);
+	return lua_pcall(L, nargs, nresults, errfunc_o);
+}
+
+void lua_pcall(lua_State* L, int nargs, int nresults, const luabind::object& errfunc)
+{
+	const int errfunc_pos = errfunc.is_valid() ?
 		lua_gettop(L) - nargs :
 		0;
 
 	if (errfunc_pos)
 	{
-		lua_pushcfunction(L, errfunc);
+		if (luabind::type(errfunc) != LUA_TFUNCTION)
+			throw runtime_error("lua_pcall: non-function used as error handler");
+
+		errfunc.push(L);
 		lua_insert(L, errfunc_pos); // Put the error handler *before* the function and its arguments
 	}
 

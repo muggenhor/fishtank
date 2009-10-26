@@ -185,7 +185,7 @@ void debug_register_with_lua(lua_State* L)
 	globals(L)["debug"] = nil;
 
 	// Extract the 'traceback' function from the 'debug' library and ditch the rest
-	lua_pushcfunction(L, &luaopen_debug); lua_pcall(L);
+	lua_pcall(L, &luaopen_debug);
 	object traceback_func = globals(L)["debug"]["traceback"];
 	registry(L)["_LOADED"]["debug"] = nil;
 	globals(L)["debug"] = nil;

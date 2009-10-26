@@ -26,7 +26,17 @@ int lua_dostream(lua_State* L, std::istream& is, const std::string& chunkname = 
 
 int lua_dofile(lua_State* L, const boost::filesystem::path& path);
 
-void lua_pcall(lua_State* L, int nargs = 0, int nresults = LUA_MULTRET, int (*errfunc)(lua_State*) = 0);
+void lua_pcall(lua_State* L, int (*func)(lua_State*), int nresults, int (*errfunc)(lua_State*));
+
+void lua_pcall(lua_State* L, const luabind::object& func, int nresults, int (*errfunc)(lua_State*));
+
+void lua_pcall(lua_State* L, int (*func)(lua_State*), int nresults = LUA_MULTRET, const luabind::object& errfunc = luabind::object());
+
+void lua_pcall(lua_State* L, const luabind::object& func, int nresults = LUA_MULTRET, const luabind::object& errfunc = luabind::object());
+
+void lua_pcall(lua_State* L, int nargs, int nresults, int (*errfunc)(lua_State*));
+
+void lua_pcall(lua_State* L, int nargs = 0, int nresults = LUA_MULTRET, const luabind::object& errfunc = luabind::object());
 
 void lua_base_register_with_lua(lua_State* L);
 
