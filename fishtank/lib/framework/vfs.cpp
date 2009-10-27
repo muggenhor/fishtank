@@ -6,6 +6,7 @@
 #include <cerrno>
 #include <stdexcept>
 #include <string>
+#include "type_traits.hpp"
 #include <vector>
 
 using namespace std;
@@ -214,15 +215,6 @@ static const char* rwu_error_message(const basic_iostream<charT, traits>&)
 	return "Cannot open file for updating";
 }
 
-template<class Fstream> struct is_fs_fstream
-  { BOOST_STATIC_CONSTANT( bool, value = false ); };
-template<class charT, class traits> struct is_fs_fstream< fs::basic_ifstream<charT, traits> >
-  { BOOST_STATIC_CONSTANT( bool, value = true ); };
-template<class charT, class traits> struct is_fs_fstream< fs::basic_ofstream<charT, traits> >
-  { BOOST_STATIC_CONSTANT( bool, value = true ); };
-template<class charT, class traits> struct is_fs_fstream< fs::basic_fstream<charT, traits> >
-  { BOOST_STATIC_CONSTANT( bool, value = true ); };
-
 template < class Fstream, class Path >
 static void stream_do_open(Fstream& s,
                            const Path& path,
@@ -232,15 +224,6 @@ static void stream_do_open(Fstream& s,
 {
 	s.open(path, mode);
 }
-
-template<class Fstream> struct is_std_fstream
-  { BOOST_STATIC_CONSTANT( bool, value = false ); };
-template<class charT, class traits> struct is_std_fstream< basic_ifstream<charT, traits> >
-  { BOOST_STATIC_CONSTANT( bool, value = true ); };
-template<class charT, class traits> struct is_std_fstream< basic_ofstream<charT, traits> >
-  { BOOST_STATIC_CONSTANT( bool, value = true ); };
-template<class charT, class traits> struct is_std_fstream< basic_fstream<charT, traits> >
-  { BOOST_STATIC_CONSTANT( bool, value = true ); };
 
 template < class Fstream >
 static void stream_do_open(Fstream& s,

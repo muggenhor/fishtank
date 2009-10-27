@@ -18,6 +18,7 @@ noinst_HEADERS = \
 	property.hpp \
 	resource.hpp \
 	threadpool.hpp \
+	type_traits.hpp \
 	vfs.hpp
 
 libframework_la_LIBADD = \

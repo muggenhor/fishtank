@@ -8,6 +8,7 @@
 #include <boost/system/error_code.hpp>
 #include <boost/system/system_error.hpp>
 #include <cstring>
+#include <framework/type_traits.hpp>
 #include <framework/vfs.hpp>
 #include <fstream>
 #include <iterator>
@@ -18,6 +19,7 @@ extern "C" {
 #include <lua.h>
 #include <lualib.h>
 }
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -310,13 +312,62 @@ static void io_open(lua_State* L, const fs::path& fname)
 	return io_open(L, fname, "r");
 }
 
-static const char* io_type(const istream&)    { return "input stream"; }
-static const char* io_type(const ostream&)    { return "output stream"; }
-static const char* io_type(const iostream&)   { return "input/output stream"; }
-static const char* io_type(const ifstream& f) { return f.is_open() ? "file" : "closed file"; }
-static const char* io_type(const ofstream& f) { return f.is_open() ? "file" : "closed file"; }
-static const char* io_type(const fstream&  f) { return f.is_open() ? "file" : "closed file"; }
+template<class charT, class traits>
+static string stream_dir(const basic_ios<charT,      traits>&) { return string();       }
+template<class charT, class traits>
+static string stream_dir(const basic_istream<charT,  traits>&) { return "input";        }
+template<class charT, class traits>
+static string stream_dir(const basic_ostream<charT,  traits>&) { return "output";       }
+template<class charT, class traits>
+static string stream_dir(const basic_iostream<charT, traits>&) { return "input/output"; }
+
+template < class Stream >
+static typename boost::enable_if_c<is_stream<Stream>::value && !is_fstream<Stream>::value, string>::type io_type(Stream&)
+{
+	const string dir(stream_dir(*(Stream*)0));
+
+	if (dir.empty())
+		return "stream";
+	else
+		return dir + " stream";
+}
+
+template < class Stream >
+static typename boost::enable_if<is_fstream<Stream>, const char*>::type io_type(Stream& f)
+{
+	return f.is_open() ?
+		"file" :
+		"closed file";
+}
+
 static void io_type(lua_State* L, const luabind::object&) { lua_pushnil(L); }
+
+template < class Stream >
+static typename boost::enable_if_c<is_stream<Stream>::value && !is_fstream<Stream>::value, string>::type io_file_tostring(Stream& s)
+{
+	const string dir(stream_dir(s));
+	ostringstream o;
+
+	o << dir;
+	if (!dir.empty())
+		o << " ";
+	o << "stream (" << &s << ")";
+
+	return o.str();
+}
+
+template < class Stream >
+static typename boost::enable_if<is_fstream<Stream>, string>::type io_file_tostring(Stream& f)
+{
+	ostringstream o;
+	o << "file (";
+	if (f.is_open())
+		o << &f;
+	else
+		o << "closed";
+	o << ")";
+	return o.str();
+}
 
 static ios_base::seekdir whence_to_seekdir(const string& whence)
 {
@@ -396,30 +447,11 @@ static int next_file_line(lua_State* L)
 	return 1;
 }
 
-static void io_file_lines(lua_State* L, boost::shared_ptr<istream> is)
+template < class Stream >
+static typename boost::enable_if<is_istream<Stream> >::type io_file_lines(lua_State* L, boost::shared_ptr<Stream> is)
 {
-	object(L, is).push(L);
+	object(L, boost::static_pointer_cast<istream>(is)).push(L);
 	return lua_pushcclosure(L, &next_file_line, 1);
-}
-
-static void io_file_lines(lua_State* L, boost::shared_ptr<ifstream> is)
-{
-	return io_file_lines(L, boost::static_pointer_cast<istream>(is));
-}
-
-static void io_file_lines(lua_State* L, boost::shared_ptr<fstream> is)
-{
-	return io_file_lines(L, boost::static_pointer_cast<istream>(is));
-}
-
-static void io_file_lines(lua_State* L, boost::shared_ptr<fs::ifstream> is)
-{
-	return io_file_lines(L, boost::static_pointer_cast<istream>(is));
-}
-
-static void io_file_lines(lua_State* L, boost::shared_ptr<fs::fstream> is)
-{
-	return io_file_lines(L, boost::static_pointer_cast<istream>(is));
 }
 
 static void io_file_read(lua_State* L, istream& is, const string& format);
@@ -574,16 +606,21 @@ void lua_base_register_with_lua(lua_State* L)
 		def("open", tag_function<void (lua_State*, const string&, const string&)>((void (*)(lua_State*, const fs::path&, const string&)) &io_open), raw(_1)),
 		def("open", tag_function<void (lua_State*, const string&)>((void (*)(lua_State*, const fs::path&)) &io_open), raw(_1)),
 
-		def("type", (const char* (*)(const istream&))  &io_type),
-		def("type", (const char* (*)(const ostream&))  &io_type),
-		def("type", (const char* (*)(const iostream&)) &io_type),
-		def("type", (const char* (*)(const ifstream&)) &io_type),
-		def("type", (const char* (*)(const ofstream&)) &io_type),
-		def("type", (const char* (*)(const fstream&))  &io_type),
+		def("type", &io_type<ios>),
+		def("type", &io_type<istream>),
+		def("type", &io_type<ostream>),
+		def("type", &io_type<iostream>),
+		def("type", &io_type<ifstream>),
+		def("type", &io_type<ofstream>),
+		def("type", &io_type<fstream>),
 		def("type", (void (*)(lua_State*, const luabind::object&)) &io_type, raw(_1)),
 
-		class_<istream, boost::shared_ptr<istream> >("file")
-			.def("lines", (void (*)(lua_State* L, boost::shared_ptr<istream>)) &io_file_lines, raw(_1))
+		class_<ios, boost::shared_ptr<ios> >("file")
+			.def("__tostring", &io_file_tostring<ios>),
+
+		class_<istream, ios, boost::shared_ptr<istream> >("file")
+			.def("__tostring", &io_file_tostring<istream>)
+			.def("lines", &io_file_lines<istream>, raw(_1))
 			.def("read",  (void (*)(lua_State*, istream&)) &io_file_read, raw(_1))
 			.def("read",  (void (*)(lua_State*, istream&, const string&)) &io_file_read, raw(_1))
 			.def("read",  (void (*)(lua_State*, istream&, unsigned long int)) &io_file_read, raw(_1))
@@ -592,10 +629,12 @@ void lua_base_register_with_lua(lua_State* L)
 			.def("seek",  (unsigned long int (*)(istream&, const string&, long int)) &io_file_seek),
 
 		class_<ifstream, istream, boost::shared_ptr<ifstream> >("file")
-			.def("lines", (void (*)(lua_State* L, boost::shared_ptr<ifstream>)) &io_file_lines, raw(_1))
+			.def("__tostring", &io_file_tostring<ifstream>)
+			.def("lines", &io_file_lines<ifstream>, raw(_1))
 			.def("close", &ifstream::close),
 
-		class_<ostream, boost::shared_ptr<ostream> >("file")
+		class_<ostream, ios, boost::shared_ptr<ostream> >("file")
+			.def("__tostring", &io_file_tostring<ostream>)
 			.def("flush", &ofstream::flush)
 			.def("seek",  (unsigned long int (*)(ostream&)) &io_file_seek)
 			.def("seek",  (unsigned long int (*)(ostream&, const string&)) &io_file_seek)
@@ -608,24 +647,28 @@ void lua_base_register_with_lua(lua_State* L)
 			.def("write", (void (*)(ostream&, const string&, const string&, const string&, const string&, const string&)) &io_file_write),
 
 		class_<ofstream, ostream, boost::shared_ptr<ofstream> >("file")
+			.def("__tostring", &io_file_tostring<ofstream>)
 			.def("close", &ofstream::close),
 
 		class_<iostream, bases<istream, ostream>, boost::shared_ptr<iostream> >("file")
+			.def("__tostring", &io_file_tostring<iostream>)
+			.def("lines", &io_file_lines<iostream>, raw(_1))
 			.def("seek", (unsigned long int (*)(iostream&)) &io_file_seek)
 			.def("seek", (unsigned long int (*)(iostream&, const string&)) &io_file_seek)
 			.def("seek", (unsigned long int (*)(iostream&, const string&, long int)) &io_file_seek),
 
 		class_<fstream, iostream, boost::shared_ptr<fstream> >("file")
+			.def("__tostring", &io_file_tostring<fstream>)
 			.def("close", &fstream::close)
-			.def("lines", (void (*)(lua_State* L, boost::shared_ptr<fstream>)) &io_file_lines, raw(_1)),
+			.def("lines", &io_file_lines<fstream>, raw(_1)),
 
 		class_<fs::ifstream, ifstream, boost::shared_ptr<fs::ifstream> >("file")
-			.def("lines", (void (*)(lua_State* L, boost::shared_ptr<fs::ifstream>)) &io_file_lines, raw(_1)),
+			.def("lines", &io_file_lines<fs::ifstream>, raw(_1)),
 
 		class_<fs::ofstream, ofstream, boost::shared_ptr<fs::ofstream> >("file"),
 
 		class_<fs::fstream, fstream, boost::shared_ptr<fs::fstream> >("file")
-			.def("lines", (void (*)(lua_State* L, boost::shared_ptr<fs::fstream>)) &io_file_lines, raw(_1))
+			.def("lines", &io_file_lines<fs::fstream>, raw(_1))
 	];
 
 	/* These classes where only registered with Luabind to make sure
