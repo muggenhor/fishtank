@@ -1,0 +1,16 @@
+diff -Naur $sourcebase.orig/src/luaconf.h $sourcebase/src/luaconf.h
+--- $sourcebase.orig/src/luaconf.h	2009-10-26 20:24:36.000000000 +0100
++++ $sourcebase/src/luaconf.h	2009-10-27 01:30:28.000000000 +0100
+@@ -719,8 +719,10 @@
+ #if defined(__cplusplus)
+ /* C++ exceptions */
+ #define LUAI_THROW(L,c)	throw(c)
+-#define LUAI_TRY(L,c,a)	try { a } catch(...) \
+-	{ if ((c)->status == 0) (c)->status = -1; }
++#define LUAI_TRY(L,c,a)	try { a } catch(const struct lua_longjmp* exception_object_ptr) \
++	{ lua_assert((c) == (e)); if ((c)->status == 0) (c)->status = -1; } \
++	catch(...) \
++	{   L->errorJmp = (c)->previous; throw; /* restore old error handler, then rethrow */ }
+ #define luai_jmpbuf	int  /* dummy variable */
+ 
+ #elif defined(LUA_USE_ULONGJMP)
