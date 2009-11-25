@@ -28,7 +28,7 @@ class Aquarium : boost::noncopyable
 	private:
 		Eigen::Vector3d _size;
 		std::vector< boost::weak_ptr<Object> > objects;
-	std::vector< boost::shared_ptr<Vis> > fishes;
+		std::vector< boost::weak_ptr<Vis> > fishes;
 	std::vector< boost::shared_ptr<Bubble> > bubbles;
 	std::vector<Eigen::Vector3f> bubbleSpots;
 	public:
@@ -53,7 +53,7 @@ class Aquarium : boost::noncopyable
 	void GoToScreen(const Eigen::Vector2d &position);
 
 	//voeg een vis toe in het aquarium
-	void AddFish(boost::shared_ptr<const Model> model, const boost::filesystem::path& propertiesFile);
+	void addFish(boost::shared_ptr<Vis> fish);
 	//voeg een object toe in het aquarium
 	void addObject(boost::shared_ptr<Object> object);
 	//voeg een bubbel maker toe in het aquarium

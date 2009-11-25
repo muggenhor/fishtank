@@ -4,6 +4,7 @@
 #include <cstring>
 #include "debug-support.hpp"
 #include "eigen-support.hpp"
+#include "fish-support.hpp"
 #include <framework/resource.hpp>
 #include <luabind/luabind.hpp>
 #include <luabind/operator.hpp>
@@ -183,11 +184,6 @@ static std::string get_model_filename(const Model& model)
 	return model.filename.file_string();
 }
 
-static void Aquarium_AddFish(Aquarium& aquarium, boost::shared_ptr<const Model> model, const std::string& propertiesFile)
-{
-	return aquarium.AddFish(model, propertiesFile);
-}
-
 void LuaScript::register_interfaces()
 {
 	lua_base_register_with_lua(L);
@@ -233,6 +229,7 @@ void LuaScript::register_interfaces()
 			.property("filename", &get_model_filename),
 
 		Object_lua_wrapper::register_with_lua(),
+		Fish_lua_wrapper::register_with_lua(),
 
 		class_<Ground>("Ground")
 			.def("depth", &Ground::depth)
@@ -241,7 +238,7 @@ void LuaScript::register_interfaces()
 			.def("width", &Ground::width),
 
 		class_<Aquarium>("Aquarium")
-			.def("AddFish", Aquarium_AddFish)
+			.def("addFish", &Aquarium::addFish)
 			.def("addObject", &Aquarium::addObject)
 			.def("AddBubbleSpot", &Aquarium::AddBubbleSpot)
 			.def_readwrite("eye_distance", &Aquarium::eye_distance)

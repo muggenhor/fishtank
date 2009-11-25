@@ -30,30 +30,30 @@ do
 		 0, 0, 0, 1
 	})
 
-	local function loadFishModels(name, properties, count)
-		local count = count or 1
+	local function loadFishModels(name, properties)
 		local model = loadModel('Vissen/Modellen', name, model_matrix)
-		for i=1,count do
-			aquarium:AddFish(model, properties)
-		end
+		return Fish(model, properties, aquarium.ground.maxHeight)
 	end
 
 	-- Load fishes
-	for k,fish in ipairs({
-			{'vis2',             'vis2'              },
-			{'vis2',             'vis2'              },
-			{'BlueTang0',        'vis3'              },
-			{'GuppyBlueGrass',   'guppieBT'          },
-			{'RyugunoTukai0',    'neon'              },
-			{'neonTeT',          'neon',            3},
-			{'Angel',            'Angel'             },
-			{'kumanomi',         'kumanomi',        2},
-			{'Rantyu',           'rantyu',          3},
-			{'yellow_submarine', 'YellowSubmarine'   },
-			{'haai',             'haai'              },
-		}) do
-		loadFishModels(unpack(fish))
-	end
+	fishes = {
+		loadFishModels('vis2',             'vis2'           ),
+		loadFishModels('vis2',             'vis2'           ),
+		loadFishModels('BlueTang0',        'vis3'           ),
+		loadFishModels('GuppyBlueGrass',   'guppieBT'       ),
+		loadFishModels('RyugunoTukai0',    'neon'           ),
+		loadFishModels('neonTeT',          'neon'           ),
+		loadFishModels('neonTeT',          'neon'           ),
+		loadFishModels('neonTeT',          'neon'           ),
+		loadFishModels('Angel',            'Angel'          ),
+		loadFishModels('kumanomi',         'kumanomi'       ),
+		loadFishModels('kumanomi',         'kumanomi'       ),
+		loadFishModels('Rantyu',           'rantyu'         ),
+		loadFishModels('Rantyu',           'rantyu'         ),
+		loadFishModels('Rantyu',           'rantyu'         ),
+		loadFishModels('yellow_submarine', 'YellowSubmarine'),
+		loadFishModels('haai',             'haai'           ),
+	}
 end
 
 do
@@ -96,9 +96,6 @@ do
 		zw_stroken(                             56,   0 ),
 		zw_stroken(                            630,   0 )
 	}
-	for key,object in pairs(objects) do
-		aquarium:addObject(object)
-	end
 
 	-- Add bubble particle gens
 	for k,pos in ipairs({
@@ -118,7 +115,6 @@ objects.wall1.corners = {
 	Eigen.Vector3d(-0.5,  0.5,  0.5),
 	Eigen.Vector3d(-0.5, -0.5,  0.5)
 }
-aquarium:addObject(objects.wall1)
 
 objects.wall2 = Wall(aquarium, 'wall2.jpg')
 objects.wall2.corners = {
@@ -127,7 +123,6 @@ objects.wall2.corners = {
 	Eigen.Vector3d( 0.5,  0.5, -0.5),
 	Eigen.Vector3d( 0.5, -0.5, -0.5)
 }
-aquarium:addObject(objects.wall2)
 
 objects.ceiling = Wall(aquarium, 'ceiling.jpg')
 objects.ceiling.corners = {
@@ -136,4 +131,11 @@ objects.ceiling.corners = {
 	Eigen.Vector3d( 0.5,  0.5, -0.5),
 	Eigen.Vector3d( 0.5,  0.5,  0.5)
 }
-aquarium:addObject(objects.ceiling)
+
+for key,object in pairs(objects) do
+	aquarium:addObject(object)
+end
+
+for key,fish in pairs(fishes) do
+	aquarium:addFish(fish)
+end

@@ -34,9 +34,10 @@ Aquarium::Aquarium(const Eigen::Vector3d& size_) :
 {
 }
 
-void Aquarium::AddFish(boost::shared_ptr<const Model> model, const boost::filesystem::path& propertiesFile)
+void Aquarium::addFish(boost::shared_ptr<Vis> fish)
 {
-	fishes.push_back(shared_ptr<Vis>(new Vis(model, propertiesFile, ground.maxHeight())));
+	if (fish)
+		fishes.push_back(fish);
 }
 
 void Aquarium::addObject(boost::shared_ptr<Object> object)
@@ -52,8 +53,13 @@ void Aquarium::AddBubbleSpot(const Eigen::Vector3f& position)
 
 void Aquarium::update(double dt)
 {
-	foreach (shared_ptr<Vis>& fish, fishes)
-		fish->update(dt);
+	foreach (const weak_ptr<Vis>& fish, fishes)
+	{
+		const shared_ptr<Vis> ptr(fish.lock());
+		if (!ptr)
+			continue;
+		ptr->update(dt);
+	}
 
 	foreach (const weak_ptr<Object>& object, objects)
 	{
@@ -100,12 +106,16 @@ void Aquarium::GoToScreen(const Eigen::Vector2d &position)
 	//laat alle vissen nu naar het punt toe zwemmen
 	for (unsigned int i = 0; i < fishes.size(); i++)
 	{
+		const shared_ptr<Vis> ptr(fishes[i].lock());
+		if (!ptr)
+			continue;
+
 		//geef de vissen een iets andere positie zodat ze niet door elkaar heen willen gaan (in dit geval een circel)
 		const double circular_position = 2. * M_PI / fishes.size() * i;
 		const Eigen::Vector2d fishGoalPos(pos.cwise() * Eigen::Vector2d(sin(circular_position), cos(circular_position)) * circleDistance);
 		//laat de vissen naar de positie zwemmen
-		fishes[i]->setGoal(Eigen::Vector3f(fishGoalPos.x(), fishGoalPos.y(), this->size().y()));
-		//fishes[i]->pos = Eigen::Vector3d(fishGoalPos.x(), fishGoalPos.y(), this->size().y());
+		ptr->setGoal(Eigen::Vector3f(fishGoalPos.x(), fishGoalPos.y(), this->size().y()));
+		//ptr->pos = Eigen::Vector3d(fishGoalPos.x(), fishGoalPos.y(), this->size().y());
 		debug(LOG_NEVER) << "Goto " << fishGoalPos;
 	}
 }
@@ -113,10 +123,18 @@ void Aquarium::GoToScreen(const Eigen::Vector2d &position)
 void Aquarium::AvoidFishBounce()
 {
 	// FIXME: O(n^2) behaviour
-	foreach (shared_ptr<Vis>& fish, fishes)
+	foreach (const weak_ptr<Vis>& fishp, fishes)
 	{
-		foreach (const shared_ptr<Vis>& collidable, fishes)
+		const shared_ptr<Vis> fish(fishp.lock());
+		if (!fish)
+			continue;
+
+		foreach (const weak_ptr<Vis>& fishp, fishes)
 		{
+			const shared_ptr<Vis> collidable(fishp.lock());
+			if (!collidable)
+				continue;
+
 			// No collision detection with self
 			if (&*collidable == &*fish)
 				continue;
@@ -152,8 +170,13 @@ void Aquarium::draw()
 	//teken alle muren die niet webcams zijn
 	ground.Draw();
 
-	foreach (const shared_ptr<Vis>& fish, fishes)
-		fish->draw();
+	foreach (const weak_ptr<Vis>& fish, fishes)
+	{
+		const shared_ptr<Vis> ptr(fish.lock());
+		if (!ptr)
+			continue;
+		ptr->draw();
+	}
 	foreach (const weak_ptr<Object>& object, objects)
 	{
 		const shared_ptr<Object> ptr(object.lock());
@@ -174,7 +197,12 @@ void Aquarium::draw()
 				continue;
 			ptr->drawCollisionSphere();
 		}
-		foreach (const shared_ptr<Vis>& fish, fishes)
-			fish->drawCollisionSphere();
+		foreach (const weak_ptr<Vis>& fish, fishes)
+		{
+			const shared_ptr<Vis> ptr(fish.lock());
+			if (!ptr)
+				continue;
+			ptr->drawCollisionSphere();
+		}
 	}
 }
