@@ -27,3 +27,11 @@ libscript_la_LIBADD = \
 	$(builddir)/../framework/libframework.la
 	$(LUA_LIBS) \
 	$(LUABIND_LIBS)
+
+# Force lua-base.cpp to be compiled with optimisations disabled (-O0)
+lua-base.lo: lua-base.cpp
+@am__fastdepCXX_TRUE@	$(LTCXXCOMPILE) -O0 -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -O0 -c -o $@ $<
