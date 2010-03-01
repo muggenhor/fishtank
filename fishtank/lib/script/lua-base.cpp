@@ -14,6 +14,7 @@
 #include <iterator>
 #include <luabind/luabind.hpp>
 #include <luabind/exception_handler.hpp>
+#include <luabind/raw_policy.hpp>
 #include <luabind/tag_function.hpp>
 extern "C" {
 #include <lua.h>

@@ -1,5 +1,6 @@
 #include "vertexarrays-support.hpp"
 #include <luabind/luabind.hpp>
+#include <luabind/raw_policy.hpp>
 
 // FIXME: #includes from top level dir
 #include "../../vertexarrays/trianglearray.hpp"
