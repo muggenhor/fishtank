@@ -14,7 +14,7 @@ execute()
 
 DEVPKG=${HOME}/svn/fishtank/devpkg
 
-HOST_TRIPLET=i686-mingw32
+: ${HOST_TRIPLET:=i686-mingw32}
 
 for arg in "$@"; do
 	case "$arg" in
